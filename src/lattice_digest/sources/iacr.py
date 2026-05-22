@@ -115,7 +115,9 @@ class IacrEprintSource(SourceAdapter):
             return []
         else:
             attempt_path.write_text(datetime.now(timezone.utc).isoformat(), encoding="utf-8")
-            xml_text = fetch_text(context, url)
+            xml_text = fetch_text(context, url, source_name=self.name)
+            if xml_text is None:
+                return []
             cache_path.write_text(xml_text, encoding="utf-8")
 
         return [
@@ -123,4 +125,3 @@ class IacrEprintSource(SourceAdapter):
             for record in parse_iacr_feed(xml_text, source_url=url)
             if within_since(record.publication_date, record.update_date, context.since)
         ]
-

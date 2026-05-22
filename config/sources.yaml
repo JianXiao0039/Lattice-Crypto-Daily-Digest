@@ -1,7 +1,10 @@
 {
   "request": {
     "timeout_seconds": 20,
-    "user_agent": "lattice-crypto-daily-digest/0.1 (+https://github.com/local/lattice-crypto-daily-digest)"
+    "user_agent": "lattice-crypto-daily-digest/0.1 (+https://github.com/local/lattice-crypto-daily-digest)",
+    "cache_ttl_seconds": 43200,
+    "per_domain_min_interval_seconds": 1.0,
+    "max_retries": 2
   },
   "sources": [
     {
@@ -17,7 +20,7 @@
       "enabled": true,
       "url": "https://export.arxiv.org/api/query",
       "categories": ["cs.CR", "cs.IT", "cs.DS", "math.NT", "math.CO", "cs.LG"],
-      "max_results": 100
+      "max_results": 50
     },
     {
       "name": "dblp",
@@ -31,7 +34,7 @@
       "type": "openalex",
       "enabled": true,
       "url": "https://api.openalex.org/works",
-      "max_results": 50
+      "max_results": 25
     },
     {
       "name": "crossref",
@@ -70,4 +73,3 @@
     }
   ]
 }
-

@@ -1,13 +1,11 @@
 from __future__ import annotations
 
-import json
 from dataclasses import dataclass, field
 from datetime import datetime, timezone
 from pathlib import Path
 from typing import Any
-from urllib.error import HTTPError, URLError
-from urllib.request import Request, urlopen
 
+from lattice_digest.http import request_json, request_text
 from lattice_digest.models import PaperRecord
 
 
@@ -19,12 +17,15 @@ class FetchContext:
     timeout_seconds: int = 20
     user_agent: str = "lattice-crypto-daily-digest/0.1"
     cache_dir: Path | None = None
+    http_cache_ttl_seconds: int = 12 * 60 * 60
+    per_domain_min_interval_seconds: float = 1.0
+    max_retries: int = 2
     api_keys: dict[str, str] = field(default_factory=dict)
     warnings: list[str] = field(default_factory=list)
 
     def __post_init__(self) -> None:
         if self.cache_dir is None:
-            self.cache_dir = self.root / ".cache"
+            self.cache_dir = self.root / "cache"
 
 
 class SourceAdapter:
@@ -36,18 +37,48 @@ class SourceAdapter:
         raise NotImplementedError
 
 
-def fetch_text(context: FetchContext, url: str, headers: dict[str, str] | None = None) -> str:
-    request_headers = {"User-Agent": context.user_agent, **(headers or {})}
-    request = Request(url, headers=request_headers)
-    try:
-        with urlopen(request, timeout=context.timeout_seconds) as response:
-            return response.read().decode("utf-8", errors="replace")
-    except (HTTPError, URLError, TimeoutError) as exc:
-        raise RuntimeError(f"request failed for {url}: {exc}") from exc
+def fetch_text(
+    context: FetchContext,
+    url: str,
+    headers: dict[str, str] | None = None,
+    source_name: str = "http",
+) -> str | None:
+    assert context.cache_dir is not None
+    response = request_text(
+        url,
+        source=source_name,
+        user_agent=context.user_agent,
+        timeout_seconds=context.timeout_seconds,
+        headers=headers,
+        cache_dir=context.cache_dir / "http",
+        cache_ttl_seconds=context.http_cache_ttl_seconds,
+        min_interval_seconds=context.per_domain_min_interval_seconds,
+        max_retries=context.max_retries,
+        warnings=context.warnings,
+    )
+    return response.text if response.ok else None
 
 
-def fetch_json(context: FetchContext, url: str, headers: dict[str, str] | None = None) -> dict[str, Any]:
-    return json.loads(fetch_text(context, url, headers=headers))
+def fetch_json(
+    context: FetchContext,
+    url: str,
+    headers: dict[str, str] | None = None,
+    source_name: str = "http",
+) -> dict[str, Any] | None:
+    assert context.cache_dir is not None
+    data, _ = request_json(
+        url,
+        source=source_name,
+        user_agent=context.user_agent,
+        timeout_seconds=context.timeout_seconds,
+        headers=headers,
+        cache_dir=context.cache_dir / "http",
+        cache_ttl_seconds=context.http_cache_ttl_seconds,
+        min_interval_seconds=context.per_domain_min_interval_seconds,
+        max_retries=context.max_retries,
+        warnings=context.warnings,
+    )
+    return data
 
 
 def normalize_date(value: str | None) -> str | None:
@@ -89,4 +120,3 @@ def within_since(publication_date: str | None, update_date: str | None, since: d
     if parsed is None:
         return True
     return parsed >= since
-

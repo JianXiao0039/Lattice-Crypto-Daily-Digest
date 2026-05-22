@@ -24,11 +24,19 @@ class OpenAlexSource(SourceAdapter):
         params = urllib.parse.urlencode(
             {
                 "search": "lattice cryptography LWE SIS NTRU BKZ FHE",
-                "per-page": int(self.config.get("max_results", 50)),
+                "per-page": min(int(self.config.get("max_results", 25)), 25),
                 "sort": "updated_date:desc",
             }
         )
-        data = fetch_json(context, f"{self.config['url']}?{params}")
+        contact_email = context.api_keys.get("CONTACT_EMAIL", "").strip()
+        if contact_email:
+            params = f"{params}&{urllib.parse.urlencode({'mailto': contact_email})}"
+        headers = {}
+        if contact_email:
+            headers["User-Agent"] = f"{context.user_agent} (mailto:{contact_email})"
+        data = fetch_json(context, f"{self.config['url']}?{params}", headers=headers, source_name=self.name)
+        if data is None:
+            return []
         records: list[PaperRecord] = []
         for item in data.get("results", []):
             title = item.get("title")
@@ -55,4 +63,3 @@ class OpenAlexSource(SourceAdapter):
             if within_since(record.publication_date, record.update_date, context.since):
                 records.append(record)
         return records
-

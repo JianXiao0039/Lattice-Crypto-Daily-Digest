@@ -86,7 +86,7 @@ class ArxivSource(SourceAdapter):
             return []
 
         categories = self.config.get("categories", [])
-        max_results = int(self.config.get("max_results", 100))
+        max_results = min(int(self.config.get("max_results", 50)), 50)
         query_terms = [
             '"lattice cryptography"',
             "LWE",
@@ -113,10 +113,11 @@ class ArxivSource(SourceAdapter):
                 "max_results": max_results,
             }
         )
-        xml_text = fetch_text(context, f"{self.config['url']}?{params}")
+        xml_text = fetch_text(context, f"{self.config['url']}?{params}", source_name=self.name)
+        if xml_text is None:
+            return []
         return [
             record
             for record in parse_arxiv_atom(xml_text)
             if within_since(record.publication_date, record.update_date, context.since)
         ]
-

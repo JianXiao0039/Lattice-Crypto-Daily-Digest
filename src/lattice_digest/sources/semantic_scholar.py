@@ -12,18 +12,22 @@ class SemanticScholarSource(SourceAdapter):
             context.warnings.append("dry-run: skipped Semantic Scholar network request")
             return []
         fields = "paperId,title,abstract,authors,venue,year,publicationDate,externalIds,url,openAccessPdf"
+        api_key = context.api_keys.get("SEMANTIC_SCHOLAR_API_KEY")
+        configured_limit = int(self.config.get("max_results", 50))
+        limit = configured_limit if api_key else min(configured_limit, 20)
         params = urllib.parse.urlencode(
             {
                 "query": "lattice cryptography LWE SIS NTRU BKZ FHE",
-                "limit": int(self.config.get("max_results", 50)),
+                "limit": limit,
                 "fields": fields,
             }
         )
         headers = {}
-        api_key = context.api_keys.get("SEMANTIC_SCHOLAR_API_KEY")
         if api_key:
             headers["x-api-key"] = api_key
-        data = fetch_json(context, f"{self.config['url']}?{params}", headers=headers)
+        data = fetch_json(context, f"{self.config['url']}?{params}", headers=headers, source_name=self.name)
+        if data is None:
+            return []
         records: list[PaperRecord] = []
         for item in data.get("data", []):
             title = item.get("title")
@@ -48,4 +52,3 @@ class SemanticScholarSource(SourceAdapter):
             if within_since(record.publication_date, record.update_date, context.since):
                 records.append(record)
         return records
-

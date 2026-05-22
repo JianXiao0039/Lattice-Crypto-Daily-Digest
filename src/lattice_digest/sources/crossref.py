@@ -24,7 +24,9 @@ class CrossrefSource(SourceAdapter):
                 "order": "desc",
             }
         )
-        data = fetch_json(context, f"{self.config['url']}?{params}")
+        data = fetch_json(context, f"{self.config['url']}?{params}", source_name=self.name)
+        if data is None:
+            return []
         records: list[PaperRecord] = []
         for item in data.get("message", {}).get("items", []):
             titles = item.get("title") or []
@@ -55,4 +57,3 @@ class CrossrefSource(SourceAdapter):
                 )
             )
         return records
-

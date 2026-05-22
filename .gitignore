@@ -13,6 +13,7 @@ __pycache__/
 # Editor / local history
 .history/
 .cache/
+cache/
 
 # Logs
 *.log

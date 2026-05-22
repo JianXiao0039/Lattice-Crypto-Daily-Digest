@@ -19,7 +19,9 @@ class DblpSource(SourceAdapter):
                 "h": int(self.config.get("max_results", 50)),
             }
         )
-        data = fetch_json(context, f"{self.config['url']}?{params}")
+        data = fetch_json(context, f"{self.config['url']}?{params}", source_name=self.name)
+        if data is None:
+            return []
         hits = data.get("result", {}).get("hits", {}).get("hit", [])
         records: list[PaperRecord] = []
         for hit in hits:
@@ -48,4 +50,3 @@ class DblpSource(SourceAdapter):
                 )
             )
         return records
-

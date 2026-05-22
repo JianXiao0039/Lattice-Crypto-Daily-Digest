@@ -99,9 +99,13 @@ def main(argv: list[str] | None = None) -> int:
         dry_run=args.dry_run,
         timeout_seconds=int(request_config.get("timeout_seconds", 20)),
         user_agent=request_config.get("user_agent", "lattice-crypto-daily-digest/0.1"),
+        http_cache_ttl_seconds=int(request_config.get("cache_ttl_seconds", 12 * 60 * 60)),
+        per_domain_min_interval_seconds=float(request_config.get("per_domain_min_interval_seconds", 1.0)),
+        max_retries=int(request_config.get("max_retries", 2)),
         api_keys={
             "SEMANTIC_SCHOLAR_API_KEY": os.getenv("SEMANTIC_SCHOLAR_API_KEY", ""),
             "OPENAI_API_KEY": os.getenv("OPENAI_API_KEY", ""),
+            "CONTACT_EMAIL": os.getenv("CONTACT_EMAIL", ""),
         },
     )
 
