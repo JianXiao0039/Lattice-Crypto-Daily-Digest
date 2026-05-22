@@ -1,45 +1,5 @@
 [
   {
-    "title": "Decision-Aware Quadratic ReLU Replacement for HE-Friendly Inference",
-    "normalized_title": "decision aware quadratic relu replacement for he friendly inference",
-    "chinese_title": "Decision-Aware Quadratic ReLU Replacement for HE-Friendly Inference",
-    "authors": [
-      "Rui Li",
-      "Wenyuan Wu",
-      "Weijie Miao"
-    ],
-    "abstract": "Fully homomorphic encryption (FHE) supports only additions and multiplications, so FHE-only neural-network inference typically replaces ReLU with polynomials fitted over empirical activation intervals. Such interval fitting often requires higher-degree polynomials to control activation error, incurring homomorphic evaluation costs, while classification is determined by the final logit decision. We revisit ReLU replacement from a decision-aware perspective: given a trained single-hidden-layer ReLU MLP and a specified calibration set, can an HE-friendly low-degree polynomial replace ReLU without retraining while preserving calibration-set decisions? We focus on quadratic replacement, the lowest-degree choice that retains a genuine per-unit nonlinearity. For calibration sets positive-margin separable in the lifted space, we formulate quadratic replacement as a linear separation problem, yielding necessary and sufficient conditions for calibration-lossless replacement and a constructive algorithm for the coefficients. When the positive-margin condition fails -- typically due to a few misclassified calibration samples -- we extend the same geometric framework via reduced convex hulls and Lagrangian-dual soft-margin relaxations, which bound the influence of any single sample, converting the problem into smaller convex quadratic programs that yield approximately feasible coefficients with high empirical agreement on calibration-set decisions. In particular, at the maximal weight cap $μ=1$, the reduced-convex-hull relaxation reduces to the convex-hull separation of the strictly separable case; the relaxation thus continuously extends the exact theory. Under CKKS, the quadratic replacement matches plaintext top-1 accuracy on multiple benchmarks, running 3.7--4.1$\\times$ faster than Remez-7 in the activation module and 1.18--1.68$\\times$ faster end-to-end.",
-    "source": "arxiv",
-    "source_url": "http://arxiv.org/abs/2605.22237v1",
-    "pdf_url": "https://arxiv.org/pdf/2605.22237v1",
-    "paper_id": "arxiv:2605.22237",
-    "arxiv_id": "2605.22237",
-    "eprint_id": null,
-    "doi": null,
-    "venue": "arXiv",
-    "publication_date": "2026-05-21",
-    "update_date": "2026-05-21",
-    "categories": [
-      "cs.CR",
-      "cs.LG"
-    ],
-    "taxonomy_tags": [
-      "fhe"
-    ],
-    "keywords_matched": [
-      "ckks",
-      "encryption",
-      "fhe",
-      "fully homomorphic encryption",
-      "homomorphic"
-    ],
-    "negative_keywords_matched": [],
-    "relevance_score": 109,
-    "relevance_label": "A",
-    "reason": "命中高置信格密码关键词：ckks、fully homomorphic encryption；存在密码学上下文：encryption、fhe、homomorphic",
-    "reading_priority": 1
-  },
-  {
     "title": "Efficient Homomorphic String Search via TFHE",
     "normalized_title": "efficient homomorphic string search via tfhe",
     "chinese_title": "Efficient Homomorphic String Search via TFHE",
@@ -64,17 +24,92 @@
       "iacr_eprint"
     ],
     "taxonomy_tags": [
+      "D01_FHE",
       "fhe"
     ],
     "keywords_matched": [
       "bgv",
-      "homomorphic",
-      "tfhe"
+      "BGV",
+      "tfhe",
+      "TFHE"
     ],
     "negative_keywords_matched": [],
-    "relevance_score": 93,
+    "relevance_score": 100,
     "relevance_label": "A",
-    "reason": "命中高置信格密码关键词：bgv、tfhe；存在密码学上下文：homomorphic",
+    "reason": "标题命中核心格密码关键词：tfhe。 摘要命中核心格密码关键词：bgv, tfhe。 来源属于高价值密码学会议/期刊/数据库。 命中 taxonomy 标签：D01_FHE。",
     "reading_priority": 1
+  },
+  {
+    "title": "Quantum and Post-Quantum Blockchain: A Systematic Survey",
+    "normalized_title": "quantum and post quantum blockchain a systematic survey",
+    "chinese_title": "Quantum and Post-Quantum Blockchain: A Systematic Survey",
+    "authors": [
+      "Ruwanga Konara",
+      "Awansika Nimuthumana",
+      "Asanka Sayakkara",
+      "Anuradha Mahasinghe",
+      "Kasun De Zoysa"
+    ],
+    "abstract": "This literature review explores the state-of-the-art advancements in quantum and post-quantum blockchain. The realm of quantum computing is on the rise and will disrupt entire tech industries, including classical cryptography, which is the foundation of blockchain. There has been extensive research on classical cryptosystems (i.e., post-quantum) and their integration with blockchain to create quantum-resistant classical blockchains. We have reviewed the state-of-the-art in these post-quantum blockchains in academic research. But to have forward compatibility with the quantum internet and infrastructure in the future and to have quantum mechanical security, research has been conducted to implement blockchain on quantum technologies and quantum cryptography as well. Consequently, we have explored the current state of research in these quantum solutions, known as quantum blockchains.",
+    "source": "iacr_eprint",
+    "source_url": "https://eprint.iacr.org/2026/1017",
+    "pdf_url": "https://eprint.iacr.org/2026/1017.pdf",
+    "paper_id": "iacr:2026/1017",
+    "arxiv_id": null,
+    "eprint_id": "2026/1017",
+    "doi": null,
+    "venue": "IACR ePrint",
+    "publication_date": "2026-05-21",
+    "update_date": null,
+    "categories": [
+      "iacr_eprint"
+    ],
+    "taxonomy_tags": [
+      "G01_NIST_PQC",
+      "standardization_and_deployment"
+    ],
+    "keywords_matched": [
+      "cryptography",
+      "post-quantum",
+      "quantum-resistant"
+    ],
+    "negative_keywords_matched": [],
+    "relevance_score": 60,
+    "relevance_label": "B",
+    "reason": "存在明确密码学/PQC上下文。 命中通用 PQC 关键词，但尚未确认格基对象。 来源属于高价值密码学会议/期刊/数据库。 命中 taxonomy 标签：G01_NIST_PQC。 通用 PQC 但没有明确格基方案，最高限制为 B 类。",
+    "reading_priority": 2
+  },
+  {
+    "title": "Comments on \"Server-Aided Public Key Authenticated Searchable Encryption With Constant Ciphertext and Constant Trapdoor\"",
+    "normalized_title": "comments on server aided public key authenticated searchable encryption with constant ciphertext and constant trapdoor",
+    "chinese_title": "Comments on \"Server-Aided Public Key Authenticated Searchable Encryption With Constant Ciphertext and Constant Trapdoor\"",
+    "authors": [
+      "Takeshi Yoshida",
+      "Keita Emura"
+    ],
+    "abstract": "Cheng and Meng (IEEE Transactions on Information Forensics and Security 2024) introduced server-aided public key authenticated encryption with keyword search (SA-PAEKS). In this short note, we give general attacks that the cloud server (tester) can obtain keyword information from both a ciphertext and a trapdoor.",
+    "source": "iacr_eprint",
+    "source_url": "https://eprint.iacr.org/2026/1015",
+    "pdf_url": "https://eprint.iacr.org/2026/1015.pdf",
+    "paper_id": "iacr:2026/1015",
+    "arxiv_id": null,
+    "eprint_id": "2026/1015",
+    "doi": null,
+    "venue": "IACR ePrint",
+    "publication_date": "2026-05-21",
+    "update_date": null,
+    "categories": [
+      "iacr_eprint"
+    ],
+    "taxonomy_tags": [],
+    "keywords_matched": [
+      "encryption",
+      "trapdoor"
+    ],
+    "negative_keywords_matched": [],
+    "relevance_score": 50,
+    "relevance_label": "C",
+    "reason": "存在明确密码学/PQC上下文。 命中格密码实现相关关键词：trapdoor。 来源属于高价值密码学会议/期刊/数据库。",
+    "reading_priority": 3
   }
 ]
