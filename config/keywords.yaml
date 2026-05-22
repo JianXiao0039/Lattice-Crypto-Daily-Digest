@@ -1,0 +1,44 @@
+{
+  "high_signal": [
+    "lwe", "rlwe", "ring-lwe", "mlwe", "module-lwe", "lwr",
+    "sis", "msis", "isis", "ntru", "kyber", "ml-kem",
+    "dilithium", "ml-dsa", "falcon", "fn-dsa", "frodokem",
+    "saber", "newhope", "qtesla", "hawk", "haetae",
+    "lattice-based kem", "lattice-based signature",
+    "lattice-based encryption", "lattice-based zkp",
+    "ckks", "bfv", "bgv", "tfhe", "fully homomorphic encryption"
+  ],
+  "medium_signal": [
+    "svp", "cvp", "bdd", "usvp", "gapsvp", "gapcvp",
+    "lll", "bkz", "bkz 2.0", "hkz", "slide reduction",
+    "progressive bkz", "lattice sieving", "enumeration",
+    "pruning", "primal attack", "dual attack", "hybrid attack",
+    "g6k", "fplll", "bootstrapping", "ntt",
+    "gaussian sampling", "discrete gaussian sampling",
+    "rejection sampling", "trapdoor generation"
+  ],
+  "crypto_context": [
+    "cryptography", "cryptographic", "cryptanalysis", "post-quantum",
+    "pqc", "kem", "signature", "zero-knowledge", "zkp",
+    "encryption", "homomorphic", "fhe", "side-channel",
+    "fault attack", "constant-time", "masked implementation",
+    "tls", "standardization", "nist"
+  ],
+  "required_crypto_context": [
+    "cryptography", "cryptographic", "cryptanalysis", "post-quantum",
+    "pqc", "lwe", "rlwe", "ring-lwe", "module-lwe", "mlwe",
+    "ntru", "bkz", "lll", "svp", "ml-kem", "ml-dsa", "kyber",
+    "dilithium", "falcon", "fn-dsa", "frodokem", "saber",
+    "newhope", "qtesla", "hawk", "haetae", "lattice-based kem",
+    "lattice-based signature", "lattice-based encryption",
+    "lattice-based zkp", "kem", "signature", "zero-knowledge",
+    "zkp", "encryption", "homomorphic", "fhe", "ckks", "bfv",
+    "bgv", "tfhe", "fully homomorphic encryption", "side-channel",
+    "fault attack", "constant-time", "masked implementation",
+    "nist", "standardization"
+  ],
+  "ai_low_priority_context": [
+    "lwe", "lattice cryptography", "modular arithmetic cryptanalysis",
+    "pqc", "cryptanalysis", "algorithmic reasoning for cryptography"
+  ]
+}

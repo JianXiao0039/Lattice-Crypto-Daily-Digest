@@ -1,0 +1,561 @@
+A_algorithms_and_attacks:
+  A01_LLL_BKZ_Reduction:
+    description: "Lattice reduction algorithms and BKZ-family techniques."
+    weight: 35
+    keywords:
+      - LLL
+      - Lenstra-Lenstra-Lovasz
+      - Lenstra-Lenstra-Lovász
+      - BKZ
+      - BKZ 2.0
+      - Block Korkine-Zolotarev
+      - Korkine-Zolotarev
+      - HKZ
+      - Hermite-Korkine-Zolotarev
+      - lattice reduction
+      - basis reduction
+      - slide reduction
+      - progressive BKZ
+      - non-deterministic BKZ
+      - self-dual BKZ
+      - root Hermite factor
+      - Hermite factor
+      - GSA
+      - geometric series assumption
+
+  A02_Sieving_Enumeration_Pruning:
+    description: "Sieving, enumeration, and pruning techniques for lattice problems."
+    weight: 35
+    keywords:
+      - lattice sieving
+      - sieve algorithm
+      - tuple sieve
+      - nearest neighbor sieve
+      - enumeration
+      - lattice enumeration
+      - extreme pruning
+      - pruning
+      - pruned enumeration
+      - Schnorr-Euchner
+      - nearest plane
+      - Babai nearest plane
+      - Voronoi reduction
+      - Voronoi cell
+      - Kannan algorithm
+      - Kannan's algorithm
+
+  A03_Primal_Dual_Hybrid_Attacks:
+    description: "Classical LWE-style attack frameworks."
+    weight: 40
+    keywords:
+      - primal attack
+      - dual attack
+      - hybrid attack
+      - primal lattice attack
+      - dual lattice attack
+      - lattice reduction attack
+      - BDD
+      - bounded distance decoding
+      - decoding attack
+      - uSVP
+      - unique SVP
+      - embedding attack
+      - meet-in-the-middle
+      - guessing attack
+      - guess and determine
+      - drop and solve
+      - distinguish attack
+      - distinguishing attack
+
+  A04_Tools_Estimators_Benchmarks:
+    description: "Tools and benchmarks for lattice cryptanalysis."
+    weight: 30
+    keywords:
+      - G6K
+      - fplll
+      - fpylll
+      - lattice estimator
+      - LWE estimator
+      - BKZ simulator
+      - lattice attack benchmark
+      - LWE benchmark
+      - security estimation
+      - concrete security
+      - parameter estimation
+      - estimator
+
+B_hardness_and_assumptions:
+  B01_LWE_Family:
+    description: "LWE-family assumptions and reductions."
+    weight: 45
+    keywords:
+      - LWE
+      - Learning With Errors
+      - learning with errors
+      - RLWE
+      - Ring-LWE
+      - Ring Learning With Errors
+      - MLWE
+      - Module-LWE
+      - Module Learning With Errors
+      - Polynomial-LWE
+      - PLWE
+      - TLWE
+      - LWE hardness
+      - LWE reduction
+      - worst-case to average-case
+      - error distribution
+      - secret distribution
+      - sparse secret LWE
+      - binary secret LWE
+      - ternary secret LWE
+
+  B02_LWR_SIS_NTRU:
+    description: "LWR, SIS, and NTRU-family assumptions."
+    weight: 45
+    keywords:
+      - LWR
+      - Learning With Rounding
+      - learning with rounding
+      - SIS
+      - Short Integer Solution
+      - short integer solution
+      - MSIS
+      - Module-SIS
+      - ISIS
+      - Inhomogeneous SIS
+      - Ring-SIS
+      - NTRU
+      - NTRU lattice
+      - NTRU problem
+      - NTRU assumption
+      - NTRU module
+      - NTRU Prime
+
+  B03_Geometric_Lattice_Problems:
+    description: "Geometric lattice problems in cryptographic context."
+    weight: 35
+    keywords:
+      - SVP
+      - Shortest Vector Problem
+      - shortest vector problem
+      - CVP
+      - Closest Vector Problem
+      - closest vector problem
+      - GapSVP
+      - GapCVP
+      - SIVP
+      - approximate SVP
+      - approximate CVP
+      - Minimax-CVP
+      - lattice decoding
+      - lattice hardness
+      - ideal lattice
+      - module lattice
+      - standard lattice
+
+C_standard_lattice_pqc:
+  C01_MLKEM_Kyber:
+    description: "Kyber and ML-KEM."
+    weight: 50
+    keywords:
+      - Kyber
+      - CRYSTALS-Kyber
+      - ML-KEM
+      - Module-Lattice-Based Key-Encapsulation
+      - Module-Lattice-Based Key-Encapsulation Mechanism
+      - lattice KEM
+      - key encapsulation mechanism
+      - KEM
+
+  C02_MLDSA_Dilithium:
+    description: "Dilithium and ML-DSA."
+    weight: 50
+    keywords:
+      - Dilithium
+      - CRYSTALS-Dilithium
+      - ML-DSA
+      - Module-Lattice-Based Digital Signature
+      - Module-Lattice-Based Digital Signature Algorithm
+      - lattice-based digital signature
+      - lattice signature
+
+  C03_Falcon_FNDSA:
+    description: "Falcon, FN-DSA, and NTRU-based signatures."
+    weight: 50
+    keywords:
+      - Falcon
+      - FN-DSA
+      - FALCON
+      - Fast-Fourier lattice-based compact signatures
+      - NTRU signature
+      - NTRU signatures
+      - GPV signature
+      - Gaussian sampling signature
+
+  C04_Other_Lattice_PQC:
+    description: "Other lattice-based PQC schemes."
+    weight: 40
+    keywords:
+      - FrodoKEM
+      - Frodo
+      - Saber
+      - LightSaber
+      - FireSaber
+      - NewHope
+      - qTESLA
+      - NTRUEncrypt
+      - NTRU-HRSS
+      - Hawk
+      - HAETAE
+      - Raccoon
+      - lattice-based post-quantum cryptography
+      - lattice-based post-quantum signature
+      - lattice-based post-quantum encryption
+      - lattice-based post-quantum key exchange
+
+D_fhe_and_advanced_protocols:
+  D01_FHE:
+    description: "Lattice-based fully homomorphic encryption."
+    weight: 45
+    keywords:
+      - fully homomorphic encryption
+      - FHE
+      - lattice-based FHE
+      - homomorphic encryption
+      - CKKS
+      - BFV
+      - BGV
+      - TFHE
+      - GSW
+      - Gentry-Sahai-Waters
+      - HEAAN
+      - bootstrapping
+      - lattice bootstrapping
+      - homomorphic evaluation
+      - leveled FHE
+      - somewhat homomorphic encryption
+      - partially homomorphic encryption
+      - RLWE-based homomorphic encryption
+      - key switching
+      - modulus switching
+      - relinearization
+      - ciphertext packing
+      - approximate homomorphic encryption
+
+  D02_Lattice_ZK_Commitment:
+    description: "Lattice-based zero-knowledge and commitments."
+    weight: 40
+    keywords:
+      - lattice-based zero-knowledge proof
+      - lattice-based zero-knowledge
+      - lattice zero-knowledge
+      - lattice ZKP
+      - lattice-based proof
+      - lattice-based zero-knowledge argument
+      - lattice-based argument
+      - lattice ZKA
+      - zero-knowledge from lattices
+      - Stern-like protocol
+      - Stern-like protocols from lattices
+      - Lyubashevsky proof
+      - Lyubashevsky-style proofs
+      - lattice commitment
+      - lattice-based commitment
+
+  D03_Lattice_IBE_ABE_PRE_FE:
+    description: "Lattice-based encryption protocols."
+    weight: 35
+    keywords:
+      - lattice-based IBE
+      - lattice IBE
+      - identity-based encryption from lattices
+      - lattice-based ABE
+      - lattice ABE
+      - attribute-based encryption from lattices
+      - lattice-based PRE
+      - proxy re-encryption from lattices
+      - lattice-based functional encryption
+      - lattice FE
+      - lattice-based blind signature
+      - lattice blind signature
+      - lattice-based ring signature
+      - lattice ring signature
+      - lattice-based group signature
+      - lattice group signature
+      - lattice-based signcryption
+      - lattice signcryption
+      - lattice-based proxy signature
+      - lattice proxy signature
+      - lattice-based broadcast encryption
+
+  D04_MPC_OT_Threshold:
+    description: "Lattice-based secure computation and threshold protocols."
+    weight: 35
+    keywords:
+      - lattice MPC
+      - lattice-based MPC
+      - lattice-based multiparty computation
+      - lattice-based secure multi-party computation
+      - lattice OT
+      - lattice-based oblivious transfer
+      - lattice threshold cryptography
+      - lattice-based threshold cryptography
+      - lattice secret sharing
+      - lattice-based secret sharing
+
+E_implementation_and_hardware:
+  E01_NTT_Polynomial_Arithmetic:
+    description: "Polynomial arithmetic and NTT implementations."
+    weight: 35
+    keywords:
+      - NTT
+      - number theoretic transform
+      - polynomial multiplication
+      - modular multiplication
+      - modular reduction
+      - Montgomery reduction
+      - Barrett reduction
+      - polynomial ring
+      - ring arithmetic
+      - modular arithmetic
+
+  E02_Sampling_Trapdoors:
+    description: "Sampling and trapdoor components."
+    weight: 35
+    keywords:
+      - Gaussian sampling
+      - discrete Gaussian sampling
+      - rejection sampling
+      - uniform sampling
+      - centered binomial distribution
+      - binomial sampling
+      - CDT sampler
+      - Knuth-Yao
+      - trapdoor generation
+      - lattice trapdoor
+      - gadget decomposition
+
+  E03_Software_Optimization:
+    description: "Software optimization of lattice schemes."
+    weight: 35
+    keywords:
+      - software implementation
+      - optimized implementation
+      - constant-time
+      - constant time
+      - AVX
+      - AVX2
+      - AVX512
+      - NEON
+      - SIMD
+      - vectorization
+      - Cortex-M
+      - Cortex-A
+      - RISC-V
+      - embedded implementation
+
+  E04_Hardware_Optimization:
+    description: "Hardware implementation of lattice schemes."
+    weight: 35
+    keywords:
+      - hardware implementation
+      - FPGA
+      - ASIC
+      - chip
+      - RISC-V instruction
+      - instruction set extension
+      - HLS
+      - High-Level Synthesis
+      - RTL
+      - Verilog
+      - VHDL
+      - co-design
+      - hardware/software co-design
+      - low-power
+      - low-power implementation
+      - high-speed
+      - high-speed implementation
+
+F_physical_security:
+  F01_Side_Channel_Attacks:
+    description: "Side-channel attacks against lattice schemes."
+    weight: 40
+    keywords:
+      - side-channel
+      - side channel
+      - SCA
+      - power analysis
+      - timing attack
+      - cache attack
+      - electromagnetic attack
+      - EM attack
+      - template attack
+      - profiled attack
+      - simple power analysis
+      - differential power analysis
+      - correlation power analysis
+
+  F02_Deep_Learning_SCA:
+    description: "Deep learning side-channel attacks on lattice schemes."
+    weight: 35
+    keywords:
+      - deep learning side-channel
+      - neural network side-channel
+      - profiled deep learning
+      - CNN side-channel
+      - transformer side-channel
+      - machine learning side-channel
+      - AI side-channel
+
+  F03_Fault_Attacks:
+    description: "Fault attacks against lattice schemes."
+    weight: 40
+    keywords:
+      - fault attack
+      - fault injection
+      - fault analysis
+      - laser fault
+      - voltage glitch
+      - clock glitch
+      - fault detection
+      - fault countermeasure
+
+  F04_Countermeasures:
+    description: "Masking and physical attack countermeasures."
+    weight: 35
+    keywords:
+      - masking
+      - masked implementation
+      - threshold masking
+      - threshold implementation
+      - hiding
+      - shuffling
+      - side-channel countermeasure
+      - leakage resilience
+      - leakage-resistant
+      - fault countermeasure
+
+G_standardization_and_deployment:
+  G01_NIST_PQC:
+    description: "NIST PQC and lattice-based standards."
+    weight: 40
+    keywords:
+      - NIST PQC
+      - post-quantum standardization
+      - post-quantum standard
+      - FIPS 203
+      - FIPS 204
+      - FIPS 205
+      - ML-KEM standard
+      - ML-DSA standard
+      - FN-DSA standard
+      - quantum-resistant
+      - quantum-safe
+
+  G02_TLS_IETF_Deployment:
+    description: "Protocol deployment of lattice-based PQC."
+    weight: 35
+    keywords:
+      - TLS
+      - post-quantum TLS
+      - hybrid key exchange
+      - IETF
+      - CFRG
+      - LAMPS
+      - X.509
+      - certificate
+      - PQC migration
+      - quantum-safe migration
+      - open-source PQC
+      - OpenSSL
+      - BoringSSL
+      - Open Quantum Safe
+      - liboqs
+
+  G03_Security_Evaluation_Parameters:
+    description: "Security evaluation and parameter selection."
+    weight: 40
+    keywords:
+      - security estimate
+      - parameter selection
+      - parameter optimization
+      - decryption failure
+      - failure probability
+      - noise analysis
+      - error distribution
+      - modulus switching
+      - reconciliation
+      - key mismatch
+      - concrete security
+      - attack cost
+
+H_ai_assisted_lattice_cryptanalysis:
+  H01_ML_LWE_Attacks:
+    description: "Machine-learning attacks or analysis for LWE-family problems."
+    weight: 40
+    keywords:
+      - machine learning LWE
+      - ML attack on LWE
+      - neural cryptanalysis
+      - transformer LWE
+      - Transformer for LWE
+      - Swin Transformer
+      - LWE transformer
+      - AI-assisted lattice cryptanalysis
+      - learning-augmented cryptanalysis
+      - neural attack on LWE
+      - SALSA
+      - sparse LWE
+
+  H02_Modular_Arithmetic_Learning:
+    description: "AI for modular arithmetic and algorithmic reasoning with possible cryptanalytic relevance."
+    weight: 25
+    keywords:
+      - modular arithmetic learning
+      - learning modular arithmetic
+      - algorithmic reasoning
+      - discrete structure learning
+      - transformer modular arithmetic
+      - neural modular arithmetic
+      - arithmetic circuit learning
+
+  H03_AI_for_BKZ_Attack_Heuristics:
+    description: "AI-guided attack heuristics for lattice cryptanalysis."
+    weight: 35
+    keywords:
+      - coordinate selection
+      - learning-guided BKZ
+      - learned pruning
+      - neural lattice reduction
+      - self-supervised lattice reduction
+      - learning-based lattice reduction
+      - hybrid attack coordinate selection
+      - learning augmented GSA
+      - AI-guided lattice reduction
+
+I_surveys_benchmarks:
+  I01_Surveys_Tutorials:
+    description: "Surveys and tutorials on lattice cryptography."
+    weight: 25
+    keywords:
+      - lattice cryptography survey
+      - lattice-based cryptography survey
+      - lattice cryptography tutorial
+      - post-quantum cryptography survey
+      - lattice-based cryptography overview
+      - tutorial on lattice-based cryptography
+      - introduction to lattice cryptography
+
+  I02_Benchmarks:
+    description: "Benchmarks and evaluation papers."
+    weight: 30
+    keywords:
+      - benchmark
+      - benchmarking lattice
+      - LWE benchmark
+      - lattice attack benchmark
+      - PQC benchmark
+      - implementation benchmark
+      - performance benchmark
+      - side-channel benchmark

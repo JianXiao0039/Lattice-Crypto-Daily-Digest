@@ -1,0 +1,73 @@
+{
+  "request": {
+    "timeout_seconds": 20,
+    "user_agent": "lattice-crypto-daily-digest/0.1 (+https://github.com/local/lattice-crypto-daily-digest)"
+  },
+  "sources": [
+    {
+      "name": "iacr_eprint",
+      "type": "iacr_eprint",
+      "enabled": true,
+      "url": "https://eprint.iacr.org/rss/rss.xml",
+      "max_per_day": 1
+    },
+    {
+      "name": "arxiv",
+      "type": "arxiv",
+      "enabled": true,
+      "url": "https://export.arxiv.org/api/query",
+      "categories": ["cs.CR", "cs.IT", "cs.DS", "math.NT", "math.CO", "cs.LG"],
+      "max_results": 100
+    },
+    {
+      "name": "dblp",
+      "type": "dblp",
+      "enabled": true,
+      "url": "https://dblp.org/search/publ/api",
+      "max_results": 50
+    },
+    {
+      "name": "openalex",
+      "type": "openalex",
+      "enabled": true,
+      "url": "https://api.openalex.org/works",
+      "max_results": 50
+    },
+    {
+      "name": "crossref",
+      "type": "crossref",
+      "enabled": true,
+      "url": "https://api.crossref.org/works",
+      "max_results": 50
+    },
+    {
+      "name": "semantic_scholar",
+      "type": "semantic_scholar",
+      "enabled": true,
+      "url": "https://api.semanticscholar.org/graph/v1/paper/search",
+      "max_results": 50
+    },
+    {
+      "name": "crypto_venues",
+      "type": "html_program_pages",
+      "enabled": false,
+      "note": "HTML fallback only. Prefer official APIs/RSS/OAI-PMH where available.",
+      "venues": ["CRYPTO", "EUROCRYPT", "ASIACRYPT", "PKC", "TCC", "CHES/TCHES", "FSE/ToSC", "Journal of Cryptology", "Communications in Cryptology", "Real World Crypto", "PQCrypto", "NIST PQC"]
+    },
+    {
+      "name": "security_venues",
+      "type": "html_program_pages",
+      "enabled": false,
+      "note": "HTML fallback only for accepted-papers pages.",
+      "venues": ["IEEE S&P", "ACM CCS", "USENIX Security", "NDSS", "AsiaCCS", "ESORICS", "RAID", "ACSAC"]
+    },
+    {
+      "name": "ai_venues_low_priority",
+      "type": "html_program_pages",
+      "enabled": false,
+      "note": "Only include explicit lattice cryptography, PQC, cryptanalysis, or cryptographic reasoning papers.",
+      "venues": ["NeurIPS", "ICML", "ICLR", "AAAI", "IJCAI"]
+    }
+  ]
+}
+

@@ -1,0 +1,169 @@
+hard_negative:
+  physics_and_materials:
+    - crystal lattice
+    - crystalline lattice
+    - lattice QCD
+    - lattice quantum chromodynamics
+    - lattice Boltzmann
+    - lattice Boltzmann method
+    - spin lattice
+    - optical lattice
+    - solid-state lattice
+    - solid state lattice
+    - materials lattice
+    - material lattice
+    - lattice oxygen
+    - lattice thermal conductivity
+    - thermal conductivity lattice
+    - phonon lattice
+    - lattice vibration
+    - lattice dynamics
+    - lattice gauge theory
+    - lattice field theory
+    - lattice model in physics
+    - lattice Hamiltonian
+    - Ising lattice
+    - Hubbard lattice
+    - Bravais lattice
+    - reciprocal lattice
+    - lattice constant
+    - lattice parameter
+    - lattice strain
+    - lattice defect
+    - lattice defects
+    - lattice mismatch
+    - lattice relaxation
+    - lattice symmetry
+    - lattice structure
+    - lattice site
+    - lattice gas
+    - lattice fluid
+
+  biology_and_chemistry:
+    - protein lattice
+    - biological lattice
+    - DNA lattice
+    - molecular lattice
+    - supramolecular lattice
+    - polymer lattice
+    - enzyme lattice
+    - cell lattice
+    - susceptible infectious model
+    - susceptible-infectious model
+    - SIS model
+    - nonlocal SIS model
+    - epidemic model
+    - epidemiological model
+    - logistic source
+    - dispersal kernels
+
+  unrelated_math_cs:
+    - lattice path
+    - lattice paths
+    - lattice path combinatorics
+    - lattice path combinatorics without cryptographic relevance
+    - lattice ordered group
+    - lattice-ordered group
+    - lattice theory in order theory
+    - distributive lattice
+    - Boolean lattice
+    - lattice graph
+    - graph lattice
+    - lattice polytope
+    - lattice polytope without cryptographic relevance
+    - lattice points in polytopes
+
+  quantum_computing_non_crypto:
+    - lattice surgery
+    - surface code lattice
+    - quantum error correction lattice
+    - topological lattice model
+
+soft_negative:
+  - lattice model
+  - lattice simulation
+  - lattice method
+  - lattice design
+  - lattice structure
+  - lattice network
+  - lattice graph
+  - grid lattice
+  - periodic lattice
+
+crypto_context_required_if_only_lattice:
+  - cryptography
+  - cryptographic
+  - cryptanalysis
+  - cryptanalytic
+  - post-quantum
+  - quantum-resistant
+  - quantum-safe
+  - LWE
+  - RLWE
+  - Ring-LWE
+  - MLWE
+  - Module-LWE
+  - LWR
+  - SIS
+  - MSIS
+  - NTRU
+  - SVP
+  - CVP
+  - BDD
+  - BKZ
+  - LLL
+  - lattice reduction
+  - lattice-based
+  - KEM
+  - key encapsulation
+  - signature
+  - digital signature
+  - encryption
+  - FHE
+  - homomorphic encryption
+  - zero-knowledge
+  - ZKP
+  - side-channel
+  - fault attack
+  - masking
+  - Kyber
+  - ML-KEM
+  - Dilithium
+  - ML-DSA
+  - Falcon
+  - FN-DSA
+  - FrodoKEM
+  - Saber
+  - Hawk
+  - HAETAE
+  - Raccoon
+
+rules:
+  - id: hard_negative_without_crypto_context
+    description: "If a hard negative keyword appears and no cryptographic context keyword appears, classify as D."
+    action: classify_D
+
+  - id: lattice_only_is_not_enough
+    description: "If the only relevant keyword is lattice, classify as D unless cryptographic context exists."
+    action: classify_D_or_at_most_C
+
+  - id: soft_negative_requires_manual_context
+    description: "Soft negative keywords are not sufficient for rejection, but relevance score should be reduced unless cryptographic context exists."
+    action: subtract_score
+
+  - id: isogeny_not_lattice
+    description: "SQIsign, SIDH, SIKE, CSIDH, and isogeny-only papers are not lattice papers. Classify as C only if they compare against lattice schemes; otherwise D."
+    action: classify_C_or_D
+
+  - id: generic_pqc_without_lattice
+    description: "Generic PQC papers without explicit lattice schemes are at most B, usually C."
+    action: cap_score_B_or_C
+
+score_penalties:
+  hard_negative_without_crypto_context: -100
+  hard_negative_with_crypto_context: -30
+  soft_negative_without_crypto_context: -35
+  soft_negative_with_crypto_context: -10
+  lattice_only: -60
+  generic_pqc_without_lattice_scheme: -20
+  ai_without_crypto_context: -40
