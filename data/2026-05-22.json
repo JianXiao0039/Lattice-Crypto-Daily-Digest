@@ -1,0 +1,80 @@
+[
+  {
+    "title": "Decision-Aware Quadratic ReLU Replacement for HE-Friendly Inference",
+    "normalized_title": "decision aware quadratic relu replacement for he friendly inference",
+    "chinese_title": "Decision-Aware Quadratic ReLU Replacement for HE-Friendly Inference",
+    "authors": [
+      "Rui Li",
+      "Wenyuan Wu",
+      "Weijie Miao"
+    ],
+    "abstract": "Fully homomorphic encryption (FHE) supports only additions and multiplications, so FHE-only neural-network inference typically replaces ReLU with polynomials fitted over empirical activation intervals. Such interval fitting often requires higher-degree polynomials to control activation error, incurring homomorphic evaluation costs, while classification is determined by the final logit decision. We revisit ReLU replacement from a decision-aware perspective: given a trained single-hidden-layer ReLU MLP and a specified calibration set, can an HE-friendly low-degree polynomial replace ReLU without retraining while preserving calibration-set decisions? We focus on quadratic replacement, the lowest-degree choice that retains a genuine per-unit nonlinearity. For calibration sets positive-margin separable in the lifted space, we formulate quadratic replacement as a linear separation problem, yielding necessary and sufficient conditions for calibration-lossless replacement and a constructive algorithm for the coefficients. When the positive-margin condition fails -- typically due to a few misclassified calibration samples -- we extend the same geometric framework via reduced convex hulls and Lagrangian-dual soft-margin relaxations, which bound the influence of any single sample, converting the problem into smaller convex quadratic programs that yield approximately feasible coefficients with high empirical agreement on calibration-set decisions. In particular, at the maximal weight cap $μ=1$, the reduced-convex-hull relaxation reduces to the convex-hull separation of the strictly separable case; the relaxation thus continuously extends the exact theory. Under CKKS, the quadratic replacement matches plaintext top-1 accuracy on multiple benchmarks, running 3.7--4.1$\\times$ faster than Remez-7 in the activation module and 1.18--1.68$\\times$ faster end-to-end.",
+    "source": "arxiv",
+    "source_url": "http://arxiv.org/abs/2605.22237v1",
+    "pdf_url": "https://arxiv.org/pdf/2605.22237v1",
+    "paper_id": "arxiv:2605.22237",
+    "arxiv_id": "2605.22237",
+    "eprint_id": null,
+    "doi": null,
+    "venue": "arXiv",
+    "publication_date": "2026-05-21",
+    "update_date": "2026-05-21",
+    "categories": [
+      "cs.CR",
+      "cs.LG"
+    ],
+    "taxonomy_tags": [
+      "fhe"
+    ],
+    "keywords_matched": [
+      "ckks",
+      "encryption",
+      "fhe",
+      "fully homomorphic encryption",
+      "homomorphic"
+    ],
+    "negative_keywords_matched": [],
+    "relevance_score": 109,
+    "relevance_label": "A",
+    "reason": "命中高置信格密码关键词：ckks、fully homomorphic encryption；存在密码学上下文：encryption、fhe、homomorphic",
+    "reading_priority": 1
+  },
+  {
+    "title": "Efficient Homomorphic String Search via TFHE",
+    "normalized_title": "efficient homomorphic string search via tfhe",
+    "chinese_title": "Efficient Homomorphic String Search via TFHE",
+    "authors": [
+      "Shintaro Narisada",
+      "Hiroki Okada",
+      "Takashi Nishide",
+      "Kazuhide Fukushima"
+    ],
+    "abstract": "We present a method for secure pattern matching over encrypted texts using TFHE. Our approach realizes a fully secure binary search algorithm by leveraging two operational modes of integer-input TFHE. While the BGV-based method of Bonte and Iliashenko (CCSW '20) requires $O(|P| \\cdot |T|)$ secure character comparisons to find a pattern $P$ in a text $T$, our method reduces this to $O(|P|\\log |T|)$ comparisons, achieving improved scalability for large texts. As a result, our method can find a pattern of length 100 in an encrypted text containing genomic data of one million characters in less than 5 minutes, where prior work would require approximately 5 days for the same task. These results highlight the practicality of TFHE and its potential for large-scale secure string search.",
+    "source": "iacr_eprint",
+    "source_url": "https://eprint.iacr.org/2026/1016",
+    "pdf_url": "https://eprint.iacr.org/2026/1016.pdf",
+    "paper_id": "iacr:2026/1016",
+    "arxiv_id": null,
+    "eprint_id": "2026/1016",
+    "doi": null,
+    "venue": "IACR ePrint",
+    "publication_date": "2026-05-21",
+    "update_date": null,
+    "categories": [
+      "iacr_eprint"
+    ],
+    "taxonomy_tags": [
+      "fhe"
+    ],
+    "keywords_matched": [
+      "bgv",
+      "homomorphic",
+      "tfhe"
+    ],
+    "negative_keywords_matched": [],
+    "relevance_score": 93,
+    "relevance_label": "A",
+    "reason": "命中高置信格密码关键词：bgv、tfhe；存在密码学上下文：homomorphic",
+    "reading_priority": 1
+  }
+]

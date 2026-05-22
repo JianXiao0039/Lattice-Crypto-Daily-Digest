@@ -1,14 +1,24 @@
+# Local environment
+.env
+.venv/
+venv/
+
+# Python cache
 __pycache__/
 *.py[cod]
 .pytest_cache/
 .mypy_cache/
 .ruff_cache/
-.venv/
-.env
-.cache/
-papers.db
-data/*.json
-digests/*.md
-!data/.gitkeep
-!digests/.gitkeep
 
+# Editor / local history
+.history/
+.cache/
+
+# Logs
+*.log
+
+# OS
+.DS_Store
+Thumbs.db
+# Local accidental pytest directory
+pytest/
