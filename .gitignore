@@ -23,3 +23,11 @@ cache/
 Thumbs.db
 # Local accidental pytest directory
 pytest/
+
+# Codex automation runtime files
+memory.md
+digests/*-error.md
+
+# Local runtime cache/logs
+cache/
+logs/
