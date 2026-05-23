@@ -28,16 +28,181 @@
       "fhe"
     ],
     "keywords_matched": [
-      "bgv",
       "BGV",
-      "tfhe",
-      "TFHE"
+      "bgv",
+      "TFHE",
+      "tfhe"
     ],
     "negative_keywords_matched": [],
     "relevance_score": 100,
     "relevance_label": "A",
     "reason": "标题命中核心格密码关键词：tfhe。 摘要命中核心格密码关键词：bgv, tfhe。 来源属于高价值密码学会议/期刊/数据库。 命中 taxonomy 标签：D01_FHE。",
     "reading_priority": 1
+  },
+  {
+    "title": "Inner Product Ring LWE Problem, Reduction, New Trapdoor Algorithm for Inner Product Ring LWE Problem and Ring SIS Problem",
+    "normalized_title": "inner product ring lwe problem reduction new trapdoor algorithm for inner product ring lwe problem and ring sis problem",
+    "chinese_title": "Inner Product Ring LWE Problem, Reduction, New Trapdoor Algorithm for Inner Product Ring LWE Problem and Ring SIS Problem",
+    "authors": [
+      "Zhuang Shan",
+      "Leyou Zhang",
+      "Qing Wu",
+      "Qiqi Lai"
+    ],
+    "abstract": "",
+    "source": "semantic_scholar",
+    "source_url": "https://www.semanticscholar.org/paper/1c973def72854d32a7bca035be36020faad78299",
+    "pdf_url": "",
+    "paper_id": "1c973def72854d32a7bca035be36020faad78299",
+    "arxiv_id": null,
+    "eprint_id": null,
+    "doi": null,
+    "venue": "IACR Cryptology ePrint Archive",
+    "publication_date": "2024",
+    "update_date": null,
+    "categories": [
+      "semantic_scholar"
+    ],
+    "taxonomy_tags": [
+      "B01_LWE_Family",
+      "B02_LWR_SIS_NTRU",
+      "lwe_sis_ntru_foundations"
+    ],
+    "keywords_matched": [
+      "LWE",
+      "lwe",
+      "Ring-LWE",
+      "Ring-SIS",
+      "sis",
+      "SIS",
+      "trapdoor"
+    ],
+    "negative_keywords_matched": [],
+    "relevance_score": 80,
+    "relevance_label": "A",
+    "reason": "标题命中核心格密码关键词：lwe, sis。 命中格密码实现相关关键词：trapdoor。 命中 taxonomy 标签：B01_LWE_Family, B02_LWR_SIS_NTRU。",
+    "reading_priority": 1
+  },
+  {
+    "title": "CRPSF and NTRU Signatures over cyclotomic fields",
+    "normalized_title": "crpsf and ntru signatures over cyclotomic fields",
+    "chinese_title": "CRPSF and NTRU Signatures over cyclotomic fields",
+    "authors": [
+      "Yang Wang",
+      "Mingqiang Wang"
+    ],
+    "abstract": "",
+    "source": "semantic_scholar",
+    "source_url": "https://www.semanticscholar.org/paper/5a03c4f1e80374f3a3f7b901e0ac4d64c5421bbb",
+    "pdf_url": "",
+    "paper_id": "5a03c4f1e80374f3a3f7b901e0ac4d64c5421bbb",
+    "arxiv_id": null,
+    "eprint_id": null,
+    "doi": null,
+    "venue": "IACR Cryptology ePrint Archive",
+    "publication_date": "2018",
+    "update_date": null,
+    "categories": [
+      "semantic_scholar"
+    ],
+    "taxonomy_tags": [
+      "B02_LWR_SIS_NTRU",
+      "C03_Falcon_FNDSA",
+      "lwe_sis_ntru_foundations",
+      "pqc_lattice_schemes"
+    ],
+    "keywords_matched": [
+      "NTRU",
+      "ntru",
+      "NTRU signatures",
+      "signature"
+    ],
+    "negative_keywords_matched": [],
+    "relevance_score": 70,
+    "relevance_label": "B",
+    "reason": "标题命中核心格密码关键词：ntru。 存在明确密码学/PQC上下文。 命中 taxonomy 标签：B02_LWR_SIS_NTRU, C03_Falcon_FNDSA。",
+    "reading_priority": 2
+  },
+  {
+    "title": "Practical Improvements on BKZ Algorithm",
+    "normalized_title": "practical improvements on bkz algorithm",
+    "chinese_title": "Practical Improvements on BKZ Algorithm",
+    "authors": [
+      "Ziyu Zhao",
+      "Jintai Ding"
+    ],
+    "abstract": "",
+    "source": "semantic_scholar",
+    "source_url": "https://www.semanticscholar.org/paper/4c2fcd42aa91a63fe7528e15a1fed4b2b425167a",
+    "pdf_url": "",
+    "paper_id": "4c2fcd42aa91a63fe7528e15a1fed4b2b425167a",
+    "arxiv_id": null,
+    "eprint_id": null,
+    "doi": "10.1007/978-3-031-34671-2_19",
+    "venue": "International Conference on Cyber Security Cryptography and Machine Learning",
+    "publication_date": "2023",
+    "update_date": null,
+    "categories": [
+      "semantic_scholar"
+    ],
+    "taxonomy_tags": [
+      "A01_LLL_BKZ_Reduction",
+      "lattice_reduction_cryptanalysis"
+    ],
+    "keywords_matched": [
+      "bkz",
+      "BKZ",
+      "cryptography"
+    ],
+    "negative_keywords_matched": [],
+    "relevance_score": 65,
+    "relevance_label": "B",
+    "reason": "标题命中核心格密码关键词：bkz。 存在明确密码学/PQC上下文。 命中 taxonomy 标签：A01_LLL_BKZ_Reduction。",
+    "reading_priority": 2
+  },
+  {
+    "title": "Decision-Aware Quadratic ReLU Replacement for HE-Friendly Inference",
+    "normalized_title": "decision aware quadratic relu replacement for he friendly inference",
+    "chinese_title": "Decision-Aware Quadratic ReLU Replacement for HE-Friendly Inference",
+    "authors": [
+      "Rui Li",
+      "Wenyuan Wu",
+      "Weijie Miao"
+    ],
+    "abstract": "Fully homomorphic encryption (FHE) supports only additions and multiplications, so FHE-only neural-network inference typically replaces ReLU with polynomials fitted over empirical activation intervals. Such interval fitting often requires higher-degree polynomials to control activation error, incurring homomorphic evaluation costs, while classification is determined by the final logit decision. We revisit ReLU replacement from a decision-aware perspective: given a trained single-hidden-layer ReLU MLP and a specified calibration set, can an HE-friendly low-degree polynomial replace ReLU without retraining while preserving calibration-set decisions? We focus on quadratic replacement, the lowest-degree choice that retains a genuine per-unit nonlinearity. For calibration sets positive-margin separable in the lifted space, we formulate quadratic replacement as a linear separation problem, yielding necessary and sufficient conditions for calibration-lossless replacement and a constructive algorithm for the coefficients. When the positive-margin condition fails -- typically due to a few misclassified calibration samples -- we extend the same geometric framework via reduced convex hulls and Lagrangian-dual soft-margin relaxations, which bound the influence of any single sample, converting the problem into smaller convex quadratic programs that yield approximately feasible coefficients with high empirical agreement on calibration-set decisions. In particular, at the maximal weight cap $μ=1$, the reduced-convex-hull relaxation reduces to the convex-hull separation of the strictly separable case; the relaxation thus continuously extends the exact theory. Under CKKS, the quadratic replacement matches plaintext top-1 accuracy on multiple benchmarks, running 3.7--4.1$\\times$ faster than Remez-7 in the activation module and 1.18--1.68$\\times$ faster end-to-end.",
+    "source": "arxiv",
+    "source_url": "http://arxiv.org/abs/2605.22237v1",
+    "pdf_url": "https://arxiv.org/pdf/2605.22237v1",
+    "paper_id": "arxiv:2605.22237",
+    "arxiv_id": "2605.22237",
+    "eprint_id": null,
+    "doi": null,
+    "venue": "arXiv",
+    "publication_date": "2026-05-21",
+    "update_date": "2026-05-21",
+    "categories": [
+      "cs.CR",
+      "cs.LG"
+    ],
+    "taxonomy_tags": [
+      "D01_FHE",
+      "fhe"
+    ],
+    "keywords_matched": [
+      "CKKS",
+      "ckks",
+      "encryption",
+      "FHE",
+      "fhe",
+      "fully homomorphic encryption",
+      "homomorphic encryption",
+      "homomorphic evaluation"
+    ],
+    "negative_keywords_matched": [],
+    "relevance_score": 65,
+    "relevance_label": "B",
+    "reason": "摘要命中核心格密码关键词：ckks, fhe, fully homomorphic encryption。 存在明确密码学/PQC上下文。 命中 taxonomy 标签：D01_FHE。",
+    "reading_priority": 2
   },
   {
     "title": "Quantum and Post-Quantum Blockchain: A Systematic Survey",
@@ -78,6 +243,115 @@
     "relevance_label": "B",
     "reason": "存在明确密码学/PQC上下文。 命中通用 PQC 关键词，但尚未确认格基对象。 来源属于高价值密码学会议/期刊/数据库。 命中 taxonomy 标签：G01_NIST_PQC。 通用 PQC 但没有明确格基方案，最高限制为 B 类。",
     "reading_priority": 2
+  },
+  {
+    "title": "ILTRU: An NTRU-Like Public Key Cryptosystem Over Ideal Lattices",
+    "normalized_title": "iltru an ntru like public key cryptosystem over ideal lattices",
+    "chinese_title": "ILTRU: An NTRU-Like Public Key Cryptosystem Over Ideal Lattices",
+    "authors": [
+      "A. Karbasi",
+      "Reza Ebrahimi Atani"
+    ],
+    "abstract": "",
+    "source": "semantic_scholar",
+    "source_url": "https://www.semanticscholar.org/paper/047d705a601297340100e20128ba09416256a9a4",
+    "pdf_url": "",
+    "paper_id": "047d705a601297340100e20128ba09416256a9a4",
+    "arxiv_id": null,
+    "eprint_id": null,
+    "doi": null,
+    "venue": "IACR Cryptology ePrint Archive",
+    "publication_date": "2015",
+    "update_date": null,
+    "categories": [
+      "semantic_scholar"
+    ],
+    "taxonomy_tags": [
+      "B02_LWR_SIS_NTRU",
+      "lwe_sis_ntru_foundations"
+    ],
+    "keywords_matched": [
+      "NTRU",
+      "ntru"
+    ],
+    "negative_keywords_matched": [],
+    "relevance_score": 50,
+    "relevance_label": "C",
+    "reason": "标题命中核心格密码关键词：ntru。 命中 taxonomy 标签：B02_LWR_SIS_NTRU。",
+    "reading_priority": 3
+  },
+  {
+    "title": "Several Improvements on BKZ Algorithm",
+    "normalized_title": "several improvements on bkz algorithm",
+    "chinese_title": "Several Improvements on BKZ Algorithm",
+    "authors": [
+      "Ziyu Zhao",
+      "Jintai Ding"
+    ],
+    "abstract": "",
+    "source": "semantic_scholar",
+    "source_url": "https://www.semanticscholar.org/paper/9f33e1b9547d554accbf11c71f30fcb4b621e7c2",
+    "pdf_url": "",
+    "paper_id": "9f33e1b9547d554accbf11c71f30fcb4b621e7c2",
+    "arxiv_id": null,
+    "eprint_id": null,
+    "doi": null,
+    "venue": "IACR Cryptology ePrint Archive",
+    "publication_date": "2022",
+    "update_date": null,
+    "categories": [
+      "semantic_scholar"
+    ],
+    "taxonomy_tags": [
+      "A01_LLL_BKZ_Reduction",
+      "lattice_reduction_cryptanalysis"
+    ],
+    "keywords_matched": [
+      "bkz",
+      "BKZ"
+    ],
+    "negative_keywords_matched": [],
+    "relevance_score": 50,
+    "relevance_label": "C",
+    "reason": "标题命中核心格密码关键词：bkz。 命中 taxonomy 标签：A01_LLL_BKZ_Reduction。",
+    "reading_priority": 3
+  },
+  {
+    "title": "New NTRU Records with Improved Lattice Bases",
+    "normalized_title": "new ntru records with improved lattice bases",
+    "chinese_title": "New NTRU Records with Improved Lattice Bases",
+    "authors": [
+      "E. Kirshanova",
+      "Alexander May",
+      "Julian Nowakowski"
+    ],
+    "abstract": "",
+    "source": "semantic_scholar",
+    "source_url": "https://www.semanticscholar.org/paper/902f7237543d1d63ea289b1b943ff3d4a677c49c",
+    "pdf_url": "",
+    "paper_id": "902f7237543d1d63ea289b1b943ff3d4a677c49c",
+    "arxiv_id": null,
+    "eprint_id": null,
+    "doi": "10.1007/978-3-031-40003-2_7",
+    "venue": "IACR Cryptology ePrint Archive",
+    "publication_date": "2023",
+    "update_date": null,
+    "categories": [
+      "semantic_scholar"
+    ],
+    "taxonomy_tags": [
+      "B02_LWR_SIS_NTRU",
+      "lwe_sis_ntru_foundations"
+    ],
+    "keywords_matched": [
+      "NTRU",
+      "ntru"
+    ],
+    "negative_keywords_matched": [],
+    "relevance_score": 50,
+    "relevance_label": "C",
+    "reason": "标题命中核心格密码关键词：ntru。 命中 taxonomy 标签：B02_LWR_SIS_NTRU。",
+    "reading_priority": 3
   },
   {
     "title": "Comments on \"Server-Aided Public Key Authenticated Searchable Encryption With Constant Ciphertext and Constant Trapdoor\"",

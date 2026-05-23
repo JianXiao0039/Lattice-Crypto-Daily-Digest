@@ -5,7 +5,7 @@ import re
 import urllib.parse
 
 from lattice_digest.models import PaperRecord, make_paper_record
-from lattice_digest.sources.base import FetchContext, SourceAdapter, fetch_json, normalize_date
+from lattice_digest.sources.base import FetchContext, SourceAdapter, fetch_json, normalize_date, within_since
 from lattice_digest.text import normalize_whitespace
 
 TAG_RE = re.compile(r"<[^>]+>")
@@ -42,18 +42,18 @@ class CrossrefSource(SourceAdapter):
             abstract = normalize_whitespace(TAG_RE.sub(" ", html.unescape(item.get("abstract") or "")))
             date_parts = (item.get("published-print") or item.get("published-online") or item.get("created") or {}).get("date-parts", [])
             date_text = "-".join(str(part) for part in date_parts[0]) if date_parts else None
-            records.append(
-                make_paper_record(
-                    title=title,
-                    authors=[author for author in authors if author],
-                    abstract=abstract,
-                    source="crossref",
-                    source_url=source_url,
-                    paper_id=doi or source_url,
-                    doi=doi,
-                    venue=(item.get("container-title") or [None])[0],
-                    publication_date=normalize_date(date_text),
-                    categories=["crossref"],
-                )
+            record = make_paper_record(
+                title=title,
+                authors=[author for author in authors if author],
+                abstract=abstract,
+                source="crossref",
+                source_url=source_url,
+                paper_id=doi or source_url,
+                doi=doi,
+                venue=(item.get("container-title") or [None])[0],
+                publication_date=normalize_date(date_text),
+                categories=["crossref"],
             )
+            if within_since(record.publication_date, record.update_date, context.since):
+                records.append(record)
         return records

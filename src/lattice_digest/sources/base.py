@@ -109,6 +109,10 @@ def parse_date_for_filter(value: str | None) -> datetime | None:
     normalized = normalize_date(value)
     if not normalized:
         return None
+    if len(normalized) == 4 and normalized.isdigit():
+        normalized = f"{normalized}-01-01"
+    elif len(normalized) == 7 and normalized[4] == "-":
+        normalized = f"{normalized}-01"
     try:
         return datetime.fromisoformat(normalized).replace(tzinfo=timezone.utc)
     except ValueError:
@@ -118,5 +122,5 @@ def parse_date_for_filter(value: str | None) -> datetime | None:
 def within_since(publication_date: str | None, update_date: str | None, since: datetime) -> bool:
     parsed = parse_date_for_filter(update_date) or parse_date_for_filter(publication_date)
     if parsed is None:
-        return True
+        return False
     return parsed >= since
