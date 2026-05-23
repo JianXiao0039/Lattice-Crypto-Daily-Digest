@@ -31,6 +31,15 @@ def _extract_arxiv_id(value: str) -> str | None:
     return VERSION_RE.sub("", match.group(1))
 
 
+def _format_query_term(term: object) -> str:
+    raw = str(term).strip()
+    if not raw:
+        return ""
+    if " " in raw and not (raw.startswith('"') and raw.endswith('"')):
+        raw = f'"{raw}"'
+    return f"all:{raw}"
+
+
 def parse_arxiv_atom(xml_text: str) -> list[PaperRecord]:
     root = ET.fromstring(xml_text)
     records: list[PaperRecord] = []
@@ -86,8 +95,8 @@ class ArxivSource(SourceAdapter):
             return []
 
         categories = self.config.get("categories", [])
-        max_results = min(int(self.config.get("max_results", 50)), 50)
-        query_terms = [
+        max_results = min(int(self.config.get("max_results", 50)), 100)
+        query_terms = self.config.get("query_terms") or [
             '"lattice cryptography"',
             "LWE",
             "Ring-LWE",
@@ -103,7 +112,7 @@ class ArxivSource(SourceAdapter):
             "Falcon",
         ]
         category_query = " OR ".join(f"cat:{category}" for category in categories)
-        term_query = " OR ".join(f"all:{term}" for term in query_terms)
+        term_query = " OR ".join(term for term in (_format_query_term(term) for term in query_terms) if term)
         search_query = f"({category_query}) AND ({term_query})" if category_query else term_query
         params = urllib.parse.urlencode(
             {

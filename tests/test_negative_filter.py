@@ -51,3 +51,46 @@ def test_non_crypto_sis_model_is_not_lattice_crypto() -> None:
 
     assert ranked.relevance_label == "D"
     assert "sis" in {term.lower() for term in ranked.keywords_matched}
+
+
+def test_sis_epidemiology_variants_are_filtered() -> None:
+    from lattice_digest.ranker import classify_record
+
+    configs = load_config_bundle()
+    record = make_paper_record(
+        title="SIS dynamics in a susceptible infected susceptible model",
+        abstract="We analyze an epidemiological SIS model in epidemiology on a social lattice.",
+        source="crossref",
+        source_url="https://doi.org/10.0000/sis-epidemiology",
+    )
+
+    ranked = classify_record(record, configs["taxonomy"], configs["keywords"], configs["negative"])
+    excluded, matches = should_exclude_as_negative(record, configs["keywords"], configs["negative"])
+
+    assert ranked.relevance_label == "D"
+    assert excluded is True
+    assert any("sis" in term.lower() for term in ranked.negative_keywords_matched)
+    assert any("sis" in term.lower() for term in matches)
+
+
+def test_physics_lattice_variants_are_filtered() -> None:
+    from lattice_digest.ranker import classify_record
+
+    configs = load_config_bundle()
+    samples = [
+        ("Lattice QCD at finite temperature", "We study lattice gauge theory."),
+        ("Fast lattice Boltzmann simulation", "A lattice fluid model for turbulence."),
+        ("Crystal lattice oxygen transport", "The material has phonon lattice thermal conductivity."),
+    ]
+
+    for title, abstract in samples:
+        record = make_paper_record(
+            title=title,
+            abstract=abstract,
+            source="openalex",
+            source_url=f"https://openalex.org/{title.replace(' ', '-')}",
+        )
+
+        ranked = classify_record(record, configs["taxonomy"], configs["keywords"], configs["negative"])
+
+        assert ranked.relevance_label == "D"

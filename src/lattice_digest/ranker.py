@@ -56,13 +56,17 @@ CORE_LATTICE_KEYWORDS: tuple[str, ...] = (
     "short integer solution",
     "msis",
     "module-sis",
+    "rsis",
     "isis",
     "inhomogeneous sis",
     "ring-sis",
     "ntru",
     "ntru lattice",
+    "ntru lattices",
     "ntru problem",
     "ntru assumption",
+    "ntruencrypt",
+    "ntru prime",
     "svp",
     "shortest vector problem",
     "approximate svp",
@@ -82,21 +86,35 @@ CORE_LATTICE_KEYWORDS: tuple[str, ...] = (
     "embedding technique",
     "decoding attack",
     "bkz",
+    "block korkine-zolotarev",
     "lll",
     "lattice reduction",
     "lattice sieving",
+    "sieving",
     "enumeration",
+    "pruning",
     "primal attack",
     "dual attack",
     "hybrid attack",
     "g6k",
     "fplll",
+    "lattice estimator",
+    "root hermite factor",
+    "gsa",
     "kyber",
     "ml-kem",
     "dilithium",
     "ml-dsa",
     "falcon",
     "fn-dsa",
+    "module-lattice-based key-encapsulation mechanism",
+    "module-lattice-based digital signature algorithm",
+    "lattice-based cryptography",
+    "lattice-based kem",
+    "lattice-based signature",
+    "lattice-based signatures",
+    "lattice-based encryption",
+    "lattice-based post-quantum cryptography",
     "frodokem",
     "saber",
     "newhope",
@@ -110,6 +128,8 @@ CORE_LATTICE_KEYWORDS: tuple[str, ...] = (
     "bfv",
     "bgv",
     "tfhe",
+    "programmable bootstrapping",
+    "lattice-based homomorphic encryption",
     "gsw",
     "gentry-sahai-waters",
 )
@@ -120,6 +140,17 @@ AMBIGUOUS_CONTEXT_KEYWORDS: tuple[str, ...] = (
     "lattice decoding",
     "nearest plane",
     "enumeration",
+    "lattice reduction",
+    "lll",
+    "svp",
+    "shortest vector problem",
+    "cvp",
+    "closest vector problem",
+    "bdd",
+    "bounded distance decoding",
+    "sieving",
+    "lattice sieving",
+    "pruning",
 )
 
 CRYPTO_CONTEXT_KEYWORDS: tuple[str, ...] = (
@@ -186,6 +217,10 @@ IMPLEMENTATION_KEYWORDS: tuple[str, ...] = (
     "verilog",
     "vhdl",
     "embedded implementation",
+    "kem implementation",
+    "signature implementation",
+    "chosen-ciphertext implementation",
+    "decapsulation failure",
 )
 
 PHYSICAL_SECURITY_KEYWORDS: tuple[str, ...] = (
@@ -194,14 +229,17 @@ PHYSICAL_SECURITY_KEYWORDS: tuple[str, ...] = (
     "power analysis",
     "timing attack",
     "cache attack",
+    "microarchitectural attack",
     "electromagnetic",
     "template attack",
     "profiled attack",
+    "implementation attack",
     "deep-learning side-channel",
     "neural network side-channel",
     "cnn side-channel",
     "transformer side-channel",
     "fault attack",
+    "implementation fault attack",
     "fault injection",
     "laser fault injection",
     "voltage glitch",
@@ -214,13 +252,21 @@ PHYSICAL_SECURITY_KEYWORDS: tuple[str, ...] = (
 
 AI_LATTICE_KEYWORDS: tuple[str, ...] = (
     "machine learning lwe",
+    "machine learning attacks on lwe",
+    "deep learning lwe",
     "transformer lwe",
+    "transformer lattice cryptanalysis",
     "neural cryptanalysis",
     "ai-assisted lattice cryptanalysis",
     "learning-augmented cryptanalysis",
+    "learning-augmented lattice reduction",
     "neural lattice reduction",
     "learning-guided bkz",
+    "reinforcement learning bkz",
+    "ml-guided bkz",
     "learned pruning",
+    "neural sieving",
+    "graph neural network lattice reduction",
     "coordinate selection",
     "modular arithmetic learning",
     "algorithmic reasoning",
@@ -246,6 +292,7 @@ HARD_NEGATIVE_KEYWORDS: tuple[str, ...] = (
     "solid state lattice",
     "materials lattice",
     "material lattice",
+    "oxygen lattice",
     "lattice oxygen",
     "lattice thermal conductivity",
     "thermal conductivity lattice",
@@ -261,6 +308,7 @@ HARD_NEGATIVE_KEYWORDS: tuple[str, ...] = (
     "reciprocal lattice",
     "lattice constant",
     "lattice strain",
+    "lattice parameter",
     "lattice defect",
     "lattice defects",
     "lattice mismatch",
@@ -270,13 +318,19 @@ HARD_NEGATIVE_KEYWORDS: tuple[str, ...] = (
     "lattice site",
     "lattice gas",
     "lattice fluid",
+    "lattice phonon",
+    "lattice heat",
     "protein lattice",
+    "lattice protein",
     "biological lattice",
     "molecular lattice",
     "supramolecular lattice",
     "polymer lattice",
     "enzyme lattice",
     "cell lattice",
+    "tissue lattice",
+    "dna lattice",
+    "neural lattice in neuroscience",
     "lattice path",
     "distributive lattice",
     "boolean lattice",
@@ -287,10 +341,28 @@ HARD_NEGATIVE_KEYWORDS: tuple[str, ...] = (
     "quantum error correction lattice",
     "topological lattice model",
     "sis model",
+    "epidemiological sis",
+    "susceptible infected susceptible",
+    "susceptible-infected-susceptible",
+    "sis model in epidemiology",
+    "sis dynamics",
+    "sis epidemic",
+    "sis spreading",
+    "sis infection",
+    "epidemic sis",
+    "network sis model",
     "nonlocal sis model",
     "susceptible infectious",
     "epidemic model",
     "epidemiological model",
+    "social lattice",
+    "graph lattice",
+    "cellular lattice",
+    "lattice network",
+    "lattice random walk",
+    "lattice animal",
+    "lattice polygon",
+    "lattice point counting",
     "logistic source",
     "dispersal kernels",
 )
@@ -303,6 +375,91 @@ GENERIC_PQC_KEYWORDS: tuple[str, ...] = (
     "quantum-safe",
     "quantum resistant",
     "quantum-resistant",
+)
+
+LATTICE_ANCHOR_KEYWORDS: tuple[str, ...] = (
+    "lwe",
+    "learning with errors",
+    "rlwe",
+    "ring-lwe",
+    "mlwe",
+    "module-lwe",
+    "sis",
+    "short integer solution",
+    "ntru",
+    "bkz",
+    "lll",
+    "svp",
+    "cvp",
+    "g6k",
+    "fplll",
+    "kyber",
+    "ml-kem",
+    "dilithium",
+    "ml-dsa",
+    "falcon",
+    "fn-dsa",
+    "fhe",
+    "fully homomorphic encryption",
+    "ckks",
+    "bfv",
+    "bgv",
+    "tfhe",
+    "lattice-based",
+    "lattice based",
+    "lattice-based cryptography",
+    "lattice-based kem",
+    "lattice-based signature",
+    "lattice-based homomorphic encryption",
+)
+
+IMPLEMENTATION_SECURITY_TARGET_KEYWORDS: tuple[str, ...] = (
+    "kyber",
+    "ml-kem",
+    "dilithium",
+    "ml-dsa",
+    "falcon",
+    "fn-dsa",
+    "fhe",
+    "fully homomorphic encryption",
+    "ckks",
+    "bfv",
+    "bgv",
+    "tfhe",
+    "lattice-based",
+    "lattice based",
+    "lattice-based cryptography",
+    "lattice cryptography",
+    "pqc scheme",
+    "post-quantum scheme",
+)
+
+CS_LG_REQUIRED_CONTEXT_KEYWORDS: tuple[str, ...] = (
+    "lwe",
+    "rlwe",
+    "ring-lwe",
+    "mlwe",
+    "module-lwe",
+    "sis",
+    "ntru",
+    "bkz",
+    "pqc",
+    "post-quantum cryptography",
+    "post quantum cryptography",
+    "cryptography",
+    "cryptanalysis",
+    "cryptanalytic",
+    "lattice cryptanalysis",
+    "lattice reduction",
+    "neural lattice reduction",
+    "ai-assisted lattice cryptanalysis",
+    "machine learning lwe",
+    "kyber",
+    "ml-kem",
+    "dilithium",
+    "ml-dsa",
+    "falcon",
+    "fhe",
 )
 
 HIGH_VALUE_SOURCES: tuple[str, ...] = (
@@ -318,6 +475,13 @@ HIGH_VALUE_SOURCES: tuple[str, ...] = (
     "tosc",
     "journal of cryptology",
     "pqcrypto",
+    "arxiv",
+    "iacr_eprint",
+    "acm ccs",
+    "ccs",
+    "usenix security",
+    "ieee s&p",
+    "ndss",
 )
 
 
@@ -415,6 +579,17 @@ def rank_paper(
     negative_keywords: list[str] = []
     taxonomy_tags: list[str] = []
 
+    if not source:
+        return RankingResult(
+            score=0,
+            label="D",
+            reading_priority="过滤",
+            matched_keywords=[],
+            negative_keywords=[],
+            taxonomy_tags=[],
+            reason="没有可靠 source，按照 no hallucination 规则过滤。",
+        )
+
     if not url:
         return RankingResult(
             score=0,
@@ -433,6 +608,8 @@ def rank_paper(
     physical_matches = collect_matches(all_text, PHYSICAL_SECURITY_KEYWORDS)
     ai_matches = collect_matches(all_text, AI_LATTICE_KEYWORDS)
     generic_pqc_matches = collect_matches(all_text, GENERIC_PQC_KEYWORDS)
+    lattice_anchor_matches = collect_matches(all_text, LATTICE_ANCHOR_KEYWORDS)
+    implementation_security_target_matches = collect_matches(all_text, IMPLEMENTATION_SECURITY_TARGET_KEYWORDS)
     negative_matches = collect_matches(all_text, HARD_NEGATIVE_KEYWORDS)
 
     matched_keywords.extend(title_core)
@@ -453,6 +630,10 @@ def rank_paper(
     ]
     has_crypto_context = bool(context_matches or strong_core_matches)
     has_core_lattice = bool(title_core or abstract_core)
+    has_lattice_anchor = bool(strong_core_matches or lattice_anchor_matches)
+    has_implementation_security_target = bool(
+        strong_core_matches or implementation_security_target_matches
+    )
 
     if negative_matches and not has_crypto_context:
         return RankingResult(
@@ -507,13 +688,17 @@ def rank_paper(
         score += 15
         reasons.append("存在明确密码学/PQC上下文。")
 
-    if implementation_matches:
+    if implementation_matches and has_implementation_security_target:
         score += 15
         reasons.append(f"命中格密码实现相关关键词：{', '.join(implementation_matches[:8])}。")
+    elif implementation_matches:
+        reasons.append("命中实现相关关键词，但未确认 Kyber/ML-KEM/FHE/lattice-based 等格密码对象，不作为强加分。")
 
-    if physical_matches:
+    if physical_matches and has_implementation_security_target:
         score += 15
         reasons.append(f"命中物理安全相关关键词：{', '.join(physical_matches[:8])}。")
+    elif physical_matches:
+        reasons.append("命中 side-channel/fault/masking 等物理安全关键词，但未确认作用于格密码方案，不作为强加分。")
 
     if ai_matches and has_crypto_context:
         score += 15
@@ -522,9 +707,11 @@ def rank_paper(
         score -= 25
         reasons.append("命中 AI 关键词，但缺少密码学上下文，降低优先级。")
 
-    if generic_pqc_matches and not has_core_lattice:
+    if generic_pqc_matches and has_lattice_anchor:
         score += 20
-        reasons.append("命中通用 PQC 关键词，但尚未确认格基对象。")
+        reasons.append("命中 PQC 关键词且存在格密码上下文。")
+    elif generic_pqc_matches:
+        reasons.append("命中通用 PQC 关键词，但尚未确认 lattice/Kyber/Dilithium/Falcon/FHE/LWE/SIS/NTRU/BKZ 上下文。")
 
     if any(phrase_in_text(src, normalized_source + " " + normalized_venue) for src in HIGH_VALUE_SOURCES):
         score += 20
@@ -546,13 +733,17 @@ def rank_paper(
         )
 
     # Cap rules.
-    if generic_pqc_matches and not has_core_lattice and not implementation_matches and not physical_matches:
-        score = min(score, 75)
-        reasons.append("通用 PQC 但没有明确格基方案，最高限制为 B 类。")
+    if generic_pqc_matches and not has_lattice_anchor:
+        score = min(score, 55)
+        reasons.append("通用 PQC 但没有明确格基方案，最高限制为 C 类。")
 
     if ai_matches and not has_core_lattice and not has_crypto_context:
         score = min(score, 45)
         reasons.append("AI/算法论文缺少明确格密码对象，最高限制为 C 类。")
+
+    if (implementation_matches or physical_matches) and not has_implementation_security_target:
+        score = min(score, 35)
+        reasons.append("实现/侧信道/故障关键词未绑定具体格密码方案，不能进入 A/B/C。")
 
     # If title and abstract contain no core lattice keywords, avoid over-ranking.
     if not has_core_lattice and not implementation_matches and not physical_matches:
@@ -657,6 +848,14 @@ def _priority_for_label(label: str) -> int:
     return {"A": 1, "B": 2, "C": 3}.get(label, 99)
 
 
+def _is_cs_lg_without_required_context(record: PaperRecord) -> bool:
+    categories = {category.lower() for category in record.categories}
+    if "cs.lg" not in categories:
+        return False
+    text = normalize_text(combined_text(record.title, record.abstract, record.venue or ""))
+    return not collect_matches(text, CS_LG_REQUIRED_CONTEXT_KEYWORDS)
+
+
 def classify_record(
     record: PaperRecord,
     taxonomy_config: Mapping[str, object],
@@ -688,6 +887,13 @@ def classify_record(
         reason = (
             "命中 SKILL.md 定义的硬负关键词且缺少明确密码学上下文。"
             f"负关键词：{', '.join(exclude_terms)}。"
+        )
+    elif _is_cs_lg_without_required_context(record):
+        label = "D"
+        score = 0
+        reason = (
+            "arXiv cs.LG 条目缺少 LWE/SIS/RLWE/MLWE/BKZ/PQC/格密码分析等明确密码上下文，"
+            "按保守策略过滤。"
         )
 
     actual_tags = sorted(set(result.taxonomy_tags or taxonomy.keys()))

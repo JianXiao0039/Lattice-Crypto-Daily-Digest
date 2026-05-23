@@ -21,9 +21,12 @@ class OpenAlexSource(SourceAdapter):
         if context.dry_run:
             context.warnings.append("dry-run: skipped OpenAlex network request")
             return []
+        query = " ".join(str(term) for term in self.config.get("query_terms", []))
+        if not query:
+            query = "lattice cryptography LWE SIS NTRU BKZ FHE"
         params = urllib.parse.urlencode(
             {
-                "search": "lattice cryptography LWE SIS NTRU BKZ FHE",
+                "search": query,
                 "per-page": min(int(self.config.get("max_results", 25)), 25),
                 "sort": "updated_date:desc",
             }

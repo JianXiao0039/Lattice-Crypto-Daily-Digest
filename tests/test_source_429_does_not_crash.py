@@ -8,6 +8,7 @@ from urllib.error import HTTPError
 import lattice_digest.http as http
 from lattice_digest.sources.arxiv import ArxivSource
 from lattice_digest.sources.base import FetchContext
+from lattice_digest.sources.openalex import OpenAlexSource
 
 
 class _Headers(dict):
@@ -53,3 +54,40 @@ def test_source_429_does_not_crash() -> None:
     assert records == []
     assert any("arxiv" in warning and "HTTP 429" in warning for warning in context.warnings)
 
+
+def test_openalex_429_warns_without_crashing() -> None:
+    original_urlopen = http.urlopen
+
+    def fake_urlopen(request: object, timeout: int) -> object:
+        raise HTTPError(
+            "https://api.openalex.org/works",
+            429,
+            "Too Many Requests",
+            _Headers({"Retry-After": "0"}),
+            None,
+        )
+
+    with TemporaryDirectory() as tmp:
+        context = FetchContext(
+            root=Path(tmp),
+            since=datetime(2026, 5, 21, tzinfo=timezone.utc),
+            dry_run=False,
+            max_retries=1,
+            per_domain_min_interval_seconds=0,
+        )
+        source = OpenAlexSource(
+            {
+                "name": "openalex",
+                "type": "openalex",
+                "url": "https://api.openalex.org/works",
+                "max_results": 25,
+            }
+        )
+        try:
+            http.urlopen = fake_urlopen
+            records = source.fetch(context)
+        finally:
+            http.urlopen = original_urlopen
+
+    assert records == []
+    assert any("openalex" in warning and "HTTP 429" in warning for warning in context.warnings)

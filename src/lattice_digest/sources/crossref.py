@@ -16,9 +16,12 @@ class CrossrefSource(SourceAdapter):
         if context.dry_run:
             context.warnings.append("dry-run: skipped Crossref network request")
             return []
+        query = " ".join(str(term) for term in self.config.get("query_terms", []))
+        if not query:
+            query = "lattice cryptography LWE SIS NTRU BKZ FHE"
         params = urllib.parse.urlencode(
             {
-                "query.bibliographic": "lattice cryptography LWE SIS NTRU BKZ FHE",
+                "query.bibliographic": query,
                 "rows": int(self.config.get("max_results", 50)),
                 "sort": "published",
                 "order": "desc",

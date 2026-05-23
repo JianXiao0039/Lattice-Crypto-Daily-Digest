@@ -1,75 +1,265 @@
-{
-  "request": {
-    "timeout_seconds": 20,
-    "user_agent": "lattice-crypto-daily-digest/0.1 (+https://github.com/local/lattice-crypto-daily-digest)",
-    "cache_ttl_seconds": 43200,
-    "per_domain_min_interval_seconds": 1.0,
-    "max_retries": 2
-  },
-  "sources": [
-    {
-      "name": "iacr_eprint",
-      "type": "iacr_eprint",
-      "enabled": true,
-      "url": "https://eprint.iacr.org/rss/rss.xml",
-      "max_per_day": 1
-    },
-    {
-      "name": "arxiv",
-      "type": "arxiv",
-      "enabled": true,
-      "url": "https://export.arxiv.org/api/query",
-      "categories": ["cs.CR", "cs.IT", "cs.DS", "math.NT", "math.CO", "cs.LG"],
-      "max_results": 50
-    },
-    {
-      "name": "dblp",
-      "type": "dblp",
-      "enabled": true,
-      "url": "https://dblp.org/search/publ/api",
-      "max_results": 50
-    },
-    {
-      "name": "openalex",
-      "type": "openalex",
-      "enabled": true,
-      "url": "https://api.openalex.org/works",
-      "max_results": 25
-    },
-    {
-      "name": "crossref",
-      "type": "crossref",
-      "enabled": true,
-      "url": "https://api.crossref.org/works",
-      "max_results": 50
-    },
-    {
-      "name": "semantic_scholar",
-      "type": "semantic_scholar",
-      "enabled": true,
-      "url": "https://api.semanticscholar.org/graph/v1/paper/search",
-      "max_results": 50
-    },
-    {
-      "name": "crypto_venues",
-      "type": "html_program_pages",
-      "enabled": false,
-      "note": "HTML fallback only. Prefer official APIs/RSS/OAI-PMH where available.",
-      "venues": ["CRYPTO", "EUROCRYPT", "ASIACRYPT", "PKC", "TCC", "CHES/TCHES", "FSE/ToSC", "Journal of Cryptology", "Communications in Cryptology", "Real World Crypto", "PQCrypto", "NIST PQC"]
-    },
-    {
-      "name": "security_venues",
-      "type": "html_program_pages",
-      "enabled": false,
-      "note": "HTML fallback only for accepted-papers pages.",
-      "venues": ["IEEE S&P", "ACM CCS", "USENIX Security", "NDSS", "AsiaCCS", "ESORICS", "RAID", "ACSAC"]
-    },
-    {
-      "name": "ai_venues_low_priority",
-      "type": "html_program_pages",
-      "enabled": false,
-      "note": "Only include explicit lattice cryptography, PQC, cryptanalysis, or cryptographic reasoning papers.",
-      "venues": ["NeurIPS", "ICML", "ICLR", "AAAI", "IJCAI"]
-    }
-  ]
-}
+request:
+  timeout_seconds: 20
+  user_agent: "lattice-crypto-daily-digest/0.1 (+https://github.com/local/lattice-crypto-daily-digest)"
+  cache_ttl_seconds: 43200
+  per_domain_min_interval_seconds: 1.0
+  max_retries: 2
+  source_failure_policy: warn_and_continue
+
+sources:
+  - name: iacr_eprint
+    type: iacr_eprint
+    enabled: true
+    priority: 100
+    priority_label: highest
+    role: highest_priority_primary
+    trust_level: high
+    url: "https://eprint.iacr.org/rss/rss.xml"
+    max_per_day: 1
+    max_requests_per_day: 1
+    cache_ttl_hours: 24
+    once_per_utc_day: true
+    candidate_priority_terms:
+      - LWE
+      - SIS
+      - NTRU
+      - BKZ
+      - FHE
+      - ML-KEM
+      - ML-DSA
+      - Falcon
+    note: "IACR ePrint is the highest-priority source and must not be requested more than once per day."
+
+  - name: arxiv
+    type: arxiv
+    enabled: true
+    priority: 90
+    priority_label: high
+    url: "https://export.arxiv.org/api/query"
+    categories:
+      - cs.CR
+      - cs.IT
+      - math.NT
+      - math.CO
+      - cs.DS
+      - cs.LG
+    cs_lg_policy: "Only allow cs.LG papers into A/B/C when explicit LWE/SIS/RLWE/MLWE/BKZ/PQC or lattice-cryptography context appears."
+    cs_lg_required_context:
+      - LWE
+      - RLWE
+      - Ring-LWE
+      - MLWE
+      - Module-LWE
+      - SIS
+      - NTRU
+      - BKZ
+      - lattice cryptanalysis
+      - lattice reduction
+      - neural lattice reduction
+      - AI-assisted lattice cryptanalysis
+      - machine learning LWE
+      - machine learning SIS
+      - post-quantum cryptography
+      - PQC
+      - Kyber
+      - ML-KEM
+      - Dilithium
+      - ML-DSA
+      - Falcon
+      - FHE
+    query_terms:
+      - lattice cryptography
+      - lattice-based cryptography
+      - Learning with Errors
+      - LWE
+      - Ring-LWE
+      - RLWE
+      - Module-LWE
+      - MLWE
+      - SIS
+      - Short Integer Solution
+      - NTRU
+      - lattice reduction
+      - BKZ
+      - LLL
+      - SVP
+      - CVP
+      - sieving
+      - enumeration
+      - G6K
+      - fplll
+      - Kyber
+      - ML-KEM
+      - Dilithium
+      - ML-DSA
+      - Falcon
+      - FN-DSA
+      - FHE
+      - fully homomorphic encryption
+      - TFHE
+      - CKKS
+      - BFV
+      - BGV
+      - bootstrapping
+      - lattice-based KEM
+      - lattice-based signature
+      - side-channel Kyber
+      - fault attack Kyber
+      - neural lattice reduction
+      - Transformer LWE
+      - machine learning LWE
+    max_results: 100
+
+  - name: dblp
+    type: dblp
+    enabled: true
+    priority: 80
+    priority_label: medium-high
+    url: "https://dblp.org/search/publ/api"
+    max_results: 100
+    per_query_results: 25
+    venues:
+      - CRYPTO
+      - EUROCRYPT
+      - ASIACRYPT
+      - TCC
+      - PKC
+      - CHES
+      - TCHES
+      - FSE
+      - ToSC
+      - CCS
+      - USENIX Security
+      - IEEE S&P
+      - NDSS
+      - PQCrypto
+      - ACNS
+      - CT-RSA
+      - INDOCRYPT
+      - AFRICACRYPT
+      - LATINCRYPT
+      - ProvSec
+      - ISC
+      - SAC
+      - CANS
+    queries:
+      - lattice cryptography
+      - LWE SIS NTRU BKZ
+      - Kyber ML-KEM Dilithium ML-DSA Falcon
+      - fully homomorphic encryption CKKS BFV BGV TFHE
+      - lattice reduction cryptanalysis
+    require_strong_title_when_no_abstract: true
+    note: "DBLP is useful for venue coverage, but year-only records must still pass date reliability and strong relevance filters. DBLP title-only records must have strong title evidence or be merged with another confirming source."
+
+  - name: openalex
+    type: openalex
+    enabled: true
+    priority: 60
+    priority_label: medium-low
+    url: "https://api.openalex.org/works"
+    max_results: 50
+    on_http_429: warning_only
+    query_terms:
+      - lattice cryptography
+      - LWE
+      - SIS
+      - NTRU
+      - BKZ
+      - FHE
+      - Kyber
+      - ML-KEM
+      - Dilithium
+      - ML-DSA
+      - Falcon
+    note: "OpenAlex 429/rate-limit responses should be recorded as warnings and must not stop the main run."
+
+  - name: crossref
+    type: crossref
+    enabled: true
+    priority: 50
+    priority_label: medium
+    role: supplemental_only
+    url: "https://api.crossref.org/works"
+    max_results: 50
+    must_pass_strong_relevance_filter: true
+    require_strong_crypto_context: true
+    query_terms:
+      - lattice cryptography
+      - LWE
+      - SIS
+      - NTRU
+      - BKZ
+      - FHE
+      - Kyber
+      - ML-KEM
+      - Dilithium
+      - ML-DSA
+      - Falcon
+    note: "Crossref is a supplemental source; candidates must pass hard negative and strong relevance filters before inclusion."
+
+  - name: semantic_scholar
+    type: semantic_scholar
+    enabled: true
+    priority: 50
+    priority_label: medium
+    url: "https://api.semanticscholar.org/graph/v1/paper/search"
+    max_results: 50
+    require_publication_or_update_date: true
+    exclude_year_only_from_since_window: true
+    allow_metadata_enrichment: true
+    query_terms:
+      - lattice cryptography
+      - LWE
+      - SIS
+      - NTRU
+      - BKZ
+      - FHE
+      - Kyber
+      - ML-KEM
+      - Dilithium
+      - ML-DSA
+      - Falcon
+    note: "Semantic Scholar records with only year and no publicationDate/updatedAt must not enter a 36h digest."
+
+  - name: crypto_venues
+    type: html_program_pages
+    enabled: false
+    note: "HTML fallback only. Prefer official APIs/RSS/OAI-PMH where available."
+    venues:
+      - CRYPTO
+      - EUROCRYPT
+      - ASIACRYPT
+      - PKC
+      - TCC
+      - CHES/TCHES
+      - FSE/ToSC
+      - Journal of Cryptology
+      - Communications in Cryptology
+      - Real World Crypto
+      - PQCrypto
+      - NIST PQC
+
+  - name: security_venues
+    type: html_program_pages
+    enabled: false
+    note: "HTML fallback only for accepted-papers pages; include only when lattice/PQC relevance is explicit."
+    venues:
+      - IEEE S&P
+      - ACM CCS
+      - USENIX Security
+      - NDSS
+      - AsiaCCS
+      - ESORICS
+      - RAID
+      - ACSAC
+
+  - name: ai_venues_low_priority
+    type: html_program_pages
+    enabled: false
+    note: "Only include explicit lattice cryptography, PQC, cryptanalysis, LWE/SIS/NTRU/BKZ, or cryptographic reasoning papers."
+    venues:
+      - NeurIPS
+      - ICML
+      - ICLR
+      - AAAI
+      - IJCAI

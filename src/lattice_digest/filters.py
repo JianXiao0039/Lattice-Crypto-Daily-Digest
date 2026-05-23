@@ -79,6 +79,9 @@ def should_exclude_as_negative(record: PaperRecord, keyword_config: dict, negati
         combined_text(record.title, record.abstract, record.venue, " ".join(record.categories)),
         required_context_terms(keyword_config, negative_config),
     )
-    if context:
+    strong_context = [
+        term for term in context if term.lower() not in {"sis"}
+    ]
+    if strong_context:
         return False, negatives
     return bool(hard_matches), negatives

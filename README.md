@@ -18,3 +18,6 @@ The normal run writes:
 
 Dry-run prints what would happen and does not write output files.
 
+Optional `.env` values such as `CONTACT_EMAIL`, `SEMANTIC_SCHOLAR_API_KEY`, `DIGEST_SINCE`, `DIGEST_OUTPUT`, and `DIGEST_SEND` are documented in `.env.example`. The current CLI still takes `--since`, `--output`, and `--send` from command-line arguments, so automation should pass them explicitly.
+
+Network/API failures are non-fatal: sources that return 429, SSL, or transient network errors are recorded as warnings while the run continues with any successful sources. The system still writes an empty Chinese digest when no A/B/C papers pass the conservative lattice-cryptography filters.

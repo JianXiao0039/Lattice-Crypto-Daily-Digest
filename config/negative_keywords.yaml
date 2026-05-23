@@ -12,10 +12,12 @@ hard_negative:
     - solid state lattice
     - materials lattice
     - material lattice
+    - oxygen lattice
     - lattice oxygen
     - lattice thermal conductivity
     - thermal conductivity lattice
     - phonon lattice
+    - lattice phonon
     - lattice vibration
     - lattice dynamics
     - lattice gauge theory
@@ -36,20 +38,34 @@ hard_negative:
     - lattice symmetry
     - lattice structure
     - lattice site
+    - lattice heat
     - lattice gas
     - lattice fluid
 
   biology_and_chemistry:
     - protein lattice
+    - lattice protein
     - biological lattice
+    - tissue lattice
     - DNA lattice
+    - neural lattice in neuroscience
     - molecular lattice
     - supramolecular lattice
     - polymer lattice
     - enzyme lattice
     - cell lattice
     - susceptible infectious model
+    - susceptible infected susceptible
+    - susceptible-infected-susceptible
     - susceptible-infectious model
+    - epidemiological SIS
+    - SIS model in epidemiology
+    - SIS dynamics
+    - SIS epidemic
+    - SIS spreading
+    - SIS infection
+    - epidemic SIS
+    - network SIS model
     - SIS model
     - nonlocal SIS model
     - epidemic model
@@ -69,6 +85,13 @@ hard_negative:
     - Boolean lattice
     - lattice graph
     - graph lattice
+    - social lattice
+    - cellular lattice
+    - lattice network
+    - lattice random walk
+    - lattice animal
+    - lattice polygon
+    - lattice point counting
     - lattice polytope
     - lattice polytope without cryptographic relevance
     - lattice points in polytopes
@@ -87,8 +110,15 @@ soft_negative:
   - lattice structure
   - lattice network
   - lattice graph
+  - lattice random walk
+  - lattice animal
+  - lattice polygon
+  - lattice point counting
   - grid lattice
   - periodic lattice
+  - social lattice
+  - graph lattice
+  - cellular lattice
 
 crypto_context_required_if_only_lattice:
   - cryptography
@@ -105,7 +135,11 @@ crypto_context_required_if_only_lattice:
   - Module-LWE
   - LWR
   - SIS
+  - Short Integer Solution
+  - Ring-SIS
+  - Module-SIS
   - MSIS
+  - RSIS
   - NTRU
   - SVP
   - CVP
@@ -114,6 +148,7 @@ crypto_context_required_if_only_lattice:
   - LLL
   - lattice reduction
   - lattice-based
+  - lattice-based cryptography
   - KEM
   - key encapsulation
   - signature

@@ -4,9 +4,11 @@ A_algorithms_and_attacks:
     weight: 35
     keywords:
       - LLL
+      - LLL reduction
       - Lenstra-Lenstra-Lovasz
       - Lenstra-Lenstra-Lovász
       - BKZ
+      - BKZ reduction
       - BKZ 2.0
       - Block Korkine-Zolotarev
       - Korkine-Zolotarev
@@ -28,6 +30,9 @@ A_algorithms_and_attacks:
     weight: 35
     keywords:
       - lattice sieving
+      - lattice sieving attack
+      - lattice sieve
+      - sieving
       - sieve algorithm
       - tuple sieve
       - nearest neighbor sieve
@@ -92,12 +97,18 @@ B_hardness_and_assumptions:
       - LWE
       - Learning With Errors
       - learning with errors
+      - Learning with Errors
+      - learning with errors problem
       - RLWE
       - Ring-LWE
       - Ring Learning With Errors
+      - Ring Learning with Errors
+      - ring learning with errors
       - MLWE
       - Module-LWE
       - Module Learning With Errors
+      - Module Learning with Errors
+      - module learning with errors
       - Polynomial-LWE
       - PLWE
       - TLWE
@@ -120,17 +131,22 @@ B_hardness_and_assumptions:
       - SIS
       - Short Integer Solution
       - short integer solution
+      - Short Integer Solution problem
+      - SIS problem
       - MSIS
       - Module-SIS
+      - RSIS
       - ISIS
       - Inhomogeneous SIS
       - Ring-SIS
       - NTRU
       - NTRU lattice
+      - NTRU lattices
       - NTRU problem
       - NTRU assumption
       - NTRU module
       - NTRU Prime
+      - NTRUEncrypt
 
   B03_Geometric_Lattice_Problems:
     description: "Geometric lattice problems in cryptographic context."
@@ -165,6 +181,8 @@ C_standard_lattice_pqc:
       - Module-Lattice-Based Key-Encapsulation
       - Module-Lattice-Based Key-Encapsulation Mechanism
       - lattice KEM
+      - lattice-based KEM
+      - lattice-based key encapsulation
       - key encapsulation mechanism
       - KEM
 
@@ -179,6 +197,8 @@ C_standard_lattice_pqc:
       - Module-Lattice-Based Digital Signature Algorithm
       - lattice-based digital signature
       - lattice signature
+      - lattice-based signature
+      - lattice-based signatures
 
   C03_Falcon_FNDSA:
     description: "Falcon, FN-DSA, and NTRU-based signatures."
@@ -210,6 +230,7 @@ C_standard_lattice_pqc:
       - HAETAE
       - Raccoon
       - lattice-based post-quantum cryptography
+      - lattice-based cryptography
       - lattice-based post-quantum signature
       - lattice-based post-quantum encryption
       - lattice-based post-quantum key exchange
@@ -221,6 +242,7 @@ D_fhe_and_advanced_protocols:
     keywords:
       - fully homomorphic encryption
       - FHE
+      - FHE bootstrapping
       - lattice-based FHE
       - homomorphic encryption
       - CKKS
@@ -231,9 +253,11 @@ D_fhe_and_advanced_protocols:
       - Gentry-Sahai-Waters
       - HEAAN
       - bootstrapping
+      - programmable bootstrapping
       - lattice bootstrapping
       - homomorphic evaluation
       - leveled FHE
+      - leveled homomorphic encryption
       - somewhat homomorphic encryption
       - partially homomorphic encryption
       - RLWE-based homomorphic encryption
@@ -251,6 +275,7 @@ D_fhe_and_advanced_protocols:
       - lattice-based zero-knowledge
       - lattice zero-knowledge
       - lattice ZKP
+      - lattice-based ZK
       - lattice-based proof
       - lattice-based zero-knowledge argument
       - lattice-based argument
@@ -262,6 +287,8 @@ D_fhe_and_advanced_protocols:
       - Lyubashevsky-style proofs
       - lattice commitment
       - lattice-based commitment
+      - lattice-based commitments
+      - lattice-based accumulators
 
   D03_Lattice_IBE_ABE_PRE_FE:
     description: "Lattice-based encryption protocols."
@@ -278,6 +305,7 @@ D_fhe_and_advanced_protocols:
       - lattice-based functional encryption
       - lattice FE
       - lattice-based blind signature
+      - lattice-based blind signatures
       - lattice blind signature
       - lattice-based ring signature
       - lattice ring signature
@@ -301,6 +329,7 @@ D_fhe_and_advanced_protocols:
       - lattice-based oblivious transfer
       - lattice threshold cryptography
       - lattice-based threshold cryptography
+      - lattice-based threshold signatures
       - lattice secret sharing
       - lattice-based secret sharing
 
@@ -384,10 +413,12 @@ F_physical_security:
     keywords:
       - side-channel
       - side channel
+      - implementation attack
       - SCA
       - power analysis
       - timing attack
       - cache attack
+      - microarchitectural attack
       - electromagnetic attack
       - EM attack
       - template attack
@@ -413,7 +444,12 @@ F_physical_security:
     weight: 40
     keywords:
       - fault attack
+      - implementation fault attack
       - fault injection
+      - decapsulation failure
+      - chosen-ciphertext implementation
+      - KEM implementation
+      - signature implementation
       - fault analysis
       - laser fault
       - voltage glitch
@@ -442,6 +478,8 @@ G_standardization_and_deployment:
     weight: 40
     keywords:
       - NIST PQC
+      - PQC
+      - post-quantum cryptography
       - post-quantum standardization
       - post-quantum standard
       - FIPS 203
@@ -496,14 +534,20 @@ H_ai_assisted_lattice_cryptanalysis:
     weight: 40
     keywords:
       - machine learning LWE
+      - machine learning attacks on LWE
+      - deep learning LWE
       - ML attack on LWE
       - neural cryptanalysis
       - transformer LWE
+      - Transformer LWE
       - Transformer for LWE
+      - Swin Transformer for LWE
       - Swin Transformer
       - LWE transformer
+      - AI-assisted LWE
       - AI-assisted lattice cryptanalysis
       - learning-augmented cryptanalysis
+      - learning-augmented lattice reduction
       - neural attack on LWE
       - SALSA
       - sparse LWE
@@ -526,10 +570,16 @@ H_ai_assisted_lattice_cryptanalysis:
     keywords:
       - coordinate selection
       - learning-guided BKZ
+      - reinforcement learning BKZ
+      - ML-guided BKZ
       - learned pruning
+      - neural sieving
       - neural lattice reduction
+      - deep learning lattice reduction
+      - graph neural network lattice reduction
       - self-supervised lattice reduction
       - learning-based lattice reduction
+      - Transformer lattice cryptanalysis
       - hybrid attack coordinate selection
       - learning augmented GSA
       - AI-guided lattice reduction
