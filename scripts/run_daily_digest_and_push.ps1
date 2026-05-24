@@ -27,6 +27,23 @@ function Test-DirectoryWritable {
     }
 }
 
+function Invoke-CheckedCommand {
+    param(
+        [Parameter(Mandatory=$true)]
+        [string]$Name,
+
+        [Parameter(Mandatory=$true)]
+        [scriptblock]$Command
+    )
+
+    Write-Host "==> $Name"
+    & $Command
+
+    if ($LASTEXITCODE -ne 0) {
+        throw "$Name failed with exit code $LASTEXITCODE"
+    }
+}
+
 Write-Host "==> Project root: $ProjectRoot"
 
 Write-Host "==> Preflight write checks"
@@ -35,34 +52,24 @@ Test-DirectoryWritable (Join-Path $ProjectRoot "data")
 Test-DirectoryWritable (Join-Path $ProjectRoot "digests")
 Test-DirectoryWritable (Join-Path $ProjectRoot ".git")
 
-Write-Host "==> Checking git remote"
-git remote -v
-if ($LASTEXITCODE -ne 0) {
-    throw "git remote failed"
+Invoke-CheckedCommand "Checking git remote" {
+    git remote -v
 }
 
-Write-Host "==> Pulling latest origin/main"
-git pull --rebase --autostash origin main
-if ($LASTEXITCODE -ne 0) {
-    throw "git pull failed. If error mentions .git/FETCH_HEAD Permission denied, fix local .git permissions or Codex sandbox write access."
+Invoke-CheckedCommand "Pulling latest origin/main" {
+    git pull --rebase --autostash origin main
 }
 
-Write-Host "==> Generating daily lattice crypto digest"
-python -m lattice_digest.run --since 36h --output markdown,json --send none
-if ($LASTEXITCODE -ne 0) {
-    throw "digest generation failed. Will not commit or push."
+Invoke-CheckedCommand "Generating daily lattice crypto digest" {
+    python -m lattice_digest.run --since 36h --output markdown,json --send none
 }
 
-Write-Host "==> Running tests"
-python -m pytest
-if ($LASTEXITCODE -ne 0) {
-    throw "pytest failed. Will not commit or push."
+Invoke-CheckedCommand "Running tests" {
+    python -m pytest
 }
 
-Write-Host "==> Staging generated outputs only"
-git add digests data papers.db
-if ($LASTEXITCODE -ne 0) {
-    throw "git add failed"
+Invoke-CheckedCommand "Staging generated outputs only" {
+    git add digests data papers.db
 }
 
 Write-Host "==> Checking staged changes"
@@ -75,22 +82,18 @@ if ($DiffExitCode -eq 0) {
 }
 
 if ($DiffExitCode -ne 1) {
-    throw "git diff --cached --quiet failed"
+    throw "git diff --cached --quiet failed with exit code $DiffExitCode"
 }
 
 $Today = Get-Date -Format "yyyy-MM-dd"
 $CommitMessage = "daily lattice digest: $Today"
 
-Write-Host "==> Committing: $CommitMessage"
-git commit -m $CommitMessage
-if ($LASTEXITCODE -ne 0) {
-    throw "git commit failed"
+Invoke-CheckedCommand "Committing: $CommitMessage" {
+    git commit -m $CommitMessage
 }
 
-Write-Host "==> Pushing to GitHub"
-git push origin main
-if ($LASTEXITCODE -ne 0) {
-    throw "git push failed. Please check GitHub network, Clash proxy, or authentication."
+Invoke-CheckedCommand "Pushing to GitHub" {
+    git push origin main
 }
 
 Write-Host "pushed daily digest to GitHub"
