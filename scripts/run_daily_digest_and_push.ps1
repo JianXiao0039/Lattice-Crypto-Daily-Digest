@@ -1,74 +1,68 @@
 $ErrorActionPreference = "Stop"
 
-$ProjectRoot = (Resolve-Path -LiteralPath (Join-Path $PSScriptRoot "..")).Path
-Set-Location -LiteralPath $ProjectRoot
+$ScriptDir = Split-Path -Parent $MyInvocation.MyCommand.Path
+$ProjectRoot = Split-Path -Parent $ScriptDir
 
-function Invoke-Checked {
-    param(
-        [Parameter(Mandatory = $true)]
-        [string]$Description,
-        [Parameter(Mandatory = $true)]
-        [scriptblock]$Command,
-        [string]$FailureHint = ""
-    )
+Set-Location $ProjectRoot
 
-    Write-Host "==> $Description"
-    & $Command
-    if ($LASTEXITCODE -ne 0) {
-        if ($FailureHint) {
-            Write-Host $FailureHint
-        }
-        throw "$Description failed with exit code $LASTEXITCODE"
-    }
+Write-Host "==> Project root: $ProjectRoot"
+
+Write-Host "==> Checking git remote"
+git remote -v
+if ($LASTEXITCODE -ne 0) {
+    throw "git remote failed"
 }
 
-Invoke-Checked "git remote -v" {
-    git remote -v
+Write-Host "==> Pulling latest origin/main"
+git pull --rebase --autostash origin main
+if ($LASTEXITCODE -ne 0) {
+    throw "git pull failed. Please check GitHub network/proxy/authentication."
 }
 
-Invoke-Checked "git pull --rebase --autostash origin main" {
-    git pull --rebase --autostash origin main
+Write-Host "==> Generating daily lattice crypto digest"
+python -m lattice_digest.run --since 36h --output markdown,json --send none
+if ($LASTEXITCODE -ne 0) {
+    throw "digest generation failed. Will not commit or push."
 }
 
-Invoke-Checked "generate daily lattice digest" {
-    python -m lattice_digest.run --since 36h --output markdown,json --send none
+Write-Host "==> Running tests"
+python -m pytest
+if ($LASTEXITCODE -ne 0) {
+    throw "pytest failed. Will not commit or push."
 }
 
-Invoke-Checked "run pytest" {
-    python -m pytest
+Write-Host "==> Staging generated outputs only"
+git add digests data papers.db
+if ($LASTEXITCODE -ne 0) {
+    throw "git add failed"
 }
 
-Invoke-Checked "stage digest artifacts" {
-    git add digests data papers.db
-}
-
+Write-Host "==> Checking staged changes"
 git diff --cached --quiet
 $DiffExitCode = $LASTEXITCODE
+
 if ($DiffExitCode -eq 0) {
     Write-Host "no changes to commit"
     exit 0
 }
+
 if ($DiffExitCode -ne 1) {
-    throw "git diff --cached --quiet failed with exit code $DiffExitCode"
+    throw "git diff --cached --quiet failed"
 }
 
-$DigestDate = Get-Date -Format "yyyy-MM-dd"
-$CommitMessage = "daily lattice digest: $DigestDate"
+$Today = Get-Date -Format "yyyy-MM-dd"
+$CommitMessage = "daily lattice digest: $Today"
 
-Invoke-Checked "git commit" {
-    git commit -m $CommitMessage
+Write-Host "==> Committing: $CommitMessage"
+git commit -m $CommitMessage
+if ($LASTEXITCODE -ne 0) {
+    throw "git commit failed"
 }
 
-try {
-    Invoke-Checked "git push origin main" {
-        git push origin main
-    }
-}
-catch {
-    Write-Host "git push failed. Please check GitHub network, Clash proxy, and authentication status."
-    Write-Host "Try: git ls-remote https://github.com/JianXiao0039/Lattice-Crypto-Daily-Digest.git"
-    Write-Host "Then retry: git push"
-    throw
+Write-Host "==> Pushing to GitHub"
+git push origin main
+if ($LASTEXITCODE -ne 0) {
+    throw "git push failed. Please check GitHub network, Clash proxy, or authentication."
 }
 
 Write-Host "pushed daily digest to GitHub"
