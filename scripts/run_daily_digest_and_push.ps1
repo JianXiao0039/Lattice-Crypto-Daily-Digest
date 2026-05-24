@@ -5,7 +5,35 @@ $ProjectRoot = Split-Path -Parent $ScriptDir
 
 Set-Location $ProjectRoot
 
+function Test-DirectoryWritable {
+    param(
+        [Parameter(Mandatory=$true)]
+        [string]$Path
+    )
+
+    if (-not (Test-Path $Path)) {
+        throw "Required path does not exist: $Path"
+    }
+
+    $testFile = Join-Path $Path "__codex_write_test.tmp"
+
+    try {
+        "probe" | Set-Content -Encoding UTF8 $testFile
+        Remove-Item $testFile -Force
+        Write-Host "Writable: $Path"
+    }
+    catch {
+        throw "Path is not writable: $Path. Error: $($_.Exception.Message)"
+    }
+}
+
 Write-Host "==> Project root: $ProjectRoot"
+
+Write-Host "==> Preflight write checks"
+Test-DirectoryWritable $ProjectRoot
+Test-DirectoryWritable (Join-Path $ProjectRoot "data")
+Test-DirectoryWritable (Join-Path $ProjectRoot "digests")
+Test-DirectoryWritable (Join-Path $ProjectRoot ".git")
 
 Write-Host "==> Checking git remote"
 git remote -v
@@ -16,7 +44,7 @@ if ($LASTEXITCODE -ne 0) {
 Write-Host "==> Pulling latest origin/main"
 git pull --rebase --autostash origin main
 if ($LASTEXITCODE -ne 0) {
-    throw "git pull failed. Please check GitHub network/proxy/authentication."
+    throw "git pull failed. If error mentions .git/FETCH_HEAD Permission denied, fix local .git permissions or Codex sandbox write access."
 }
 
 Write-Host "==> Generating daily lattice crypto digest"
