@@ -3,38 +3,53 @@ name: Daily Lattice Crypto Digest
 on:
   workflow_dispatch:
   schedule:
-    # Asia/Singapore 08:30 == UTC 00:30
-    - cron: "30 0 * * *"
+    # 01:17 UTC == 09:17 Asia/Shanghai / Asia/Singapore.
+    - cron: "17 1 * * *"
+
+permissions:
+  contents: write
 
 jobs:
   digest:
     runs-on: ubuntu-latest
-    permissions:
-      contents: write
     steps:
       - uses: actions/checkout@v4
+
       - uses: actions/setup-python@v5
         with:
           python-version: "3.11"
-      - name: Install
-        run: python -m pip install -e ".[dev]"
+
+      - name: Upgrade pip
+        run: python -m pip install --upgrade pip
+
+      - name: Install project
+        run: pip install -e .
+
       - name: Generate digest
         env:
-          OPENAI_API_KEY: ${{ secrets.OPENAI_API_KEY }}
+          CONTACT_EMAIL: ${{ secrets.CONTACT_EMAIL }}
           SEMANTIC_SCHOLAR_API_KEY: ${{ secrets.SEMANTIC_SCHOLAR_API_KEY }}
-          EMAIL_TO: ${{ secrets.EMAIL_TO }}
-          TELEGRAM_BOT_TOKEN: ${{ secrets.TELEGRAM_BOT_TOKEN }}
-          TELEGRAM_CHAT_ID: ${{ secrets.TELEGRAM_CHAT_ID }}
         run: python -m lattice_digest.run --since 36h --output markdown,json --send none
+
+      - name: Run tests
+        run: python -m pytest
+
+      - name: Send email
+        env:
+          SMTP_HOST: ${{ secrets.SMTP_HOST }}
+          SMTP_PORT: ${{ secrets.SMTP_PORT }}
+          SMTP_USER: ${{ secrets.SMTP_USER }}
+          SMTP_PASSWORD: ${{ secrets.SMTP_PASSWORD }}
+          MAIL_FROM: ${{ secrets.MAIL_FROM }}
+          MAIL_TO: ${{ secrets.MAIL_TO }}
+        run: python scripts/send_latest_digest_email.py
+
       - name: Commit digest artifacts
         run: |
+          LATEST_DIGEST="$(ls digests/[0-9][0-9][0-9][0-9]-[0-9][0-9]-[0-9][0-9].md 2>/dev/null | sort | tail -n 1)"
+          DIGEST_DATE="$(basename "${LATEST_DIGEST:-unknown-date.md}" .md)"
           git config user.name "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
-          git add data digests papers.db .cache || true
-          if git diff --cached --quiet; then
-            echo "No digest changes."
-          else
-            git commit -m "chore: add daily lattice crypto digest"
-            git push
-          fi
-
+          git add digests data papers.db
+          git diff --cached --quiet || git commit -m "daily lattice digest: ${DIGEST_DATE}"
+          git push
