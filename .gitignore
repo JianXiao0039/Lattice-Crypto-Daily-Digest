@@ -31,3 +31,7 @@ digests/*-error.md
 # Local runtime cache/logs
 cache/
 logs/
+
+# Local editor/runtime folders
+.tmp/
+.vscode/
