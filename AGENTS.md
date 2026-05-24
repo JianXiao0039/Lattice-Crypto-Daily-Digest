@@ -564,3 +564,22 @@ python -m lattice_digest.run --since 36h --output markdown,json --send none
 python -m lattice_digest.run --since 36h --dry-run
 python -m pytest
 ```
+
+---
+
+## Local Automation Git Rule
+
+For routine local Codex automation, Codex may run:
+
+```powershell
+.\scripts\run_daily_digest_and_push.ps1
+```
+
+Outside that script, Codex must not expand the `git add` scope for daily automation.
+Automatic daily commits may include only:
+
+- `digests/`
+- `data/`
+- `papers.db`
+
+If the digest command fails or `python -m pytest` fails, Codex must not commit or push.

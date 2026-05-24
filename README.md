@@ -53,3 +53,36 @@ Configure these repository secrets before enabling email delivery:
 The workflow checks out the repository, installs Python 3.11, runs the digest command, runs tests, sends the latest Markdown digest by email, then commits `digests`, `data`, and `papers.db` back to `main` if generated artifacts changed.
 
 To verify delivery, open the latest workflow run and check the `Send email` step for `sent email to ...`. SMTP/API failures appear in the GitHub Actions log; the digest command itself treats 429, SSL, and transient network failures as warnings and continues with other sources.
+
+## 本地 Codex 自动化后自动推送 GitHub
+
+Codex 本地自动化可以直接调用：
+
+```powershell
+.\scripts\run_daily_digest_and_push.ps1
+```
+
+也可以双击或从其他调度器调用：
+
+```cmd
+scripts\run_daily_digest_and_push.cmd
+```
+
+脚本会自动定位项目根目录，先执行 `git pull --rebase --autostash origin main`，再运行日报生成和 `python -m pytest`。只有两步都成功后，脚本才会执行 `git add digests data papers.db`、提交 `daily lattice digest: YYYY-MM-DD` 并 `git push origin main`。
+
+运行前需要确认本地 `git push` 已经能通过 Clash 代理访问 GitHub。如果已经配置过以下内容，无需重复配置：
+
+```powershell
+git config --global http.proxy http://127.0.0.1:7897
+git config --global https.proxy http://127.0.0.1:7897
+git config --global http.version HTTP/1.1
+```
+
+如果 push 失败，先手动检查：
+
+```powershell
+git ls-remote https://github.com/JianXiao0039/Lattice-Crypto-Daily-Digest.git
+git push
+```
+
+脚本不会暂存 `.env`、`memory.md`、`.tmp/`、`.vscode/`、`cache/`、`.cache/`、`.history/` 或 pytest 临时目录。
