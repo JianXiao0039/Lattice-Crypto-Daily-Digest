@@ -3,67 +3,42 @@ name: Daily Lattice Crypto Digest
 on:
   workflow_dispatch:
   schedule:
-    # 01:00 UTC = 09:00 Asia/Shanghai
-    - cron: "0 1 * * *"
+    # 01:17 UTC = 09:17 Asia/Shanghai
+    # Avoid the top of the hour to reduce GitHub Actions scheduling delays.
+    - cron: "17 1 * * *"
 
 permissions:
   contents: write
-
-concurrency:
-  group: daily-lattice-crypto-digest
-  cancel-in-progress: false
 
 jobs:
   digest:
     runs-on: ubuntu-latest
 
-    env:
-      TZ: Asia/Shanghai
-      PYTHONUNBUFFERED: "1"
-
     steps:
       - name: Checkout repository
         uses: actions/checkout@v4
         with:
-          fetch-depth: 0
+          persist-credentials: true
 
       - name: Set up Python
         uses: actions/setup-python@v5
         with:
-          python-version: "3.12"
-          cache: "pip"
+          python-version: "3.11"
 
-      - name: Show environment
-        run: |
-          python --version
-          pwd
-          ls -la
-          find . -maxdepth 2 -type f | sort | sed 's#^\./##' | head -200
-
-      - name: Install project dependencies
+      - name: Install project
         run: |
           python -m pip install --upgrade pip
-          python -m pip install -e .
-          python -m pip install pytest pyyaml requests feedparser python-dateutil
-
-      - name: Run daily digest
-        run: |
-          python -m lattice_digest.run --since 36h --output markdown,json --send none
+          pip install -e ".[dev]"
 
       - name: Run tests
         run: |
           python -m pytest
 
-      - name: Show generated outputs
+      - name: Generate daily digest
         run: |
-          echo "Generated digests:"
-          ls -la digests || true
-          echo "Generated data:"
-          ls -la data || true
-          echo "Database:"
-          ls -la papers.db || true
+          python -m lattice_digest.run --since 36h --output markdown,json --send none
 
-      - name: Commit and push generated digest
+      - name: Commit generated digest
         run: |
           git config user.name "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
@@ -71,24 +46,22 @@ jobs:
           git add digests data papers.db
 
           if git diff --cached --quiet; then
-            echo "No digest/data/papers.db changes to commit."
+            echo "No digest changes to commit."
           else
-            TODAY="$(date +'%Y-%m-%d')"
-            git commit -m "daily lattice digest: ${TODAY}"
+            git commit -m "daily lattice digest: $(date -u +'%Y-%m-%d')"
             git push
           fi
 
-      - name: Send digest email
-        if: ${{ always() }}
+      - name: Send latest digest email
         env:
           SMTP_HOST: ${{ secrets.SMTP_HOST }}
           SMTP_PORT: ${{ secrets.SMTP_PORT }}
           SMTP_USERNAME: ${{ secrets.SMTP_USERNAME }}
           SMTP_PASSWORD: ${{ secrets.SMTP_PASSWORD }}
-          EMAIL_FROM: ${{ secrets.EMAIL_FROM }}
-          EMAIL_TO: ${{ secrets.EMAIL_TO }}
+          MAIL_FROM: ${{ secrets.MAIL_FROM }}
+          MAIL_TO: ${{ secrets.MAIL_TO }}
         run: |
-          if [ -f scripts/send_latest_digest_email.py ] && [ -n "$SMTP_HOST" ] && [ -n "$EMAIL_TO" ]; then
+          if [ -f scripts/send_latest_digest_email.py ] && [ -n "$SMTP_HOST" ] && [ -n "$SMTP_PASSWORD" ]; then
             python scripts/send_latest_digest_email.py
           else
             echo "Email sending skipped: script or SMTP secrets not configured."
