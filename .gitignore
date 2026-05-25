@@ -35,3 +35,6 @@ logs/
 # Local editor/runtime folders
 .tmp/
 .vscode/
+
+# Python package build metadata
+src/*.egg-info/
