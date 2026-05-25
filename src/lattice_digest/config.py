@@ -11,12 +11,29 @@ def project_root() -> Path:
 
 def load_structured_file(path: Path) -> dict[str, Any]:
     text = path.read_text(encoding="utf-8")
-    try:
-        import yaml  # type: ignore
+    if not text.strip():
+        return {}
 
-        data = yaml.safe_load(text)
-    except ModuleNotFoundError:
+    try:
         data = json.loads(text)
+    except json.JSONDecodeError as json_error:
+        try:
+            import yaml  # type: ignore
+        except ModuleNotFoundError as exc:
+            raise ValueError(
+                f"{path} is not valid JSON and PyYAML is not installed; "
+                "install pyyaml or use JSON-compatible configuration."
+            ) from exc
+
+        try:
+            data = yaml.safe_load(text)
+        except Exception as yaml_error:  # noqa: BLE001 - include both parser failures with the path.
+            raise ValueError(
+                f"{path} is neither valid JSON nor valid YAML: "
+                f"JSON error: {json_error}; YAML error: {yaml_error}"
+            ) from yaml_error
+    if data is None:
+        return {}
     if not isinstance(data, dict):
         raise ValueError(f"{path} must contain a mapping")
     return data
@@ -31,4 +48,3 @@ def load_config_bundle(config_dir: Path | None = None) -> dict[str, Any]:
         "negative": load_structured_file(directory / "negative_keywords.yaml"),
         "sources": load_structured_file(directory / "sources.yaml"),
     }
-

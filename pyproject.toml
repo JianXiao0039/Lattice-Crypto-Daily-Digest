@@ -10,6 +10,7 @@ readme = "README.md"
 requires-python = ">=3.11"
 dependencies = [
   "pydantic>=1.10,<3",
+  "PyYAML>=6.0.1",
 ]
 
 [project.optional-dependencies]
@@ -24,4 +25,3 @@ where = ["src"]
 pythonpath = ["src"]
 testpaths = ["tests"]
 addopts = "-q"
-
