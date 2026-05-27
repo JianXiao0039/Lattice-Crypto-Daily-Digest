@@ -1,0 +1,101 @@
+[
+  {
+    "title": "Falcon-X: A Time Series Foundation Model for Heterogeneous Multivariate Modeling",
+    "normalized_title": "falcon x a time series foundation model for heterogeneous multivariate modeling",
+    "chinese_title": "Falcon-X: A Time Series Foundation Model for Heterogeneous Multivariate Modeling",
+    "authors": [
+      "Yiding Liu",
+      "Yifan Hu",
+      "Hongjie Xia",
+      "Peiyuan Liu",
+      "Hongzhou Chen",
+      "Xilin Dai",
+      "Zewei Dong",
+      "Jiang-Ming Yang"
+    ],
+    "abstract": "Time series foundation models (TSFMs) are transforming the forecasting paradigm through large-scale cross-domain pretraining. However, most existing TSFMs remain univariate, and recent efforts to enable cross-variate modeling still operate directly within the raw variate space. This design introduces fundamental limitations in semantic alignment and relational expressivity. Specifically, raw-space group mixing lacks a dedicated mechanism to align heterogeneous physical quantities, while standard non-negative attention fails to capture the complex synergistic and antagonistic interactions ubiquitous in real-world systems. To address these challenges, we propose Falcon-X, decouples variates from the raw space and maps them into a unified latent prototype space. Falcon-X employs a Unified Prototype Diff-Attention mechanism that explicitly evaluates both positive and negative semantic affinities to explicitly align heterogeneous variates. Cross-variate interactions are then efficiently performed within this shared space via Latent Entity Attention, naturally facilitating zero-shot structural transfer. Finally, a Variate Reassembly Router robustly reconstructs variate-specific trajectories via a request-and-dispatch mechanism. Extensive evaluations on the GIFT-Eval and fev-bench benchmarks demonstrate that Falcon-X achieves state-of-the-art forecasting performance, offering a principled and scalable paradigm for complex multivariate environments. Falcon-X is publicly released to support future research.",
+    "source": "arxiv",
+    "source_url": "http://arxiv.org/abs/2605.27286v1",
+    "pdf_url": "https://arxiv.org/pdf/2605.27286v1",
+    "paper_id": "arxiv:2605.27286",
+    "arxiv_id": "2605.27286",
+    "eprint_id": null,
+    "doi": null,
+    "venue": "arXiv",
+    "publication_date": "2026-05-26",
+    "update_date": "2026-05-26",
+    "categories": [
+      "cs.LG",
+      "cs.AI"
+    ],
+    "taxonomy_tags": [
+      "C03_Falcon_FNDSA",
+      "pqc_lattice_schemes"
+    ],
+    "keywords_matched": [
+      "FALCON",
+      "Falcon",
+      "falcon"
+    ],
+    "negative_keywords_matched": [],
+    "relevance_score": 100,
+    "relevance_label": "A",
+    "reason": "标题命中核心格密码关键词：falcon。 摘要命中核心格密码关键词：falcon。 来源属于高价值密码学会议/期刊/数据库。 命中 taxonomy 标签：C03_Falcon_FNDSA。",
+    "reading_priority": 1
+  },
+  {
+    "title": "Practical Anonymous Two-Party Gradient Boosting Decision Tree",
+    "normalized_title": "practical anonymous two party gradient boosting decision tree",
+    "chinese_title": "Practical Anonymous Two-Party Gradient Boosting Decision Tree",
+    "authors": [
+      "Huang Chenyu",
+      "Zhang Fan",
+      "Du Minxin",
+      "Chow Sherman SM",
+      "Chen Huangxun",
+      "Rao Huaming",
+      "Huang Danqing",
+      "Qian Bo",
+      "Chen Peng"
+    ],
+    "abstract": "Structured data is well handled by gradient-boosted decision trees (GBDT), which are usually trained on vertically partitioned features across mutually distrustful parties. High speed and interpretability make GBDTs popular in finance and healthcare, where neural networks may fall short. Enabling secure computation for GBDTs poses unique challenges, requiring secure record alignment for comparison. Relying on private set intersection (PSI) is a de facto approach. Mistaking PSI for a safety measure actually exposes which record identifiers (IDs) are shared between the datasets. Although circuit-PSI could help, it is costly for generic uses. New ideas are needed to efficiently train in a \"dark forest\". Aiming to hide the IDs, we initiate the study of anonymous GBDT training on split data held by two parties. Dual circuit-PSI in our design lets the parties alternate as receiver to run pick-then-sum over local features. Via oblivious programmable pseudorandom functions, we propagate circuit-PSI outputs as shared state across runs. Avoiding universal alignment, we resolve the neglected dilemma that ID hiding incurs a cost that scales with domain size. Next, we halve the cost of ciphertext packing used to convert single-instruction multiple-data homomorphic encryption from (ring) learning with errors in prior secure GBDT (Usenix Security' 23) and related secure machine-learning computations. Comparative experiments show our protocol remains competitive with leaky approaches in efficiency. Enabling ID-hiding aggregation, our techniques can extend to other vertically partitioned analytics.",
+    "source": "arxiv",
+    "source_url": "http://arxiv.org/abs/2605.26903v1",
+    "pdf_url": "https://arxiv.org/pdf/2605.26903v1",
+    "paper_id": "arxiv:2605.26903",
+    "arxiv_id": "2605.26903",
+    "eprint_id": null,
+    "doi": "10.1109/SP63933.2026.00084",
+    "venue": "arXiv",
+    "publication_date": "2026-05-26",
+    "update_date": "2026-05-26",
+    "categories": [
+      "cs.CR",
+      "cs.AI"
+    ],
+    "taxonomy_tags": [
+      "B01_LWE_Family",
+      "D01_FHE",
+      "E04_Hardware_Optimization",
+      "F04_Countermeasures",
+      "fhe",
+      "implementation_security",
+      "lwe_sis_ntru_foundations"
+    ],
+    "keywords_matched": [
+      "ciphertext packing",
+      "encryption",
+      "hiding",
+      "high-speed",
+      "homomorphic encryption",
+      "Learning With Errors",
+      "learning with errors",
+      "Learning with Errors"
+    ],
+    "negative_keywords_matched": [],
+    "relevance_score": 100,
+    "relevance_label": "A",
+    "reason": "摘要命中核心格密码关键词：learning with errors。 存在明确密码学/PQC上下文。 来源属于高价值密码学会议/期刊/数据库。 命中 taxonomy 标签：B01_LWE_Family, D01_FHE, E04_Hardware_Optimization, F04_Countermeasures。",
+    "reading_priority": 1
+  }
+]
