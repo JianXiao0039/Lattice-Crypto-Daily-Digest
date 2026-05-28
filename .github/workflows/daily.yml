@@ -42,7 +42,7 @@ jobs:
           CONTACT_EMAIL: ${{ secrets.CONTACT_EMAIL }}
           SEMANTIC_SCHOLAR_API_KEY: ${{ secrets.SEMANTIC_SCHOLAR_API_KEY }}
         run: |
-          python -m lattice_digest.run --since 36h --output markdown,json --send none
+          python -m lattice_digest.run --since 36h --output markdown,json --send none --collector github_actions --quality-status provisional --run-mode daily
 
       - name: Verify generated artifacts
         run: |
@@ -60,7 +60,11 @@ jobs:
           import sys
 
           with open(sys.argv[1], encoding="utf-8") as handle:
-              json.load(handle)
+              payload = json.load(handle)
+          metadata = payload.get("metadata", {})
+          assert metadata.get("collector") in {"github_actions", "local_codex"}
+          assert metadata.get("quality_status") in {"provisional", "authoritative", "authoritative_backfill"}
+          assert metadata.get("run_mode") in {"daily", "backfill", "dry_run"}
           PY
 
           for section in "今日核心结论" "高优先级论文" "AI4Lattice 与机器学习辅助密码分析" "格基约简与经典攻击" "PQC 标准、原语与实现" "阅读队列与精读建议" "可孵化研究 idea 与导师讨论问题" "数据源健康与空报告处理"; do

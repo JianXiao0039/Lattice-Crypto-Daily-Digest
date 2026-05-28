@@ -17,6 +17,7 @@ def write_json(
     source_health: list[dict[str, object]] | None = None,
     warnings: list[str] | None = None,
     since_window: str = "36h",
+    metadata: dict[str, object] | None = None,
 ) -> Path:
     output_dir.mkdir(parents=True, exist_ok=True)
     path = output_dir / f"{digest_date.isoformat()}.json"
@@ -43,16 +44,25 @@ def write_json(
             }
         )
         enriched_records.append(item)
+    payload_metadata = {
+        "target_date": digest_date.isoformat(),
+        "run_date": digest_date.isoformat(),
+        "since_window": since_window,
+        "total_records": len(records),
+        "source_health": source_health or [],
+        "warnings": warnings or [],
+        "query_profile": "lattice-crypto-daily-digest",
+        "version": "0.1.0",
+    }
+    if metadata:
+        payload_metadata.update(metadata)
+    payload_metadata["target_date"] = str(payload_metadata.get("target_date") or digest_date.isoformat())
+    payload_metadata["since_window"] = since_window
+    payload_metadata["total_records"] = len(records)
+    payload_metadata["source_health"] = source_health or []
+    payload_metadata["warnings"] = warnings or []
     payload = {
-        "metadata": {
-            "run_date": digest_date.isoformat(),
-            "since_window": since_window,
-            "total_records": len(records),
-            "source_health": source_health or [],
-            "warnings": warnings or [],
-            "query_profile": "lattice-crypto-daily-digest",
-            "version": "0.1.0",
-        },
+        "metadata": payload_metadata,
         "records": enriched_records,
         "source_health": source_health or [],
         "warnings": warnings or [],
@@ -69,11 +79,12 @@ def write_markdown(
     source_health: list[dict[str, object]] | None = None,
     warnings: list[str] | None = None,
     since_window: str = "36h",
+    metadata: dict[str, object] | None = None,
 ) -> Path:
     output_dir.mkdir(parents=True, exist_ok=True)
     path = output_dir / f"{digest_date.isoformat()}.md"
     path.write_text(
-        generate_markdown(records, digest_date, filtered_count, source_health, warnings, since_window),
+        generate_markdown(records, digest_date, filtered_count, source_health, warnings, since_window, metadata),
         encoding="utf-8",
     )
     return path

@@ -1,8 +1,9 @@
 from __future__ import annotations
 
 import argparse
+import json
 import os
-from datetime import datetime, timedelta, timezone
+from datetime import date, datetime, time, timedelta, timezone
 from pathlib import Path
 from zoneinfo import ZoneInfo
 
@@ -12,6 +13,7 @@ from lattice_digest.digest import generate_markdown
 from lattice_digest.models import PaperRecord
 from lattice_digest.ranker import rank_records
 from lattice_digest.sources import FetchContext, build_source
+from lattice_digest.sources.base import parse_date_for_filter
 from lattice_digest.storage import write_json, write_markdown, write_sqlite
 from lattice_digest.text import parse_duration_to_hours
 
@@ -23,6 +25,15 @@ def parse_args(argv: list[str] | None = None) -> argparse.Namespace:
     parser.add_argument("--send", default="none", help="Delivery backend. Currently only 'none' is implemented.")
     parser.add_argument("--dry-run", action="store_true", help="Run without network writes or output artifact writes.")
     parser.add_argument("--config-dir", type=Path, default=None, help="Override config directory.")
+    parser.add_argument("--target-date", default=None, help="Output report date in YYYY-MM-DD format.")
+    parser.add_argument("--collector", choices=("local_codex", "github_actions"), default=None)
+    parser.add_argument(
+        "--quality-status",
+        choices=("authoritative", "provisional", "authoritative_backfill"),
+        default=None,
+    )
+    parser.add_argument("--run-mode", choices=("daily", "backfill", "dry_run"), default="daily")
+    parser.add_argument("--force", action="store_true", help="Overwrite authoritative reports for the target date.")
     return parser.parse_args(argv)
 
 
@@ -73,6 +84,115 @@ def _sort_records(records: list[PaperRecord]) -> list[PaperRecord]:
 
 def _record_source_names(record: PaperRecord) -> list[str]:
     return [item.strip() for item in record.source.split(",") if item.strip()]
+
+
+def _parse_target_date(value: str | None, now_local: datetime) -> date:
+    if not value:
+        return now_local.date()
+    try:
+        return date.fromisoformat(value)
+    except ValueError as exc:
+        raise SystemExit(f"invalid --target-date {value!r}; expected YYYY-MM-DD") from exc
+
+
+def _coverage_window(target_date: date, hours: int, target_date_was_explicit: bool) -> tuple[datetime, datetime]:
+    if target_date_was_explicit:
+        local_end = datetime.combine(target_date + timedelta(days=1), time.min, ZoneInfo("Asia/Singapore"))
+        coverage_end = local_end.astimezone(timezone.utc)
+    else:
+        coverage_end = datetime.now(timezone.utc)
+    return coverage_end - timedelta(hours=hours), coverage_end
+
+
+def _record_effective_datetime(record: PaperRecord) -> datetime | None:
+    return parse_date_for_filter(record.update_date) or parse_date_for_filter(record.publication_date)
+
+
+def _filter_records_to_coverage(
+    records: list[PaperRecord],
+    coverage_start: datetime,
+    coverage_end: datetime,
+) -> tuple[list[PaperRecord], int]:
+    kept: list[PaperRecord] = []
+    dropped = 0
+    for record in records:
+        parsed = _record_effective_datetime(record)
+        if parsed is not None and coverage_start <= parsed < coverage_end:
+            kept.append(record)
+        elif parsed is None:
+            kept.append(record)
+        else:
+            dropped += 1
+    return kept, dropped
+
+
+def _load_existing_metadata(root: Path, target_date: date) -> dict[str, object] | None:
+    path = root / "data" / f"{target_date.isoformat()}.json"
+    if not path.exists():
+        return None
+    try:
+        payload = json.loads(path.read_text(encoding="utf-8"))
+    except (OSError, json.JSONDecodeError):
+        return None
+    metadata = payload.get("metadata")
+    return metadata if isinstance(metadata, dict) else None
+
+
+def _should_skip_write(
+    existing_metadata: dict[str, object] | None,
+    new_quality_status: str,
+    force: bool,
+) -> bool:
+    if force or not existing_metadata:
+        return False
+    old_quality = str(existing_metadata.get("quality_status") or "")
+    if new_quality_status == "provisional" and old_quality in {"authoritative", "authoritative_backfill"}:
+        return True
+    if old_quality in {"authoritative", "authoritative_backfill"}:
+        return True
+    return False
+
+
+def _supersedes_metadata(
+    existing_metadata: dict[str, object] | None,
+    new_quality_status: str,
+) -> dict[str, object] | None:
+    if not existing_metadata:
+        return None
+    old_quality = str(existing_metadata.get("quality_status") or "")
+    if old_quality == "provisional" and new_quality_status == "authoritative_backfill":
+        return {
+            "collector": existing_metadata.get("collector"),
+            "run_date": existing_metadata.get("run_date"),
+            "quality_status": existing_metadata.get("quality_status"),
+        }
+    return None
+
+
+def _build_run_metadata(
+    *,
+    target_date: date,
+    run_datetime: datetime,
+    collector: str,
+    quality_status: str,
+    run_mode: str,
+    coverage_start: datetime,
+    coverage_end: datetime,
+    since_window: str,
+    supersedes: dict[str, object] | None,
+) -> dict[str, object]:
+    return {
+        "target_date": target_date.isoformat(),
+        "run_date": run_datetime.date().isoformat(),
+        "collector": collector,
+        "quality_status": quality_status,
+        "run_mode": run_mode,
+        "coverage_start": coverage_start.isoformat(),
+        "coverage_end": coverage_end.isoformat(),
+        "since_window": since_window,
+        "backfill": run_mode == "backfill",
+        "supersedes": supersedes,
+    }
 
 
 def _update_source_health_after_pipeline(
@@ -157,7 +277,26 @@ def main(argv: list[str] | None = None) -> int:
     _load_dotenv(root)
     configs = load_config_bundle(args.config_dir)
     hours = parse_duration_to_hours(args.since)
-    since = datetime.now(timezone.utc) - timedelta(hours=hours)
+    run_datetime = datetime.now(ZoneInfo("Asia/Singapore"))
+    digest_date = _parse_target_date(args.target_date, run_datetime)
+    coverage_start, coverage_end = _coverage_window(digest_date, hours, args.target_date is not None)
+    since = coverage_start
+    collector = args.collector or "local_codex"
+    quality_status = args.quality_status or ("provisional" if collector == "github_actions" else "authoritative")
+    run_mode = "dry_run" if args.dry_run else args.run_mode
+    existing_metadata = _load_existing_metadata(root, digest_date)
+    supersedes = _supersedes_metadata(existing_metadata, quality_status)
+    metadata = _build_run_metadata(
+        target_date=digest_date,
+        run_datetime=run_datetime,
+        collector=collector,
+        quality_status=quality_status,
+        run_mode=run_mode,
+        coverage_start=coverage_start,
+        coverage_end=coverage_end,
+        since_window=args.since,
+        supersedes=supersedes,
+    )
     request_config = configs["sources"].get("request", {})
     context = FetchContext(
         root=root,
@@ -178,12 +317,15 @@ def main(argv: list[str] | None = None) -> int:
     source_configs = _enabled_source_configs(configs["sources"])
     records = _collect_records(source_configs, context)
     ranked = rank_records(records, configs["taxonomy"], configs["keywords"], configs["negative"])
+    if args.target_date is not None:
+        ranked, coverage_dropped = _filter_records_to_coverage(ranked, coverage_start, coverage_end)
+        if coverage_dropped:
+            context.warnings.append(f"coverage filter dropped {coverage_dropped} records outside target_date window")
     reliable, dropped_count = _filter_reliable(ranked)
     deduped = deduplicate(reliable)
     ordered = _sort_records(deduped)
     _update_source_health_after_pipeline(context, ranked, reliable, deduped, ordered)
     source_health = context.source_health_summary()
-    digest_date = datetime.now(ZoneInfo("Asia/Singapore")).date()
     outputs = {item.strip().lower() for item in args.output.split(",") if item.strip()}
 
     if args.send != "none":
@@ -198,15 +340,37 @@ def main(argv: list[str] | None = None) -> int:
                 print(f"- {warning}")
         _print_source_health(source_health)
         print("\nMarkdown preview:")
-        print(generate_markdown(ordered, digest_date, dropped_count, source_health, context.warnings, args.since))
+        print(generate_markdown(ordered, digest_date, dropped_count, source_health, context.warnings, args.since, metadata))
+        return 0
+
+    if _should_skip_write(existing_metadata, quality_status, args.force):
+        old_quality = existing_metadata.get("quality_status") if existing_metadata else "unknown"
+        old_collector = existing_metadata.get("collector") if existing_metadata else "unknown"
+        print(
+            "Skipped writing {date}: existing report is {collector}/{quality}; use --force to overwrite.".format(
+                date=digest_date.isoformat(),
+                collector=old_collector,
+                quality=old_quality,
+            )
+        )
+        _print_source_health(source_health)
         return 0
 
     written: list[Path] = []
     if "json" in outputs:
-        written.append(write_json(ordered, root / "data", digest_date, source_health, context.warnings, args.since))
+        written.append(write_json(ordered, root / "data", digest_date, source_health, context.warnings, args.since, metadata))
     if "markdown" in outputs or "md" in outputs:
         written.append(
-            write_markdown(ordered, root / "digests", digest_date, dropped_count, source_health, context.warnings, args.since)
+            write_markdown(
+                ordered,
+                root / "digests",
+                digest_date,
+                dropped_count,
+                source_health,
+                context.warnings,
+                args.since,
+                metadata,
+            )
         )
     written.append(write_sqlite(ordered, root / "papers.db"))
 

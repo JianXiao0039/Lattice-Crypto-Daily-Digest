@@ -821,6 +821,29 @@ def _source_health_brief(source_health: list[dict[str, object]] | None) -> str:
     return "；".join(parts) if parts else "暂无 source health 数据"
 
 
+def _metadata_text(metadata: dict[str, object] | None, key: str, default: str = "unknown") -> str:
+    if not metadata:
+        return default
+    value = metadata.get(key)
+    if value is None or value == "":
+        return default
+    if isinstance(value, bool):
+        return "true" if value else "false"
+    return str(value)
+
+
+def _supersedes_text(metadata: dict[str, object] | None) -> str:
+    if not metadata:
+        return "无"
+    supersedes = metadata.get("supersedes")
+    if not isinstance(supersedes, dict) or not supersedes:
+        return "无"
+    collector = supersedes.get("collector") or "unknown"
+    run_date = supersedes.get("run_date") or "unknown"
+    quality = supersedes.get("quality_status") or "unknown"
+    return f"{collector} / {run_date} / {quality}"
+
+
 def _paper_header(record: PaperRecord, index: int | None = None) -> str:
     prefix = f"{index}. " if index is not None else ""
     return f"### {prefix}{record.title}"
@@ -1009,8 +1032,17 @@ def _append_source_health_and_empty(
     filtered_count: int,
     source_health: list[dict[str, object]] | None,
     warnings: list[str] | None,
+    metadata: dict[str, object] | None = None,
 ) -> None:
     lines.extend(["## 8. 数据源健康与空报告处理", ""])
+    if metadata:
+        if metadata.get("collector") == "github_actions" or metadata.get("quality_status") == "provisional":
+            lines.append(
+                "- 采集质量提示：该报告由 GitHub Actions 生成，可能受限于 GitHub runner 网络环境；"
+                "建议后续由本地 Codex backfill 增强。"
+            )
+        elif metadata.get("quality_status") == "authoritative_backfill":
+            lines.append("- 采集质量提示：该报告为本地 Codex 权威回填版本，可替代此前的 provisional 日报。")
     lines.append(f"- D 类/过滤数量：{filtered_count}")
     lines.append(f"- Warning 数量：{len(warnings or [])}")
     lines.append(f"- Source health 摘要：{_source_health_brief(source_health)}")
@@ -1074,6 +1106,7 @@ def generate_markdown(
     source_health: list[dict[str, object]] | None = None,
     warnings: list[str] | None = None,
     since_window: str = "36h",
+    metadata: dict[str, object] | None = None,
 ) -> str:
     records = [record for record in records if record.relevance_label in {"A", "B", "C"}]
     sorted_records = _sort_by_reading_priority(records)
@@ -1092,13 +1125,24 @@ def generate_markdown(
         "",
         f"- 最终入选论文数：{len(records)}",
         f"- 高优先级论文数：{len(high_priority)}",
+        f"- target_date：{_metadata_text(metadata, 'target_date', digest_date.isoformat())}",
+        f"- run_date：{_metadata_text(metadata, 'run_date', digest_date.isoformat())}",
+        f"- collector：{_metadata_text(metadata, 'collector', 'local_codex')}",
+        f"- quality_status：{_metadata_text(metadata, 'quality_status', 'authoritative')}",
+        f"- run_mode：{_metadata_text(metadata, 'run_mode', 'daily')}",
+        f"- coverage_start：{_metadata_text(metadata, 'coverage_start')}",
+        f"- coverage_end：{_metadata_text(metadata, 'coverage_end')}",
         f"- 检索窗口：{since_window}",
+        f"- backfill：{_metadata_text(metadata, 'backfill', 'false')}",
+        f"- supersedes：{_supersedes_text(metadata)}",
         f"- 主要来源：{'、'.join(source_names[:5]) if source_names else '无'}",
         f"- 今日主题：{'、'.join(main_topics) if main_topics else '无'}",
         f"- 是否出现 AI4Lattice：{'是' if any('AI4Lattice' in research_tags(record) for record in records) else '否'}",
         f"- 是否覆盖 LWE/MLWE/Module-SIS/格基约简/PQC 实现：{'是' if has_mainline else '否'}",
         f"- 数据源健康：{_source_health_brief(source_health)}",
     ]
+    if metadata and (metadata.get("collector") == "github_actions" or metadata.get("quality_status") == "provisional"):
+        lines.append("- 质量提示：该报告由 GitHub Actions 生成，可能受限于 runner 网络环境；建议后续由本地 Codex backfill 增强。")
     if len(records) == 0:
         lines.append("今日未发现值得记录的格密码相关新论文。")
     if warnings:
@@ -1113,5 +1157,5 @@ def generate_markdown(
     _append_pqc_section(lines, records)
     _append_reading_queue(lines, records)
     _append_idea_and_questions(lines, records)
-    _append_source_health_and_empty(lines, records, filtered_count, source_health, warnings)
+    _append_source_health_and_empty(lines, records, filtered_count, source_health, warnings, metadata)
     return "\n".join(lines)

@@ -84,11 +84,16 @@ def test_daily_workflow_verifies_generated_outputs() -> None:
     workflow = WORKFLOW_PATH.read_text(encoding="utf-8")
 
     assert "python -m pytest" in workflow
-    assert "python -m lattice_digest.run --since 36h --output markdown,json --send none" in workflow
+    assert (
+        "python -m lattice_digest.run --since 36h --output markdown,json --send none "
+        "--collector github_actions --quality-status provisional --run-mode daily"
+    ) in workflow
     assert 'markdown_path="digests/${digest_date}.md"' in workflow
     assert 'json_path="data/${digest_date}.json"' in workflow
     assert "test -f papers.db" in workflow
     assert "json.load(handle)" in workflow
+    assert 'metadata.get("collector") in {"github_actions", "local_codex"}' in workflow
+    assert 'metadata.get("quality_status") in {"provisional", "authoritative", "authoritative_backfill"}' in workflow
     for section in [
         "今日核心结论",
         "高优先级论文",
