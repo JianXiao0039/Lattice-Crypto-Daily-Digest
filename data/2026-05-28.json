@@ -1,0 +1,48 @@
+[
+  {
+    "title": "Revisiting ML Training under Fully Homomorphic Encryption: Convergence Guarantees, Differential Privacy, and Efficient Algorithms",
+    "normalized_title": "revisiting ml training under fully homomorphic encryption convergence guarantees differential privacy and efficient algorithms",
+    "chinese_title": "Revisiting ML Training under Fully Homomorphic Encryption: Convergence Guarantees, Differential Privacy, and Efficient Algorithms",
+    "authors": [
+      "Yvonne Zhou",
+      "Mingyu Liang",
+      "Ivan Brugere",
+      "Danial Dervovic",
+      "Yue Guo",
+      "Antigoni Polychroniadou",
+      "Min Wu",
+      "Dana Dachman-Soled"
+    ],
+    "abstract": "We present the first theoretical convergence analysis of machine learning training under fully homomorphic encryption (FHE), combined with a differentially private (DP) training algorithm tailored to encrypted computation. Our approach improves computational efficiency over standard differentially private gradient descent (DP-GD) while achieving comparable utility. In particular, we prove convergence of approximate gradient descent using polynomial approximations of activation and loss functions, which are required for FHE compatibility. To preserve privacy in downstream tasks, we integrate differential privacy without relying on costly per-sample gradient clipping, enabling scalable encrypted learning. We also provide data-independent hyperparameter selection and theoretically grounded strategies for polynomial approximation which can be of independent interest. Together, these contributions advance the feasibility of efficient, private, and secure machine learning on sensitive data.",
+    "source": "arxiv",
+    "source_url": "http://arxiv.org/abs/2605.27782v1",
+    "pdf_url": "https://arxiv.org/pdf/2605.27782v1",
+    "paper_id": "arxiv:2605.27782",
+    "arxiv_id": "2605.27782",
+    "eprint_id": null,
+    "doi": null,
+    "venue": "arXiv",
+    "publication_date": "2026-05-27",
+    "update_date": "2026-05-27",
+    "categories": [
+      "cs.LG",
+      "cs.CR"
+    ],
+    "taxonomy_tags": [
+      "D01_FHE",
+      "fhe"
+    ],
+    "keywords_matched": [
+      "encryption",
+      "FHE",
+      "fhe",
+      "fully homomorphic encryption",
+      "homomorphic encryption"
+    ],
+    "negative_keywords_matched": [],
+    "relevance_score": 100,
+    "relevance_label": "A",
+    "reason": "标题命中核心格密码关键词：fully homomorphic encryption。 摘要命中核心格密码关键词：fhe, fully homomorphic encryption。 存在明确密码学/PQC上下文。 来源属于高价值密码学会议/期刊/数据库。 命中 taxonomy 标签：D01_FHE。",
+    "reading_priority": 1
+  }
+]
