@@ -105,6 +105,161 @@ ACTION_LABELS = {
     "Ignore unless related work needed": "低优先级，除非需要 related work",
 }
 
+PRIORITY_RULES: tuple[tuple[str, tuple[str, ...], int, str], ...] = (
+    (
+        "AI-assisted lattice cryptanalysis",
+        (
+            "ai-assisted lattice cryptanalysis",
+            "learning-assisted cryptanalysis",
+            "neural cryptanalysis",
+            "machine learning attacks on lwe",
+            "machine learning lwe",
+            "deep learning lwe",
+            "learned pruning",
+            "coordinate selection",
+            "candidate ranking",
+            "neural sieving",
+        ),
+        45,
+        "直接贴近 AI-assisted lattice cryptanalysis，可优先判断它是否能作为经典攻击子程序。",
+    ),
+    (
+        "Transformer/Swin/neural LWE",
+        (
+            "transformer lwe",
+            "swin transformer",
+            "swin-guided",
+            "neural lattice reduction",
+            "neural reduction",
+            "ml-guided bkz",
+            "reinforcement learning bkz",
+            "graph neural network lattice reduction",
+        ),
+        42,
+        "命中 Transformer/Swin/neural lattice reduction 主线，适合服务 Swin-guided coordinate selection 或神经格约简实验。",
+    ),
+    (
+        "LWE/RLWE/MLWE attacks",
+        (
+            "lwe",
+            "learning with errors",
+            "rlwe",
+            "ring-lwe",
+            "mlwe",
+            "module-lwe",
+            "sparse lwe",
+            "secret recovery",
+            "distinguishing attack",
+        ),
+        36,
+        "覆盖 LWE/RLWE/MLWE 或 sparse LWE 攻击，是当前安全分析和实验主线的核心素材。",
+    ),
+    (
+        "primal/dual/hybrid attack",
+        ("primal attack", "dual attack", "hybrid attack", "bdd attack", "lattice reduction attack"),
+        34,
+        "涉及 primal/dual/hybrid 等经典攻击接口，适合转化为参数估计或可复现实验。",
+    ),
+    (
+        "BKZ/LLL/G6K/fplll/sieving",
+        (
+            "bkz",
+            "lll",
+            "g6k",
+            "fplll",
+            "sieving",
+            "enumeration",
+            "lattice reduction",
+            "lattice estimator",
+            "root hermite factor",
+        ),
+        32,
+        "命中 BKZ/LLL/G6K/fplll/sieving 方向，可作为 lattice reduction 或攻击成本 baseline。",
+    ),
+    (
+        "Module-SIS/commitment/chameleon hash",
+        (
+            "module-sis",
+            "msis",
+            "short integer solution",
+            "commitment",
+            "commitments",
+            "chameleon hash",
+            "lattice-based commitment",
+            "trapdoor",
+            "rejection sampling",
+        ),
+        30,
+        "贴近 Module-SIS、承诺或 chameleon hash 小原语方向，可用于导师讨论和短论文选题判断。",
+    ),
+    (
+        "ML-KEM/Kyber security and implementation",
+        (
+            "ml-kem",
+            "kyber",
+            "crystals-kyber",
+            "kem security",
+            "decapsulation failure",
+            "side-channel",
+            "fault attack",
+            "implementation attack",
+        ),
+        26,
+        "服务 ML-KEM/Kyber 安全、实现、侧信道或故障攻击线，适合纳入 PQC 实验与部署讨论。",
+    ),
+    (
+        "ML-DSA/Dilithium/Falcon signatures",
+        (
+            "ml-dsa",
+            "dilithium",
+            "crystals-dilithium",
+            "falcon",
+            "fn-dsa",
+            "lattice-based signature",
+            "post-quantum signatures",
+        ),
+        24,
+        "关联 ML-DSA/Dilithium/Falcon 或格签名，可用于签名安全、实现或参数化背景。",
+    ),
+    (
+        "FHE and lattice HE",
+        (
+            "fhe",
+            "fully homomorphic encryption",
+            "ckks",
+            "bfv",
+            "bgv",
+            "tfhe",
+            "bootstrapping",
+            "lattice-based homomorphic encryption",
+        ),
+        16,
+        "属于格密码中的 FHE/HE 扩展方向，通常作为背景扩展或工程优化线索。",
+    ),
+    (
+        "broader PQC implementation and standardization",
+        (
+            "post-quantum cryptography",
+            "pqc",
+            "nist pqc",
+            "standardization",
+            "deployment",
+            "quantum-safe",
+            "post-quantum tls",
+        ),
+        8,
+        "属于 broader PQC 标准化或部署背景，除非明确连接格方案，否则精读优先级较低。",
+    ),
+)
+
+PRIORITY_LABELS: tuple[tuple[int, str], ...] = (
+    (85, "必须精读"),
+    (70, "建议精读"),
+    (50, "可略读"),
+    (30, "暂存"),
+    (0, "低相关"),
+)
+
 
 def _combined_text(record: PaperRecord) -> str:
     return " ".join(
@@ -121,6 +276,10 @@ def _combined_text(record: PaperRecord) -> str:
 
 def _matches(record: PaperRecord, terms: tuple[str, ...]) -> bool:
     text = _combined_text(record)
+    return any(term.lower() in text for term in terms)
+
+
+def _matches_text(text: str, terms: tuple[str, ...]) -> bool:
     return any(term.lower() in text for term in terms)
 
 
@@ -144,7 +303,105 @@ def suggested_action(record: PaperRecord) -> str:
 
 def _action_text(record: PaperRecord) -> str:
     action = suggested_action(record)
-    return f"{ACTION_LABELS.get(action, action)} ({action})"
+    return ACTION_LABELS.get(action, action)
+
+
+def _priority_hits(record: PaperRecord) -> list[tuple[str, int, str]]:
+    text = _combined_text(record)
+    hits: list[tuple[str, int, str]] = []
+    for name, terms, weight, reason in PRIORITY_RULES:
+        if name == "LWE/RLWE/MLWE attacks":
+            has_lwe_family = _matches_text(
+                text,
+                (
+                    "lwe",
+                    "learning with errors",
+                    "rlwe",
+                    "ring-lwe",
+                    "mlwe",
+                    "module-lwe",
+                    "sparse lwe",
+                ),
+            )
+            has_attack_context = _matches_text(
+                text,
+                (
+                    "attack",
+                    "cryptanalysis",
+                    "security estimate",
+                    "security analysis",
+                    "cost model",
+                    "secret recovery",
+                    "distinguishing",
+                    "bkz",
+                    "lll",
+                    "primal attack",
+                    "dual attack",
+                    "hybrid attack",
+                    "lattice estimator",
+                    "reduction",
+                ),
+            )
+            if has_lwe_family and has_attack_context:
+                hits.append((name, weight, reason))
+            continue
+        if _matches_text(text, terms):
+            hits.append((name, weight, reason))
+    return hits
+
+
+def reading_priority_score(record: PaperRecord) -> int:
+    label_base = {"A": 30, "B": 22, "C": 12}.get(record.relevance_label, 0)
+    score = label_base + max(0, min(record.relevance_score, 100)) // 5
+    hits = _priority_hits(record)
+    score += sum(weight for _, weight, _ in hits)
+
+    text = _combined_text(record)
+    has_core_hit = any(weight >= 24 for _, weight, _ in hits)
+    if "survey" in text and not has_core_hit:
+        score -= 10
+    if _matches_text(text, ("post-quantum cryptography", "pqc", "standardization")) and not has_core_hit:
+        score = min(score, 49)
+    if not record.source_url:
+        score -= 20
+        score = min(score, 49)
+    if record.relevance_label == "D":
+        score = min(score, 29)
+    return max(0, min(100, score))
+
+
+def priority_label_for_score(score: int) -> str:
+    for threshold, label in PRIORITY_LABELS:
+        if score >= threshold:
+            return label
+    return "低相关"
+
+
+def priority_label(record: PaperRecord) -> str:
+    return priority_label_for_score(reading_priority_score(record))
+
+
+def reason_for_priority(record: PaperRecord) -> str:
+    score = reading_priority_score(record)
+    label = priority_label_for_score(score)
+    hits = _priority_hits(record)
+    if not hits:
+        if record.relevance_label == "D":
+            return f"{label}：未命中你的格密码主线关键词，且分类为 D，默认不投入阅读时间。"
+        return f"{label}：虽然通过基础相关性筛选，但暂未命中 AI4Lattice、LWE/MLWE、BKZ、Module-SIS 或标准格方案等精读主线。"
+    reasons = [reason for _, _, reason in hits[:3]]
+    return f"{label}：阅读优先级 {score}/100。{''.join(reasons)}"
+
+
+def _sort_by_reading_priority(records: list[PaperRecord]) -> list[PaperRecord]:
+    return sorted(
+        records,
+        key=lambda record: (
+            -reading_priority_score(record),
+            -record.relevance_score,
+            record.title.lower(),
+        ),
+    )
 
 
 def why_it_matters(record: PaperRecord) -> str:
@@ -201,10 +458,14 @@ def advisor_questions_for_record(record: PaperRecord) -> list[str]:
 
 def record_intelligence(record: PaperRecord) -> dict[str, object]:
     tags = research_tags(record)
+    score = reading_priority_score(record)
     return {
         "tags": tags,
         "research_tags": tags,
         "priority": record.reading_priority,
+        "reading_priority_score": score,
+        "priority_label": priority_label_for_score(score),
+        "reason_for_priority": reason_for_priority(record),
         "why_it_matters": why_it_matters(record),
         "suggested_action": suggested_action(record),
         "research_hooks": research_hooks_for_record(record),
@@ -270,6 +531,9 @@ def _basic_paper_lines(record: PaperRecord) -> list[str]:
         f"- 链接：{link}",
         f"- 分类/分数：{record.relevance_label} / {record.relevance_score}",
         f"- priority：{intel['priority']}",
+        f"- reading_priority_score：{intel['reading_priority_score']}",
+        f"- priority_label：{intel['priority_label']}",
+        f"- reason_for_priority：{intel['reason_for_priority']}",
         f"- research_tags：{', '.join(intel['tags']) if intel['tags'] else 'unknown'}",
         f"- why_it_matters：{intel['why_it_matters']}",
         f"- suggested_action：{_action_text(record)}",
@@ -361,15 +625,12 @@ def _append_pqc_section(lines: list[str], records: list[PaperRecord]) -> None:
 
 def _append_reading_queue(lines: list[str], records: list[PaperRecord]) -> None:
     lines.extend(["## 6. 阅读队列与精读建议", ""])
+    sorted_records = _sort_by_reading_priority(records)
     buckets = {
-        "今日精读（最多 3 篇）": [record for record in records if suggested_action(record) == "Read immediately"][:3],
-        "本周阅读（最多 5 篇）": [record for record in records if suggested_action(record) == "Add to weekly reading"][:5],
-        "背景引用库": [record for record in records if suggested_action(record) == "Use as background citation"][:8],
-        "低优先级/暂不投入": [
-            record
-            for record in records
-            if suggested_action(record) in {"Monitor only", "Ignore unless related work needed"}
-        ][:8],
+        "必须精读": [record for record in sorted_records if priority_label(record) == "必须精读"][:5],
+        "建议精读": [record for record in sorted_records if priority_label(record) == "建议精读"][:5],
+        "可略读": [record for record in sorted_records if priority_label(record) == "可略读"][:8],
+        "暂存": [record for record in sorted_records if priority_label(record) == "暂存"][:8],
     }
     for title, bucket in buckets.items():
         lines.extend([f"### {title}", ""])
@@ -377,7 +638,10 @@ def _append_reading_queue(lines: list[str], records: list[PaperRecord]) -> None:
             lines.extend(["- 无。", ""])
             continue
         for record in bucket:
-            lines.append(f"- {record.title}（{record.source}，score {record.relevance_score}）：{_action_text(record)}")
+            lines.append(
+                f"- {record.title}（{record.source}，reading_priority_score {reading_priority_score(record)}，"
+                f"relevance {record.relevance_score}）：{reason_for_priority(record)}"
+            )
         lines.append("")
 
 
@@ -505,7 +769,8 @@ def generate_markdown(
     since_window: str = "36h",
 ) -> str:
     records = [record for record in records if record.relevance_label in {"A", "B", "C"}]
-    high_priority = [record for record in records if suggested_action(record) == "Read immediately"]
+    sorted_records = _sort_by_reading_priority(records)
+    high_priority = [record for record in sorted_records if reading_priority_score(record) >= 70]
     topic_counts = Counter(tag for record in records for tag in research_tags(record))
     main_topics = [topic for topic, _ in topic_counts.most_common(3)]
     source_names = sorted({record.source for record in records})
