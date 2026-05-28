@@ -34,13 +34,14 @@ def _collect_records(source_configs: list[dict], context: FetchContext) -> list[
     records: list[PaperRecord] = []
     for source_config in source_configs:
         name = source_config.get("name", source_config.get("type", "unknown"))
+        context.health(name)
         try:
             adapter = build_source(source_config)
             fetched = adapter.fetch(context)
             records.extend(fetched)
             context.warnings.append(f"{name}: fetched {len(fetched)} candidate records")
         except Exception as exc:  # noqa: BLE001 - source failures should not fabricate or stop the digest.
-            context.warnings.append(f"{name}: failed ({exc})")
+            context.add_error(f"{name}: failed ({exc})", name)
     return records
 
 
@@ -68,6 +69,67 @@ def _sort_records(records: list[PaperRecord]) -> list[PaperRecord]:
             record.title.lower(),
         ),
     )
+
+
+def _record_source_names(record: PaperRecord) -> list[str]:
+    return [item.strip() for item in record.source.split(",") if item.strip()]
+
+
+def _update_source_health_after_pipeline(
+    context: FetchContext,
+    ranked: list[PaperRecord],
+    reliable: list[PaperRecord],
+    deduped: list[PaperRecord],
+    final_records: list[PaperRecord],
+) -> None:
+    for health in context.source_health.values():
+        health.relevance_filtered_candidates = 0
+        health.scoring_threshold_candidates = 0
+        health.deduped_candidates = 0
+        health.final_records = 0
+
+    for record in reliable:
+        for source_name in _record_source_names(record):
+            context.health(source_name).relevance_filtered_candidates += 1
+
+    for record in ranked:
+        if record.relevance_label in {"A", "B", "C"} and record.relevance_score >= 40:
+            for source_name in _record_source_names(record):
+                context.health(source_name).scoring_threshold_candidates += 1
+
+    for record in deduped:
+        for source_name in _record_source_names(record):
+            context.health(source_name).deduped_candidates += 1
+
+    for record in final_records:
+        for source_name in _record_source_names(record):
+            context.health(source_name).final_records += 1
+
+
+def _print_source_health(source_health: list[dict[str, object]]) -> None:
+    print("\nSource Health:")
+    if not source_health:
+        print("- no source health data")
+        return
+    for item in source_health:
+        warnings = item.get("warnings") if isinstance(item.get("warnings"), list) else []
+        errors = item.get("errors") if isinstance(item.get("errors"), list) else []
+        print(
+            "- {source}: raw={raw}, normalized={normalized}, date_filtered={date_filtered}, "
+            "deduped={deduped}, relevance_filtered={relevance}, threshold={threshold}, "
+            "final={final}, warnings={warnings}, errors={errors}".format(
+                source=item.get("source", "unknown"),
+                raw=item.get("raw_candidates", 0),
+                normalized=item.get("normalized_candidates", 0),
+                date_filtered=item.get("date_filtered_candidates", 0),
+                deduped=item.get("deduped_candidates", 0),
+                relevance=item.get("relevance_filtered_candidates", 0),
+                threshold=item.get("scoring_threshold_candidates", 0),
+                final=item.get("final_records", 0),
+                warnings=len(warnings),
+                errors=len(errors),
+            )
+        )
 
 
 def _load_dotenv(root: Path) -> None:
@@ -115,6 +177,8 @@ def main(argv: list[str] | None = None) -> int:
     reliable, dropped_count = _filter_reliable(ranked)
     deduped = deduplicate(reliable)
     ordered = _sort_records(deduped)
+    _update_source_health_after_pipeline(context, ranked, reliable, deduped, ordered)
+    source_health = context.source_health_summary()
     digest_date = datetime.now(ZoneInfo("Asia/Singapore")).date()
     outputs = {item.strip().lower() for item in args.output.split(",") if item.strip()}
 
@@ -128,15 +192,16 @@ def main(argv: list[str] | None = None) -> int:
             print("\nWarnings:")
             for warning in context.warnings:
                 print(f"- {warning}")
+        _print_source_health(source_health)
         print("\nMarkdown preview:")
-        print(generate_markdown(ordered, digest_date, dropped_count))
+        print(generate_markdown(ordered, digest_date, dropped_count, source_health))
         return 0
 
     written: list[Path] = []
     if "json" in outputs:
-        written.append(write_json(ordered, root / "data", digest_date))
+        written.append(write_json(ordered, root / "data", digest_date, source_health))
     if "markdown" in outputs or "md" in outputs:
-        written.append(write_markdown(ordered, root / "digests", digest_date, dropped_count))
+        written.append(write_markdown(ordered, root / "digests", digest_date, dropped_count, source_health))
     written.append(write_sqlite(ordered, root / "papers.db"))
 
     print(f"Generated {len(ordered)} digest records.")
@@ -146,6 +211,7 @@ def main(argv: list[str] | None = None) -> int:
         print("\nWarnings:")
         for warning in context.warnings:
             print(f"- {warning}")
+    _print_source_health(source_health)
     return 0
 
 

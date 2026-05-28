@@ -91,7 +91,7 @@ def parse_arxiv_atom(xml_text: str) -> list[PaperRecord]:
 class ArxivSource(SourceAdapter):
     def fetch(self, context: FetchContext) -> list[PaperRecord]:
         if context.dry_run:
-            context.warnings.append("dry-run: skipped arXiv network request")
+            context.add_warning("dry-run: skipped arXiv network request", self.name)
             return []
 
         categories = self.config.get("categories", [])
@@ -125,8 +125,18 @@ class ArxivSource(SourceAdapter):
         xml_text = fetch_text(context, f"{self.config['url']}?{params}", source_name=self.name)
         if xml_text is None:
             return []
-        return [
+        root = ET.fromstring(xml_text)
+        raw_count = sum(1 for element in root.iter() if _local_name(element.tag) == "entry")
+        normalized = parse_arxiv_atom(xml_text)
+        filtered = [
             record
-            for record in parse_arxiv_atom(xml_text)
+            for record in normalized
             if within_since(record.publication_date, record.update_date, context.since)
         ]
+        context.set_source_counts(
+            self.name,
+            raw=raw_count,
+            normalized=len(normalized),
+            date_filtered=len(filtered),
+        )
+        return filtered

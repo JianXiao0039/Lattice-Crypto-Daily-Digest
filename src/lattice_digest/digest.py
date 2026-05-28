@@ -99,7 +99,51 @@ def _append_paper(lines: list[str], record: PaperRecord, index: int, include_rel
     lines.append("")
 
 
-def generate_markdown(records: list[PaperRecord], digest_date: date, filtered_count: int = 0) -> str:
+def _source_health_lines(source_health: list[dict[str, object]] | None) -> list[str]:
+    lines = ["## Source Health", ""]
+    if not source_health:
+        lines.extend(["暂无 source health 数据。", ""])
+        return lines
+
+    lines.append("| Source | Raw | Normalized | Date Filtered | Deduped | Relevance Filtered | Threshold | Final | Warnings | Errors |")
+    lines.append("| --- | ---: | ---: | ---: | ---: | ---: | ---: | ---: | ---: | ---: |")
+    for item in source_health:
+        warnings = item.get("warnings") if isinstance(item.get("warnings"), list) else []
+        errors = item.get("errors") if isinstance(item.get("errors"), list) else []
+        lines.append(
+            "| {source} | {raw} | {normalized} | {date_filtered} | {deduped} | {relevance} | {threshold} | {final} | {warnings} | {errors} |".format(
+                source=item.get("source", "unknown"),
+                raw=item.get("raw_candidates", 0),
+                normalized=item.get("normalized_candidates", 0),
+                date_filtered=item.get("date_filtered_candidates", 0),
+                deduped=item.get("deduped_candidates", 0),
+                relevance=item.get("relevance_filtered_candidates", 0),
+                threshold=item.get("scoring_threshold_candidates", 0),
+                final=item.get("final_records", 0),
+                warnings=len(warnings),
+                errors=len(errors),
+            )
+        )
+    lines.append("")
+
+    for item in source_health:
+        source = item.get("source", "unknown")
+        warnings = item.get("warnings") if isinstance(item.get("warnings"), list) else []
+        errors = item.get("errors") if isinstance(item.get("errors"), list) else []
+        for warning in warnings:
+            lines.append(f"- {source} warning: {warning}")
+        for error in errors:
+            lines.append(f"- {source} error: {error}")
+    lines.append("")
+    return lines
+
+
+def generate_markdown(
+    records: list[PaperRecord],
+    digest_date: date,
+    filtered_count: int = 0,
+    source_health: list[dict[str, object]] | None = None,
+) -> str:
     included = [record for record in records if record.relevance_label in {"A", "B", "C"}]
     grouped: dict[str, list[PaperRecord]] = defaultdict(list)
     for record in included:
@@ -165,4 +209,5 @@ def generate_markdown(records: list[PaperRecord], digest_date: date, filtered_co
     else:
         lines.append("今日未发现值得记录的格密码相关新论文。")
     lines.append("")
+    lines.extend(_source_health_lines(source_health))
     return "\n".join(lines)

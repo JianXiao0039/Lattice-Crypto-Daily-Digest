@@ -19,7 +19,7 @@ def _abstract_from_inverted_index(index: dict | None) -> str:
 class OpenAlexSource(SourceAdapter):
     def fetch(self, context: FetchContext) -> list[PaperRecord]:
         if context.dry_run:
-            context.warnings.append("dry-run: skipped OpenAlex network request")
+            context.add_warning("dry-run: skipped OpenAlex network request", self.name)
             return []
         query = " ".join(str(term) for term in self.config.get("query_terms", []))
         if not query:
@@ -40,8 +40,9 @@ class OpenAlexSource(SourceAdapter):
         data = fetch_json(context, f"{self.config['url']}?{params}", headers=headers, source_name=self.name)
         if data is None:
             return []
-        records: list[PaperRecord] = []
-        for item in data.get("results", []):
+        normalized: list[PaperRecord] = []
+        results = data.get("results", [])
+        for item in results:
             title = item.get("title")
             source_url = item.get("doi") or item.get("id")
             if not title or not source_url:
@@ -63,6 +64,16 @@ class OpenAlexSource(SourceAdapter):
                 update_date=normalize_date(item.get("updated_date")),
                 categories=["openalex"],
             )
-            if within_since(record.publication_date, record.update_date, context.since):
-                records.append(record)
-        return records
+            normalized.append(record)
+        filtered = [
+            record
+            for record in normalized
+            if within_since(record.publication_date, record.update_date, context.since)
+        ]
+        context.set_source_counts(
+            self.name,
+            raw=len(results),
+            normalized=len(normalized),
+            date_filtered=len(filtered),
+        )
+        return filtered

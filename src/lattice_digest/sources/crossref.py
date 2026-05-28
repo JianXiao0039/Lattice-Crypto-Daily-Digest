@@ -14,7 +14,7 @@ TAG_RE = re.compile(r"<[^>]+>")
 class CrossrefSource(SourceAdapter):
     def fetch(self, context: FetchContext) -> list[PaperRecord]:
         if context.dry_run:
-            context.warnings.append("dry-run: skipped Crossref network request")
+            context.add_warning("dry-run: skipped Crossref network request", self.name)
             return []
         query = " ".join(str(term) for term in self.config.get("query_terms", []))
         if not query:
@@ -30,8 +30,9 @@ class CrossrefSource(SourceAdapter):
         data = fetch_json(context, f"{self.config['url']}?{params}", source_name=self.name)
         if data is None:
             return []
-        records: list[PaperRecord] = []
-        for item in data.get("message", {}).get("items", []):
+        normalized: list[PaperRecord] = []
+        items = data.get("message", {}).get("items", [])
+        for item in items:
             titles = item.get("title") or []
             title = titles[0] if titles else None
             doi = item.get("DOI")
@@ -57,6 +58,16 @@ class CrossrefSource(SourceAdapter):
                 publication_date=normalize_date(date_text),
                 categories=["crossref"],
             )
-            if within_since(record.publication_date, record.update_date, context.since):
-                records.append(record)
-        return records
+            normalized.append(record)
+        filtered = [
+            record
+            for record in normalized
+            if within_since(record.publication_date, record.update_date, context.since)
+        ]
+        context.set_source_counts(
+            self.name,
+            raw=len(items),
+            normalized=len(normalized),
+            date_filtered=len(filtered),
+        )
+        return filtered

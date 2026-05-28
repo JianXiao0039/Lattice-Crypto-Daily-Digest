@@ -9,7 +9,7 @@ from lattice_digest.sources.base import FetchContext, SourceAdapter, fetch_json,
 class SemanticScholarSource(SourceAdapter):
     def fetch(self, context: FetchContext) -> list[PaperRecord]:
         if context.dry_run:
-            context.warnings.append("dry-run: skipped Semantic Scholar network request")
+            context.add_warning("dry-run: skipped Semantic Scholar network request", self.name)
             return []
         fields = (
             "paperId,title,abstract,authors,venue,year,publicationDate,updatedAt,"
@@ -34,9 +34,11 @@ class SemanticScholarSource(SourceAdapter):
         data = fetch_json(context, f"{self.config['url']}?{params}", headers=headers, source_name=self.name)
         if data is None:
             return []
-        records: list[PaperRecord] = []
+        normalized: list[PaperRecord] = []
+        filtered: list[PaperRecord] = []
         skipped_year_only = 0
-        for item in data.get("data", []):
+        items = data.get("data", [])
+        for item in items:
             title = item.get("title")
             source_url = item.get("url")
             if not title or not source_url:
@@ -44,14 +46,6 @@ class SemanticScholarSource(SourceAdapter):
             external = item.get("externalIds") or {}
             publication_date = normalize_date(item.get("publicationDate") or item.get("releaseDate"))
             update_date = normalize_date(item.get("updatedAt") or item.get("updated_at"))
-            if (
-                self.config.get("exclude_year_only_from_since_window", True)
-                and item.get("year")
-                and not publication_date
-                and not update_date
-            ):
-                skipped_year_only += 1
-                continue
             record = make_paper_record(
                 title=title,
                 authors=[author.get("name", "") for author in item.get("authors", []) if author.get("name")],
@@ -67,10 +61,26 @@ class SemanticScholarSource(SourceAdapter):
                 update_date=update_date,
                 categories=["semantic_scholar"],
             )
+            normalized.append(record)
+            if (
+                self.config.get("exclude_year_only_from_since_window", True)
+                and item.get("year")
+                and not publication_date
+                and not update_date
+            ):
+                skipped_year_only += 1
+                continue
             if within_since(record.publication_date, record.update_date, context.since):
-                records.append(record)
+                filtered.append(record)
         if skipped_year_only:
-            context.warnings.append(
-                f"{self.name}: skipped {skipped_year_only} year-only record(s) without publicationDate/updatedAt"
+            context.add_warning(
+                f"{self.name}: skipped {skipped_year_only} year-only record(s) without publicationDate/updatedAt",
+                self.name,
             )
-        return records
+        context.set_source_counts(
+            self.name,
+            raw=len(items),
+            normalized=len(normalized),
+            date_filtered=len(filtered),
+        )
+        return filtered

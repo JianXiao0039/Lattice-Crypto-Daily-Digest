@@ -10,6 +10,34 @@ from lattice_digest.models import PaperRecord
 
 
 @dataclass
+class SourceHealth:
+    name: str
+    raw_candidates: int = 0
+    normalized_candidates: int = 0
+    date_filtered_candidates: int = 0
+    deduped_candidates: int = 0
+    relevance_filtered_candidates: int = 0
+    scoring_threshold_candidates: int = 0
+    final_records: int = 0
+    warnings: list[str] = field(default_factory=list)
+    errors: list[str] = field(default_factory=list)
+
+    def to_dict(self) -> dict[str, object]:
+        return {
+            "source": self.name,
+            "raw_candidates": self.raw_candidates,
+            "normalized_candidates": self.normalized_candidates,
+            "date_filtered_candidates": self.date_filtered_candidates,
+            "deduped_candidates": self.deduped_candidates,
+            "relevance_filtered_candidates": self.relevance_filtered_candidates,
+            "scoring_threshold_candidates": self.scoring_threshold_candidates,
+            "final_records": self.final_records,
+            "warnings": list(self.warnings),
+            "errors": list(self.errors),
+        }
+
+
+@dataclass
 class FetchContext:
     root: Path
     since: datetime
@@ -22,10 +50,48 @@ class FetchContext:
     max_retries: int = 2
     api_keys: dict[str, str] = field(default_factory=dict)
     warnings: list[str] = field(default_factory=list)
+    source_health: dict[str, SourceHealth] = field(default_factory=dict)
 
     def __post_init__(self) -> None:
         if self.cache_dir is None:
             self.cache_dir = self.root / "cache"
+
+    def health(self, source_name: str) -> SourceHealth:
+        if source_name not in self.source_health:
+            self.source_health[source_name] = SourceHealth(name=source_name)
+        return self.source_health[source_name]
+
+    def add_warning(self, message: str, source_name: str | None = None) -> None:
+        self.warnings.append(message)
+        if source_name:
+            self.health(source_name).warnings.append(message)
+
+    def add_error(self, message: str, source_name: str | None = None) -> None:
+        if source_name:
+            self.health(source_name).errors.append(message)
+        self.add_warning(message, source_name)
+
+    def set_source_counts(
+        self,
+        source_name: str,
+        *,
+        raw: int | None = None,
+        normalized: int | None = None,
+        date_filtered: int | None = None,
+    ) -> None:
+        health = self.health(source_name)
+        if raw is not None:
+            health.raw_candidates = raw
+        if normalized is not None:
+            health.normalized_candidates = normalized
+        if date_filtered is not None:
+            health.date_filtered_candidates = date_filtered
+
+    def source_health_summary(self) -> list[dict[str, object]]:
+        return [
+            self.source_health[name].to_dict()
+            for name in sorted(self.source_health)
+        ]
 
 
 class SourceAdapter:
@@ -44,6 +110,7 @@ def fetch_text(
     source_name: str = "http",
 ) -> str | None:
     assert context.cache_dir is not None
+    source_warnings: list[str] = []
     response = request_text(
         url,
         source=source_name,
@@ -54,8 +121,10 @@ def fetch_text(
         cache_ttl_seconds=context.http_cache_ttl_seconds,
         min_interval_seconds=context.per_domain_min_interval_seconds,
         max_retries=context.max_retries,
-        warnings=context.warnings,
+        warnings=source_warnings,
     )
+    for warning in source_warnings:
+        context.add_warning(warning, source_name)
     return response.text if response.ok else None
 
 
@@ -66,6 +135,7 @@ def fetch_json(
     source_name: str = "http",
 ) -> dict[str, Any] | None:
     assert context.cache_dir is not None
+    source_warnings: list[str] = []
     data, _ = request_json(
         url,
         source=source_name,
@@ -76,8 +146,10 @@ def fetch_json(
         cache_ttl_seconds=context.http_cache_ttl_seconds,
         min_interval_seconds=context.per_domain_min_interval_seconds,
         max_retries=context.max_retries,
-        warnings=context.warnings,
+        warnings=source_warnings,
     )
+    for warning in source_warnings:
+        context.add_warning(warning, source_name)
     return data
 
 

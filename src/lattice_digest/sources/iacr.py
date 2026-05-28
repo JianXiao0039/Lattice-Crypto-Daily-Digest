@@ -99,7 +99,7 @@ class IacrEprintSource(SourceAdapter):
     def fetch(self, context: FetchContext) -> list[PaperRecord]:
         url = self.config["url"]
         if context.dry_run:
-            context.warnings.append("dry-run: skipped IACR ePrint network request")
+            context.add_warning("dry-run: skipped IACR ePrint network request", self.name)
             return []
 
         assert context.cache_dir is not None
@@ -111,7 +111,7 @@ class IacrEprintSource(SourceAdapter):
         if cache_path.exists():
             xml_text = cache_path.read_text(encoding="utf-8")
         elif attempt_path.exists():
-            context.warnings.append("IACR ePrint already requested today; skipped to honor max once per day")
+            context.add_warning("IACR ePrint already requested today; skipped to honor max once per day", self.name)
             return []
         else:
             attempt_path.write_text(datetime.now(timezone.utc).isoformat(), encoding="utf-8")
@@ -120,8 +120,20 @@ class IacrEprintSource(SourceAdapter):
                 return []
             cache_path.write_text(xml_text, encoding="utf-8")
 
-        return [
+        root = ET.fromstring(xml_text)
+        rss_items = root.findall(".//item")
+        atom_entries = [element for element in root.iter() if _local_name(element.tag) == "entry"]
+        raw_count = len(rss_items or atom_entries)
+        normalized = parse_iacr_feed(xml_text, source_url=url)
+        filtered = [
             record
-            for record in parse_iacr_feed(xml_text, source_url=url)
+            for record in normalized
             if within_since(record.publication_date, record.update_date, context.since)
         ]
+        context.set_source_counts(
+            self.name,
+            raw=raw_count,
+            normalized=len(normalized),
+            date_filtered=len(filtered),
+        )
+        return filtered

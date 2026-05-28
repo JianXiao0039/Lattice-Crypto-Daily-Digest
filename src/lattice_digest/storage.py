@@ -10,18 +10,32 @@ from lattice_digest.dedup import dedup_keys
 from lattice_digest.models import PaperRecord, record_to_dict
 
 
-def write_json(records: list[PaperRecord], output_dir: Path, digest_date: date) -> Path:
+def write_json(
+    records: list[PaperRecord],
+    output_dir: Path,
+    digest_date: date,
+    source_health: list[dict[str, object]] | None = None,
+) -> Path:
     output_dir.mkdir(parents=True, exist_ok=True)
     path = output_dir / f"{digest_date.isoformat()}.json"
-    payload = [record_to_dict(record) for record in records]
+    payload = {
+        "records": [record_to_dict(record) for record in records],
+        "source_health": source_health or [],
+    }
     path.write_text(json.dumps(payload, ensure_ascii=False, indent=2), encoding="utf-8")
     return path
 
 
-def write_markdown(records: list[PaperRecord], output_dir: Path, digest_date: date, filtered_count: int) -> Path:
+def write_markdown(
+    records: list[PaperRecord],
+    output_dir: Path,
+    digest_date: date,
+    filtered_count: int,
+    source_health: list[dict[str, object]] | None = None,
+) -> Path:
     output_dir.mkdir(parents=True, exist_ok=True)
     path = output_dir / f"{digest_date.isoformat()}.md"
-    path.write_text(generate_markdown(records, digest_date, filtered_count), encoding="utf-8")
+    path.write_text(generate_markdown(records, digest_date, filtered_count, source_health), encoding="utf-8")
     return path
 
 

@@ -22,12 +22,17 @@ class HttpWarning:
     attempts: int = 0
     retry_after: float | None = None
     error: str | None = None
+    response_body_preview: str | None = None
 
     def to_message(self) -> str:
-        status = f"HTTP {self.status_code}" if self.status_code else "request error"
+        if self.status_code == 429:
+            status = "HTTP 429 rate limit"
+        else:
+            status = f"HTTP {self.status_code}" if self.status_code else "request error"
         detail = self.reason or self.error or "unknown error"
         retry = f"; retry_after={self.retry_after:g}s" if self.retry_after is not None else ""
-        return f"{self.source}: skipped {self.url} after {self.attempts} attempt(s): {status} {detail}{retry}"
+        body = f"; body_preview={self.response_body_preview}" if self.response_body_preview else ""
+        return f"{self.source}: skipped {self.url} after {self.attempts} attempt(s): {status} {detail}{retry}{body}"
 
 
 @dataclass
@@ -171,6 +176,11 @@ def request_text(
         except HTTPError as exc:
             status_code = int(exc.code)
             retry_after = _retry_after_seconds(exc.headers.get("Retry-After"), now_func())
+            response_body_preview = ""
+            try:
+                response_body_preview = exc.read().decode("utf-8", errors="replace")[:500]
+            except Exception:
+                response_body_preview = ""
             last_warning = HttpWarning(
                 url=url,
                 source=source,
@@ -178,6 +188,7 @@ def request_text(
                 reason=str(exc.reason),
                 attempts=attempt,
                 retry_after=retry_after,
+                response_body_preview=response_body_preview,
             )
             if status_code not in retry_statuses or attempt >= attempts:
                 break
