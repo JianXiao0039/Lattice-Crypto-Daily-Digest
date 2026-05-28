@@ -3,6 +3,7 @@ from __future__ import annotations
 import argparse
 import json
 import os
+import shutil
 from datetime import date, datetime, time, timedelta, timezone
 from pathlib import Path
 from zoneinfo import ZoneInfo
@@ -159,14 +160,35 @@ def _supersedes_metadata(
 ) -> dict[str, object] | None:
     if not existing_metadata:
         return None
-    old_quality = str(existing_metadata.get("quality_status") or "")
-    if old_quality == "provisional" and new_quality_status == "authoritative_backfill":
+    if _is_provisional_metadata(existing_metadata) and new_quality_status == "authoritative_backfill":
         return {
             "collector": existing_metadata.get("collector"),
             "run_date": existing_metadata.get("run_date"),
             "quality_status": existing_metadata.get("quality_status"),
         }
     return None
+
+
+def _is_provisional_metadata(metadata: dict[str, object] | None) -> bool:
+    if not metadata:
+        return False
+    return metadata.get("collector") == "github_actions" or metadata.get("quality_status") == "provisional"
+
+
+def _archive_existing_provisional(root: Path, target_date: date, existing_metadata: dict[str, object] | None) -> list[Path]:
+    if not _is_provisional_metadata(existing_metadata):
+        return []
+    archive_dir = root / "archive" / "provisional"
+    archive_dir.mkdir(parents=True, exist_ok=True)
+    archived: list[Path] = []
+    for source_path, target_path in [
+        (root / "data" / f"{target_date.isoformat()}.json", archive_dir / f"{target_date.isoformat()}.json"),
+        (root / "digests" / f"{target_date.isoformat()}.md", archive_dir / f"{target_date.isoformat()}.md"),
+    ]:
+        if source_path.exists():
+            shutil.copy2(source_path, target_path)
+            archived.append(target_path)
+    return archived
 
 
 def _build_run_metadata(
@@ -357,6 +379,8 @@ def main(argv: list[str] | None = None) -> int:
         return 0
 
     written: list[Path] = []
+    if quality_status == "authoritative_backfill" and supersedes:
+        written.extend(_archive_existing_provisional(root, digest_date, existing_metadata))
     if "json" in outputs:
         written.append(write_json(ordered, root / "data", digest_date, source_health, context.warnings, args.since, metadata))
     if "markdown" in outputs or "md" in outputs:

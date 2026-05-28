@@ -66,3 +66,50 @@ backfill lattice digest: YYYY-MM-DD..YYYY-MM-DD
 ```
 
 如果 push 失败，先检查 GitHub 网络、Clash 代理和认证状态。
+
+## Backfill quality audit
+
+本地回填不仅要覆盖 GitHub Actions 的 provisional 日报，还需要知道“本地到底补全了什么”。因此当 `authoritative_backfill` 准备覆盖已有 `collector=github_actions` 或 `quality_status=provisional` 的报告时，旧版本会先保存到：
+
+- `archive/provisional/YYYY-MM-DD.json`
+- `archive/provisional/YYYY-MM-DD.md`
+
+新的本地权威版本仍写入：
+
+- `data/YYYY-MM-DD.json`
+- `digests/YYYY-MM-DD.md`
+
+审计单日：
+
+```powershell
+powershell.exe -ExecutionPolicy Bypass -File scripts\audit_backfill_quality.ps1 -Date 2026-05-29
+```
+
+审计日期范围：
+
+```powershell
+powershell.exe -ExecutionPolicy Bypass -File scripts\audit_backfill_quality.ps1 -FromDate 2026-05-25 -ToDate 2026-05-29
+```
+
+审计输出：
+
+- `audits/backfill/YYYY-MM-DD.json`
+- `audits/backfill/YYYY-MM-DD.md`
+
+`added_by_backfill` 表示本地权威回填比 GitHub provisional 多发现的论文，尤其要关注其中的“必须精读 / 建议精读”。`missing_from_backfill` 表示 GitHub provisional 有、但本地回填没有的论文；这些不能直接丢弃，应该作为风险项人工检查，常见原因包括 API 限流、时间窗口差异、dedup/filter 差异。
+
+可以较放心替换 provisional 的情况：
+
+- 本地 authoritative 论文数更多；
+- 本地新增高优先级论文；
+- 本地 source health 绿色数据源更多；
+- GitHub provisional 有 red source，而本地至少 yellow/green；
+- 没有高优先级论文从本地回填中消失。
+
+需要人工检查的情况：
+
+- `missing_from_backfill` 非空；
+- GitHub 独有论文里有“必须精读 / 建议精读”；
+- 本地 source health 更差；
+- 本地总记录数明显少于 GitHub provisional；
+- 没有找到 provisional 快照，只能做 authoritative 自检。

@@ -199,6 +199,13 @@ def test_provisional_report_can_be_replaced_by_authoritative_backfill() -> None:
             "run_date": "2026-05-27",
             "quality_status": "provisional",
         }
+        archived_json = root / "archive" / "provisional" / "2026-05-27.json"
+        archived_markdown = root / "archive" / "provisional" / "2026-05-27.md"
+        assert archived_json.exists()
+        assert archived_markdown.exists()
+        archived_payload = json.loads(archived_json.read_text(encoding="utf-8"))
+        assert archived_payload["records"][0]["title"] == "old provisional"
+        assert archived_markdown.read_text(encoding="utf-8") == "old provisional"
 
 
 def test_authoritative_backfill_is_not_overwritten_by_github_provisional() -> None:

@@ -6,6 +6,7 @@ from pathlib import Path
 ROOT = Path(__file__).resolve().parents[1]
 BAT_PATH = ROOT / "scripts" / "push_all_digest_outputs.bat"
 BACKFILL_PATH = ROOT / "scripts" / "run_local_digest_backfill.ps1"
+AUDIT_PATH = ROOT / "scripts" / "audit_backfill_quality.ps1"
 
 
 def _bat_text() -> str:
@@ -77,3 +78,15 @@ def test_local_backfill_script_exists_and_stages_only_digest_outputs() -> None:
     assert "git add ." not in text
     assert "ghp_" not in text
     assert "github_pat_" not in text
+
+
+def test_backfill_quality_audit_script_exists_and_writes_audits_only() -> None:
+    assert AUDIT_PATH.exists()
+    text = AUDIT_PATH.read_text(encoding="utf-8")
+
+    assert "python -m lattice_digest.audit --date" in text
+    assert "-Date YYYY-MM-DD" in text
+    assert "-FromDate YYYY-MM-DD -ToDate YYYY-MM-DD" in text
+    assert "git add" not in text.lower()
+    assert "git commit" not in text.lower()
+    assert "git push" not in text.lower()
