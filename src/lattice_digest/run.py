@@ -117,15 +117,19 @@ def _print_source_health(source_health: list[dict[str, object]]) -> None:
         print(
             "- {source}: raw={raw}, normalized={normalized}, date_filtered={date_filtered}, "
             "deduped={deduped}, relevance_filtered={relevance}, threshold={threshold}, "
-            "final={final}, warnings={warnings}, errors={errors}".format(
+            "final={final}, status={status}, error_type={error_type}, retryable={retryable}, "
+            "warnings={warnings}, errors={errors}".format(
                 source=item.get("source", "unknown"),
-                raw=item.get("raw_candidates", 0),
-                normalized=item.get("normalized_candidates", 0),
-                date_filtered=item.get("date_filtered_candidates", 0),
+                raw=item.get("raw_count", item.get("raw_candidates", 0)),
+                normalized=item.get("normalized_count", item.get("normalized_candidates", 0)),
+                date_filtered=item.get("date_filtered_count", item.get("date_filtered_candidates", 0)),
                 deduped=item.get("deduped_candidates", 0),
                 relevance=item.get("relevance_filtered_candidates", 0),
                 threshold=item.get("scoring_threshold_candidates", 0),
-                final=item.get("final_records", 0),
+                final=item.get("final_count", item.get("final_records", 0)),
+                status=item.get("health_status", item.get("status", "unknown")),
+                error_type=item.get("error_type") or "none",
+                retryable=item.get("retryable"),
                 warnings=len(warnings),
                 errors=len(errors),
             )
@@ -194,14 +198,16 @@ def main(argv: list[str] | None = None) -> int:
                 print(f"- {warning}")
         _print_source_health(source_health)
         print("\nMarkdown preview:")
-        print(generate_markdown(ordered, digest_date, dropped_count, source_health))
+        print(generate_markdown(ordered, digest_date, dropped_count, source_health, context.warnings, args.since))
         return 0
 
     written: list[Path] = []
     if "json" in outputs:
-        written.append(write_json(ordered, root / "data", digest_date, source_health))
+        written.append(write_json(ordered, root / "data", digest_date, source_health, context.warnings, args.since))
     if "markdown" in outputs or "md" in outputs:
-        written.append(write_markdown(ordered, root / "digests", digest_date, dropped_count, source_health))
+        written.append(
+            write_markdown(ordered, root / "digests", digest_date, dropped_count, source_health, context.warnings, args.since)
+        )
     written.append(write_sqlite(ordered, root / "papers.db"))
 
     print(f"Generated {len(ordered)} digest records.")

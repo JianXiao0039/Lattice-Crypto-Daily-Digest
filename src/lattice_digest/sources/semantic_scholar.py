@@ -15,9 +15,10 @@ class SemanticScholarSource(SourceAdapter):
             "paperId,title,abstract,authors,venue,year,publicationDate,updatedAt,"
             "releaseDate,externalIds,url,openAccessPdf"
         )
-        api_key = context.api_keys.get("SEMANTIC_SCHOLAR_API_KEY")
+        api_key = (context.api_keys.get("SEMANTIC_SCHOLAR_API_KEY") or "").strip()
+        context.health(self.name).api_key_used = bool(api_key)
         configured_limit = int(self.config.get("max_results", 50))
-        limit = configured_limit if api_key else min(configured_limit, 20)
+        limit = configured_limit if api_key else min(configured_limit, 10)
         query = " ".join(str(term) for term in self.config.get("query_terms", []))
         if not query:
             query = "lattice cryptography LWE SIS NTRU BKZ FHE"

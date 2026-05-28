@@ -5,7 +5,7 @@ import sqlite3
 from datetime import date
 from pathlib import Path
 
-from lattice_digest.digest import generate_markdown
+from lattice_digest.digest import generate_markdown, record_intelligence, research_tags
 from lattice_digest.dedup import dedup_keys
 from lattice_digest.models import PaperRecord, record_to_dict
 
@@ -15,12 +15,44 @@ def write_json(
     output_dir: Path,
     digest_date: date,
     source_health: list[dict[str, object]] | None = None,
+    warnings: list[str] | None = None,
+    since_window: str = "36h",
 ) -> Path:
     output_dir.mkdir(parents=True, exist_ok=True)
     path = output_dir / f"{digest_date.isoformat()}.json"
+    enriched_records = []
+    for record in records:
+        item = record_to_dict(record)
+        intelligence = record_intelligence(record)
+        item.update(
+            {
+                "date": record.publication_date or record.update_date,
+                "year": (record.publication_date or record.update_date or "")[:4] or None,
+                "url": record.source_url,
+                "tags": research_tags(record),
+                "research_tags": research_tags(record),
+                "priority": intelligence["priority"],
+                "why_it_matters": intelligence["why_it_matters"],
+                "suggested_action": intelligence["suggested_action"],
+                "research_hooks": intelligence["research_hooks"],
+                "advisor_questions": intelligence["advisor_questions"],
+                "source_health_ref": intelligence["source_health_ref"],
+            }
+        )
+        enriched_records.append(item)
     payload = {
-        "records": [record_to_dict(record) for record in records],
+        "metadata": {
+            "run_date": digest_date.isoformat(),
+            "since_window": since_window,
+            "total_records": len(records),
+            "source_health": source_health or [],
+            "warnings": warnings or [],
+            "query_profile": "lattice-crypto-daily-digest",
+            "version": "0.1.0",
+        },
+        "records": enriched_records,
         "source_health": source_health or [],
+        "warnings": warnings or [],
     }
     path.write_text(json.dumps(payload, ensure_ascii=False, indent=2), encoding="utf-8")
     return path
@@ -32,10 +64,15 @@ def write_markdown(
     digest_date: date,
     filtered_count: int,
     source_health: list[dict[str, object]] | None = None,
+    warnings: list[str] | None = None,
+    since_window: str = "36h",
 ) -> Path:
     output_dir.mkdir(parents=True, exist_ok=True)
     path = output_dir / f"{digest_date.isoformat()}.md"
-    path.write_text(generate_markdown(records, digest_date, filtered_count, source_health), encoding="utf-8")
+    path.write_text(
+        generate_markdown(records, digest_date, filtered_count, source_health, warnings, since_window),
+        encoding="utf-8",
+    )
     return path
 
 

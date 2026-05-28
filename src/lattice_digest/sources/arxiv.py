@@ -40,6 +40,34 @@ def _format_query_term(term: object) -> str:
     return f"all:{raw}"
 
 
+def _default_query_groups() -> list[list[str]]:
+    return [
+        ["lattice cryptography"],
+        ["Learning with Errors"],
+        ["Ring-LWE", "RLWE"],
+        ["Module-LWE", "MLWE"],
+        ["SIS", "Short Integer Solution"],
+        ["Kyber", "ML-KEM"],
+        ["Dilithium", "ML-DSA"],
+        ["BKZ", "lattice reduction"],
+        ["neural lattice reduction"],
+        ["Transformer LWE"],
+    ]
+
+
+def _query_groups(config: dict) -> list[list[str]]:
+    configured = config.get("query_groups")
+    if configured:
+        groups: list[list[str]] = []
+        for group in configured:
+            if isinstance(group, str):
+                groups.append([group])
+            else:
+                groups.append([str(term) for term in group if str(term).strip()])
+        return [group for group in groups if group]
+    return _default_query_groups()
+
+
 def parse_arxiv_atom(xml_text: str) -> list[PaperRecord]:
     root = ET.fromstring(xml_text)
     records: list[PaperRecord] = []
@@ -95,39 +123,47 @@ class ArxivSource(SourceAdapter):
             return []
 
         categories = self.config.get("categories", [])
-        max_results = min(int(self.config.get("max_results", 50)), 100)
-        query_terms = self.config.get("query_terms") or [
-            '"lattice cryptography"',
-            "LWE",
-            "Ring-LWE",
-            "Module-LWE",
-            "SIS",
-            "NTRU",
-            "BKZ",
-            "ML-KEM",
-            "ML-DSA",
-            "FHE",
-            "Kyber",
-            "Dilithium",
-            "Falcon",
-        ]
-        category_query = " OR ".join(f"cat:{category}" for category in categories)
-        term_query = " OR ".join(term for term in (_format_query_term(term) for term in query_terms) if term)
-        search_query = f"({category_query}) AND ({term_query})" if category_query else term_query
-        params = urllib.parse.urlencode(
-            {
-                "search_query": search_query,
-                "sortBy": "lastUpdatedDate",
-                "sortOrder": "descending",
-                "max_results": max_results,
-            }
+        per_group_results = min(
+            int(self.config.get("per_query_results", self.config.get("per_group_results", 25))),
+            25,
         )
-        xml_text = fetch_text(context, f"{self.config['url']}?{params}", source_name=self.name)
-        if xml_text is None:
-            return []
-        root = ET.fromstring(xml_text)
-        raw_count = sum(1 for element in root.iter() if _local_name(element.tag) == "entry")
-        normalized = parse_arxiv_atom(xml_text)
+        category_query = " OR ".join(f"cat:{category}" for category in categories)
+        groups = _query_groups(self.config)
+        health = context.health(self.name)
+        health.query_groups_total = len(groups)
+        raw_count = 0
+        normalized_by_key: dict[str, PaperRecord] = {}
+        for group in groups:
+            term_query = " OR ".join(term for term in (_format_query_term(term) for term in group) if term)
+            if not term_query:
+                continue
+            search_query = f"({category_query}) AND ({term_query})" if category_query else term_query
+            params = urllib.parse.urlencode(
+                {
+                    "search_query": search_query,
+                    "sortBy": "lastUpdatedDate",
+                    "sortOrder": "descending",
+                    "max_results": per_group_results,
+                }
+            )
+            xml_text = fetch_text(context, f"{self.config['url']}?{params}", source_name=self.name)
+            if xml_text is None:
+                health.query_groups_failed += 1
+                continue
+            try:
+                root = ET.fromstring(xml_text)
+                group_raw_count = sum(1 for element in root.iter() if _local_name(element.tag) == "entry")
+                group_records = parse_arxiv_atom(xml_text)
+            except ET.ParseError as exc:
+                health.query_groups_failed += 1
+                context.add_warning(f"{self.name}: failed to parse arXiv query group {group}: {exc}", self.name)
+                continue
+            raw_count += group_raw_count
+            health.query_groups_success += 1
+            for record in group_records:
+                key = record.arxiv_id or record.source_url or record.title.lower()
+                normalized_by_key.setdefault(key, record)
+        normalized = list(normalized_by_key.values())
         filtered = [
             record
             for record in normalized

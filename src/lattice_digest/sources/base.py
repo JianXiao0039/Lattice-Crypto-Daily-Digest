@@ -21,17 +21,84 @@ class SourceHealth:
     final_records: int = 0
     warnings: list[str] = field(default_factory=list)
     errors: list[str] = field(default_factory=list)
+    query_groups_total: int = 0
+    query_groups_success: int = 0
+    query_groups_failed: int = 0
+    api_key_used: bool | None = None
+
+    def _problem_text(self) -> str:
+        values = [*self.errors, *self.warnings]
+        return str(values[0]) if values else ""
+
+    def error_type(self) -> str | None:
+        message = self._problem_text().lower()
+        if not message:
+            return None
+        if "plan upgrade" in message or "premium" in message:
+            return "plan_upgrade_required"
+        if "http 429" in message or "too many requests" in message or "rate limit" in message:
+            return "rate_limit"
+        if "timeouterror" in message or "timeout" in message:
+            return "timeout"
+        if "sslerror" in message or "ssl" in message:
+            return "ssl_error"
+        if "http 400" in message or "bad request" in message:
+            return "invalid_request"
+        if "http 500" in message or "internal server error" in message:
+            return "server_error"
+        if self.errors:
+            return "source_error"
+        return "warning"
+
+    def retryable(self) -> bool:
+        error_type = self.error_type()
+        if error_type in {None, "plan_upgrade_required", "invalid_request"}:
+            return False
+        return error_type in {"rate_limit", "timeout", "ssl_error", "server_error", "source_error", "warning"}
+
+    def health_status(self) -> str:
+        if self.errors:
+            return "red"
+        if self.query_groups_total and self.query_groups_failed >= self.query_groups_total and not self.query_groups_success:
+            return "red"
+        if self.warnings:
+            if self.raw_candidates or self.date_filtered_candidates or self.final_records or self.query_groups_success:
+                return "yellow"
+            return "red"
+        if self.final_records:
+            return "green"
+        return "yellow"
+
+    def error_message(self) -> str | None:
+        message = self._problem_text()
+        if not message:
+            return None
+        return " ".join(message.split())[:240]
 
     def to_dict(self) -> dict[str, object]:
+        health_status = self.health_status()
         return {
             "source": self.name,
+            "health_status": health_status,
+            "status": health_status,
             "raw_candidates": self.raw_candidates,
+            "raw_count": self.raw_candidates,
             "normalized_candidates": self.normalized_candidates,
+            "normalized_count": self.normalized_candidates,
             "date_filtered_candidates": self.date_filtered_candidates,
+            "date_filtered_count": self.date_filtered_candidates,
             "deduped_candidates": self.deduped_candidates,
             "relevance_filtered_candidates": self.relevance_filtered_candidates,
             "scoring_threshold_candidates": self.scoring_threshold_candidates,
             "final_records": self.final_records,
+            "final_count": self.final_records,
+            "error_type": self.error_type(),
+            "error_message": self.error_message(),
+            "retryable": self.retryable(),
+            "query_groups_total": self.query_groups_total,
+            "query_groups_success": self.query_groups_success,
+            "query_groups_failed": self.query_groups_failed,
+            "api_key_used": self.api_key_used,
             "warnings": list(self.warnings),
             "errors": list(self.errors),
         }

@@ -90,14 +90,14 @@ def test_daily_workflow_verifies_generated_outputs() -> None:
     assert "test -f papers.db" in workflow
     assert "json.load(handle)" in workflow
     for section in [
-        "今日结论",
-        "A 类",
-        "B 类",
-        "C 类",
-        "D 类",
-        "今日统计",
-        "明日跟踪建议",
-        "今日一句话总结",
+        "今日核心结论",
+        "高优先级论文",
+        "AI4Lattice 与机器学习辅助密码分析",
+        "格基约简与经典攻击",
+        "PQC 标准、原语与实现",
+        "阅读队列与精读建议",
+        "可孵化研究 idea 与导师讨论问题",
+        "数据源健康与空报告处理",
     ]:
         assert section in workflow
 

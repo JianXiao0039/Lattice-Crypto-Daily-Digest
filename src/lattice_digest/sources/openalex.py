@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 import urllib.parse
+from datetime import datetime, timezone
 
 from lattice_digest.models import PaperRecord, make_paper_record
 from lattice_digest.sources.base import FetchContext, SourceAdapter, fetch_json, normalize_date, within_since
@@ -16,6 +17,16 @@ def _abstract_from_inverted_index(index: dict | None) -> str:
     return " ".join(word for _, word in sorted(positions))
 
 
+def _sort_key(record: PaperRecord) -> datetime:
+    for value in (record.update_date, record.publication_date):
+        if value:
+            try:
+                return datetime.fromisoformat(value[:10]).replace(tzinfo=timezone.utc)
+            except ValueError:
+                continue
+    return datetime.min.replace(tzinfo=timezone.utc)
+
+
 class OpenAlexSource(SourceAdapter):
     def fetch(self, context: FetchContext) -> list[PaperRecord]:
         if context.dry_run:
@@ -28,7 +39,6 @@ class OpenAlexSource(SourceAdapter):
             {
                 "search": query,
                 "per-page": min(int(self.config.get("max_results", 25)), 25),
-                "sort": "updated_date:desc",
             }
         )
         contact_email = context.api_keys.get("CONTACT_EMAIL", "").strip()
@@ -70,6 +80,7 @@ class OpenAlexSource(SourceAdapter):
             for record in normalized
             if within_since(record.publication_date, record.update_date, context.since)
         ]
+        filtered.sort(key=_sort_key, reverse=True)
         context.set_source_counts(
             self.name,
             raw=len(results),
