@@ -98,11 +98,19 @@ SECTION_TERMS: dict[str, tuple[str, ...]] = {
 }
 
 ACTION_LABELS = {
-    "Read immediately": "立即精读",
-    "Add to weekly reading": "加入本周阅读",
-    "Use as background citation": "作为背景引用",
-    "Monitor only": "仅跟踪",
-    "Ignore unless related work needed": "低优先级，除非需要 related work",
+    "Read today": "今日精读",
+    "Read this week": "本周阅读",
+    "Skim for related work": "略读作为 related work",
+    "Save for background": "暂存",
+    "Ignore unless needed": "暂不阅读",
+}
+
+ACTION_BY_PRIORITY_LABEL = {
+    "必须精读": "Read today",
+    "建议精读": "Read this week",
+    "可略读": "Skim for related work",
+    "暂存": "Save for background",
+    "低相关": "Ignore unless needed",
 }
 
 PRIORITY_RULES: tuple[tuple[str, tuple[str, ...], int, str], ...] = (
@@ -120,7 +128,7 @@ PRIORITY_RULES: tuple[tuple[str, tuple[str, ...], int, str], ...] = (
             "candidate ranking",
             "neural sieving",
         ),
-        45,
+        30,
         "直接贴近 AI-assisted lattice cryptanalysis，可优先判断它是否能作为经典攻击子程序。",
     ),
     (
@@ -135,7 +143,7 @@ PRIORITY_RULES: tuple[tuple[str, tuple[str, ...], int, str], ...] = (
             "reinforcement learning bkz",
             "graph neural network lattice reduction",
         ),
-        42,
+        28,
         "命中 Transformer/Swin/neural lattice reduction 主线，适合服务 Swin-guided coordinate selection 或神经格约简实验。",
     ),
     (
@@ -151,13 +159,24 @@ PRIORITY_RULES: tuple[tuple[str, tuple[str, ...], int, str], ...] = (
             "secret recovery",
             "distinguishing attack",
         ),
-        36,
+        26,
         "覆盖 LWE/RLWE/MLWE 或 sparse LWE 攻击，是当前安全分析和实验主线的核心素材。",
     ),
     (
         "primal/dual/hybrid attack",
-        ("primal attack", "dual attack", "hybrid attack", "bdd attack", "lattice reduction attack"),
-        34,
+        (
+            "primal attack",
+            "primal attacks",
+            "dual attack",
+            "dual attacks",
+            "hybrid attack",
+            "hybrid attacks",
+            "bdd attack",
+            "distinguishing attack",
+            "secret recovery",
+            "lattice reduction attack",
+        ),
+        22,
         "涉及 primal/dual/hybrid 等经典攻击接口，适合转化为参数估计或可复现实验。",
     ),
     (
@@ -173,7 +192,7 @@ PRIORITY_RULES: tuple[tuple[str, tuple[str, ...], int, str], ...] = (
             "lattice estimator",
             "root hermite factor",
         ),
-        32,
+        20,
         "命中 BKZ/LLL/G6K/fplll/sieving 方向，可作为 lattice reduction 或攻击成本 baseline。",
     ),
     (
@@ -189,7 +208,7 @@ PRIORITY_RULES: tuple[tuple[str, tuple[str, ...], int, str], ...] = (
             "trapdoor",
             "rejection sampling",
         ),
-        30,
+        24,
         "贴近 Module-SIS、承诺或 chameleon hash 小原语方向，可用于导师讨论和短论文选题判断。",
     ),
     (
@@ -204,7 +223,7 @@ PRIORITY_RULES: tuple[tuple[str, tuple[str, ...], int, str], ...] = (
             "fault attack",
             "implementation attack",
         ),
-        26,
+        23,
         "服务 ML-KEM/Kyber 安全、实现、侧信道或故障攻击线，适合纳入 PQC 实验与部署讨论。",
     ),
     (
@@ -218,7 +237,7 @@ PRIORITY_RULES: tuple[tuple[str, tuple[str, ...], int, str], ...] = (
             "lattice-based signature",
             "post-quantum signatures",
         ),
-        24,
+        21,
         "关联 ML-DSA/Dilithium/Falcon 或格签名，可用于签名安全、实现或参数化背景。",
     ),
     (
@@ -233,7 +252,7 @@ PRIORITY_RULES: tuple[tuple[str, tuple[str, ...], int, str], ...] = (
             "bootstrapping",
             "lattice-based homomorphic encryption",
         ),
-        16,
+        10,
         "属于格密码中的 FHE/HE 扩展方向，通常作为背景扩展或工程优化线索。",
     ),
     (
@@ -247,9 +266,93 @@ PRIORITY_RULES: tuple[tuple[str, tuple[str, ...], int, str], ...] = (
             "quantum-safe",
             "post-quantum tls",
         ),
-        8,
+        4,
         "属于 broader PQC 标准化或部署背景，除非明确连接格方案，否则精读优先级较低。",
     ),
+)
+
+PRIORITY_TIE_RANK = {
+    "AI-assisted lattice cryptanalysis": 1,
+    "Transformer/Swin/neural LWE": 1,
+    "LWE/RLWE/MLWE attacks": 2,
+    "primal/dual/hybrid attack": 3,
+    "BKZ/LLL/G6K/fplll/sieving": 4,
+    "Module-SIS/commitment/chameleon hash": 5,
+    "ML-KEM/Kyber security and implementation": 6,
+    "ML-DSA/Dilithium/Falcon signatures": 6,
+    "FHE and lattice HE": 7,
+    "broader PQC implementation and standardization": 8,
+}
+
+CRYPTO_CONTEXT_TERMS = (
+    "lattice",
+    "lattices",
+    "cryptanalysis",
+    "cryptographic",
+    "cryptography",
+    "lwe",
+    "rlwe",
+    "mlwe",
+    "module-lwe",
+    "sis",
+    "module-sis",
+    "ntru",
+    "bkz",
+    "lll",
+    "svp",
+    "cvp",
+    "bdd",
+    "kyber",
+    "ml-kem",
+    "dilithium",
+    "ml-dsa",
+    "falcon",
+    "fhe",
+    "homomorphic encryption",
+)
+
+ATTACK_CONTEXT_TERMS = (
+    "attack",
+    "attacks",
+    "cryptanalysis",
+    "security estimate",
+    "security analysis",
+    "cost model",
+    "secret recovery",
+    "distinguishing",
+    "bkz",
+    "lll",
+    "primal attack",
+    "dual attack",
+    "hybrid attack",
+    "lattice estimator",
+    "reduction",
+)
+
+SPECIFIC_SCHEME_TERMS = (
+    "ml-kem",
+    "kyber",
+    "crystals-kyber",
+    "ml-dsa",
+    "dilithium",
+    "crystals-dilithium",
+    "falcon",
+    "fn-dsa",
+)
+
+IMPLEMENTATION_RISK_TERMS = (
+    "side-channel",
+    "fault",
+    "fault attack",
+    "leakage",
+    "vulnerability",
+    "failure",
+    "audit",
+    "constant-time",
+    "masking",
+    "production",
+    "implementation attack",
+    "security",
 )
 
 PRIORITY_LABELS: tuple[tuple[int, str], ...] = (
@@ -289,16 +392,7 @@ def research_tags(record: PaperRecord) -> list[str]:
 
 
 def suggested_action(record: PaperRecord) -> str:
-    tags = set(research_tags(record))
-    if record.relevance_score >= 85 or record.relevance_label == "A":
-        return "Read immediately"
-    if record.relevance_score >= 70 or tags & {"AI4Lattice", "Lattice Reduction", "ML-KEM", "MLWE", "Module-SIS"}:
-        return "Add to weekly reading"
-    if record.relevance_score >= 55 or tags:
-        return "Use as background citation"
-    if record.relevance_label == "C":
-        return "Monitor only"
-    return "Ignore unless related work needed"
+    return ACTION_BY_PRIORITY_LABEL[priority_label(record)]
 
 
 def _action_text(record: PaperRecord) -> str:
@@ -306,10 +400,58 @@ def _action_text(record: PaperRecord) -> str:
     return ACTION_LABELS.get(action, action)
 
 
+def _title_text(record: PaperRecord) -> str:
+    return record.title.lower()
+
+
+def _abstract_text(record: PaperRecord) -> str:
+    return record.abstract.lower()
+
+
+def _content_text(record: PaperRecord) -> str:
+    return " ".join([record.title, record.abstract]).lower()
+
+
+def _has_any_hit(record: PaperRecord, terms: tuple[str, ...]) -> bool:
+    return _matches_text(_combined_text(record), terms)
+
+
+def _has_content_hit(record: PaperRecord, terms: tuple[str, ...]) -> bool:
+    return _matches_text(_content_text(record), terms)
+
+
+def _has_title_hit(record: PaperRecord, terms: tuple[str, ...]) -> bool:
+    return _matches_text(_title_text(record), terms)
+
+
+def _has_abstract_hit(record: PaperRecord, terms: tuple[str, ...]) -> bool:
+    return _matches_text(_abstract_text(record), terms)
+
+
+def _has_crypto_context(record: PaperRecord) -> bool:
+    return _has_any_hit(record, CRYPTO_CONTEXT_TERMS)
+
+
+def _has_attack_context(record: PaperRecord) -> bool:
+    return _has_any_hit(record, ATTACK_CONTEXT_TERMS)
+
+
+def _has_specific_scheme(record: PaperRecord) -> bool:
+    return _has_any_hit(record, SPECIFIC_SCHEME_TERMS)
+
+
+def _has_implementation_risk(record: PaperRecord) -> bool:
+    return _has_any_hit(record, IMPLEMENTATION_RISK_TERMS)
+
+
 def _priority_hits(record: PaperRecord) -> list[tuple[str, int, str]]:
     text = _combined_text(record)
     hits: list[tuple[str, int, str]] = []
     for name, terms, weight, reason in PRIORITY_RULES:
+        if name in {"AI-assisted lattice cryptanalysis", "Transformer/Swin/neural LWE"}:
+            if _matches_text(text, terms) and _has_crypto_context(record):
+                hits.append((name, weight, reason))
+            continue
         if name == "LWE/RLWE/MLWE attacks":
             has_lwe_family = _matches_text(
                 text,
@@ -323,26 +465,22 @@ def _priority_hits(record: PaperRecord) -> list[tuple[str, int, str]]:
                     "sparse lwe",
                 ),
             )
-            has_attack_context = _matches_text(
-                text,
-                (
-                    "attack",
-                    "cryptanalysis",
-                    "security estimate",
-                    "security analysis",
-                    "cost model",
-                    "secret recovery",
-                    "distinguishing",
-                    "bkz",
-                    "lll",
-                    "primal attack",
-                    "dual attack",
-                    "hybrid attack",
-                    "lattice estimator",
-                    "reduction",
-                ),
-            )
-            if has_lwe_family and has_attack_context:
+            if has_lwe_family and _has_attack_context(record):
+                hits.append((name, weight, reason))
+            continue
+        if name == "primal/dual/hybrid attack":
+            if _matches_text(text, terms) and _has_crypto_context(record):
+                hits.append((name, weight, reason))
+            continue
+        if name == "ML-KEM/Kyber security and implementation":
+            has_scheme = _matches_text(text, ("ml-kem", "kyber", "crystals-kyber"))
+            if has_scheme or (_matches_text(text, terms) and _has_specific_scheme(record) and _has_implementation_risk(record)):
+                hits.append((name, weight, reason))
+            continue
+        if name == "ML-DSA/Dilithium/Falcon signatures":
+            has_scheme = _matches_text(text, ("ml-dsa", "dilithium", "crystals-dilithium", "falcon", "fn-dsa"))
+            has_signature_context = _matches_text(text, ("signature", "signatures", "implementation", "side-channel", "fault", "security"))
+            if has_scheme or (_matches_text(text, terms) and has_signature_context):
                 hits.append((name, weight, reason))
             continue
         if _matches_text(text, terms):
@@ -351,23 +489,153 @@ def _priority_hits(record: PaperRecord) -> list[tuple[str, int, str]]:
 
 
 def reading_priority_score(record: PaperRecord) -> int:
-    label_base = {"A": 30, "B": 22, "C": 12}.get(record.relevance_label, 0)
+    label_base = {"A": 22, "B": 16, "C": 8}.get(record.relevance_label, 0)
     score = label_base + max(0, min(record.relevance_score, 100)) // 5
     hits = _priority_hits(record)
-    score += sum(weight for _, weight, _ in hits)
+    weighted_hits = sorted(hits, key=lambda hit: PRIORITY_TIE_RANK.get(hit[0], 99))
+    for index, (_, weight, _) in enumerate(weighted_hits[:4]):
+        if index == 0:
+            score += weight
+        elif index == 1:
+            score += round(weight * 0.45)
+        elif index == 2:
+            score += round(weight * 0.25)
+        else:
+            score += round(weight * 0.1)
 
-    text = _combined_text(record)
-    has_core_hit = any(weight >= 24 for _, weight, _ in hits)
-    if "survey" in text and not has_core_hit:
-        score -= 10
-    if _matches_text(text, ("post-quantum cryptography", "pqc", "standardization")) and not has_core_hit:
-        score = min(score, 49)
+    if any(_has_title_hit(record, terms) for _, terms, _, _ in PRIORITY_RULES):
+        score += 4
+    if any(_has_abstract_hit(record, terms) for _, terms, _, _ in PRIORITY_RULES):
+        score += 3
+    if record.source.lower().split(",")[0].strip() in {"iacr_eprint", "arxiv"}:
+        score += 2
+
+    cap = _priority_score_cap(record, hits)
+    score = min(score, cap)
     if not record.source_url:
         score -= 20
         score = min(score, 49)
     if record.relevance_label == "D":
         score = min(score, 29)
     return max(0, min(100, score))
+
+
+def _priority_score_cap(record: PaperRecord, hits: list[tuple[str, int, str]]) -> int:
+    text = _combined_text(record)
+    content = _content_text(record)
+    hit_names = {name for name, _, _ in hits}
+    has_top_core = bool(
+        hit_names
+        & {
+            "AI-assisted lattice cryptanalysis",
+            "Transformer/Swin/neural LWE",
+            "LWE/RLWE/MLWE attacks",
+            "primal/dual/hybrid attack",
+            "BKZ/LLL/G6K/fplll/sieving",
+        }
+    )
+    cap = 98
+    if not record.abstract.strip():
+        cap = min(cap, 84)
+    if hits and not any(
+        _matches_text(content, terms)
+        for name, terms, _, _ in PRIORITY_RULES
+        if name in hit_names
+    ):
+        cap = min(cap, 69)
+    if hits and any(_has_title_hit(record, terms) for name, terms, _, _ in PRIORITY_RULES if name in hit_names) and not any(
+        _has_abstract_hit(record, terms)
+        for name, terms, _, _ in PRIORITY_RULES
+        if name in hit_names
+    ):
+        cap = min(cap, 84)
+    if _matches_text(text, ("survey", "overview", "introduction", "tutorial")) and not has_top_core:
+        cap = min(cap, 75)
+    if "broader PQC implementation and standardization" in hit_names and not (
+        has_top_core or _has_specific_scheme(record)
+    ):
+        cap = min(cap, 60)
+    if _is_fhe_application(record, hit_names):
+        cap = min(cap, 65)
+    if _is_weak_implementation_audit(record):
+        cap = min(cap, 75)
+    if _matches_text(text, ("quantum attack", "quantum attacks", "quantum algorithm")) and not has_top_core:
+        cap = min(cap, 88)
+    if _only_generic_lattice_or_lwe(record, hit_names):
+        cap = min(cap, 49)
+    return cap
+
+
+def _is_fhe_application(record: PaperRecord, hit_names: set[str]) -> bool:
+    if "FHE and lattice HE" not in hit_names:
+        return False
+    content = _content_text(record)
+    has_direct_security_or_parameter = _matches_text(
+        content,
+        (
+            "attack",
+            "cryptanalysis",
+            "security analysis",
+            "parameter",
+            "parameters",
+            "estimator",
+            "implementation",
+            "side-channel",
+            "fault",
+            "bootstrapping optimization",
+            "noise analysis",
+        ),
+    )
+    has_application_language = _matches_text(
+        content,
+        (
+            "analytics",
+            "machine learning",
+            "gradient boosting",
+            "healthcare",
+            "finance",
+            "inference",
+            "database",
+            "pir",
+            "private information retrieval",
+        ),
+    )
+    return has_application_language and not has_direct_security_or_parameter
+
+
+def _is_weak_implementation_audit(record: PaperRecord) -> bool:
+    text = _content_text(record)
+    if not _matches_text(text, ("implementation", "implementations", "audit", "production", "constant-time")):
+        return False
+    if _has_specific_scheme(record) and _has_implementation_risk(record):
+        return False
+    return _matches_text(text, ("implementation", "implementations", "audit", "production"))
+
+
+def _only_generic_lattice_or_lwe(record: PaperRecord, hit_names: set[str]) -> bool:
+    if hit_names:
+        return False
+    text = _combined_text(record)
+    has_generic_term = _matches_text(text, ("lattice", "lwe", "learning with errors"))
+    has_specific_context = _matches_text(
+        text,
+        (
+            "attack",
+            "cryptanalysis",
+            "bkz",
+            "lll",
+            "module-sis",
+            "mlwe",
+            "kyber",
+            "ml-kem",
+            "dilithium",
+            "ml-dsa",
+            "falcon",
+            "fhe",
+            "commitment",
+        ),
+    )
+    return has_generic_term and not has_specific_context
 
 
 def priority_label_for_score(score: int) -> str:
@@ -385,12 +653,43 @@ def reason_for_priority(record: PaperRecord) -> str:
     score = reading_priority_score(record)
     label = priority_label_for_score(score)
     hits = _priority_hits(record)
+    action = ACTION_LABELS[ACTION_BY_PRIORITY_LABEL[label]]
     if not hits:
         if record.relevance_label == "D":
-            return f"{label}：未命中你的格密码主线关键词，且分类为 D，默认不投入阅读时间。"
-        return f"{label}：虽然通过基础相关性筛选，但暂未命中 AI4Lattice、LWE/MLWE、BKZ、Module-SIS 或标准格方案等精读主线。"
-    reasons = [reason for _, _, reason in hits[:3]]
-    return f"{label}：阅读优先级 {score}/100。{''.join(reasons)}"
+            return f"{label}：未命中你的格密码主线关键词，且分类为 D，分数 {score}/100 合理；下一步动作：{action}。"
+        return (
+            f"{label}：虽然通过基础相关性筛选，但暂未命中 AI4Lattice、LWE/MLWE 攻击、BKZ、"
+            f"Module-SIS 或标准格方案等精读主线，分数 {score}/100；下一步动作：{action}。"
+        )
+    hit_names = [name for name, _, _ in sorted(hits, key=lambda hit: PRIORITY_TIE_RANK.get(hit[0], 99))]
+    mainline = "、".join(hit_names[:3])
+    cap_note = _priority_cap_note(record, set(hit_names))
+    if label == "必须精读":
+        judgment = "直接贴近你的核心研究主线，适合今天进入精读或组会候选。"
+    elif label == "建议精读":
+        judgment = "强相关但可能偏实现、理论背景或间接支撑，适合本周系统阅读。"
+    elif label == "可略读":
+        judgment = "与主线有关但不够直接，适合作为 related work 或背景素材。"
+    elif label == "暂存":
+        judgment = "相关性较弱或证据不足，先保留标题和链接即可。"
+    else:
+        judgment = "与当前主线距离较远，不建议投入阅读时间。"
+    return f"{label}：命中主线：{mainline}。分数 {score}/100 的原因是{judgment}{cap_note}下一步动作：{action}。"
+
+
+def _priority_cap_note(record: PaperRecord, hit_names: set[str]) -> str:
+    notes: list[str] = []
+    if _is_fhe_application(record, hit_names):
+        notes.append("它更像 FHE 应用论文，未直接服务 LWE/MLWE 攻击或参数估计，因此已做上限控制。")
+    if "broader PQC implementation and standardization" in hit_names and not (
+        _has_specific_scheme(record) or hit_names & {"LWE/RLWE/MLWE attacks", "BKZ/LLL/G6K/fplll/sieving"}
+    ):
+        notes.append("它偏泛 PQC/标准化背景，不按核心格攻击论文处理。")
+    if _is_weak_implementation_audit(record):
+        notes.append("它虽涉及 implementation/audit，但未明确呈现 ML-KEM/ML-DSA/Kyber/Dilithium/Falcon 安全后果。")
+    if not record.abstract.strip():
+        notes.append("摘要缺失，不能轻易上调到最高精读区间。")
+    return (" " + " ".join(notes) + " ") if notes else " "
 
 
 def _sort_by_reading_priority(records: list[PaperRecord]) -> list[PaperRecord]:
@@ -398,10 +697,18 @@ def _sort_by_reading_priority(records: list[PaperRecord]) -> list[PaperRecord]:
         records,
         key=lambda record: (
             -reading_priority_score(record),
+            _priority_tie_rank(record),
             -record.relevance_score,
             record.title.lower(),
         ),
     )
+
+
+def _priority_tie_rank(record: PaperRecord) -> int:
+    hits = _priority_hits(record)
+    if not hits:
+        return 99
+    return min(PRIORITY_TIE_RANK.get(name, 99) for name, _, _ in hits)
 
 
 def why_it_matters(record: PaperRecord) -> str:
