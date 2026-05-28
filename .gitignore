@@ -38,3 +38,5 @@ logs/
 
 # Python package build metadata
 src/*.egg-info/
+.pytest_tmp/
+*.pyc
