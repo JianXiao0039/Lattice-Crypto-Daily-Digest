@@ -74,6 +74,15 @@ powershell.exe -ExecutionPolicy Bypass -File scripts\generate_idea_bank.ps1 -Fro
 4. 与导师确认 novelty 和投稿定位。
 5. 把 candidate idea 升级为 active，并建立单独 project note。
 
+也可以用 Paper Plan 自动升级器生成保守计划草案：
+
+```powershell
+powershell.exe -ExecutionPolicy Bypass -File scripts\generate_paper_plans.ps1 -DryRun
+powershell.exe -ExecutionPolicy Bypass -File scripts\generate_paper_plans.ps1 -Top 5
+```
+
+详见 `docs/paper-plans.md`。Paper Plan 不是最终论文，只是用于组会、导师讨论、artifact 设计和 PhD 研究规划的执行草案。
+
 ## 导入 Obsidian
 
 生成物会写入：
