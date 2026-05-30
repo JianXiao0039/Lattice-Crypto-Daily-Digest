@@ -175,6 +175,13 @@ Set-Location "D:\Code\CodexProjects\lattice-crypto-daily-digest"
 powershell.exe -ExecutionPolicy Bypass -File scripts\audit_library_export.ps1 -Input exports\library\library-items.json
 ```
 
+Phase 7C adds a Zotero Compatibility Layer for offline Zotero JSON / CSL-JSON / BibTeX / RIS export, without calling the Zotero API or creating an `.xpi` plugin. See [docs/zotero-compat.md](docs/zotero-compat.md) and run:
+
+```powershell
+Set-Location "D:\Code\CodexProjects\lattice-crypto-daily-digest"
+powershell.exe -ExecutionPolicy Bypass -File scripts\export_zotero.ps1 -Days 7 -DryRun
+```
+
 ## 研究工作流
 
 推荐使用方式：
