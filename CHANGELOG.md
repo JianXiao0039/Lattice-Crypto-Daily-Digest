@@ -1,5 +1,93 @@
 # Changelog
 
+## v0.2.0 - 2026-05-30
+
+### Release type
+
+- Stable release.
+- Research library interoperability release.
+- Supersedes v0.2.0-rc1.
+
+### Added
+
+- Stable Library Export Layer.
+- `library-items.json` export.
+- CSL JSON export.
+- BibTeX export.
+- RIS export.
+- `zotero-tags.json` export.
+- `import-report.md`.
+- Library item schema.
+- Deep lattice cryptography taxonomy.
+- Library Export Quality Audit.
+- Field quality report.
+- Taxonomy confusion report.
+- Zotero Compatibility Layer.
+- Zotero-style JSON export.
+- Zotero manual import QA workflow.
+- Zotero import checklist.
+- Obsidian / Zotero / BibTeX / RIS / CSL JSON interoperability docs.
+
+### Research taxonomy coverage
+
+- LWE / RLWE / MLWE.
+- SIS / Module-SIS / Ring-SIS.
+- NTRU.
+- BKZ / LLL / G6K / fplll / lattice reduction.
+- primal / dual / hybrid attacks.
+- sparse LWE / secret recovery.
+- ML-KEM / Kyber.
+- ML-DSA / Dilithium.
+- Falcon / FN-DSA.
+- Module-SIS chameleon hash.
+- commitments.
+- lattice-based ZK / ZK-friendly PQ privacy primitives.
+- FHE / CKKS / BFV / BGV / TFHE.
+- implementation security / side-channel / fault / constant-time.
+- AI4Lattice / Swin-guided coordinate selection / negative-cyclic modeling / hybrid ranking.
+
+### Stable guarantees
+
+- File-based export is stable.
+- CSL JSON / BibTeX / RIS output contracts are stable enough for manual import.
+- Zotero compatibility layer is offline-only.
+- Library item schema is versioned.
+- Taxonomy is deterministic.
+- Audit reports are reproducible from local data.
+
+### Known limitations
+
+- Zotero XPI plugin is not included.
+- Zotero Web API sync is not included.
+- Automatic PDF attachment import is not included.
+- Metadata quality depends on upstream sources.
+- DOI / authors / abstract may be missing.
+- Some taxonomy labels may require manual verification.
+- This tool is for research triage, not a complete bibliographic authority database.
+- GitHub Actions provisional output may be less complete than local authoritative backfill.
+
+### Upgrade notes
+
+- Pull latest `main`.
+- Run `python -m pytest`.
+- Run `scripts\export_library.ps1` for library export.
+- Run `scripts\audit_library_export.ps1` for quality audit.
+- Run Zotero compatibility dry-run before manual import.
+- Do not commit `exports/` or `audits/`.
+- Keep secrets in `.env` or GitHub Secrets.
+
+### Next
+
+- Phase 8A: Zotero Web API dry-run client.
+- Phase 8B: Optional Zotero Web API push with explicit user confirmation.
+- Phase 8C: Zotero collection sync.
+- Phase 9: Zotero XPI plugin prototype.
+- Longer-term: Research dashboard and advisor-facing research intelligence portal.
+
+### English summary
+
+v0.2.0 is the stable Research Library Interoperability release. It stabilizes file-based library export, deep lattice-cryptography taxonomy, library export audit, offline Zotero compatibility, and Zotero manual import QA. It does not include Zotero Web API sync, automatic PDF attachment import, or a Zotero XPI plugin.
+
 ## v0.2.0-rc1 - 2026-05-30
 
 ### Release type

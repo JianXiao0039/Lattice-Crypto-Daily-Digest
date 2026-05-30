@@ -113,6 +113,47 @@ git push origin main
 git push origin v0.2.0-rc1
 ```
 
+## v0.2.0 Stable Release Checklist
+
+v0.2.0 是 Research Library Interoperability Stable Release。发布前确认：
+
+- clean working tree.
+- VERSION is 0.2.0 or package version is 0.2.0.
+- CHANGELOG updated.
+- `docs/releases/v0.2.0.md` exists.
+- README links to v0.2.0 release docs.
+- library export tests pass.
+- library export audit tests pass.
+- Zotero compatibility tests pass.
+- Zotero manual import QA docs exist.
+- `python -m pytest` passes.
+- library export dry-run passes.
+- actual library export passes.
+- library audit dry-run passes.
+- Zotero compat dry-run passes.
+- fresh clone test passes.
+- GitHub Actions green.
+- no `exports/` staged.
+- no `audits/` staged.
+- no `data/*.json` accidentally staged.
+- no `digests/*.md` accidentally staged.
+- no `papers.db` staged.
+- no `.pytest_tmp` staged.
+- no `__pycache__` staged.
+- no `.env` or secrets staged.
+
+Documentation-only release commands; do not execute automatically:
+
+```powershell
+git fetch origin
+git pull --rebase origin main
+git add pyproject.toml src/lattice_digest/__init__.py CHANGELOG.md README.md docs tests schemas scripts src/lattice_digest/export_library.py src/lattice_digest/library_taxonomy.py src/lattice_digest/audit_library_export.py src/lattice_digest/zotero_compat.py
+git commit -m "Release v0.2.0"
+git tag -a v0.2.0 -m "Release v0.2.0"
+git push origin main
+git push origin v0.2.0
+```
+
 ## 4. Rollback notes
 
 Delete local tag:
