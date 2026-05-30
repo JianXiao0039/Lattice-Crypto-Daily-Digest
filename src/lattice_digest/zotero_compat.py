@@ -16,7 +16,6 @@ from lattice_digest.export_library import (
     filter_items,
     merge_items,
     record_to_library_item,
-    render_ris as render_library_ris,
 )
 from lattice_digest.ideas import normalize_key, short_hash
 
@@ -460,6 +459,8 @@ def record_to_zotero_item(record: dict[str, Any]) -> dict[str, Any]:
     item_type = infer_zotero_item_type(record)
     item: dict[str, Any] = {
         "itemType": item_type,
+        "latticeDigestID": _clean_output_text(record.get("item_id")),
+        "canonicalID": _clean_output_text(record.get("dedup_key")),
         "title": _clean_output_text(record.get("title")),
         "creators": normalize_authors_to_zotero_creators(record),
         "abstractNote": _clean_output_text(record.get("abstract")),
@@ -533,7 +534,7 @@ def render_bibtex(items: list[dict[str, Any]]) -> str:
             "year": item.get("year") or _year(item.get("date")) or "",
             "url": item.get("url") or "",
             "doi": item.get("doi") or "",
-            "note": f"source={item.get('source') or 'unknown'}; priority={item.get('priority_label') or ''}; score={item.get('reading_priority_score')}",
+            "note": f"source={item.get('source') or 'unknown'}; priority={item.get('priority_label') or ''}; score={item.get('reading_priority_score')}; tags={'; '.join(entry['tag'] for entry in build_zotero_tags(item))}",
         }
         if item.get("venue"):
             fields["booktitle" if entry_type == "inproceedings" else "journal"] = item.get("venue")
@@ -547,7 +548,30 @@ def render_bibtex(items: list[dict[str, Any]]) -> str:
 
 
 def render_ris(items: list[dict[str, Any]]) -> str:
-    return render_library_ris(items, include_abstract=True, include_notes=True)
+    lines: list[str] = []
+    for raw_item in items:
+        item = _ensure_library_like(raw_item)
+        lines.append("TY  - CONF" if infer_zotero_item_type(item) == "conferencePaper" else "TY  - JOUR" if infer_zotero_item_type(item) == "journalArticle" else "TY  - GEN")
+        lines.append(f"TI  - {_clean_output_text(item.get('title'))}")
+        for author in _as_list(item.get("authors")):
+            lines.append(f"AU  - {_clean_output_text(author)}")
+        year = item.get("year") or _year(item.get("date"))
+        if year:
+            lines.append(f"PY  - {year}")
+        if item.get("doi"):
+            lines.append(f"DO  - {_clean_output_text(item.get('doi'))}")
+        if item.get("url"):
+            lines.append(f"UR  - {clean_url(item.get('url'))}")
+        if item.get("abstract"):
+            lines.append(f"AB  - {_clean_output_text(item.get('abstract'))}")
+        for tag in (entry["tag"] for entry in build_zotero_tags(item)):
+            lines.append(f"KW  - {tag}")
+        note = build_extra_field(item)
+        if note:
+            lines.append(f"N1  - {note.replace(chr(10), ' | ')}")
+        lines.append("ER  -")
+        lines.append("")
+    return "\n".join(lines)
 
 
 def dedup_records_for_zotero(records: list[dict[str, Any]]) -> list[dict[str, Any]]:
@@ -584,6 +608,7 @@ def _collection_tree() -> dict[str, Any]:
 
 
 def render_export_report(items: list[dict[str, Any]], *, input_dir: Path, from_date: str | None, to_date: str | None, formats: list[str], dedup_count: int) -> str:
+    input_display = input_dir.name if input_dir.is_absolute() else str(input_dir)
     missing_doi = sum(1 for item in items if not item.get("doi"))
     missing_author = sum(1 for item in items if not _as_list(item.get("authors")))
     high_priority = sum(1 for item in items if int(item.get("reading_priority_score") or 0) >= 70)
@@ -596,7 +621,7 @@ def render_export_report(items: list[dict[str, Any]], *, input_dir: Path, from_d
         "",
         "## 1. 导出摘要",
         "",
-        f"- 输入目录：{input_dir}",
+        f"- 输入目录：{input_display}",
         f"- 日期范围：{from_date or '未限制'} 至 {to_date or '未限制'}",
         f"- record 数量：{len(items)}",
         f"- 格式数量：{len(formats)}",
