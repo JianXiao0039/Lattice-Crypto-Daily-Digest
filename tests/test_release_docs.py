@@ -1,0 +1,74 @@
+from __future__ import annotations
+
+import re
+from pathlib import Path
+
+
+ROOT = Path(__file__).resolve().parents[1]
+
+
+def _read(path: str) -> str:
+    return (ROOT / path).read_text(encoding="utf-8")
+
+
+def test_version_metadata_contains_current_release_candidate() -> None:
+    candidates = []
+    for rel_path in ["VERSION", "pyproject.toml", "setup.cfg", "src/lattice_digest/__init__.py"]:
+        path = ROOT / rel_path
+        if path.exists():
+            candidates.append(path.read_text(encoding="utf-8"))
+
+    assert candidates
+    assert any("0.2.0rc1" in content or "0.2.0-rc1" in content for content in candidates)
+
+
+def test_changelog_documents_v010_capabilities_and_limits() -> None:
+    changelog = _read("CHANGELOG.md")
+
+    for text in [
+        "v0.1.0",
+        "Source Health",
+        "authoritative backfill",
+        "Weekly Research Brief",
+        "Obsidian",
+        "Known limitations",
+        "Semantic Scholar works best with API key",
+    ]:
+        assert text in changelog
+
+
+def test_release_note_documents_deployment_and_api_guidance() -> None:
+    release_note = _read("docs/releases/v0.1.0.md")
+
+    for text in [
+        "v0.1.0",
+        "local authoritative backfill",
+        "Semantic Scholar",
+        "Semantic Scholar: recommended API key",
+        "Known limitations",
+        "v0.2.0",
+    ]:
+        assert text.lower() in release_note.lower()
+
+
+def test_release_checklist_contains_required_release_steps() -> None:
+    checklist = _read("docs/release-checklist.md")
+
+    for text in [
+        "git tag -a v0.1.0",
+        "python -m pytest",
+        "no secrets",
+        "no generated artifacts",
+        "GitHub Release body template",
+    ]:
+        assert text in checklist
+
+
+def test_readme_links_release_docs() -> None:
+    readme = _read("README.md")
+
+    assert "CHANGELOG.md" in readme
+    assert "docs/releases/v0.1.0.md" in readme
+    assert "docs/release-checklist.md" in readme
+    assert "v0.1.0" in readme
+    assert re.search(r"local (authoritative )?backfill", readme, flags=re.IGNORECASE)

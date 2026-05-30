@@ -8,6 +8,8 @@ Library Interoperability Layer 是 `lattice-crypto-daily-digest` 的稳定文献
 
 这一层只读取已有的 `data/*.json`，不会重新抓取论文，不会修改 `digests/`、`papers.db` 或 source health。它把 digest records 转换成稳定的 `library item`，保留题名、作者、来源、URL、摘要、研究优先级、格密码标签、Zotero tags、Obsidian 双链提示和质量警告。
 
+Release status: v0.2.0-rc1 Library Interoperability Release Candidate. It is not the stable v0.2.0 release and does not include a Zotero XPI plugin.
+
 ## 2. 为什么不直接做 Zotero 插件
 
 Zotero 插件应当是前端适配器，而不是论文抓取、过滤和 ranking 的核心。当前项目的 Python core 已经负责采集、去重、过滤、研究优先级排序和 source health 诊断。稳定 export schema 是 Zotero XPI 插件之前的必要前置条件：
