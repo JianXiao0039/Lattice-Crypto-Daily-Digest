@@ -4,9 +4,13 @@
 venv/
 
 # Python cache
+__pycache__
 __pycache__/
+**/__pycache__
+**/__pycache__/
 *.py[cod]
 .pytest_cache/
+.pytest_tmp/
 .mypy_cache/
 .ruff_cache/
 
@@ -14,13 +18,17 @@ __pycache__/
 .history/
 .cache/
 cache/
+.tmp/
+.vscode/
 
 # Logs
 *.log
+logs/
 
 # OS
 .DS_Store
 Thumbs.db
+
 # Local accidental pytest directory
 pytest/
 
@@ -28,19 +36,5 @@ pytest/
 memory.md
 digests/*-error.md
 
-# Local runtime cache/logs
-cache/
-logs/
-
-# Local editor/runtime folders
-.tmp/
-.vscode/
-
 # Python package build metadata
 src/*.egg-info/
-.pytest_tmp/
-*.pyc
-
-__pycache__/
-**/__pycache__/
-*.py[cod]
