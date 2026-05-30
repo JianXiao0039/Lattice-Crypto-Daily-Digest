@@ -125,9 +125,10 @@ REDUCTION_RULES: list[tuple[str, tuple[str, ...]]] = [
 
 
 ATTACK_RULES: list[tuple[str, tuple[str, ...]]] = [
+    ("Lattice Reduction Attack", (r"\blattice reduction attack\b", r"\blattice reduction attacks\b")),
     ("Primal Attack", (r"\bprimal attack\b",)),
     ("Dual Attack", (r"\bdual attack\b",)),
-    ("Hybrid Attack", (r"\bhybrid attack\b",)),
+    ("Hybrid Attack", (r"\bhybrid attack\b", r"\bhybrid attacks\b")),
     ("Dual Hybrid Attack", (r"\bdual hybrid attack\b",)),
     ("Primal Hybrid Attack", (r"\bprimal hybrid attack\b",)),
     ("Meet-in-the-Middle", (r"\bmeet[- ]in[- ]the[- ]middle\b", r"\bmitm\b")),
@@ -224,7 +225,7 @@ PRIMITIVE_RULES: list[tuple[str, tuple[str, ...]]] = [
     ("Preimage Sampling", (r"\bpreimage sampling\b",)),
     ("GPV", (r"\bgpv\b",)),
     ("Bonsai Tree", (r"\bbonsai tree\b",)),
-    ("Lattice Trapdoor", (r"\blattice trapdoor\b",)),
+    ("Lattice Trapdoor", (r"\blattice trapdoor\b", r"\blattice trapdoors\b")),
     ("Identity-Based Encryption", (r"\bidentity[- ]based encryption\b", r"\bibe\b")),
     ("Attribute-Based Encryption", (r"\battribute[- ]based encryption\b", r"\babe\b")),
     ("Functional Encryption", (r"\bfunctional encryption\b",)),
@@ -389,6 +390,9 @@ CONTEXT_LATTICE = (
 AI_CONTEXT = (
     r"\btransformer\b",
     r"\bswin\b",
+    r"\bcoordinate selection\b",
+    r"\bnegative[- ]cyclic\b",
+    r"\bnegacyclic\b",
     r"\bmachine learning\b",
     r"\bneural\b",
     r"\bgnn\b",
@@ -477,6 +481,8 @@ def classify_text(
         _add(research_tags, "Paper Idea")
     if _contains(text, (r"\bexperiment\b", r"\bbenchmark\b")):
         _add(research_tags, "Experiment Candidate")
+    if _contains(text, (r"\btoy\b", r"\bsmall parameter", r"\bsmall[- ]parameter", r"\bsynthetic\b")):
+        _add(research_tags, "Toy Benchmark")
     if _contains(text, (r"\bproof\b", r"\bsecurity analysis\b")):
         _add(research_tags, "Security Proof Needed")
     if _contains(text, (r"\bparameter estimation\b", r"\bestimator\b")):

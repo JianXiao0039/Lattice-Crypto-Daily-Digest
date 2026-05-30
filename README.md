@@ -166,6 +166,13 @@ Set-Location "D:\Code\CodexProjects\lattice-crypto-daily-digest"
 powershell.exe -ExecutionPolicy Bypass -File scripts\export_library.ps1 -Days 7
 ```
 
+导出后可以运行 taxonomy quality audit 与 Zotero manual import test，检查标签误报、字段完整性和手动导入流程。说明见 [docs/library-export-audit.md](docs/library-export-audit.md)，脚本入口：
+
+```powershell
+Set-Location "D:\Code\CodexProjects\lattice-crypto-daily-digest"
+powershell.exe -ExecutionPolicy Bypass -File scripts\audit_library_export.ps1 -Input exports\library\library-items.json
+```
+
 ## 研究工作流
 
 推荐使用方式：

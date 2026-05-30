@@ -1,0 +1,242 @@
+[
+  {
+    "id": "case_lwe_only",
+    "title": "Learning with Errors assumption for encryption",
+    "abstract": "We study LWE samples and error distributions in a cryptographic setting.",
+    "expected_present": {"lattice_tags": ["LWE"]},
+    "expected_absent": {"lattice_tags": ["Ring-LWE", "Module-LWE"], "ai_tags": ["AI4Lattice"]},
+    "notes": "LWE should not imply RLWE or MLWE."
+  },
+  {
+    "id": "case_rlwe_only",
+    "title": "Ring-LWE parameter selection",
+    "abstract": "The work focuses on RLWE over cyclotomic rings.",
+    "expected_present": {"lattice_tags": ["Ring-LWE", "Cyclotomic Ring"]},
+    "expected_absent": {"lattice_tags": ["Module-LWE"]},
+    "notes": "RLWE should not imply MLWE."
+  },
+  {
+    "id": "case_mlwe_module_lwe",
+    "title": "Module-LWE security estimates",
+    "abstract": "MLWE instances are evaluated for module-lattice KEM parameters.",
+    "expected_present": {"lattice_tags": ["Module-LWE"], "pqc_tags": ["Module-Lattice KEM"]},
+    "expected_absent": {"lattice_tags": ["Ring-LWE"]},
+    "notes": "Module-LWE should be distinct from Ring-LWE."
+  },
+  {
+    "id": "case_sis_only",
+    "title": "Short Integer Solution commitments",
+    "abstract": "The SIS assumption is used for a commitment construction.",
+    "expected_present": {"lattice_tags": ["SIS"], "primitive_tags": ["Commitment"]},
+    "expected_absent": {"lattice_tags": ["Module-SIS", "Ring-SIS"]},
+    "notes": "SIS should not imply Module-SIS."
+  },
+  {
+    "id": "case_module_sis",
+    "title": "Module-SIS primitive with parameter estimation",
+    "abstract": "MSIS assumptions support a module lattice construction.",
+    "expected_present": {"lattice_tags": ["Module-SIS", "Module Lattice"], "research_tags": ["Parameter Estimation Needed"]},
+    "expected_absent": {"lattice_tags": ["Ring-SIS"]},
+    "notes": "Module-SIS needs its own tag."
+  },
+  {
+    "id": "case_ring_sis",
+    "title": "Ring-SIS signatures",
+    "abstract": "RSIS is used for a ring lattice signature proof.",
+    "expected_present": {"lattice_tags": ["Ring-SIS"], "pqc_tags": ["Signature"]},
+    "expected_absent": {"lattice_tags": ["Module-SIS"]},
+    "notes": "Ring-SIS should be distinct from Module-SIS."
+  },
+  {
+    "id": "case_bkz_g6k_fplll",
+    "title": "BKZ experiments with G6K and fplll",
+    "abstract": "We compare lattice reduction, sieving and enumeration baselines.",
+    "expected_present": {"lattice_tags": ["BKZ", "G6K", "fplll", "Sieving", "Enumeration"], "research_tags": ["Lattice Reduction"]},
+    "expected_absent": {"ai_tags": ["AI4Lattice"]},
+    "notes": "Reduction tags should be recognized without AI."
+  },
+  {
+    "id": "case_dual_primal_hybrid_plain_english",
+    "title": "Dual use hybrid vehicle design",
+    "abstract": "The primal objective is energy efficiency in a hybrid engine.",
+    "expected_present": {},
+    "expected_absent": {"attack_tags": ["Dual Attack", "Primal Attack", "Hybrid Attack"], "research_tags": ["Lattice Cryptanalysis"]},
+    "notes": "Plain English dual/primal/hybrid should not become lattice attacks."
+  },
+  {
+    "id": "case_lwe_hybrid_attack",
+    "title": "Hybrid attack on sparse LWE",
+    "abstract": "The primal attack and dual attack are compared for LWE cryptanalysis.",
+    "expected_present": {"lattice_tags": ["LWE", "Sparse LWE"], "attack_tags": ["Hybrid Attack", "Primal Attack", "Dual Attack"]},
+    "expected_absent": {"lattice_tags": ["Module-LWE"]},
+    "notes": "Attack tags require lattice context."
+  },
+  {
+    "id": "case_generic_transformer",
+    "title": "Transformer for image classification",
+    "abstract": "A vision transformer model for generic computer vision tasks.",
+    "expected_present": {},
+    "expected_absent": {"ai_tags": ["AI4Lattice", "Transformer LWE"], "lattice_tags": ["LWE"]},
+    "notes": "Generic AI must not trigger AI4Lattice."
+  },
+  {
+    "id": "case_transformer_lwe",
+    "title": "Transformer LWE cryptanalysis",
+    "abstract": "A transformer model ranks LWE samples for lattice cryptanalysis.",
+    "expected_present": {"lattice_tags": ["LWE"], "ai_tags": ["AI4Lattice", "Transformer LWE"], "research_tags": ["AI4Lattice"]},
+    "expected_absent": {"lattice_tags": ["Module-LWE"]},
+    "notes": "Transformer plus LWE should be AI4Lattice."
+  },
+  {
+    "id": "case_swin_coordinate_rlwe_mlwe",
+    "title": "Swin-guided coordinate selection for RLWE and MLWE",
+    "abstract": "Shifted window attention supports coordinate selection for Ring-LWE and Module-LWE hybrid attacks.",
+    "expected_present": {"lattice_tags": ["Ring-LWE", "Module-LWE"], "ai_tags": ["AI4Lattice", "Swin-guided Coordinate Selection", "Shifted Window Attention"], "attack_tags": ["Hybrid Attack"]},
+    "expected_absent": {},
+    "notes": "Swin-guided coordinate selection is a core AI4Lattice case."
+  },
+  {
+    "id": "case_negative_cyclic_rlwe",
+    "title": "Negative-cyclic modeling for RLWE samples",
+    "abstract": "Negacyclic shift and negative-cyclic structure model RLWE polynomial rings.",
+    "expected_present": {"lattice_tags": ["Ring-LWE", "Negacyclic Ring"], "ai_tags": ["AI4Lattice", "Negative-Cyclic Modeling", "Negacyclic Shift"]},
+    "expected_absent": {"lattice_tags": ["Module-LWE"]},
+    "notes": "Negative-cyclic RLWE modeling should be visible to AI4Lattice workflows."
+  },
+  {
+    "id": "case_fhe_application_no_attack",
+    "title": "FHE application for private analytics",
+    "abstract": "A homomorphic encryption application uses CKKS for analytics workloads.",
+    "expected_present": {"primitive_tags": ["FHE", "Homomorphic Encryption", "CKKS"], "research_tags": ["FHE"]},
+    "expected_absent": {"attack_tags": ["Primal Attack", "Dual Attack", "Hybrid Attack"], "research_tags": ["Lattice Cryptanalysis"]},
+    "notes": "FHE application should not become lattice attack."
+  },
+  {
+    "id": "case_ckks_bfv_bgv_tfhe",
+    "title": "CKKS BFV BGV TFHE bootstrapping",
+    "abstract": "The benchmark compares bootstrapping and key switching in FHE schemes.",
+    "expected_present": {"primitive_tags": ["CKKS", "BFV", "BGV", "TFHE", "Bootstrapping"], "research_tags": ["FHE", "Experiment Candidate"]},
+    "expected_absent": {"attack_tags": ["Secret Recovery"]},
+    "notes": "FHE family tags should be recognized."
+  },
+  {
+    "id": "case_mlkem_kyber",
+    "title": "ML-KEM Kyber implementation",
+    "abstract": "A Module-Lattice-Based Key-Encapsulation Mechanism implementation uses Kyber.",
+    "expected_present": {"pqc_tags": ["ML-KEM", "Kyber"], "research_tags": ["PQC Schemes"]},
+    "expected_absent": {"pqc_tags": ["ML-DSA"]},
+    "notes": "ML-KEM/Kyber should not imply ML-DSA."
+  },
+  {
+    "id": "case_mldsa_dilithium",
+    "title": "ML-DSA Dilithium rejection sampling",
+    "abstract": "The Module-Lattice-Based Digital Signature Algorithm is analyzed with CRYSTALS-Dilithium.",
+    "expected_present": {"pqc_tags": ["ML-DSA", "Dilithium", "CRYSTALS-Dilithium", "Rejection Sampling"], "research_tags": ["PQC Schemes"]},
+    "expected_absent": {"pqc_tags": ["ML-KEM"]},
+    "notes": "ML-DSA should be separate from ML-KEM."
+  },
+  {
+    "id": "case_falcon_fndsa",
+    "title": "Falcon and FN-DSA signing",
+    "abstract": "Falcon / FN-DSA signatures use lattice trapdoors.",
+    "expected_present": {"pqc_tags": ["Falcon", "FN-DSA", "Signature"], "primitive_tags": ["Lattice Trapdoor"]},
+    "expected_absent": {"pqc_tags": ["ML-KEM"]},
+    "notes": "Falcon/FN-DSA should be recognized when explicit."
+  },
+  {
+    "id": "case_falcon_x_not_pqc",
+    "title": "Falcon-X time series forecasting",
+    "abstract": "A generic forecasting model for multivariate time series.",
+    "expected_present": {},
+    "expected_absent": {"pqc_tags": ["Falcon"], "research_tags": ["PQC Schemes"]},
+    "notes": "Falcon-X must not become Falcon/FN-DSA."
+  },
+  {
+    "id": "case_implementation_security",
+    "title": "Constant-time side-channel and fault attack audit",
+    "abstract": "The audit checks timing attack, cache attack, masking and fault injection for ML-KEM.",
+    "expected_present": {"pqc_tags": ["ML-KEM"], "implementation_tags": ["Constant-Time", "Side-Channel", "Fault Attack", "Timing Attack", "Cache Attack", "Fault Injection"], "research_tags": ["Implementation Security"]},
+    "expected_absent": {},
+    "notes": "Implementation security tags support Zotero filtering."
+  },
+  {
+    "id": "case_module_sis_chameleon_hash",
+    "title": "Module-SIS chameleon hash primitive",
+    "abstract": "A Module-SIS Chameleon Hash and commitment construction with parameter estimation.",
+    "expected_present": {"lattice_tags": ["Module-SIS"], "primitive_tags": ["Module-SIS Chameleon Hash", "Chameleon Hash", "Commitment"], "research_tags": ["Parameter Estimation Needed"]},
+    "expected_absent": {"lattice_tags": ["Ring-SIS"]},
+    "notes": "Short-term primitive line."
+  },
+  {
+    "id": "case_sis_commitment",
+    "title": "SIS commitment scheme",
+    "abstract": "A SIS Commitment from Short Integer Solution without module structure.",
+    "expected_present": {"lattice_tags": ["SIS"], "primitive_tags": ["SIS Commitment", "Commitment"]},
+    "expected_absent": {"lattice_tags": ["Module-SIS"]},
+    "notes": "Plain SIS commitment should not imply Module-SIS."
+  },
+  {
+    "id": "case_lattice_zk_privacy",
+    "title": "Lattice-based ZK-friendly post-quantum privacy primitive",
+    "abstract": "A lattice-based ZK construction for anonymous credential and commitment systems.",
+    "expected_present": {"primitive_tags": ["Lattice-Based ZK", "ZK-Friendly", "Anonymous Credential", "Commitment"], "research_tags": ["ZK-friendly PQ Privacy"]},
+    "expected_absent": {"attack_tags": ["Hybrid Attack"]},
+    "notes": "ZK-friendly PQ privacy should be primitive/privacy, not attack."
+  },
+  {
+    "id": "case_toy_small_parameters",
+    "title": "Toy LWE benchmark with small parameters",
+    "abstract": "Synthetic toy benchmark instances for LWE experiments and small-parameter validation.",
+    "expected_present": {"lattice_tags": ["LWE"], "research_tags": ["Experiment Candidate", "Toy Benchmark"]},
+    "expected_absent": {"attack_tags": ["Secret Recovery"]},
+    "notes": "Toy benchmark should be marked cautiously."
+  },
+  {
+    "id": "case_generic_ai_no_lattice",
+    "title": "Graph neural network for route planning",
+    "abstract": "A GNN model improves generic combinatorial optimization benchmarks.",
+    "expected_present": {},
+    "expected_absent": {"ai_tags": ["AI4Lattice", "Graph Neural Network"], "research_tags": ["AI4Lattice"]},
+    "notes": "Generic ML without cryptographic context is out of AI4Lattice."
+  },
+  {
+    "id": "case_ntru",
+    "title": "NTRU lattice attack",
+    "abstract": "The NTRU lattice is evaluated with a lattice reduction attack.",
+    "expected_present": {"lattice_tags": ["NTRU", "Lattice"], "research_tags": ["Lattice Cryptanalysis"]},
+    "expected_absent": {"lattice_tags": ["LWE"]},
+    "notes": "NTRU should be separate from LWE."
+  },
+  {
+    "id": "case_lwr",
+    "title": "Learning with Rounding in module lattices",
+    "abstract": "LWR and Module-LWR are used for encryption.",
+    "expected_present": {"lattice_tags": ["Learning With Rounding", "Module-LWR"]},
+    "expected_absent": {"lattice_tags": ["LWE"]},
+    "notes": "LWR is distinct from LWE."
+  },
+  {
+    "id": "case_discrete_gaussian_sampling",
+    "title": "Discrete Gaussian trapdoor sampling",
+    "abstract": "Gaussian sampling and gadget matrix trapdoor sampling for lattice trapdoors.",
+    "expected_present": {"lattice_tags": ["Discrete Gaussian", "Gaussian Sampling", "Trapdoor Sampling", "Gadget Matrix"], "primitive_tags": ["Lattice Trapdoor"]},
+    "expected_absent": {"pqc_tags": ["ML-KEM"]},
+    "notes": "Sampling tags support primitive/security proof workflows."
+  },
+  {
+    "id": "case_ntt_polymul",
+    "title": "NTT polynomial multiplication for embedded PQC",
+    "abstract": "Number theoretic transform, Montgomery reduction and Barrett reduction on ARM Cortex-M.",
+    "expected_present": {"implementation_tags": ["NTT", "Polynomial Multiplication", "Montgomery Reduction", "Barrett Reduction", "ARM Cortex-M", "Embedded PQC"]},
+    "expected_absent": {"attack_tags": ["Fault Attack"]},
+    "notes": "Implementation benchmark is not automatically an attack."
+  },
+  {
+    "id": "case_security_estimator",
+    "title": "Lattice estimator cost model",
+    "abstract": "Core-SVP, root Hermite factor, GSA and block size estimates for LWE.",
+    "expected_present": {"lattice_tags": ["LWE", "Lattice Estimator", "Core-SVP", "Root Hermite Factor", "GSA", "Block Size"], "research_tags": ["Lattice Reduction", "Parameter Estimation Needed"]},
+    "expected_absent": {"ai_tags": ["AI4Lattice"]},
+    "notes": "Estimator metadata should support parameter audit."
+  }
+]
