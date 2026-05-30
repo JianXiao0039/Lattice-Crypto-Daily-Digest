@@ -238,5 +238,101 @@
     "expected_present": {"lattice_tags": ["LWE", "Lattice Estimator", "Core-SVP", "Root Hermite Factor", "GSA", "Block Size"], "research_tags": ["Lattice Reduction", "Parameter Estimation Needed"]},
     "expected_absent": {"ai_tags": ["AI4Lattice"]},
     "notes": "Estimator metadata should support parameter audit."
+  },
+  {
+    "id": "case_sparse_binary_ternary_lwe",
+    "title": "Sparse LWE with binary and ternary secret distributions",
+    "abstract": "Binary secret LWE, ternary secret LWE and small secret LWE instances are benchmarked.",
+    "expected_present": {"lattice_tags": ["Sparse LWE", "Binary Secret LWE", "Ternary Secret LWE", "Small Secret LWE", "LWE"]},
+    "expected_absent": {"lattice_tags": ["Ring-LWE", "Module-LWE"]},
+    "notes": "Secret-distribution variants should not imply structured LWE families."
+  },
+  {
+    "id": "case_generic_crypto_no_lattice",
+    "title": "Authenticated encryption for cloud storage",
+    "abstract": "A generic cryptography construction with symmetric encryption and message authentication.",
+    "expected_present": {},
+    "expected_absent": {"lattice_tags": ["Lattice", "LWE", "SIS"], "pqc_tags": ["PQC"], "ai_tags": ["AI4Lattice"]},
+    "notes": "Generic cryptography without lattice context should not receive lattice tags."
+  },
+  {
+    "id": "case_fhe_implementation_security",
+    "title": "Constant-time CKKS bootstrapping implementation audit",
+    "abstract": "The FHE implementation checks constant-time modular arithmetic and benchmark stability for CKKS bootstrapping.",
+    "expected_present": {"primitive_tags": ["FHE", "CKKS", "Bootstrapping"], "implementation_tags": ["Constant-Time", "Modular Arithmetic", "Benchmark"], "research_tags": ["Implementation Security", "FHE"]},
+    "expected_absent": {"attack_tags": ["Hybrid Attack"]},
+    "notes": "FHE implementation security should not become lattice attack."
+  },
+  {
+    "id": "case_hash_and_sign_not_chameleon",
+    "title": "Hash-and-sign lattice trapdoor function",
+    "abstract": "A GPV preimage sampling method is used for hash-and-sign signatures.",
+    "expected_present": {"primitive_tags": ["Hash-and-Sign", "Trapdoor Function", "Preimage Sampling", "GPV"], "pqc_tags": ["Signature"]},
+    "expected_absent": {"primitive_tags": ["Chameleon Hash", "Commitment"]},
+    "notes": "Hash-and-sign should not be confused with chameleon hash or commitment."
+  },
+  {
+    "id": "case_mamba_generic_no_lattice",
+    "title": "Mamba sequence model for speech recognition",
+    "abstract": "A state space model improves speech benchmarks without cryptographic tasks.",
+    "expected_present": {},
+    "expected_absent": {"ai_tags": ["AI4Lattice", "Mamba", "State Space Model"], "lattice_tags": ["LWE"]},
+    "notes": "Generic Mamba papers should not trigger AI4Lattice tags."
+  },
+  {
+    "id": "case_cnn_generic_no_lattice",
+    "title": "CNN for medical image segmentation",
+    "abstract": "A convolutional neural network for image segmentation in clinical datasets.",
+    "expected_present": {},
+    "expected_absent": {"ai_tags": ["AI4Lattice", "CNN"], "lattice_tags": ["Lattice"]},
+    "notes": "Generic CNN papers are not AI4Lattice."
+  },
+  {
+    "id": "case_mlwe_negative_cyclic",
+    "title": "Negative-cyclic modeling for MLWE modules",
+    "abstract": "Block-circulant attention and negacyclic shift model Module-LWE polynomial quotient rings.",
+    "expected_present": {"lattice_tags": ["Module-LWE", "Negacyclic Ring", "Polynomial Quotient Ring"], "ai_tags": ["AI4Lattice", "Negative-Cyclic Modeling", "Negacyclic Shift", "Block-Circulant Attention"]},
+    "expected_absent": {"lattice_tags": ["Ring-SIS"]},
+    "notes": "MLWE structured representation should be recognized without claiming real attack success."
+  },
+  {
+    "id": "case_dual_lattice_not_dual_attack",
+    "title": "Dual lattice basis quality",
+    "abstract": "The dual lattice and Gram-Schmidt orthogonalization are studied for reduction quality.",
+    "expected_present": {"lattice_tags": ["Dual Lattice", "Gram-Schmidt"]},
+    "expected_absent": {"attack_tags": ["Dual Attack"]},
+    "notes": "Dual lattice is a lattice concept, not automatically dual attack."
+  },
+  {
+    "id": "case_lattice_based_zk_no_attack",
+    "title": "Lattice-based ZK argument for commitments",
+    "abstract": "A lattice-based zero-knowledge argument uses commitments and anonymous credentials.",
+    "expected_present": {"primitive_tags": ["Lattice-Based ZK", "Zero-Knowledge", "Commitment", "Anonymous Credential"], "research_tags": ["ZK-friendly PQ Privacy"]},
+    "expected_absent": {"attack_tags": ["Primal Attack", "Hybrid Attack"]},
+    "notes": "Lattice ZK belongs to primitives/privacy rather than attack."
+  },
+  {
+    "id": "case_qary_module_lattice",
+    "title": "q-ary module lattice parameters",
+    "abstract": "The q-ary lattice and module lattice use parameter estimation for security analysis.",
+    "expected_present": {"lattice_tags": ["q-ary lattice", "Module Lattice"], "research_tags": ["Parameter Estimation Needed"]},
+    "expected_absent": {"ai_tags": ["AI4Lattice"]},
+    "notes": "Parameter-estimation metadata should be visible without AI tags."
+  },
+  {
+    "id": "case_rejection_sampling_leakage",
+    "title": "Rejection sampling leakage in Dilithium",
+    "abstract": "The implementation audit studies rejection sampling leakage, masking and constant-time verification for ML-DSA.",
+    "expected_present": {"pqc_tags": ["Dilithium", "ML-DSA", "Rejection Sampling"], "implementation_tags": ["Rejection Sampling Leakage", "Masking", "Constant-Time Verification", "Implementation Audit"], "research_tags": ["Implementation Security"]},
+    "expected_absent": {"pqc_tags": ["ML-KEM"]},
+    "notes": "Signature implementation security should not be confused with KEM."
+  },
+  {
+    "id": "case_sample_selection_lwe",
+    "title": "Sample selection for LWE distinguishers",
+    "abstract": "Sample selection and learned distinguishers are evaluated for LWE cryptanalysis.",
+    "expected_present": {"lattice_tags": ["LWE"], "attack_tags": ["Sample Selection", "Distinguisher"], "ai_tags": ["AI4Lattice", "Sample Selection", "Learned Distinguisher"]},
+    "expected_absent": {"lattice_tags": ["Module-LWE"]},
+    "notes": "Sample selection with LWE cryptanalysis is a valid AI4Lattice-adjacent case."
   }
 ]

@@ -48,6 +48,7 @@ powershell.exe -ExecutionPolicy Bypass -File scripts\audit_library_export.ps1 -I
 - **hybrid / dual / primal 需要 lattice attack 上下文**：普通英文语境里的 dual、primal、hybrid 不应误打 attack tag。
 - **FHE 应用论文不等于 lattice attack**：CKKS / BFV / BGV / TFHE 应归为 FHE 或 primitive；除非明确 attack/security/parameter/implementation，不应成为 lattice cryptanalysis。
 - **toy benchmark 不等于真实安全结论**：toy、small parameters、synthetic benchmark 只能作为实验线索，不能当作真实参数攻击结论。
+- **chameleon hash / commitment / hash-and-sign 不应混淆**：Module-SIS chameleon hash、SIS commitment 和 hash-and-sign 签名组件的接口、安全目标和后续 artifact 路线不同。
 
 ## 4. Zotero 手动导入检查
 
@@ -58,6 +59,7 @@ powershell.exe -ExecutionPolicy Bypass -File scripts\audit_library_export.ps1 -I
 - year / date 是否合理。
 - DOI 是否存在、是否重复。
 - URL 是否能打开。
+- abstract 是否缺失。
 - tags 是否过多，是否需要人工精简。
 - note 是否包含 source、reading priority、score、why it matters 和 research tags。
 - 高优先级论文是否需要进入专门 collection。
@@ -82,7 +84,16 @@ powershell.exe -ExecutionPolicy Bypass -File scripts\audit_library_export.ps1 -I
 
 导入后不要盲目保留全部自动标签。自动标签用于初筛，长期文献库仍需要人工整理。
 
-## 6. 未来 Zotero XPI 插件前置条件
+## 6. Zotero 标签治理建议
+
+- 优先保留研究主线标签，例如 LWE/RLWE/MLWE、Module-SIS、BKZ、AI4Lattice、ML-KEM/ML-DSA implementation security。
+- 对 `TODO_VERIFY` 标签要人工核验，不要把它当作已验证结论。
+- 对 AI4Lattice 标签要检查是否真的有 lattice / LWE / RLWE / MLWE / SIS / BKZ / cryptanalysis 上下文。
+- 对 FHE 标签要区分 theory、implementation、application、attack / security / parameter。
+- 对 Module-SIS / Chameleon Hash 标签要重点保留，因为它服务短期论文 artifact 与 chameleon hash / commitment 主线。
+- 对 hash-and-sign、commitment、chameleon hash 这三类原语不要混在同一个 Zotero collection 中。
+
+## 7. 未来 Zotero XPI 插件前置条件
 
 在开发 Zotero XPI 插件前，至少需要稳定完成：
 

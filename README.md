@@ -168,7 +168,7 @@ powershell.exe -ExecutionPolicy Bypass -File scripts\export_library.ps1 -Days 7
 
 Zotero XPI plugin is not included in v0.2.0-rc1. Current Zotero workflow is file-based manual import: export CSL JSON / BibTeX / RIS, then use Zotero `File -> Import` and manually verify authors, year, DOI, URL, tags, and notes. Release notes: [docs/releases/v0.2.0-rc1.md](docs/releases/v0.2.0-rc1.md).
 
-导出后可以运行 taxonomy quality audit 与 Zotero manual import test，检查标签误报、字段完整性和手动导入流程。说明见 [docs/library-export-audit.md](docs/library-export-audit.md)，脚本入口：
+导出后可以运行 Library Export Quality Audit、taxonomy quality audit 与 Zotero Manual Import Test，检查标签误报、字段完整性和手动导入流程。v0.2.0 stable depends on Phase 7B audit：需要先完成 file-based Zotero manual import 质量检查，再进入 stable 发布。说明见 [docs/library-export-audit.md](docs/library-export-audit.md)，脚本入口：
 
 ```powershell
 Set-Location "D:\Code\CodexProjects\lattice-crypto-daily-digest"

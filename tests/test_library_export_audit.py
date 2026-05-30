@@ -109,6 +109,8 @@ def test_audit_reports_from_data_digest_json() -> None:
 
         assert len(result.items) == 5
         tag_report = (output_dir / "tag-quality-report.md").read_text(encoding="utf-8")
+        assert "## 1. 标签审计摘要" in tag_report
+        assert "## 10. ZK-friendly PQ Privacy 候选" in tag_report
         assert "AI4Lattice" in tag_report
         assert "Module-SIS" in tag_report
         assert "Chameleon Hash" in tag_report
@@ -146,16 +148,26 @@ def test_field_confusion_and_zotero_reports_content() -> None:
         assert "缺 DOI 数量" in field_report
         assert "缺作者数量" in field_report
         assert "缺摘要数量" in field_report
+        assert "缺 source 数量" in field_report
+        assert "## 10. Zotero 导入风险" in field_report
 
         confusion = json.loads((output_dir / "taxonomy-confusion-report.json").read_text(encoding="utf-8"))
+        assert confusion["metadata"]["schema_version"] == 1
+        assert confusion["metadata"]["total_items"] == 5
         assert "lwe_rlwe_mlwe_distribution" in confusion
         assert "sis_module_sis_ring_sis_distribution" in confusion
+        assert "pqc_scheme_distribution" in confusion
+        assert "attack_distribution" in confusion
+        assert "primitive_distribution" in confusion
+        assert "field_quality_summary" in confusion
 
         checklist = (output_dir / "zotero-import-checklist.md").read_text(encoding="utf-8")
         assert "CSL JSON" in checklist
         assert "BibTeX" in checklist
         assert "RIS" in checklist
         assert "Zotero" in checklist
+        assert "file-based manual import" in checklist
+        assert "不是 Zotero XPI plugin" in checklist
 
 
 def test_audit_outputs_are_clean_and_secret_free() -> None:

@@ -8,7 +8,8 @@ param(
     [switch]$DryRun,
     [string[]]$Tag,
     [string[]]$Source,
-    [int]$MinPriorityScore = 0
+    [int]$MinPriorityScore = 0,
+    [string]$Format = "all"
 )
 
 $ErrorActionPreference = "Stop"
@@ -37,7 +38,7 @@ $pythonArgs = @(
     "-m", "lattice_digest.audit_library_export",
     "--input", $resolvedInput,
     "--output-dir", $OutputDir,
-    "--format", "all",
+    "--format", $Format,
     "--min-priority-score", "$MinPriorityScore"
 )
 

@@ -16,7 +16,7 @@ def _as_set(value: object) -> set[str]:
 def test_library_taxonomy_fixture_quality() -> None:
     cases = json.loads(FIXTURE.read_text(encoding="utf-8"))
 
-    assert 30 <= len(cases) <= 50
+    assert 40 <= len(cases) <= 60
 
     for case in cases:
         result = classify_text(title=case["title"], abstract=case["abstract"])
