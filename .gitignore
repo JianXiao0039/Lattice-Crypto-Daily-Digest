@@ -36,5 +36,14 @@ pytest/
 memory.md
 digests/*-error.md
 
+# Generated research/export artifacts
+exports/
+audits/
+data/*.json
+digests/*.md
+!data/.gitkeep
+!digests/.gitkeep
+papers.db
+
 # Python package build metadata
 src/*.egg-info/
