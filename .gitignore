@@ -41,6 +41,8 @@ exports/
 audits/
 data/*.json
 digests/*.md
+data/weekly/
+digests/weekly/
 !data/.gitkeep
 !digests/.gitkeep
 papers.db
