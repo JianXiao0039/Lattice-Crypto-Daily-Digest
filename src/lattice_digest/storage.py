@@ -6,8 +6,10 @@ from datetime import date
 from pathlib import Path
 
 from lattice_digest.digest import generate_markdown, record_intelligence, research_tags
+from lattice_digest.digest_sections import assign_research_sections
 from lattice_digest.dedup import dedup_keys
 from lattice_digest.models import PaperRecord, record_to_dict
+from lattice_digest.ranking_explainability import build_ranking_explanation
 
 
 def write_json(
@@ -41,6 +43,8 @@ def write_json(
                 "research_hooks": intelligence["research_hooks"],
                 "advisor_questions": intelligence["advisor_questions"],
                 "source_health_ref": intelligence["source_health_ref"],
+                "ranking_explanation": build_ranking_explanation(record),
+                "research_sections": assign_research_sections(record),
             }
         )
         enriched_records.append(item)

@@ -29,6 +29,7 @@ def test_forbidden_staged_generated_artifacts_are_detected() -> None:
         "digests/2026-05-31.md",
         "papers.db",
         ".env",
+        "state/reading-queue.json",
         "src/lattice_digest/storage.py",
     ]
 
@@ -44,6 +45,7 @@ def test_tracked_guard_blocks_runtime_dirs_by_default() -> None:
         "exports/zotero/items.csl.json",
         "audits/library-export/report.md",
         ".env",
+        "state/reading-queue.lock",
         "src/lattice_digest/storage.py",
         "data/2026-05-30.json",
         "digests/2026-05-30.md",
@@ -55,6 +57,7 @@ def test_tracked_guard_blocks_runtime_dirs_by_default() -> None:
     assert "exports/zotero/items.csl.json" in blocked
     assert "audits/library-export/report.md" in blocked
     assert ".env" in blocked
+    assert "state/reading-queue.lock" in blocked
     assert "src/lattice_digest/storage.py" not in blocked
     assert "data/2026-05-30.json" not in blocked
     assert "digests/2026-05-30.md" not in blocked

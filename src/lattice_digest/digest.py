@@ -3,7 +3,16 @@ from __future__ import annotations
 from collections import Counter
 from datetime import date
 
+from lattice_digest.digest_sections import (
+    IDEA_BANK_CANDIDATES,
+    PAPER_PLAN_CANDIDATES,
+    PAPER_SECTION_ORDER,
+    SOURCE_HEALTH_SUMMARY,
+    candidate_reason,
+    sectioned_records,
+)
 from lattice_digest.models import PaperRecord
+from lattice_digest.ranking_explainability import concise_ranking_explanation
 
 
 TOPIC_TERMS: dict[str, tuple[str, ...]] = {
@@ -860,6 +869,7 @@ def _basic_paper_lines(record: PaperRecord) -> list[str]:
         f"- 来源：{record.source}",
         f"- 链接：{link}",
         f"- 分类/分数：{record.relevance_label} / {record.relevance_score}",
+        f"- {concise_ranking_explanation(record)}",
         f"- priority：{intel['priority']}",
         f"- reading_priority_score：{intel['reading_priority_score']}",
         f"- priority_label：{intel['priority_label']}",
@@ -880,6 +890,41 @@ def _append_records(lines: list[str], records: list[PaperRecord], empty_text: st
     for index, record in enumerate(selected, start=1):
         lines.append(_paper_header(record, index))
         lines.extend(_basic_paper_lines(record))
+        lines.append("")
+
+
+def _record_identifier(record: PaperRecord) -> str:
+    return (
+        record.source_url
+        or record.paper_id
+        or record.arxiv_id
+        or record.eprint_id
+        or record.doi
+        or "unknown"
+    )
+
+
+def _research_section_entry(record: PaperRecord, section: str) -> str:
+    reason = ""
+    if section in {IDEA_BANK_CANDIDATES, PAPER_PLAN_CANDIDATES}:
+        reason = f"；候选原因：{candidate_reason(record, section)}"
+    return (
+        f"- {record.title}｜{record.relevance_label} / {record.relevance_score}｜"
+        f"{record.source}｜{_record_identifier(record)}｜{concise_ranking_explanation(record)}{reason}"
+    )
+
+
+def _append_research_sections(lines: list[str], records: list[PaperRecord]) -> None:
+    lines.extend(["### Research-Oriented Sections", ""])
+    mapping = sectioned_records(records)
+    for section in PAPER_SECTION_ORDER:
+        lines.extend([f"#### {section}", ""])
+        section_records = mapping.get(section, [])
+        if not section_records:
+            lines.extend(["- No matching records.", ""])
+            continue
+        for record in _sort_by_reading_priority(section_records):
+            lines.append(_research_section_entry(record, section))
         lines.append("")
 
 
@@ -1035,6 +1080,13 @@ def _append_source_health_and_empty(
     metadata: dict[str, object] | None = None,
 ) -> None:
     lines.extend(["## 8. 数据源健康与空报告处理", ""])
+    ledger_date = _metadata_text(metadata, "target_date", "")
+    if ledger_date:
+        lines.append(
+            f"- Source Health Ledger：`audits/source-health/{ledger_date}.json`；"
+            f"`audits/source-health/{ledger_date}.md`"
+        )
+    lines.extend([f"### {SOURCE_HEALTH_SUMMARY}", ""])
     if metadata:
         if metadata.get("collector") == "github_actions" or metadata.get("quality_status") == "provisional":
             lines.append(
@@ -1155,6 +1207,7 @@ def generate_markdown(
     _append_ai_section(lines, records)
     _append_reduction_section(lines, records)
     _append_pqc_section(lines, records)
+    _append_research_sections(lines, records)
     _append_reading_queue(lines, records)
     _append_idea_and_questions(lines, records)
     _append_source_health_and_empty(lines, records, filtered_count, source_health, warnings, metadata)

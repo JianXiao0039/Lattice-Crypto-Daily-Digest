@@ -22,6 +22,8 @@ NEVER_TRACK_PATTERNS = (
     "__pycache__",
     "*/__pycache__/*",
     ".env",
+    "state/reading-queue.json",
+    "state/reading-queue.lock",
 )
 
 GENERATED_ARTIFACT_PATTERNS = (
