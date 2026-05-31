@@ -39,6 +39,8 @@ digests/*-error.md
 # Generated research/export artifacts
 exports/
 audits/
+state/reading-queue.json
+state/reading-queue.lock
 data/*.json
 digests/*.md
 data/weekly/

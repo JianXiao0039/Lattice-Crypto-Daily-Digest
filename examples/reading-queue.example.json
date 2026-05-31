@@ -1,0 +1,49 @@
+{
+  "schema_version": 1,
+  "updated_at": "2026-05-31T00:00:00+00:00",
+  "records": [
+    {
+      "schema_version": 1,
+      "dedup_key": "arxiv:2605.00001",
+      "title": "Transformer LWE coordinate selection",
+      "source_url": "https://arxiv.org/abs/2605.00001",
+      "doi": "",
+      "arxiv_id": "2605.00001",
+      "publication_date": "2026-05-31",
+      "relevance_label": "A",
+      "relevance_score": 92,
+      "research_sections": [
+        "High-Priority Papers",
+        "LWE / RLWE / MLWE",
+        "BKZ / LLL / G6K / Lattice Reduction / Attacks",
+        "AI-assisted Lattice Cryptanalysis"
+      ],
+      "ranking_explanation": {
+        "schema_version": 1,
+        "relevance_score": 92,
+        "relevance_label": "A"
+      },
+      "seen_dates": [
+        "2026-05-31"
+      ],
+      "seen_sources": [
+        "arxiv"
+      ],
+      "queue_priority": "HIGH",
+      "track": "AI-assisted Lattice Cryptanalysis",
+      "reading_status": "TODO_READ",
+      "review_status": "TODO_VERIFY",
+      "zotero_key": "",
+      "obsidian_note_path": "",
+      "personal_notes_path": "",
+      "added_at": "2026-05-31T00:00:00+00:00",
+      "updated_at": "2026-05-31T00:00:00+00:00",
+      "status_history": [
+        {
+          "timestamp": "2026-05-31T00:00:00+00:00",
+          "action": "imported"
+        }
+      ]
+    }
+  ]
+}
