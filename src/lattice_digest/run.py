@@ -13,6 +13,7 @@ from lattice_digest.dedup import deduplicate
 from lattice_digest.digest import generate_markdown
 from lattice_digest.models import PaperRecord
 from lattice_digest.ranker import rank_records
+from lattice_digest.source_health_ledger import write_source_health_ledger
 from lattice_digest.sources import FetchContext, build_source
 from lattice_digest.sources.base import parse_date_for_filter
 from lattice_digest.storage import write_json, write_markdown, write_sqlite
@@ -364,6 +365,8 @@ def main(argv: list[str] | None = None) -> int:
         print("\nMarkdown preview:")
         print(generate_markdown(ordered, digest_date, dropped_count, source_health, context.warnings, args.since, metadata))
         return 0
+
+    write_source_health_ledger(source_health, root, digest_date, run_datetime)
 
     if _should_skip_write(existing_metadata, quality_status, args.force):
         old_quality = existing_metadata.get("quality_status") if existing_metadata else "unknown"
