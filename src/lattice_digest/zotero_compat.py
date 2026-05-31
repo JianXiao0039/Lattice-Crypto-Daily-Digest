@@ -713,10 +713,10 @@ def write_zotero_exports(
     return zotero_items, written
 
 
-def _default_dates(days: int | None, from_date: str | None, to_date: str | None) -> tuple[str | None, str | None]:
+def _default_dates(days: int | None, from_date: str | None, to_date: str | None, run_date: str | None = None) -> tuple[str | None, str | None]:
     if days is None or from_date or to_date:
         return from_date, to_date
-    today = date.today()
+    today = date.fromisoformat(run_date) if run_date else date.today()
     start = today - timedelta(days=max(0, days - 1))
     return start.isoformat(), today.isoformat()
 
@@ -733,15 +733,16 @@ def generate_zotero_export(
     include_provisional: bool = False,
     dry_run: bool = False,
     fail_on_empty: bool = False,
+    run_date: str | None = None,
 ) -> ZoteroExportResult:
-    from_date, to_date = _default_dates(days, from_date, to_date)
+    from_date, to_date = _default_dates(days, from_date, to_date, run_date)
     parsed_formats = parse_formats(formats)
     raw_items = _load_items_with_metadata(input_dir, from_date=from_date, to_date=to_date, include_provisional=include_provisional, dedup=False)
     deduped = dedup_records_for_zotero(raw_items)
     items = filter_items(deduped, min_priority_score=min_priority_score)
     if fail_on_empty and not items:
         raise ValueError("No Zotero-compatible records found for the requested input/date range.")
-    run_day = to_date or from_date or datetime.now(timezone.utc).date().isoformat()
+    run_day = run_date or to_date or from_date or datetime.now(timezone.utc).date().isoformat()
     run_dir = output_dir / run_day
     if dry_run:
         zotero_items = [record_to_zotero_item(item) for item in items]
@@ -770,6 +771,7 @@ def build_parser() -> argparse.ArgumentParser:
     parser.add_argument("--include-provisional", action="store_true")
     parser.add_argument("--dry-run", action="store_true")
     parser.add_argument("--fail-on-empty", action="store_true")
+    parser.add_argument("--run-date", default=None, help="Override output run date for deterministic tests, YYYY-MM-DD.")
     return parser
 
 
@@ -788,6 +790,7 @@ def main(argv: list[str] | None = None) -> int:
             include_provisional=args.include_provisional,
             dry_run=args.dry_run,
             fail_on_empty=args.fail_on_empty,
+            run_date=args.run_date,
         )
     except ValueError as exc:
         print(f"zotero export failed: {exc}")

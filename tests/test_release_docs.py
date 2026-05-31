@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 import re
+import tomllib
 from pathlib import Path
 
 
@@ -12,14 +13,11 @@ def _read(path: str) -> str:
 
 
 def test_version_metadata_contains_current_release_candidate() -> None:
-    candidates = []
-    for rel_path in ["VERSION", "pyproject.toml", "setup.cfg", "src/lattice_digest/__init__.py"]:
-        path = ROOT / rel_path
-        if path.exists():
-            candidates.append(path.read_text(encoding="utf-8"))
+    pyproject = tomllib.loads(_read("pyproject.toml"))
+    init = _read("src/lattice_digest/__init__.py")
 
-    assert candidates
-    assert any("0.2.0rc1" in content or "0.2.0-rc1" in content for content in candidates)
+    assert pyproject["project"]["version"] == "0.2.0"
+    assert '__version__ = "0.2.0"' in init
 
 
 def test_changelog_documents_v010_capabilities_and_limits() -> None:

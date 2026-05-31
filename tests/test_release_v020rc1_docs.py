@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 import re
+import tomllib
 from pathlib import Path
 
 
@@ -12,12 +13,12 @@ def _read(relative: str) -> str:
     return (ROOT / relative).read_text(encoding="utf-8")
 
 
-def test_version_field_contains_v020rc1() -> None:
-    pyproject = _read("pyproject.toml")
+def test_current_version_has_moved_beyond_v020rc1() -> None:
+    pyproject = tomllib.loads(_read("pyproject.toml"))
     init = _read("src/lattice_digest/__init__.py")
 
-    assert 'version = "0.2.0rc1"' in pyproject or "0.2.0-rc1" in pyproject
-    assert '__version__ = "0.2.0rc1"' in init or "0.2.0-rc1" in init
+    assert pyproject["project"]["version"] == "0.2.0"
+    assert '__version__ = "0.2.0"' in init
 
 
 def test_changelog_documents_v020rc1_library_export() -> None:
@@ -50,14 +51,12 @@ def test_release_checklist_contains_v020rc1_tag_command() -> None:
     assert "python -m pytest" in checklist
 
 
-def test_readme_links_v020rc1_and_library_interop() -> None:
+def test_readme_keeps_historical_v020rc1_link_and_library_interop() -> None:
     readme = _read("README.md")
 
     for needle in [
         "v0.2.0-rc1",
-        "Library Interoperability Release Candidate",
         "Stable Library Export Layer",
-        "Zotero-ready export",
         "CSL JSON",
         "BibTeX",
         "RIS",
@@ -65,7 +64,7 @@ def test_readme_links_v020rc1_and_library_interop() -> None:
         "docs/releases/v0.2.0-rc1.md",
     ]:
         assert needle in readme
-    assert "Zotero XPI plugin is not included in v0.2.0-rc1" in readme
+    assert "Zotero XPI plugin is not included in v0.2.0" in readme
     assert "file-based manual import" in readme
 
 

@@ -237,7 +237,7 @@ def test_item_type_inference_and_windows_style_output_path() -> None:
         root = Path(tmp)
         _write_digest(root)
         output_dir = root / "exports" / "zotero"
-        result = generate_zotero_export(input_dir=root / "data", output_dir=output_dir)
+        result = generate_zotero_export(input_dir=root / "data", output_dir=output_dir, run_date="2026-05-30")
         assert str(result.run_dir).endswith("2026-05-30")
         assert result.run_dir.exists()
 

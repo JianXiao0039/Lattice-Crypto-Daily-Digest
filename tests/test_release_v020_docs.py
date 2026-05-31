@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 import re
+import tomllib
 from pathlib import Path
 
 
@@ -13,10 +14,10 @@ def _read(relative: str) -> str:
 
 
 def test_version_field_contains_v020() -> None:
-    pyproject = _read("pyproject.toml")
+    pyproject = tomllib.loads(_read("pyproject.toml"))
     init = _read("src/lattice_digest/__init__.py")
 
-    assert 'version = "0.2.0"' in pyproject
+    assert pyproject["project"]["version"] == "0.2.0"
     assert '__version__ = "0.2.0"' in init
 
 

@@ -91,7 +91,8 @@ def write_markdown(
 
 
 def write_sqlite(records: list[PaperRecord], db_path: Path) -> Path:
-    with sqlite3.connect(db_path) as conn:
+    conn = sqlite3.connect(db_path)
+    try:
         conn.execute(
             """
             CREATE TABLE IF NOT EXISTS papers (
@@ -137,4 +138,10 @@ def write_sqlite(records: list[PaperRecord], db_path: Path) -> Path:
                     json.dumps(record_to_dict(record), ensure_ascii=False),
                 ),
             )
+        conn.commit()
+    except Exception:
+        conn.rollback()
+        raise
+    finally:
+        conn.close()
     return db_path
