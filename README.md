@@ -24,11 +24,18 @@
 
 ## 快速部署 / Quick Deployment
 
-Release status: v0.3.0 stable, Research Workflow Stabilization Release. v0.2.0 remains the Research Library Interoperability Stable Release. See [CHANGELOG.md](CHANGELOG.md), [docs/releases/v0.1.0.md](docs/releases/v0.1.0.md), [docs/releases/v0.2.0.md](docs/releases/v0.2.0.md), [docs/releases/v0.3.0.md](docs/releases/v0.3.0.md), historical [docs/releases/v0.2.0-rc1.md](docs/releases/v0.2.0-rc1.md), and [docs/release-checklist.md](docs/release-checklist.md).
+Release status: v0.3.1 patch release. v0.3.0 remains the Research Workflow Stabilization Release, and v0.2.0 remains the Research Library Interoperability Stable Release. See [CHANGELOG.md](CHANGELOG.md), [docs/releases/v0.1.0.md](docs/releases/v0.1.0.md), [docs/releases/v0.2.0.md](docs/releases/v0.2.0.md), [docs/releases/v0.3.0.md](docs/releases/v0.3.0.md), [docs/releases/v0.3.1.md](docs/releases/v0.3.1.md), historical [docs/releases/v0.2.0-rc1.md](docs/releases/v0.2.0-rc1.md), and [docs/release-checklist.md](docs/release-checklist.md).
 
 完整公开部署说明见 [docs/deployment-public.md](docs/deployment-public.md)。不需要 Codex 自动化模块也能部署和运行；Codex is not required for deployment.
 
 Quick Start / Local deployment / GitHub Actions deployment are documented in this README and in the public deployment guide. Recommended optional API configuration: set `SEMANTIC_SCHOLAR_API_KEY` to reduce Semantic Scholar rate-limit issues. Local authoritative backfill is recommended when GitHub Actions provisional coverage is degraded.
+
+Manual operations docs:
+
+- [docs/manual-operations-runbook.md](docs/manual-operations-runbook.md)：手动运行、dry-run default、low-load mode、read-only / write-file commands。
+- [docs/recovery-playbook.md](docs/recovery-playbook.md)：清理、reading queue backup、`papers.db` recovery、Windows SQLite file lock、tzdata / ZoneInfo。
+- [docs/artifact-retention-policy.md](docs/artifact-retention-policy.md)：哪些 generated artifacts 不应提交。
+- [docs/troubleshooting.md](docs/troubleshooting.md)：CI failure triage、offline/no-network usage 和常见 Windows 问题。
 
 Windows 11 PowerShell 最短本地验收命令：
 

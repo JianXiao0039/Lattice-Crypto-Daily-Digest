@@ -1,5 +1,42 @@
 # Changelog
 
+## v0.3.1 - 2026-06-01
+
+### Release type
+
+- Patch release.
+- Documentation and validation hardening release.
+- Does not change fetcher, ranking, source health semantics, section classifier, daily digest generation, weekly synthesis, reading queue, Obsidian scaffold, research progress, or workflow behavior.
+
+### Added / fixed since v0.3.0
+
+- Deterministic E2E workflow acceptance suite for the manual low-load research workflow chain.
+- Stale release test hotfix so v0.2.x and v0.3.0 tests remain archival and do not pin the current version.
+- Manual operations runbook for dry-run default, low-load mode, no-network/offline usage, and read-only versus write-file commands.
+- Recovery playbook covering cleanup, reading queue backup, `papers.db` recovery, Windows SQLite file locks, CI triage, and `tzdata` / `ZoneInfo` issues.
+- Artifact retention policy documenting generated artifacts that must not be committed by default.
+- Troubleshooting docs for shell differences, workflow execution, SQLite locks, timezone data, CI failures, and generated artifact hygiene.
+
+### Stable guarantees
+
+- Workflow command center remains manual-only.
+- `daily`, `weekly`, and `full` workflows still default to dry-run.
+- Writing workflow runs still require explicit `--execute`.
+- No Windows Task Scheduler integration, cron job, startup task, background service, watcher, or automatic scheduled local run is added.
+- Generated artifacts remain ignored and should not be staged by default.
+
+### Upgrade notes
+
+- Pull latest `main`.
+- Run `python -m pytest`.
+- Run `python scripts\check_release_hygiene.py`.
+- Run `git diff --check`.
+- Keep `exports/`, `audits/`, `state/reading-queue.json`, `data/*.json`, `digests/*.md`, `papers.db`, `.env`, and local caches out of feature commits.
+
+### English summary
+
+v0.3.1 is a patch release for validation and operator documentation. It adds deterministic E2E workflow acceptance tests, fixes stale archival release tests after v0.3.0, and documents manual operations, recovery, artifact retention, and troubleshooting. It does not add scheduled automation or change workflow, fetcher, ranking, source health, daily digest, weekly synthesis, reading queue, Obsidian scaffold, or research progress behavior.
+
 ## v0.3.0 - 2026-06-01
 
 ### Release type
