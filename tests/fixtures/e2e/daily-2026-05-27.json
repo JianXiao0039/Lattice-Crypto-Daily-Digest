@@ -1,0 +1,116 @@
+{
+  "metadata": {
+    "target_date": "2026-05-27",
+    "collector": "fixture",
+    "quality_status": "authoritative",
+    "run_mode": "e2e"
+  },
+  "records": [
+    {
+      "title": "Module-SIS chameleon hash commitments with reproducible parameters",
+      "normalized_title": "module sis chameleon hash commitments with reproducible parameters",
+      "authors": [
+        "Dana Example"
+      ],
+      "abstract": "A Module-SIS commitment and chameleon hash fixture with parameter estimation and implementation artifact hooks. It is a true positive for SIS, commitments and paper planning.",
+      "source": "iacr_eprint",
+      "source_url": "https://eprint.iacr.org/2026/901",
+      "doi": "10.5555/module-sis-chameleon",
+      "eprint_id": "2026/901",
+      "publication_date": "2026-05-27",
+      "relevance_label": "A",
+      "relevance_score": 89,
+      "keywords_matched": [
+        "Module-SIS",
+        "chameleon hash",
+        "commitment",
+        "parameter estimation"
+      ],
+      "taxonomy_tags": [
+        "Module-SIS",
+        "Chameleon Hash",
+        "Commitment"
+      ],
+      "ranking_explanation": {
+        "schema_version": 1,
+        "relevance_score": 89,
+        "relevance_label": "A",
+        "decision": "include",
+        "matched_taxonomy": [
+          "Chameleon Hash",
+          "Commitment",
+          "Module-SIS"
+        ],
+        "positive_signals": [
+          "Module-SIS",
+          "chameleon hash",
+          "commitment",
+          "parameter estimation"
+        ],
+        "negative_signals": []
+      }
+    },
+    {
+      "title": "ML-KEM side-channel implementation audit",
+      "normalized_title": "ml kem side channel implementation audit",
+      "authors": [
+        "Eve Example"
+      ],
+      "abstract": "A Kyber ML-KEM fixture covering constant-time implementation, side-channel leakage and fault attack audit workflow.",
+      "source": "crossref",
+      "source_url": "https://doi.org/10.5555/ml-kem-audit",
+      "doi": "10.5555/ml-kem-audit",
+      "publication_date": "2026-05-27",
+      "relevance_label": "B",
+      "relevance_score": 78,
+      "keywords_matched": [
+        "ML-KEM",
+        "Kyber",
+        "side-channel",
+        "fault attack",
+        "constant-time"
+      ],
+      "taxonomy_tags": [
+        "ML-KEM",
+        "Kyber",
+        "implementation security"
+      ],
+      "ranking_explanation": {
+        "schema_version": 1,
+        "relevance_score": 78,
+        "relevance_label": "B",
+        "decision": "include",
+        "matched_taxonomy": [
+          "Kyber",
+          "ML-KEM",
+          "side-channel"
+        ],
+        "positive_signals": [
+          "ML-KEM",
+          "Kyber",
+          "side-channel",
+          "fault attack"
+        ],
+        "negative_signals": []
+      }
+    }
+  ],
+  "source_health": [
+    {
+      "source": "Crossref",
+      "health_status": "green",
+      "status": "green",
+      "raw_count": 8,
+      "normalized_count": 8,
+      "date_filtered_count": 2,
+      "deduped_count": 2,
+      "relevance_filtered_count": 2,
+      "threshold_count": 2,
+      "final_count": 2,
+      "warnings": [],
+      "errors": [],
+      "error_type": null,
+      "retryable": false
+    }
+  ]
+}

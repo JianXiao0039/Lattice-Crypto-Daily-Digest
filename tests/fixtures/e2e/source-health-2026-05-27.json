@@ -1,0 +1,62 @@
+{
+  "schema_version": 1,
+  "run_date": "2026-05-27",
+  "generated_at": "2026-05-27T00:00:00+00:00",
+  "sources": [
+    {
+      "source": "arxiv",
+      "status": "green",
+      "raw_count": 12,
+      "normalized_count": 12,
+      "date_filtered_count": 2,
+      "deduped_count": 2,
+      "relevance_filtered_count": 2,
+      "threshold_count": 2,
+      "final_count": 2,
+      "warnings_count": 0,
+      "errors_count": 0,
+      "error_type": null,
+      "retryable": false,
+      "warnings": [],
+      "errors": []
+    },
+    {
+      "source": "Semantic Scholar",
+      "status": "yellow",
+      "raw_count": 4,
+      "normalized_count": 4,
+      "date_filtered_count": 1,
+      "deduped_count": 1,
+      "relevance_filtered_count": 0,
+      "threshold_count": 0,
+      "final_count": 0,
+      "warnings_count": 1,
+      "errors_count": 0,
+      "error_type": "rate_limit",
+      "retryable": true,
+      "warnings": [
+        "fixture partial rate-limit"
+      ],
+      "errors": []
+    },
+    {
+      "source": "OpenAlex",
+      "status": "red",
+      "raw_count": 0,
+      "normalized_count": 0,
+      "date_filtered_count": 0,
+      "deduped_count": 0,
+      "relevance_filtered_count": 0,
+      "threshold_count": 0,
+      "final_count": 0,
+      "warnings_count": 0,
+      "errors_count": 1,
+      "error_type": "429",
+      "retryable": true,
+      "warnings": [],
+      "errors": [
+        "fixture HTTP 429"
+      ]
+    }
+  ]
+}

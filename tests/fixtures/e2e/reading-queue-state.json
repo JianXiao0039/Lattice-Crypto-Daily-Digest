@@ -1,0 +1,52 @@
+{
+  "schema_version": 1,
+  "updated_at": "2026-05-28T00:00:00+00:00",
+  "records": [
+    {
+      "schema_version": 1,
+      "dedup_key": "arxiv:2605.90001",
+      "title": "Transformer LWE coordinate selection for hybrid attacks",
+      "source_url": "https://arxiv.org/abs/2605.90001",
+      "doi": "",
+      "arxiv_id": "2605.90001v1",
+      "publication_date": "2026-05-25",
+      "relevance_label": "A",
+      "relevance_score": 94,
+      "research_sections": [
+        "LWE / RLWE / MLWE",
+        "BKZ / LLL / G6K / Lattice Reduction / Attacks",
+        "AI-assisted Lattice Cryptanalysis"
+      ],
+      "report_buckets": [
+        "High-Priority Papers",
+        "Idea Bank Candidates",
+        "Paper Plan Candidates"
+      ],
+      "ranking_explanation": {
+        "relevance_label": "A",
+        "relevance_score": 94
+      },
+      "seen_dates": [
+        "2026-05-25"
+      ],
+      "seen_sources": [
+        "arxiv"
+      ],
+      "queue_priority": "HIGH",
+      "track": "AI-assisted Lattice Cryptanalysis",
+      "reading_status": "READING",
+      "review_status": "NEEDS_MATH_CHECK",
+      "zotero_key": "MANUAL123",
+      "obsidian_note_path": "Papers/transformer-lwe-coordinate-selection.md",
+      "personal_notes_path": "Notes/manual-transformer-lwe.md",
+      "added_at": "2026-05-28T00:00:00+00:00",
+      "updated_at": "2026-05-28T00:00:00+00:00",
+      "status_history": [
+        {
+          "timestamp": "2026-05-28T00:00:00+00:00",
+          "action": "manual-status"
+        }
+      ]
+    }
+  ]
+}

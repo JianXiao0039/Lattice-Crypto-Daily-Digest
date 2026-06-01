@@ -1,0 +1,120 @@
+{
+  "metadata": {
+    "target_date": "2026-05-25",
+    "collector": "fixture",
+    "quality_status": "authoritative",
+    "run_mode": "e2e"
+  },
+  "records": [
+    {
+      "title": "Transformer LWE coordinate selection for hybrid attacks",
+      "normalized_title": "transformer lwe coordinate selection for hybrid attacks",
+      "authors": [
+        "Alice Example",
+        "Bob Example"
+      ],
+      "abstract": "AI-assisted lattice cryptanalysis for LWE uses Transformer ranking to prioritize coordinates before a BKZ-assisted hybrid attack. The record is a deterministic fixture, not a real paper claim.",
+      "source": "arxiv",
+      "source_url": "https://arxiv.org/abs/2605.90001",
+      "arxiv_id": "2605.90001v1",
+      "publication_date": "2026-05-25",
+      "relevance_label": "A",
+      "relevance_score": 94,
+      "keywords_matched": [
+        "Transformer",
+        "LWE",
+        "BKZ",
+        "hybrid attack"
+      ],
+      "taxonomy_tags": [
+        "LWE",
+        "AI-assisted lattice cryptanalysis",
+        "BKZ"
+      ],
+      "ranking_explanation": {
+        "schema_version": 1,
+        "relevance_score": 94,
+        "relevance_label": "A",
+        "decision": "include",
+        "matched_taxonomy": [
+          "AI-assisted lattice cryptanalysis",
+          "BKZ",
+          "LWE"
+        ],
+        "positive_signals": [
+          "Transformer",
+          "LWE",
+          "BKZ",
+          "hybrid attack"
+        ],
+        "negative_signals": []
+      }
+    },
+    {
+      "title": "Falcon-X: a time series foundation model",
+      "normalized_title": "falcon x a time series foundation model",
+      "authors": [
+        "Forecast Example"
+      ],
+      "abstract": "A Falcon-X foundation model for heterogeneous multivariate time series forecasting. This fixture intentionally mentions Falcon-X without cryptographic signing context.",
+      "source": "crossref",
+      "source_url": "https://example.org/falcon-x-time-series",
+      "publication_date": "2026-05-25",
+      "relevance_label": "C",
+      "relevance_score": 45,
+      "keywords_matched": [
+        "Falcon-X"
+      ],
+      "taxonomy_tags": [],
+      "ranking_explanation": {
+        "schema_version": 1,
+        "relevance_score": 45,
+        "relevance_label": "C",
+        "decision": "watchlist",
+        "matched_taxonomy": [],
+        "positive_signals": [
+          "Falcon-X"
+        ],
+        "negative_signals": [
+          "Falcon-X is not Falcon/FN-DSA without PQC context"
+        ]
+      }
+    }
+  ],
+  "source_health": [
+    {
+      "source": "arxiv",
+      "health_status": "green",
+      "status": "green",
+      "raw_count": 12,
+      "normalized_count": 12,
+      "date_filtered_count": 2,
+      "deduped_count": 2,
+      "relevance_filtered_count": 2,
+      "threshold_count": 2,
+      "final_count": 2,
+      "warnings": [],
+      "errors": [],
+      "error_type": null,
+      "retryable": false
+    },
+    {
+      "source": "Semantic Scholar",
+      "health_status": "yellow",
+      "status": "yellow",
+      "raw_count": 4,
+      "normalized_count": 4,
+      "date_filtered_count": 1,
+      "deduped_count": 1,
+      "relevance_filtered_count": 0,
+      "threshold_count": 0,
+      "final_count": 0,
+      "warnings": [
+        "fixture partial rate-limit"
+      ],
+      "errors": [],
+      "error_type": "rate_limit",
+      "retryable": true
+    }
+  ]
+}

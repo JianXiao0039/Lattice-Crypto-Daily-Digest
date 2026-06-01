@@ -1,0 +1,129 @@
+{
+  "metadata": {
+    "target_date": "2026-05-26",
+    "collector": "fixture",
+    "quality_status": "authoritative",
+    "run_mode": "e2e"
+  },
+  "records": [
+    {
+      "title": "BKZ and G6K baselines for sparse LWE hybrid attacks",
+      "normalized_title": "bkz and g6k baselines for sparse lwe hybrid attacks",
+      "authors": [
+        "Carol Example"
+      ],
+      "abstract": "The fixture studies BKZ, G6K, fplll and lattice reduction baselines for sparse LWE dual and hybrid attacks. It is designed as a true positive for lattice reduction and LWE sections.",
+      "source": "iacr_eprint",
+      "source_url": "https://eprint.iacr.org/2026/900",
+      "eprint_id": "2026/900",
+      "publication_date": "2026-05-26",
+      "relevance_label": "A",
+      "relevance_score": 91,
+      "keywords_matched": [
+        "BKZ",
+        "G6K",
+        "fplll",
+        "sparse LWE",
+        "hybrid attack"
+      ],
+      "taxonomy_tags": [
+        "LWE",
+        "BKZ",
+        "G6K",
+        "fplll"
+      ],
+      "ranking_explanation": {
+        "schema_version": 1,
+        "relevance_score": 91,
+        "relevance_label": "A",
+        "decision": "include",
+        "matched_taxonomy": [
+          "BKZ",
+          "G6K",
+          "LWE",
+          "lattice reduction"
+        ],
+        "positive_signals": [
+          "BKZ",
+          "G6K",
+          "fplll",
+          "sparse LWE",
+          "hybrid attack"
+        ],
+        "negative_signals": []
+      }
+    },
+    {
+      "title": "Practical Anonymous Two-Party GBDT",
+      "normalized_title": "practical anonymous two party gbdt",
+      "authors": [
+        "Privacy Example"
+      ],
+      "abstract": "Privacy-preserving machine learning for anonymous two-party gradient boosting decision tree inference. The fixture is a general privacy systems example.",
+      "source": "dblp",
+      "source_url": "https://dblp.org/rec/conf/example/gbdt",
+      "publication_date": "2026-05-26",
+      "relevance_label": "C",
+      "relevance_score": 42,
+      "keywords_matched": [
+        "anonymous two-party",
+        "GBDT"
+      ],
+      "taxonomy_tags": [
+        "general privacy"
+      ],
+      "ranking_explanation": {
+        "schema_version": 1,
+        "relevance_score": 42,
+        "relevance_label": "C",
+        "decision": "background",
+        "matched_taxonomy": [
+          "general privacy"
+        ],
+        "positive_signals": [
+          "anonymous two-party",
+          "privacy-preserving"
+        ],
+        "negative_signals": [
+          "no lattice context"
+        ]
+      }
+    }
+  ],
+  "source_health": [
+    {
+      "source": "IACR ePrint",
+      "health_status": "green",
+      "status": "green",
+      "raw_count": 3,
+      "normalized_count": 3,
+      "date_filtered_count": 1,
+      "deduped_count": 1,
+      "relevance_filtered_count": 1,
+      "threshold_count": 1,
+      "final_count": 1,
+      "warnings": [],
+      "errors": [],
+      "error_type": null,
+      "retryable": false
+    },
+    {
+      "source": "OpenAlex",
+      "health_status": "red",
+      "status": "red",
+      "raw_count": 0,
+      "normalized_count": 0,
+      "date_filtered_count": 0,
+      "deduped_count": 0,
+      "relevance_filtered_count": 0,
+      "threshold_count": 0,
+      "final_count": 0,
+      "warnings": [],
+      "errors": [
+        "fixture HTTP 429"
+      ],
+      "error_type": "429",
+      "retryable": true
+    }
+  ]
+}
