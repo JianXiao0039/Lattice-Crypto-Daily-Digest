@@ -93,6 +93,19 @@ def _records_from_weekly(payload: dict[str, Any]) -> list[dict[str, Any]]:
                     continue
                 key = str(record.get("dedup_key") or dedup_key(record))
                 records[key] = record
+    report_buckets = payload.get("report_buckets")
+    if isinstance(report_buckets, dict):
+        for bucket_name, bucket_records in report_buckets.items():
+            if not isinstance(bucket_records, list):
+                continue
+            for record in bucket_records:
+                if not isinstance(record, dict):
+                    continue
+                key = str(record.get("dedup_key") or dedup_key(record))
+                merged = dict(records.get(key, record))
+                existing = merged.get("report_buckets") if isinstance(merged.get("report_buckets"), list) else []
+                merged["report_buckets"] = sorted({*existing, str(bucket_name)})
+                records[key] = merged
     return sorted(records.values(), key=reading_sort_key)
 
 
@@ -207,6 +220,7 @@ def render_reading_queue(records: list[dict[str, Any]], from_date: date, to_date
         lines.append(_record_line(record))
         lines.append(f"  - Status: {_status_for(record)}")
         lines.append(f"  - Sections: {', '.join(record.get('research_sections', [])) if isinstance(record.get('research_sections'), list) else 'unknown'}")
+        lines.append(f"  - Report buckets: {', '.join(record.get('report_buckets', [])) if isinstance(record.get('report_buckets'), list) else 'none'}")
     lines.append("")
     return "\n".join(lines)
 

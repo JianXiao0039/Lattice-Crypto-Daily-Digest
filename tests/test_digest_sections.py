@@ -16,6 +16,9 @@ from lattice_digest.digest_sections import (
     PAPER_PLAN_CANDIDATES,
     PQC_STANDARDS,
     SIS_NTRU_COMMITMENTS,
+    GENERAL_CRYPTO_PRIVACY,
+    OTHER_WATCHLIST,
+    assign_report_buckets,
     assign_research_sections,
     is_idea_bank_candidate,
     is_paper_plan_candidate,
@@ -41,9 +44,10 @@ def test_section_assignment_for_lwe_rlwe_mlwe() -> None:
     record = _record("Module-LWE attack estimates", "The work studies RLWE, MLWE and sparse LWE.")
 
     sections = assign_research_sections(record)
+    buckets = assign_report_buckets(record)
 
     assert LWE_FAMILY in sections
-    assert HIGH_PRIORITY in sections
+    assert HIGH_PRIORITY in buckets
 
 
 def test_section_assignment_for_sis_ntru_commitment_chameleon_hash() -> None:
@@ -97,8 +101,11 @@ def test_json_records_contain_research_sections() -> None:
         payload = json.loads(path.read_text(encoding="utf-8"))
 
     sections = payload["records"][0]["research_sections"]
+    buckets = payload["records"][0]["report_buckets"]
     assert LWE_FAMILY in sections
     assert LATTICE_REDUCTION_ATTACKS in sections
+    assert HIGH_PRIORITY not in sections
+    assert HIGH_PRIORITY in buckets
 
 
 def test_markdown_contains_expected_research_section_headers() -> None:
@@ -127,7 +134,7 @@ def test_idea_bank_candidate_criteria_are_deterministic() -> None:
 
     assert is_idea_bank_candidate(record) is True
     assert is_idea_bank_candidate(record) is True
-    assert IDEA_BANK_CANDIDATES in assign_research_sections(record)
+    assert IDEA_BANK_CANDIDATES in assign_report_buckets(record)
 
 
 def test_paper_plan_candidate_criteria_are_deterministic() -> None:
@@ -141,6 +148,118 @@ def test_paper_plan_candidate_criteria_are_deterministic() -> None:
 
     assert is_paper_plan_candidate(positive) is True
     assert is_paper_plan_candidate(positive) is True
-    assert PAPER_PLAN_CANDIDATES in assign_research_sections(positive)
+    assert PAPER_PLAN_CANDIDATES in assign_report_buckets(positive)
     assert is_paper_plan_candidate(weak) is False
     assert IMPLEMENTATION_SYSTEMS not in assign_research_sections(weak)
+
+
+def test_research_sections_are_topical_only_and_report_buckets_are_separate() -> None:
+    record = _record("Transformer LWE ranking", "AI-assisted lattice cryptanalysis for LWE.", score=92, label="A")
+
+    sections = assign_research_sections(record)
+    buckets = assign_report_buckets(record)
+
+    assert HIGH_PRIORITY not in sections
+    assert IDEA_BANK_CANDIDATES not in sections
+    assert PAPER_PLAN_CANDIDATES not in sections
+    assert HIGH_PRIORITY in buckets
+    assert IDEA_BANK_CANDIDATES in buckets
+    assert PAPER_PLAN_CANDIDATES in buckets
+
+
+def test_falcon_x_time_series_model_does_not_trigger_pqc_falcon() -> None:
+    record = _record(
+        "Falcon-X: a time series foundation model",
+        "A Falcon foundation model for heterogeneous multivariate forecasting.",
+    )
+
+    sections = assign_research_sections(record)
+
+    assert PQC_STANDARDS not in sections
+    assert OTHER_WATCHLIST in sections
+
+
+def test_anonymous_two_party_gbdt_without_lattice_routes_to_general_privacy_only() -> None:
+    record = _record(
+        "Practical Anonymous Two-Party Gradient Boosting Decision Tree",
+        "Privacy-preserving machine learning for anonymous two-party computation.",
+    )
+
+    sections = assign_research_sections(record)
+
+    assert GENERAL_CRYPTO_PRIVACY in sections
+    assert AI_LATTICE not in sections
+    assert LWE_FAMILY not in sections
+    assert SIS_NTRU_COMMITMENTS not in sections
+    assert PQC_STANDARDS not in sections
+
+
+def test_pir_without_lattice_terms_routes_to_general_crypto_privacy() -> None:
+    record = _record("Fast private information retrieval", "PIR protocol for database privacy.", label="B", score=70)
+
+    sections = assign_research_sections(record)
+
+    assert GENERAL_CRYPTO_PRIVACY in sections
+    assert LWE_FAMILY not in sections
+    assert PQC_STANDARDS not in sections
+
+
+def test_generic_ai_paper_without_lattice_terms_does_not_trigger_ai_lattice() -> None:
+    record = _record("Transformer foundation model for time series", "A neural model for forecasting.", label="B", score=70)
+
+    sections = assign_research_sections(record)
+
+    assert AI_LATTICE not in sections
+
+
+def test_generic_implementation_without_pqc_terms_does_not_trigger_pqc() -> None:
+    record = _record("Production implementation audit for distributed systems", "Implementation auditing and benchmark.", label="B", score=70)
+
+    sections = assign_research_sections(record)
+
+    assert IMPLEMENTATION_SYSTEMS in sections
+    assert PQC_STANDARDS not in sections
+
+
+def test_true_positive_transformer_for_lwe_gets_ai_and_lwe() -> None:
+    record = _record("Transformer for LWE", "Neural coordinate selection for LWE cryptanalysis.")
+
+    sections = assign_research_sections(record)
+
+    assert AI_LATTICE in sections
+    assert LWE_FAMILY in sections
+
+
+def test_true_positive_bkz_attack_on_lwe_gets_reduction_and_lwe() -> None:
+    record = _record("BKZ attack on LWE", "Dual attack and lattice reduction for LWE.")
+
+    sections = assign_research_sections(record)
+
+    assert LATTICE_REDUCTION_ATTACKS in sections
+    assert LWE_FAMILY in sections
+
+
+def test_true_positive_ml_dsa_implementation_audit_gets_pqc_and_implementation() -> None:
+    record = _record("ML-DSA production implementation audit", "Constant-time and fault audit for Dilithium.")
+
+    sections = assign_research_sections(record)
+
+    assert PQC_STANDARDS in sections
+    assert IMPLEMENTATION_SYSTEMS in sections
+
+
+def test_true_positive_module_sis_chameleon_hash_gets_sis_section() -> None:
+    record = _record("Module-SIS chameleon hash", "A lattice-based commitment interface.")
+
+    sections = assign_research_sections(record)
+
+    assert SIS_NTRU_COMMITMENTS in sections
+
+
+def test_true_positive_falcon_signature_implementation_gets_pqc() -> None:
+    record = _record("Falcon signature implementation", "Constant-time implementation of the Falcon signing algorithm.")
+
+    sections = assign_research_sections(record)
+
+    assert PQC_STANDARDS in sections
+    assert IMPLEMENTATION_SYSTEMS in sections

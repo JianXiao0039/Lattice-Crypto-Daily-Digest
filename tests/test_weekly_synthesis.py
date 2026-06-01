@@ -238,7 +238,8 @@ def test_idea_bank_candidate_selection_is_deterministic() -> None:
         second = build_weekly_synthesis(data_dir, date(2026, 5, 29), date(2026, 5, 31))
 
     assert first["idea_bank_candidates"] == second["idea_bank_candidates"]
-    assert any(IDEA_BANK_CANDIDATES in record["research_sections"] for record in first["sections"][AI_LATTICE])
+    assert any(IDEA_BANK_CANDIDATES in record["report_buckets"] for record in first["sections"][AI_LATTICE])
+    assert all(IDEA_BANK_CANDIDATES not in record["research_sections"] for record in first["sections"][AI_LATTICE])
 
 
 def test_paper_plan_candidate_selection_is_deterministic() -> None:
@@ -249,7 +250,8 @@ def test_paper_plan_candidate_selection_is_deterministic() -> None:
         second = build_weekly_synthesis(data_dir, date(2026, 5, 29), date(2026, 5, 31))
 
     assert first["paper_plan_candidates"] == second["paper_plan_candidates"]
-    assert any(PAPER_PLAN_CANDIDATES in record["research_sections"] for record in first["sections"][SIS_NTRU_COMMITMENTS])
+    assert any(PAPER_PLAN_CANDIDATES in record["report_buckets"] for record in first["sections"][SIS_NTRU_COMMITMENTS])
+    assert all(PAPER_PLAN_CANDIDATES not in record["research_sections"] for record in first["sections"][SIS_NTRU_COMMITMENTS])
 
 
 def test_weekly_synthesis_dry_run_writes_no_files() -> None:

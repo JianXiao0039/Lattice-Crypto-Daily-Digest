@@ -124,6 +124,7 @@ def assign_note_paths(records: list[dict[str, Any]], output_dir: Path) -> dict[s
 def render_note(record: dict[str, Any]) -> str:
     title = _clean(record.get("title") or "Untitled Paper")
     sections = _stable_list(record.get("research_sections"))
+    report_buckets = _stable_list(record.get("report_buckets"))
     lines = [
         "---",
         "type: paper_note",
@@ -138,6 +139,7 @@ def render_note(record: dict[str, Any]) -> str:
         f"review_status: {_yaml_scalar(record.get('review_status') or '')}",
         f"track: {_yaml_scalar(record.get('track') or '')}",
         *_yaml_list("research_sections", sections),
+        *_yaml_list("report_buckets", report_buckets),
         f"source_url: {_yaml_scalar(record.get('source_url') or '')}",
         f"doi: {_yaml_scalar(record.get('doi') or '')}",
         f"arxiv_id: {_yaml_scalar(record.get('arxiv_id') or '')}",
@@ -165,6 +167,7 @@ def render_note(record: dict[str, Any]) -> str:
             "- Needs verification against the original paper before any contribution, attack, security, or experiment statement.",
             f"- Queue track: {_clean(record.get('track') or 'Potentially relevant')}",
             f"- Research sections: {', '.join(sections) if sections else 'TODO_VERIFY'}",
+            f"- Report buckets: {', '.join(report_buckets) if report_buckets else 'none'}",
             "",
             "## Reading Goal",
             "",

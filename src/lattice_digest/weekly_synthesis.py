@@ -10,14 +10,17 @@ from typing import Any
 
 from lattice_digest.digest_sections import (
     AI_LATTICE,
+    HIGH_PRIORITY,
     IDEA_BANK_CANDIDATES,
     LATTICE_REDUCTION_ATTACKS,
     LWE_FAMILY,
     PAPER_PLAN_CANDIDATES,
-    PAPER_SECTION_ORDER,
     PQC_STANDARDS,
+    REPORT_BUCKET_ORDER,
     RESEARCH_SECTION_ORDER,
     SIS_NTRU_COMMITMENTS,
+    TOPICAL_SECTION_ORDER,
+    assign_report_buckets,
     assign_research_sections,
     candidate_reason,
 )
@@ -98,7 +101,18 @@ def _display_sort_key(record: dict[str, Any]) -> tuple[int, int, int, str]:
 
 def _stable_sections(values: list[str]) -> list[str]:
     order = {name: index for index, name in enumerate(RESEARCH_SECTION_ORDER)}
-    return sorted({value for value in values if value}, key=lambda value: (order.get(value, 999), value.lower()))
+    return sorted(
+        {value for value in values if value in order},
+        key=lambda value: (order.get(value, 999), value.lower()),
+    )
+
+
+def _stable_report_buckets(values: list[str]) -> list[str]:
+    order = {name: index for index, name in enumerate(REPORT_BUCKET_ORDER)}
+    return sorted(
+        {value for value in values if value in order},
+        key=lambda value: (order.get(value, 999), value.lower()),
+    )
 
 
 def _paper_record_from_dict(record: dict[str, Any]):
@@ -130,8 +144,22 @@ def _paper_record_from_dict(record: dict[str, Any]):
 def _research_sections(record: dict[str, Any]) -> list[str]:
     sections = record.get("research_sections")
     if isinstance(sections, list) and sections:
-        return _stable_sections([str(section) for section in sections])
+        topical = _stable_sections([str(section) for section in sections])
+        if topical:
+            return topical
     return assign_research_sections(_paper_record_from_dict(record))
+
+
+def _report_buckets(record: dict[str, Any]) -> list[str]:
+    buckets = record.get("report_buckets")
+    if isinstance(buckets, list) and buckets:
+        return _stable_report_buckets([str(bucket) for bucket in buckets])
+    legacy_sections = record.get("research_sections")
+    if isinstance(legacy_sections, list) and legacy_sections:
+        legacy = _stable_report_buckets([str(section) for section in legacy_sections])
+        if legacy:
+            return legacy
+    return assign_report_buckets(_paper_record_from_dict(record))
 
 
 def _merge_record(base: dict[str, Any], incoming: dict[str, Any]) -> dict[str, Any]:
@@ -143,9 +171,12 @@ def _merge_record(base: dict[str, Any], incoming: dict[str, Any]) -> dict[str, A
     merged["research_sections"] = _stable_sections(
         [*base.get("research_sections", []), *incoming.get("research_sections", [])]
     )
+    merged["report_buckets"] = _stable_report_buckets(
+        [*base.get("report_buckets", []), *incoming.get("report_buckets", [])]
+    )
     if _display_sort_key(incoming) < _display_sort_key(base):
         for key, value in incoming.items():
-            if key not in {"seen_dates", "seen_sources", "research_sections"}:
+            if key not in {"seen_dates", "seen_sources", "research_sections", "report_buckets"}:
                 merged[key] = value
     return merged
 
@@ -191,6 +222,7 @@ def _prepare_record(record: dict[str, Any], day: date) -> dict[str, Any]:
     source = str(item.get("source") or "unknown")
     item["seen_sources"] = [source]
     item["research_sections"] = _research_sections(item)
+    item["report_buckets"] = _report_buckets(item)
     item["dedup_key"] = dedup_key(item)
     return item
 
@@ -206,12 +238,21 @@ def aggregate_records(daily_payloads: list[tuple[date, dict[str, Any]]]) -> list
 
 
 def _section_map(records: list[dict[str, Any]]) -> dict[str, list[dict[str, Any]]]:
-    sections = {name: [] for name in PAPER_SECTION_ORDER}
+    sections = {name: [] for name in TOPICAL_SECTION_ORDER}
     for record in records:
         for section in record.get("research_sections", []):
             if section in sections:
                 sections[section].append(record)
     return {name: sorted(items, key=_display_sort_key) for name, items in sections.items()}
+
+
+def _report_bucket_map(records: list[dict[str, Any]]) -> dict[str, list[dict[str, Any]]]:
+    buckets = {name: [] for name in REPORT_BUCKET_ORDER}
+    for record in records:
+        for bucket in record.get("report_buckets", []):
+            if bucket in buckets:
+                buckets[bucket].append(record)
+    return {name: sorted(items, key=_display_sort_key) for name, items in buckets.items()}
 
 
 def _candidate_reason(record: dict[str, Any], section: str) -> str:
@@ -234,7 +275,7 @@ def _idea_candidates(records: list[dict[str, Any]]) -> list[dict[str, Any]]:
             "reason": _candidate_reason(record, IDEA_BANK_CANDIDATES),
         }
         for record in records
-        if IDEA_BANK_CANDIDATES in record.get("research_sections", [])
+        if IDEA_BANK_CANDIDATES in record.get("report_buckets", [])
     ]
     return sorted(candidates, key=lambda item: (LABEL_ORDER.get(str(item.get("relevance_label")), 9), -int(item.get("relevance_score") or 0), str(item.get("title") or "").lower()))
 
@@ -250,7 +291,7 @@ def _paper_plan_candidates(records: list[dict[str, Any]]) -> list[dict[str, Any]
             "reason": _candidate_reason(record, PAPER_PLAN_CANDIDATES),
         }
         for record in records
-        if PAPER_PLAN_CANDIDATES in record.get("research_sections", [])
+        if PAPER_PLAN_CANDIDATES in record.get("report_buckets", [])
     ]
     return sorted(candidates, key=lambda item: (LABEL_ORDER.get(str(item.get("relevance_label")), 9), -int(item.get("relevance_score") or 0), str(item.get("title") or "").lower()))
 
@@ -265,6 +306,7 @@ def build_weekly_synthesis(
     loaded_payloads, missing_days = load_daily_json(data_dir, selected_days)
     records = aggregate_records(loaded_payloads)
     sections = _section_map(records)
+    report_buckets = _report_bucket_map(records)
     total_records = sum(len(_records(payload)) for _, payload in loaded_payloads)
     label_counts = Counter(str(record.get("relevance_label") or "D") for record in records)
     generated = generated_at or datetime.now(timezone.utc)
@@ -284,6 +326,7 @@ def build_weekly_synthesis(
         },
         "label_counts": dict(sorted(label_counts.items(), key=lambda item: LABEL_ORDER.get(item[0], 9))),
         "sections": sections,
+        "report_buckets": report_buckets,
         "idea_bank_candidates": _idea_candidates(records),
         "paper_plan_candidates": _paper_plan_candidates(records),
         "source_health_summary": _source_health_summary(loaded_payloads),
@@ -335,9 +378,13 @@ def render_markdown(payload: dict[str, Any]) -> str:
         "Implementation / Side-channel / Systems": "Implementation / Side-channel / Systems",
     }
     sections = payload.get("sections", {})
+    report_buckets = payload.get("report_buckets", {})
     for title in section_titles:
         lines.extend([f"## {title}", ""])
-        records = sections.get(section_lookup[title], []) if isinstance(sections, dict) else []
+        if title == "High-Priority Papers This Week":
+            records = report_buckets.get(HIGH_PRIORITY, []) if isinstance(report_buckets, dict) else []
+        else:
+            records = sections.get(section_lookup[title], []) if isinstance(sections, dict) else []
         if not records:
             lines.extend(["- No matching records.", ""])
             continue

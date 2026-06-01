@@ -18,7 +18,9 @@ from lattice_digest.digest_sections import (
     LWE_FAMILY,
     PAPER_PLAN_CANDIDATES,
     PQC_STANDARDS,
+    REPORT_BUCKET_ORDER,
     SIS_NTRU_COMMITMENTS,
+    TOPICAL_SECTION_ORDER,
 )
 from lattice_digest.weekly_synthesis import build_weekly_synthesis, dedup_key
 
@@ -46,7 +48,7 @@ MAIN_RESEARCH_SECTIONS = (
     PQC_STANDARDS,
     IMPLEMENTATION_SYSTEMS,
 )
-IMPORT_SECTIONS = (HIGH_PRIORITY, IDEA_BANK_CANDIDATES, PAPER_PLAN_CANDIDATES, *MAIN_RESEARCH_SECTIONS)
+IMPORT_SECTIONS = (*REPORT_BUCKET_ORDER, *TOPICAL_SECTION_ORDER)
 LABEL_ORDER = {"A": 0, "B": 1, "C": 2, "D": 3}
 PRIORITY_ORDER = {"HIGH": 0, "MEDIUM": 1, "LOW": 2}
 
@@ -141,8 +143,20 @@ def _stable_list(values: Any) -> list[str]:
 
 def _stable_sections(values: Any) -> list[str]:
     sections = _stable_list(values)
-    order = {name: index for index, name in enumerate(IMPORT_SECTIONS)}
-    return sorted(sections, key=lambda item: (order.get(item, 999), item.lower()))
+    order = {name: index for index, name in enumerate(TOPICAL_SECTION_ORDER)}
+    return sorted(
+        [section for section in sections if section in order],
+        key=lambda item: (order.get(item, 999), item.lower()),
+    )
+
+
+def _stable_report_buckets(values: Any) -> list[str]:
+    buckets = _stable_list(values)
+    order = {name: index for index, name in enumerate(REPORT_BUCKET_ORDER)}
+    return sorted(
+        [bucket for bucket in buckets if bucket in order],
+        key=lambda item: (order.get(item, 999), item.lower()),
+    )
 
 
 def track_for_record(record: dict[str, Any]) -> str:
@@ -172,10 +186,11 @@ def default_reading_status(priority: str) -> str:
 
 def should_import_record(record: dict[str, Any]) -> bool:
     sections = set(_stable_sections(record.get("research_sections")))
+    buckets = set(_stable_report_buckets(record.get("report_buckets")))
     label = str(record.get("relevance_label") or "D")
-    if label == "D" and PAPER_PLAN_CANDIDATES not in sections:
+    if label == "D" and PAPER_PLAN_CANDIDATES not in buckets:
         return False
-    return bool(sections & set(IMPORT_SECTIONS))
+    return bool((sections & set(MAIN_RESEARCH_SECTIONS)) or (buckets & set(REPORT_BUCKET_ORDER)))
 
 
 def _records_from_weekly_payload(payload: dict[str, Any]) -> list[dict[str, Any]]:
@@ -191,12 +206,34 @@ def _records_from_weekly_payload(payload: dict[str, Any]) -> list[dict[str, Any]
                 continue
             item = dict(record)
             existing_sections = _stable_sections(item.get("research_sections"))
-            item["research_sections"] = _stable_sections([*existing_sections, str(section_name)])
+            existing_buckets = _stable_report_buckets(item.get("report_buckets"))
+            if section_name in TOPICAL_SECTION_ORDER:
+                item["research_sections"] = _stable_sections([*existing_sections, str(section_name)])
+                item["report_buckets"] = existing_buckets
+            elif section_name in REPORT_BUCKET_ORDER:
+                item["research_sections"] = existing_sections
+                item["report_buckets"] = _stable_report_buckets([*existing_buckets, str(section_name)])
+            else:
+                item["research_sections"] = existing_sections
+                item["report_buckets"] = existing_buckets
             key = _record_key(item)
             if key in records_by_key:
                 records_by_key[key] = _merge_candidate_records(records_by_key[key], item)
             else:
                 records_by_key[key] = item
+    report_buckets = payload.get("report_buckets")
+    if isinstance(report_buckets, dict):
+        for bucket_name, bucket_records in report_buckets.items():
+            if bucket_name not in REPORT_BUCKET_ORDER or not isinstance(bucket_records, list):
+                continue
+            for record in bucket_records:
+                if not isinstance(record, dict):
+                    continue
+                item = dict(record)
+                item["research_sections"] = _stable_sections(item.get("research_sections"))
+                item["report_buckets"] = _stable_report_buckets([*_stable_report_buckets(item.get("report_buckets")), str(bucket_name)])
+                key = _record_key(item)
+                records_by_key[key] = _merge_candidate_records(records_by_key[key], item) if key in records_by_key else item
     return sorted(records_by_key.values(), key=queue_sort_key)
 
 
@@ -205,11 +242,12 @@ def _merge_candidate_records(base: dict[str, Any], incoming: dict[str, Any]) -> 
     merged["seen_dates"] = sorted({*_stable_list(base.get("seen_dates")), *_stable_list(incoming.get("seen_dates"))})
     merged["seen_sources"] = sorted({*_stable_list(base.get("seen_sources")), *_stable_list(incoming.get("seen_sources"))})
     merged["research_sections"] = _stable_sections([*_stable_list(base.get("research_sections")), *_stable_list(incoming.get("research_sections"))])
+    merged["report_buckets"] = _stable_report_buckets([*_stable_list(base.get("report_buckets")), *_stable_list(incoming.get("report_buckets"))])
     incoming_score = int(incoming.get("relevance_score") or 0)
     base_score = int(base.get("relevance_score") or 0)
     if incoming_score > base_score:
         for key, value in incoming.items():
-            if key not in {"seen_dates", "seen_sources", "research_sections"}:
+            if key not in {"seen_dates", "seen_sources", "research_sections", "report_buckets"}:
                 merged[key] = value
     return merged
 
@@ -359,6 +397,7 @@ def _queue_record(record: dict[str, Any], timestamp: str) -> dict[str, Any]:
         "relevance_label": _clean(record.get("relevance_label") or "D"),
         "relevance_score": int(record.get("relevance_score") or record.get("reading_priority_score") or 0),
         "research_sections": sections,
+        "report_buckets": _stable_report_buckets(record.get("report_buckets")),
         "ranking_explanation": record.get("ranking_explanation") if isinstance(record.get("ranking_explanation"), dict) else {},
         "seen_dates": _stable_list(record.get("seen_dates")) or ([record.get("publication_date")] if record.get("publication_date") else []),
         "seen_sources": _stable_list(record.get("seen_sources")) or ([str(record.get("source"))] if record.get("source") else []),
@@ -411,6 +450,9 @@ def _merge_queue_record(existing: dict[str, Any], incoming: dict[str, Any], time
             continue
         if key == "research_sections":
             merged[key] = _stable_sections([*_stable_list(merged.get(key)), *_stable_list(value)])
+            continue
+        if key == "report_buckets":
+            merged[key] = _stable_report_buckets([*_stable_list(merged.get(key)), *_stable_list(value)])
             continue
         if value and not merged.get(key):
             merged[key] = value
