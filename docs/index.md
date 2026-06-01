@@ -10,6 +10,7 @@ Safety baseline: manual-only usage, dry-run default, explicit low-load mode, no-
 - [Workflow command center](workflow-command-center.md): `daily`, `weekly`, `full`, `status`, and `doctor` command behavior.
 - [Manual low-load workflow](manual-low-load-workflow.md): explicit `--low-load`, `--no-network`, and `--offline` usage.
 - [Research scope taxonomy](research-scope-taxonomy.md): topical sections, inclusion rules, exclusion rules, and golden examples.
+- [Query expansion and negative keywords](query-expansion-and-negative-keywords.md): anchored query expansion and false-positive suppression boundaries.
 
 ## Recovery and safety
 
