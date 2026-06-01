@@ -1,5 +1,47 @@
 # Changelog
 
+## v0.3.2 - 2026-06-01
+
+### Release type
+
+- Documentation and maintenance release.
+- No product feature expansion.
+- Does not change fetcher, ranking, source health semantics, section classifier, daily digest generation, weekly synthesis, reading queue, Obsidian scaffold, research progress, Zotero export, release hygiene semantics, or workflow behavior.
+
+### Added / fixed since v0.3.1
+
+- Documentation polish for the stable manual low-load research workflow.
+- `docs/index.md` documentation map for manual operations, recovery, pilot feedback, troubleshooting, and release notes.
+- README safe manual quickstart with manual-only workflow guidance.
+- Command safety matrix covering read-only status, write behavior, network behavior, low-load support, and notes.
+- One-week manual pilot docs for manual acceptance review.
+- Pilot feedback triage docs, summary template, and fix prioritization rules.
+- Maintenance cleanup / warning reduction from Phase 9C where applicable.
+
+### Stable guarantees
+
+- Workflow command center remains manual-only.
+- `daily`, `weekly`, and `full` workflows still use dry-run default behavior.
+- Writing workflow runs still require explicit `--execute`.
+- Low-load mode still requires explicit `--low-load`.
+- No-network/offline usage still requires explicit `--no-network` or `--offline` where supported.
+- No scheduled automation is added: no Windows Task Scheduler integration, cron job, startup task, background service, watcher, daemon, or automatic scheduled local run.
+- Generated artifacts must not be committed by default.
+- Reading queue manual statuses and local state remain user-owned.
+
+### Upgrade notes
+
+- Pull latest `main`.
+- Run `python -m pytest tests\test_release_v032_docs.py`.
+- Run `python -m pytest`.
+- Run `python scripts\check_release_hygiene.py`.
+- Run `git diff --check`.
+- Keep `exports/`, `audits/`, `research_artifacts/`, `.pytest_tmp/`, `__pycache__/`, `state/reading-queue.json`, local test `data/*.json`, `digests/*.md`, `papers.db`, `.env`, and local caches out of feature commits.
+
+### English summary
+
+v0.3.2 is a documentation and maintenance release after v0.3.1. It packages documentation polish, the `docs/index.md` documentation map, the README safe manual quickstart, command safety matrix, one-week manual pilot docs, pilot feedback triage docs, and maintenance cleanup / warning reduction where applicable. It preserves the manual-only workflow, dry-run default, explicit low-load mode, no-network/offline usage, and adds no scheduled automation.
+
 ## v0.3.1 - 2026-06-01
 
 ### Release type
