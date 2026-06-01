@@ -24,7 +24,7 @@
 
 ## 快速部署 / Quick Deployment
 
-Release status: v0.2.0 stable, Research Library Interoperability Stable Release. See [CHANGELOG.md](CHANGELOG.md), [docs/releases/v0.1.0.md](docs/releases/v0.1.0.md), [docs/releases/v0.2.0.md](docs/releases/v0.2.0.md), historical [docs/releases/v0.2.0-rc1.md](docs/releases/v0.2.0-rc1.md), and [docs/release-checklist.md](docs/release-checklist.md).
+Release status: v0.3.0 stable, Research Workflow Stabilization Release. v0.2.0 remains the Research Library Interoperability Stable Release. See [CHANGELOG.md](CHANGELOG.md), [docs/releases/v0.1.0.md](docs/releases/v0.1.0.md), [docs/releases/v0.2.0.md](docs/releases/v0.2.0.md), [docs/releases/v0.3.0.md](docs/releases/v0.3.0.md), historical [docs/releases/v0.2.0-rc1.md](docs/releases/v0.2.0-rc1.md), and [docs/release-checklist.md](docs/release-checklist.md).
 
 完整公开部署说明见 [docs/deployment-public.md](docs/deployment-public.md)。不需要 Codex 自动化模块也能部署和运行；Codex is not required for deployment.
 
@@ -56,6 +56,8 @@ GitHub Actions secrets 在仓库页面配置：`Settings -> Secrets and variable
 - Idea -> Paper Plan 自动升级，把高价值 idea 转成保守、可执行、可验证的论文计划草案。
 - Paper Plan -> Research Artifact scaffold，把论文计划转成可开工的研究项目骨架。
 - Idea Bank 和 Paper Plan 的 Obsidian 兼容 Markdown 输出。
+- 手动 Workflow Command Center：`daily`、`weekly`、`full`、`status`、`doctor`，默认 dry-run，写文件需要 `--execute`。
+- Manual low-load mode：`--low-load` 适合笔记本和低负载手动运行；本地不默认配置 scheduled automation、Task Scheduler、cron、后台服务或自启动。
 
 不把这些能力夸大为“自动写论文”或“自动判断安全性”。Paper Plan 和 Artifact Scaffold 只生成研究计划、目录结构、TODO 和复现实验骨架，不编造实验结果、安全证明或投稿结论。
 
@@ -193,8 +195,11 @@ powershell.exe -ExecutionPolicy Bypass -File scripts\export_zotero.ps1 -Days 7 -
 5. 生成 Idea Bank，把论文线索沉淀为长期研究想法。
 6. 将高价值 idea 升级为 Paper Plan，用于组会、导师讨论和短期论文设计。
 7. 从 Paper Plan 生成 Research Artifact scaffold，进入可复现实验和论文写作阶段。
+8. 使用 `python -m lattice_digest.workflow weekly --low-load` 做手动低负载 dry-run；需要写文件时再显式加入 `--execute`。
 
 该工作流服务两个目标：短期形成可执行的小论文或 artifact，长期沉淀 PhD 研究主线。
+
+本地命令中心不配置自动调度；所有 workflow 都由用户手动触发。说明见 [docs/workflow-command-center.md](docs/workflow-command-center.md) 和 [docs/manual-low-load-workflow.md](docs/manual-low-load-workflow.md)。
 
 ## 云端自动运行：GitHub Actions
 
@@ -365,6 +370,8 @@ Capabilities currently present in this branch:
 - Idea-to-Paper-Plan upgrade for turning promising ideas into conservative research plans.
 - Paper-Plan-to-Research-Artifact scaffold generation for reproducible experiments and writing.
 - Obsidian-compatible Markdown outputs for Idea Bank and Paper Plans.
+- Manual Workflow Command Center with `daily`, `weekly`, `full`, `status`, and `doctor`.
+- Manual low-load mode for laptop-friendly runs. Local scheduled automation is not configured by default: no Task Scheduler, cron, background service, daemon, or startup task is installed.
 
 The project does not automatically write papers or decide cryptographic security. Paper Plans and Research Artifacts are conservative planning drafts. They do not invent experimental results, security proofs, or publication claims.
 
@@ -468,8 +475,11 @@ Recommended workflow:
 5. Generate an Idea Bank from accumulated digest records.
 6. Upgrade strong ideas into Paper Plans for advisor discussion and short-term project design.
 7. Generate Research Artifact scaffolds from Paper Plans to start reproducible experiments and writing.
+8. Use `python -m lattice_digest.workflow weekly --low-load` for a manual low-load dry-run; add `--execute` only when you intentionally want files written.
 
 The workflow is meant to support both short-term paper/artifact execution and long-term PhD research-line development.
+
+The local workflow command center is manually triggered and does not configure scheduled automation. See [docs/workflow-command-center.md](docs/workflow-command-center.md) and [docs/manual-low-load-workflow.md](docs/manual-low-load-workflow.md).
 
 ## GitHub Actions
 

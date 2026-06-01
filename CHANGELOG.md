@@ -1,5 +1,59 @@
 # Changelog
 
+## v0.3.0 - 2026-06-01
+
+### Release type
+
+- Stabilization release.
+- Research workflow orchestration release.
+- Does not change fetcher, ranking, source health semantics, daily digest sections, or weekly synthesis semantics.
+
+### Added since v0.2.0
+
+- CI and release hygiene checks for Windows / Ubuntu validation.
+- Runtime Source Health Ledger under `audits/source-health/`.
+- Ranking explainability in JSON and Markdown digest output.
+- Research-oriented daily digest section assignment.
+- Golden examples for section classifier calibration.
+- Weekly Research Synthesis from existing daily JSON.
+- Research Artifact Export Pack.
+- Reading Queue Workflow and Review Status Tracker.
+- Obsidian Paper Note Scaffold.
+- Advisor Update and Research Progress Log.
+- Workflow Command Center with `daily`, `weekly`, `full`, `status`, and `doctor`.
+- Manual low-load workflow profiles for laptop-friendly user-triggered runs.
+
+### Stable guarantees
+
+- Workflows remain user-triggered.
+- `daily`, `weekly`, and `full` workflows default to dry-run.
+- Writing workflow runs require `--execute`.
+- Obsidian note generation still requires explicit `--generate-notes`.
+- `status` and `doctor` are read-only.
+- No Windows Task Scheduler integration, cron job, startup task, background daemon, or automatic scheduled local run is added.
+- Generated workflow manifests remain under ignored `exports/workflow-runs/`.
+
+### Known limitations
+
+- External academic APIs can still rate-limit, timeout, or return incomplete metadata.
+- GitHub Actions provisional coverage may remain weaker than local authoritative backfill.
+- Workflow command center coordinates existing modules; it does not replace careful manual review.
+- Low-load mode reduces workflow pressure only when explicitly requested.
+- This project is research triage and workflow automation, not a formal bibliographic authority database.
+
+### Upgrade notes
+
+- Pull latest `main`.
+- Run `python -m pytest`.
+- Run `python scripts/check_release_hygiene.py`.
+- Run `python -m lattice_digest.workflow doctor`.
+- Use `python -m lattice_digest.workflow weekly --low-load --skip-hygiene` for a safe manual dry-run.
+- Do not commit `exports/`, `audits/`, `state/reading-queue.json`, `data/*.json`, `digests/*.md`, or `papers.db` unless intentionally publishing digest artifacts.
+
+### English summary
+
+v0.3.0 is a stabilization release for the research workflow layer. It packages CI/release hygiene, source health ledger persistence, ranking explainability, research-oriented digest sections, weekly synthesis, artifact export, reading queue tracking, Obsidian note scaffolding, advisor progress logs, the workflow command center, and manual low-load profiles. It does not add scheduled local automation or change fetcher, ranking, section classifier, source health, daily digest, weekly synthesis, reading queue, Obsidian scaffold, research progress, or workflow semantics.
+
 ## v0.2.0 - 2026-05-30
 
 ### Release type
