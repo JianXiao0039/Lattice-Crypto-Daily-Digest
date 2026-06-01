@@ -1,6 +1,8 @@
 # Lattice Crypto Daily Digest
 
 - [中文说明](#中文说明)
+- [Safe manual quickstart](#safe-manual-quickstart)
+- [Documentation map](#documentation-map)
 - [English Version](#english-version)
 
 ## 中文说明
@@ -22,6 +24,31 @@
 - Module-SIS chameleon hash / commitment
 - ZK-friendly post-quantum privacy primitives
 
+## Safe manual quickstart
+
+本地研究工作流是 manual-only usage：所有命令都由用户手动触发。No scheduled automation is configured；本地不配置 Windows Task Scheduler、cron、后台服务、startup task、watcher 或 automatic scheduling。
+
+Workflow command center 默认 dry-run default。需要真实写文件时，先审查 dry-run 输出，再显式加入 `--execute`。
+
+```powershell
+Set-Location "D:\Code\CodexProjects\lattice-crypto-daily-digest"
+python -m lattice_digest.workflow status
+python -m lattice_digest.workflow doctor
+python -m lattice_digest.workflow weekly --low-load --skip-hygiene
+python -m lattice_digest.workflow daily --no-network --skip-hygiene
+```
+
+- `--low-load` 只在显式使用时降低手动运行的运行时 / 网络压力。
+- `--no-network` / `--offline` 在支持的 workflow 中跳过网络抓取。
+- generated artifacts must not be committed by default；`exports/`、`audits/`、`.pytest_tmp/`、`state/reading-queue.json`、本地测试 `data/` / `digests/` 和 `papers.db` 需要先人工判断。
+- reading queue manual statuses / local state should be preserved.
+
+## Documentation map
+
+文档入口见 [docs/index.md](docs/index.md)。它汇总 manual operations、workflow command center、manual low-load workflow、recovery、artifact retention、troubleshooting、pilot feedback triage 和 release notes。
+
+Core direct links: [docs/manual-operations-runbook.md](docs/manual-operations-runbook.md), [docs/workflow-command-center.md](docs/workflow-command-center.md), [docs/manual-low-load-workflow.md](docs/manual-low-load-workflow.md), [docs/recovery-playbook.md](docs/recovery-playbook.md), [docs/artifact-retention-policy.md](docs/artifact-retention-policy.md), [docs/troubleshooting.md](docs/troubleshooting.md), [docs/one-week-manual-pilot.md](docs/one-week-manual-pilot.md), [docs/pilot-acceptance-checklist.md](docs/pilot-acceptance-checklist.md), [docs/pilot-issue-log-template.md](docs/pilot-issue-log-template.md), [docs/pilot-feedback-triage.md](docs/pilot-feedback-triage.md), [docs/pilot-feedback-summary-template.md](docs/pilot-feedback-summary-template.md), [docs/pilot-fix-prioritization.md](docs/pilot-fix-prioritization.md).
+
 ## 快速部署 / Quick Deployment
 
 Release status: v0.3.1 patch release. v0.3.0 remains the Research Workflow Stabilization Release, and v0.2.0 remains the Research Library Interoperability Stable Release. See [CHANGELOG.md](CHANGELOG.md), [docs/releases/v0.1.0.md](docs/releases/v0.1.0.md), [docs/releases/v0.2.0.md](docs/releases/v0.2.0.md), [docs/releases/v0.3.0.md](docs/releases/v0.3.0.md), [docs/releases/v0.3.1.md](docs/releases/v0.3.1.md), historical [docs/releases/v0.2.0-rc1.md](docs/releases/v0.2.0-rc1.md), and [docs/release-checklist.md](docs/release-checklist.md).
@@ -30,21 +57,7 @@ Release status: v0.3.1 patch release. v0.3.0 remains the Research Workflow Stabi
 
 Quick Start / Local deployment / GitHub Actions deployment are documented in this README and in the public deployment guide. Recommended optional API configuration: set `SEMANTIC_SCHOLAR_API_KEY` to reduce Semantic Scholar rate-limit issues. Local authoritative backfill is recommended when GitHub Actions provisional coverage is degraded.
 
-Manual operations docs:
-
-- [docs/manual-operations-runbook.md](docs/manual-operations-runbook.md)：手动运行、dry-run default、low-load mode、read-only / write-file commands。
-- [docs/recovery-playbook.md](docs/recovery-playbook.md)：清理、reading queue backup、`papers.db` recovery、Windows SQLite file lock、tzdata / ZoneInfo。
-- [docs/artifact-retention-policy.md](docs/artifact-retention-policy.md)：哪些 generated artifacts 不应提交。
-- [docs/troubleshooting.md](docs/troubleshooting.md)：CI failure triage、offline/no-network usage 和常见 Windows 问题。
-
-One-week manual pilot docs:
-
-- [docs/one-week-manual-pilot.md](docs/one-week-manual-pilot.md)：7 天手动低负载 pilot routine。
-- [docs/pilot-acceptance-checklist.md](docs/pilot-acceptance-checklist.md)：pilot acceptance criteria。
-- [docs/pilot-issue-log-template.md](docs/pilot-issue-log-template.md)：pilot issue log template。
-- [docs/pilot-feedback-triage.md](docs/pilot-feedback-triage.md)：pilot feedback triage categories, severity, and phase targets。
-- [docs/pilot-feedback-summary-template.md](docs/pilot-feedback-summary-template.md)：pilot feedback summary template。
-- [docs/pilot-fix-prioritization.md](docs/pilot-fix-prioritization.md)：pilot fix prioritization rules。
+Manual operations, pilot feedback, recovery, artifact retention, troubleshooting, and release docs are mapped in [docs/index.md](docs/index.md).
 
 Windows 11 PowerShell 最短本地验收命令：
 

@@ -1,6 +1,6 @@
 # Manual Low-Load Workflow Profiles
 
-本项目不配置任何自动后台任务。Phase 8K 只增加手动触发的低负载 workflow profile，用于笔记本、本地 Windows 环境或临时网络较差时安全运行。
+本项目不配置任何自动后台任务。Phase 8K 只增加手动触发的低负载 workflow profile，用于笔记本、本地 Windows 环境或临时网络较差时安全运行。Low-load mode is manually triggered; no background task is installed.
 
 ## 1. 明确不做的事情
 
@@ -11,7 +11,7 @@
 - No background daemons.
 - No automatic scheduled runs.
 
-所有命令都必须由用户手动触发。默认行为仍是 dry-run，不写文件。
+所有命令都必须由用户手动触发。默认行为仍是 dry-run，不写文件。No scheduled automation is configured.
 
 ## 2. Profile 类型
 
@@ -32,18 +32,18 @@ python -m lattice_digest.workflow daily --low-load
 python -m lattice_digest.workflow weekly --low-load
 ```
 
-在 daily workflow 中，如果用户没有显式指定 `--since`，低负载 profile 会把 workflow 默认的 `7d` 日报窗口收敛到 `36h`，减少运行时间和网络压力。它只在显式传入 `--low-load` 时生效，不改变普通模式语义。
+在 daily workflow 中，如果用户没有显式指定 `--since`，低负载 profile 会把 workflow 默认的 `7d` 日报窗口收敛到 `36h`，减少运行时间和网络压力。`--low-load` reduces runtime / network pressure only when explicitly used; it does not change normal mode semantics.
 
 ### offline / no-network
 
-离线或无网络 profile 会跳过 daily 抓取步骤，只允许读取已有本地 JSON、阅读队列、source health ledger 和研究产物：
+离线或无网络 profile 会在支持的 workflow 中跳过 network fetch，只允许读取已有本地 JSON、阅读队列、source health ledger 和研究产物：
 
 ```powershell
 python -m lattice_digest.workflow daily --no-network
 python -m lattice_digest.workflow full --no-network
 ```
 
-这不会运行 fetcher，也不会发起网络请求。weekly workflow 本身只使用已有本地文件。
+`--no-network` / `--offline` skip network fetch where supported. 这不会运行 fetcher，也不会发起网络请求。weekly workflow 本身只使用已有本地文件。
 
 ## 3. 写文件仍需要 --execute
 

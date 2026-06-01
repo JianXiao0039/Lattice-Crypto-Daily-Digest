@@ -1,6 +1,6 @@
 # Artifact Retention Policy
 
-本策略说明哪些文件适合提交，哪些文件默认只保留在本地。项目是 manual-only workflow；no scheduled automation is configured。
+本策略说明哪些文件适合提交，哪些文件默认只保留在本地。项目是 manual-only workflow；no scheduled automation is configured。No automatic cleanup daemon or scheduled cleanup is recommended.
 
 ## 1. Principles
 
@@ -26,10 +26,11 @@
 
 ## 3. Usually not committed
 
-默认不要提交：
+Generated artifacts must not be committed by default. 默认不要提交：
 
 - `exports/`
 - `audits/`
+- `research_artifacts/`
 - `.pytest_tmp/`
 - `__pycache__/`
 - `state/reading-queue.json`
@@ -67,7 +68,7 @@
 
 ## 6. Reading queue
 
-`state/reading-queue.json` 包含人工阅读状态、review status、Obsidian note path、Zotero key 等本地状态，默认不提交。
+`state/reading-queue.json` 包含人工阅读状态、review status、Obsidian note path、Zotero key 等 local personal state，默认不提交。reading queue manual statuses should be preserved.
 
 备份建议见 `docs/recovery-playbook.md`。
 
@@ -86,7 +87,7 @@ git clean -ndX
 git clean -fdX
 ```
 
-不要清理未忽略文件，除非已经确认它们不是用户手写资料。
+不要清理未忽略文件，除非已经确认它们不是用户手写资料。不要配置自动清理 daemon、scheduled cleanup、startup cleanup 或后台清理服务。
 
 ## 8. English summary
 

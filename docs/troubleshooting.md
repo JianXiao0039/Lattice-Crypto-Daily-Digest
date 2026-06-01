@@ -1,6 +1,6 @@
 # Troubleshooting
 
-本文件收集本项目最常见的本地与 CI 问题。项目不配置自动调度；所有命令都应由用户手动触发。
+本文件收集本项目最常见的本地与 CI 问题。项目不配置自动调度；所有命令都应由用户手动触发。No scheduled automation is configured.
 
 ## 1. Command shell confusion
 
@@ -102,12 +102,53 @@ git status -sb
 
 常见原因：
 
+- release hygiene failure；
+- version mismatch failure；
+- README missing link failure；
+- workflow doctor failure；
 - release docs/test 中的旧版本断言没有归档化；
 - Windows SQLite file lock；
 - Windows 缺 `tzdata`；
 - generated artifacts 被误追踪；
-- line ending warning；
+- LF/CRLF git diff --check warning；
 - 文档断言缺失 README link。
+
+### Release hygiene failure
+
+症状：`python scripts\check_release_hygiene.py` 返回非零，或提示 generated artifacts、版本文档、release checklist 不一致。
+
+处理：
+
+```powershell
+python scripts\check_release_hygiene.py
+git status -sb
+```
+
+先确认是否误改了 release docs、生成物或版本号；不要用提交 generated artifacts 来绕过 hygiene failure。
+
+### Version mismatch failure
+
+症状：README、CHANGELOG、release notes、`pyproject.toml` 或 release tests 对当前版本的描述不一致。
+
+处理：以当前 release docs 和 `CHANGELOG.md` 为准，更新 stale wording；历史 release notes 保持历史语境，不把旧版本改成 latest。
+
+### README missing link failure
+
+症状：docs tests 报 README missing link。
+
+处理：确认 README 是否链接到 [docs/index.md](index.md) 或对应核心文档；优先补导航，不要移动文档导致旧链接失效。
+
+### Workflow doctor failure
+
+症状：`python -m lattice_digest.workflow doctor` 报环境、依赖、路径或本地状态问题。
+
+处理：先按 doctor 输出修复环境；如果涉及写文件，先运行 dry-run 并检查 `git status -sb`。
+
+### LF/CRLF git diff --check warning
+
+症状：`git diff --check` 报 whitespace、CRLF 或 trailing whitespace。
+
+处理：修正文档或代码行尾；不要通过关闭检查来绕过。
 
 ## 7. Network source warnings
 
@@ -141,6 +182,8 @@ git status --ignored -sb -- exports audits state data digests papers.db .pytest_
 - `digests/*.md`
 - `papers.db`
 - `.env`
+
+generated artifacts must not be committed by default. `state/reading-queue.json` 是 local personal state；reading queue manual statuses should be preserved.
 
 ## 9. Reading queue looks wrong
 

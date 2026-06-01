@@ -1,6 +1,6 @@
 # Recovery Playbook
 
-本 playbook 用于本地误操作、测试产物残留、SQLite 文件锁、reading queue 误改和 `papers.db` 恢复。项目不配置 scheduled automation；恢复操作也必须手动执行。
+本 playbook 用于本地误操作、测试产物残留、SQLite 文件锁、reading queue 误改和 `papers.db` 恢复。项目不配置 scheduled automation；恢复操作也必须手动执行。No automatic cleanup daemon or scheduled cleanup is recommended.
 
 English summary: use this document for manual recovery only. No background recovery service or scheduled task is configured.
 
@@ -28,6 +28,8 @@ git diff --check
 
 ## 2. Cleanup commands
 
+Generated artifacts must not be committed by default. 常见本地生成物包括 `exports/`、`audits/`、`research_artifacts/`、`.pytest_tmp/`、`__pycache__/`、`state/reading-queue.json`、本地测试 `data/` / `digests/` 和 `papers.db`。
+
 清理 pytest 临时目录：
 
 ```powershell
@@ -38,6 +40,7 @@ if (Test-Path ".pytest_tmp") { Remove-Item ".pytest_tmp" -Recurse -Force }
 清理 Python cache：
 
 ```powershell
+Set-Location "D:\Code\CodexProjects\lattice-crypto-daily-digest"
 Get-ChildItem -Path . -Recurse -Directory -Filter "__pycache__" | Remove-Item -Recurse -Force
 ```
 
@@ -57,7 +60,7 @@ git clean -fdX
 
 ## 3. Reading queue backup and recovery
 
-`state/reading-queue.json` 保存人工阅读状态，默认不提交。执行会写 queue 的命令前，建议备份：
+`state/reading-queue.json` 保存人工阅读状态，是 local personal state，默认不提交。reading queue manual statuses should be preserved. 执行会写 queue 的命令前，建议备份：
 
 ```powershell
 Set-Location "D:\Code\CodexProjects\lattice-crypto-daily-digest"
@@ -159,4 +162,4 @@ git status -sb
 git status --ignored -sb -- exports audits state data digests papers.db .pytest_tmp __pycache__
 ```
 
-如果只是 ignored artifacts，通常不需要提交。需要清理时按第 2 节执行。`data/`、`digests/`、`papers.db` 若是正式日报产物，必须单独判断，不要混入功能修复。
+如果只是 ignored artifacts，通常不需要提交。需要清理时按第 2 节执行。`data/`、`digests/`、`papers.db` 若是正式日报产物，必须单独判断，不要混入功能修复。不要配置自动清理服务、定时清理任务或后台清理进程。

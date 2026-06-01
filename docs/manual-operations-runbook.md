@@ -88,7 +88,23 @@ python -m lattice_digest.workflow daily --offline --skip-hygiene
 
 `status` 和 `doctor` 是只读命令，不应执行网络抓取。`--no-network` / `--offline` 用于避免 daily fetch 类步骤。
 
-## 7. Read-only commands
+## 7. Command safety matrix
+
+| Command | Read-only or not | Writes files or not | Network behavior | Low-load support | Notes |
+| --- | --- | --- | --- | --- | --- |
+| `git status -sb` | Read-only | No | No network | N/A | First check before cleanup or commit decisions. |
+| `git diff --check` | Read-only | No | No network | N/A | Catches whitespace and LF/CRLF diff issues. |
+| `python scripts\check_release_hygiene.py` | Read-only check | No | No network | N/A | Checks release hygiene and generated artifact boundaries. |
+| `python -m lattice_digest.workflow status` | Read-only | No | No network fetch | N/A | Safe local state overview. |
+| `python -m lattice_digest.workflow doctor` | Read-only | No | No network fetch | N/A | Environment checks only. |
+| `python -m lattice_digest.workflow weekly --low-load --skip-hygiene` | Dry-run plan | No | Uses local artifacts | Yes | Manual low-load weekly plan; add `--execute` only after review. |
+| `python -m lattice_digest.workflow daily --low-load --skip-hygiene` | Dry-run plan | No | May plan network fetches | Yes | `--low-load` applies only because it is explicitly passed. |
+| `python -m lattice_digest.workflow daily --no-network --skip-hygiene` | Dry-run plan | No | Skips network fetch where supported | Optional | Use for offline or no-network checks. |
+| `python -m lattice_digest.workflow weekly --execute --low-load --skip-hygiene` | Not read-only | Yes | Uses local artifacts | Yes | Writes weekly outputs, reading queue updates, progress logs, and manifests. |
+| `python -m lattice_digest.run --since 36h --output markdown,json --send none` | Not read-only | Yes | Fetches configured sources | No workflow profile | Writes daily Markdown, JSON, and `papers.db`. |
+| `python -m lattice_digest.obsidian_scaffold generate` | Not read-only | Yes | No network fetch expected | No workflow profile | Writes Obsidian scaffold output only when intentionally run. |
+
+## 8. Read-only commands
 
 这些命令用于检查，不应写入研究产物：
 
@@ -101,7 +117,7 @@ python -m lattice_digest.workflow daily --offline --skip-hygiene
 | Workflow doctor | `python -m lattice_digest.workflow doctor` | 只读 |
 | Weekly dry-run | `python -m lattice_digest.workflow weekly --low-load --skip-hygiene` | dry-run，不写产物 |
 
-## 8. Commands that write files
+## 9. Commands that write files
 
 这些命令会写入文件，运行前先确认工作区状态：
 
@@ -113,9 +129,9 @@ python -m lattice_digest.workflow daily --offline --skip-hygiene
 | `python -m lattice_digest.obsidian_scaffold generate` | Obsidian paper note scaffolds |
 | `python -m lattice_digest.research_progress generate` | advisor update and verification backlog |
 
-## 9. Generated artifacts that must not be committed by default
+## 10. Generated artifacts that must not be committed by default
 
-默认不要提交：
+Generated artifacts must not be committed by default. 默认不要提交：
 
 - `exports/`
 - `audits/`
@@ -132,7 +148,7 @@ python -m lattice_digest.workflow daily --offline --skip-hygiene
 
 `data/`、`digests/`、`papers.db` 只有在明确发布日报产物时才应作为单独 artifact commit 处理，不要混入功能 commit。
 
-## 10. Before any commit
+## 11. Before any commit
 
 ```powershell
 Set-Location "D:\Code\CodexProjects\lattice-crypto-daily-digest"
