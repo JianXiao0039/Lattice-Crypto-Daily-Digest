@@ -42,6 +42,9 @@ One-week manual pilot docs:
 - [docs/one-week-manual-pilot.md](docs/one-week-manual-pilot.md)：7 天手动低负载 pilot routine。
 - [docs/pilot-acceptance-checklist.md](docs/pilot-acceptance-checklist.md)：pilot acceptance criteria。
 - [docs/pilot-issue-log-template.md](docs/pilot-issue-log-template.md)：pilot issue log template。
+- [docs/pilot-feedback-triage.md](docs/pilot-feedback-triage.md)：pilot feedback triage categories, severity, and phase targets。
+- [docs/pilot-feedback-summary-template.md](docs/pilot-feedback-summary-template.md)：pilot feedback summary template。
+- [docs/pilot-fix-prioritization.md](docs/pilot-fix-prioritization.md)：pilot fix prioritization rules。
 
 Windows 11 PowerShell 最短本地验收命令：
 
