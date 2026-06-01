@@ -37,6 +37,12 @@ Manual operations docs:
 - [docs/artifact-retention-policy.md](docs/artifact-retention-policy.md)：哪些 generated artifacts 不应提交。
 - [docs/troubleshooting.md](docs/troubleshooting.md)：CI failure triage、offline/no-network usage 和常见 Windows 问题。
 
+One-week manual pilot docs:
+
+- [docs/one-week-manual-pilot.md](docs/one-week-manual-pilot.md)：7 天手动低负载 pilot routine。
+- [docs/pilot-acceptance-checklist.md](docs/pilot-acceptance-checklist.md)：pilot acceptance criteria。
+- [docs/pilot-issue-log-template.md](docs/pilot-issue-log-template.md)：pilot issue log template。
+
 Windows 11 PowerShell 最短本地验收命令：
 
 ```powershell
