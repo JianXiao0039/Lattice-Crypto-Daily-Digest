@@ -2,6 +2,8 @@
 
 本文档描述 `lattice-crypto-daily-digest` 的研究覆盖范围、section assignment 规则和误报控制边界。它只说明 taxonomy / topical section 语义，不定义新的 workflow 行为。
 
+Phase 9M/9N 扩展主题必须保持 lattice cryptography 或 post-quantum cryptography grounded。泛 DP、FL、LLM fine-tuning、registration、encryption、isomorphism、zero-knowledge、credential、commitment 或 privacy 论文本身不够，必须出现 lattice / PQC / HE / FHE / SIS / LWE / RLWE / MLWE / NTRU / Module-SIS / Module-LWE 等明确锚点，才进入 lattice-specific sections。
+
 English summary: this document defines research scope and deterministic topical sections. It does not add scheduled automation, cron jobs, Windows Task Scheduler integration, background services, startup tasks, or automatic runs.
 
 ## 1. Core lattice cryptography sections
@@ -23,20 +25,22 @@ These sections are deterministic tags for research routing. They do not change A
 
 Section name: `Lattice + Privacy / FL / LLM Fine-tuning`.
 
-Include only when privacy / federated learning / LLM fine-tuning terms co-occur with lattice, PQC, HE, FHE, RLWE, MLWE, or secure-aggregation anchors.
+Include only when privacy / federated learning / LLM fine-tuning terms co-occur with explicit lattice/PQC/HE/FHE cryptographic anchors.
 
 Positive examples:
 
 - Differentially private federated fine-tuning with RLWE-based secure aggregation.
 - Lattice-based secure aggregation for federated learning.
 - Homomorphic encryption for ML using lattice-based HE.
+- Fully homomorphic encryption for private LLM fine-tuning based on RLWE.
 - PQC-secure federated learning with explicit lattice or HE evidence.
 
 False positives to exclude:
 
 - Generic DP-SGD for LLM fine-tuning.
 - Generic federated learning paper without cryptography.
-- Generic privacy-preserving training without lattice, PQC, HE, FHE, or secure aggregation evidence.
+- Generic secure aggregation without HE/FHE/lattice/PQC evidence.
+- Generic privacy-preserving training without lattice, PQC, HE, FHE, or secure aggregation cryptographic evidence.
 
 ## 3. Lattice Isomorphism / Advanced Lattice Assumptions
 
@@ -49,6 +53,7 @@ Include explicit lattice-isomorphism terms:
 - isomorphism of lattices
 - lattice automorphism
 - structured lattice isomorphism
+- LIP only when the surrounding text is explicitly lattice/PQC/isomorphism context.
 
 False positives to exclude:
 
@@ -57,27 +62,33 @@ False positives to exclude:
 - code isomorphism
 - neural isomorphism
 - chemical isomorphism
+- image registration
+- point cloud registration
 
 ## 4. Registration-Based Encryption / Advanced Encryption Primitives
 
 Section name: `Registration-Based Encryption / Advanced Encryption Primitives`.
 
-Include:
+Include only lattice/PQC-grounded RBE evidence:
 
-- registration-based encryption
-- registered encryption
-- registered identity-based encryption
-- registration-based key management
-- public-key encryption with registration
-- LWE-based or lattice-based RBE constructions
+- lattice-based registration-based encryption
+- LWE-based registration-based encryption
+- SIS-based registration-based encryption
+- post-quantum registration-based encryption
+- PQC registration-based encryption
+- registration-based encryption from lattices
 
-For generic registration terms, require cryptographic anchors such as encryption, public key, identity-based encryption, ABE, LWE, PQC, or cryptographic primitive.
+Generic `registration` plus `encryption` is not enough. Generic `registration-based encryption` without lattice/PQC/LWE/SIS anchors is also not enough for this lattice-specific section.
 
 False positives to exclude:
 
 - user account registration systems
 - web login / signup workflows
 - database account registration
+- medical image registration
+- point cloud registration
+- domain registration
+- certificate registration unless explicitly tied to lattice/PQC RBE
 
 ## 5. Lattice Advanced Primitives
 
@@ -98,6 +109,23 @@ Include lattice-based or PQC-backed versions of:
 - MLWE primitive
 
 Do not overclassify generic ZK, anonymous credential, or privacy primitive papers as lattice work unless there is explicit lattice, PQC, SIS, LWE, RLWE, MLWE, Module-SIS, or NTRU evidence. Generic cryptographic privacy papers should route to `General Cryptography / Privacy`.
+
+Positive examples:
+
+- Module-SIS chameleon hash.
+- SIS-based commitment.
+- Lattice-based anonymous credential.
+- Lattice-based ring signature.
+- LWE-based functional encryption.
+- Lattice-based zero-knowledge proof.
+
+False positives to exclude:
+
+- Generic zero-knowledge proof.
+- Generic anonymous credential.
+- Generic commitment scheme.
+- Generic functional encryption.
+- Generic accumulator, ABE, FE, predicate encryption, or ring signature without lattice/PQC evidence.
 
 ## 6. AI4Lattice boundary
 

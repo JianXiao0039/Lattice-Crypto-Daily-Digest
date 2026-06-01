@@ -505,5 +505,274 @@
     ],
     "expected_report_buckets": [],
     "notes": "Homomorphic-sounding ML without cryptographic HE/FHE evidence is not a lattice privacy hit."
+  },
+  {
+    "id": "false_positive_registration_access_control",
+    "title": "Registration-Based Access Control System",
+    "abstract": "A generic access-control workflow for enterprise user registration.",
+    "keywords": [
+      "registration"
+    ],
+    "source": "crossref",
+    "relevance_label": "B",
+    "relevance_score": 70,
+    "expected_sections": [
+      "Other / Watchlist"
+    ],
+    "forbidden_sections": [
+      "Registration-Based Encryption / Advanced Encryption Primitives"
+    ],
+    "expected_report_buckets": [],
+    "notes": "Generic registration access control is not lattice/PQC RBE."
+  },
+  {
+    "id": "false_positive_account_registration_with_encryption",
+    "title": "User Account Registration with Encryption",
+    "abstract": "A web account registration system encrypts stored profiles.",
+    "keywords": [
+      "account registration",
+      "encryption"
+    ],
+    "source": "crossref",
+    "relevance_label": "B",
+    "relevance_score": 70,
+    "expected_sections": [
+      "Other / Watchlist"
+    ],
+    "forbidden_sections": [
+      "Registration-Based Encryption / Advanced Encryption Primitives"
+    ],
+    "expected_report_buckets": [],
+    "notes": "Generic registration plus encryption is not enough for RBE."
+  },
+  {
+    "id": "false_positive_medical_image_registration_encrypted_storage",
+    "title": "Medical Image Registration with Encrypted Storage",
+    "abstract": "A medical image registration pipeline stores records encrypted at rest.",
+    "keywords": [
+      "image registration",
+      "encrypted storage"
+    ],
+    "source": "crossref",
+    "relevance_label": "B",
+    "relevance_score": 70,
+    "expected_sections": [
+      "Other / Watchlist"
+    ],
+    "forbidden_sections": [
+      "Registration-Based Encryption / Advanced Encryption Primitives",
+      "Lattice Isomorphism / Advanced Lattice Assumptions"
+    ],
+    "expected_report_buckets": [],
+    "notes": "Image registration is not cryptographic RBE or lattice isomorphism."
+  },
+  {
+    "id": "false_positive_generic_registration_based_encryption",
+    "title": "Registration-Based Encryption for Databases",
+    "abstract": "A generic registration-based encryption interface for database middleware.",
+    "keywords": [
+      "registration-based encryption"
+    ],
+    "source": "crossref",
+    "relevance_label": "B",
+    "relevance_score": 70,
+    "expected_sections": [
+      "Other / Watchlist"
+    ],
+    "forbidden_sections": [
+      "Registration-Based Encryption / Advanced Encryption Primitives"
+    ],
+    "expected_report_buckets": [],
+    "notes": "RBE without lattice/PQC anchors is excluded from lattice-specific RBE."
+  },
+  {
+    "id": "false_positive_generic_secure_aggregation",
+    "title": "Generic Secure Aggregation",
+    "abstract": "A generic secure aggregation protocol for distributed statistics.",
+    "keywords": [
+      "secure aggregation"
+    ],
+    "source": "dblp",
+    "relevance_label": "B",
+    "relevance_score": 70,
+    "expected_sections": [
+      "General Cryptography / Privacy"
+    ],
+    "forbidden_sections": [
+      "Lattice + Privacy / FL / LLM Fine-tuning"
+    ],
+    "expected_report_buckets": [],
+    "notes": "Secure aggregation without HE/FHE/lattice/PQC anchors stays general privacy."
+  },
+  {
+    "id": "false_positive_code_isomorphism",
+    "title": "The Code Isomorphism Problem",
+    "abstract": "We study code isomorphism and equivalence of linear codes.",
+    "keywords": [
+      "code isomorphism"
+    ],
+    "source": "arxiv",
+    "relevance_label": "B",
+    "relevance_score": 70,
+    "expected_sections": [
+      "Other / Watchlist"
+    ],
+    "forbidden_sections": [
+      "Lattice Isomorphism / Advanced Lattice Assumptions"
+    ],
+    "expected_report_buckets": [],
+    "notes": "Code isomorphism is not lattice isomorphism."
+  },
+  {
+    "id": "false_positive_generic_commitment_scheme",
+    "title": "A Generic Commitment Scheme",
+    "abstract": "A commitment scheme for application protocols using standard assumptions.",
+    "keywords": [
+      "commitment"
+    ],
+    "source": "dblp",
+    "relevance_label": "B",
+    "relevance_score": 70,
+    "expected_sections": [
+      "Other / Watchlist"
+    ],
+    "forbidden_sections": [
+      "SIS / NTRU / Commitments / Chameleon Hash",
+      "Lattice Advanced Primitives"
+    ],
+    "expected_report_buckets": [],
+    "notes": "Generic commitment without lattice/PQC/SIS evidence should not enter lattice primitive sections."
+  },
+  {
+    "id": "false_positive_generic_functional_encryption",
+    "title": "Generic Functional Encryption",
+    "abstract": "A functional encryption survey using standard assumptions.",
+    "keywords": [
+      "functional encryption"
+    ],
+    "source": "dblp",
+    "relevance_label": "B",
+    "relevance_score": 70,
+    "expected_sections": [
+      "Other / Watchlist"
+    ],
+    "forbidden_sections": [
+      "Lattice Advanced Primitives"
+    ],
+    "expected_report_buckets": [],
+    "notes": "Functional encryption needs lattice/PQC evidence for lattice advanced primitive routing."
+  },
+  {
+    "id": "true_positive_post_quantum_rbe_lattices",
+    "title": "Post-Quantum Registration-Based Encryption from Lattices",
+    "abstract": "A PQC registration-based encryption primitive built from lattices.",
+    "keywords": [
+      "post-quantum registration-based encryption",
+      "lattices"
+    ],
+    "source": "iacr_eprint",
+    "relevance_label": "A",
+    "relevance_score": 86,
+    "expected_sections": [
+      "PQC Standards / ML-KEM / ML-DSA / Falcon",
+      "Registration-Based Encryption / Advanced Encryption Primitives"
+    ],
+    "forbidden_sections": [],
+    "expected_report_buckets": [
+      "High-Priority Papers",
+      "Idea Bank Candidates",
+      "Paper Plan Candidates"
+    ],
+    "notes": "Post-quantum RBE from lattices is included."
+  },
+  {
+    "id": "true_positive_fhe_private_llm_rlwe",
+    "title": "Fully Homomorphic Encryption for Private LLM Fine-Tuning",
+    "abstract": "A private LLM fine-tuning protocol based on RLWE fully homomorphic encryption.",
+    "keywords": [
+      "FHE",
+      "private LLM fine-tuning",
+      "RLWE"
+    ],
+    "source": "arxiv",
+    "relevance_label": "A",
+    "relevance_score": 86,
+    "expected_sections": [
+      "LWE / RLWE / MLWE",
+      "Lattice + Privacy / FL / LLM Fine-tuning"
+    ],
+    "forbidden_sections": [],
+    "expected_report_buckets": [
+      "High-Priority Papers",
+      "Idea Bank Candidates",
+      "Paper Plan Candidates"
+    ],
+    "notes": "FHE + RLWE anchors make private LLM fine-tuning in scope."
+  },
+  {
+    "id": "true_positive_sis_based_commitment",
+    "title": "SIS-Based Commitment",
+    "abstract": "A SIS-based commitment scheme with parameter analysis.",
+    "keywords": [
+      "SIS-based commitment"
+    ],
+    "source": "iacr_eprint",
+    "relevance_label": "A",
+    "relevance_score": 86,
+    "expected_sections": [
+      "SIS / NTRU / Commitments / Chameleon Hash",
+      "Lattice Advanced Primitives"
+    ],
+    "forbidden_sections": [],
+    "expected_report_buckets": [
+      "High-Priority Papers",
+      "Idea Bank Candidates",
+      "Paper Plan Candidates"
+    ],
+    "notes": "SIS-based commitment is a lattice advanced primitive."
+  },
+  {
+    "id": "true_positive_lattice_ring_signature",
+    "title": "Lattice-Based Ring Signature",
+    "abstract": "A lattice-based ring signature from module lattices.",
+    "keywords": [
+      "lattice-based ring signature"
+    ],
+    "source": "iacr_eprint",
+    "relevance_label": "A",
+    "relevance_score": 86,
+    "expected_sections": [
+      "PQC Standards / ML-KEM / ML-DSA / Falcon",
+      "Lattice Advanced Primitives"
+    ],
+    "forbidden_sections": [],
+    "expected_report_buckets": [
+      "High-Priority Papers",
+      "Idea Bank Candidates",
+      "Paper Plan Candidates"
+    ],
+    "notes": "Lattice ring signature is an advanced primitive."
+  },
+  {
+    "id": "true_positive_lwe_functional_encryption",
+    "title": "LWE-Based Functional Encryption",
+    "abstract": "A functional encryption primitive based on LWE.",
+    "keywords": [
+      "LWE-based functional encryption"
+    ],
+    "source": "iacr_eprint",
+    "relevance_label": "A",
+    "relevance_score": 86,
+    "expected_sections": [
+      "LWE / RLWE / MLWE",
+      "Lattice Advanced Primitives"
+    ],
+    "forbidden_sections": [],
+    "expected_report_buckets": [
+      "High-Priority Papers",
+      "Idea Bank Candidates",
+      "Paper Plan Candidates"
+    ],
+    "notes": "LWE-based FE is a lattice advanced primitive."
   }
 ]

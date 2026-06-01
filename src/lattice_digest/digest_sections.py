@@ -237,6 +237,37 @@ GENERAL_CRYPTO_PRIVACY_TERMS = (
     "gbdt",
 )
 
+LATTICE_PQC_HE_ANCHORS = (
+    "lattice",
+    "lattices",
+    "lattice-based",
+    "lwe",
+    "rlwe",
+    "ring-lwe",
+    "mlwe",
+    "module-lwe",
+    "sis",
+    "module-sis",
+    "ntru",
+    "pqc",
+    "post-quantum",
+    "ml-kem",
+    "ml-dsa",
+    "kyber",
+    "dilithium",
+    "falcon signature",
+    "fn-dsa",
+    "homomorphic encryption",
+    "fully homomorphic encryption",
+    "fhe",
+    "ckks",
+    "bfv",
+    "bgv",
+    "tfhe",
+    "rlwe-based secure aggregation",
+    "lattice-based secure aggregation",
+)
+
 PRIVACY_FL_LLM_TERMS = (
     "differential privacy",
     "dp-sgd",
@@ -255,27 +286,10 @@ PRIVACY_FL_LLM_TERMS = (
 )
 
 PRIVACY_FL_LLM_ANCHORS = (
-    "lattice",
-    "lattice-based",
-    "post-quantum",
-    "pqc",
-    "lwe",
-    "rlwe",
-    "ring-lwe",
-    "mlwe",
-    "module-lwe",
-    "sis",
-    "module-sis",
-    "ntru",
+    *LATTICE_PQC_HE_ANCHORS,
     "homomorphic encryption",
     "fully homomorphic encryption",
-    "fhe",
-    "ckks",
-    "bfv",
-    "bgv",
-    "tfhe",
     "lattice-based he",
-    "rlwe-based secure aggregation",
 )
 
 LATTICE_ISOMORPHISM_TERMS = (
@@ -304,6 +318,12 @@ LATTICE_ISOMORPHISM_FALSE_TERMS = (
 )
 
 REGISTRATION_ENCRYPTION_STRONG_TERMS = (
+    "lattice-based registration-based encryption",
+    "lwe-based registration-based encryption",
+    "sis-based registration-based encryption",
+    "post-quantum registration-based encryption",
+    "pqc registration-based encryption",
+    "registration-based encryption from lattices",
     "registration-based encryption",
     "registered encryption",
     "registered identity-based encryption",
@@ -311,24 +331,30 @@ REGISTRATION_ENCRYPTION_STRONG_TERMS = (
     "public-key encryption with registration",
 )
 
-REGISTRATION_ENCRYPTION_WEAK_TERMS = (
-    "rbe",
-    "registration",
-    "registered",
-)
-
 REGISTRATION_ENCRYPTION_ANCHORS = (
-    "encryption",
-    "public key",
-    "public-key",
-    "identity-based",
-    "ibe",
-    "abe",
     "lattice",
+    "lattices",
+    "lattice-based",
     "lwe",
+    "rlwe",
+    "mlwe",
+    "module-lwe",
+    "sis",
+    "module-sis",
+    "ntru",
     "pqc",
     "post-quantum",
-    "cryptographic primitive",
+)
+
+REGISTRATION_ENCRYPTION_FALSE_TERMS = (
+    "user registration",
+    "account registration",
+    "registration system",
+    "medical image registration",
+    "image registration",
+    "point cloud registration",
+    "domain registration",
+    "certificate registration",
 )
 
 ADVANCED_PRIMITIVE_TERMS = (
@@ -352,18 +378,8 @@ ADVANCED_PRIMITIVE_TERMS = (
 )
 
 ADVANCED_PRIMITIVE_ANCHORS = (
-    "lattice",
-    "lattice-based",
-    "post-quantum",
-    "pqc",
-    "lwe",
-    "rlwe",
-    "mlwe",
-    "module-lwe",
-    "sis",
-    "module-sis",
+    *LATTICE_PQC_HE_ANCHORS,
     "ring-sis",
-    "ntru",
 )
 
 CRYPTO_CONTEXT_TERMS = (
@@ -488,9 +504,9 @@ def _has_lattice_isomorphism(text: str) -> bool:
 
 
 def _has_registration_encryption(text: str) -> bool:
-    if _has(text, REGISTRATION_ENCRYPTION_STRONG_TERMS):
-        return True
-    return _has(text, REGISTRATION_ENCRYPTION_WEAK_TERMS) and _has(text, REGISTRATION_ENCRYPTION_ANCHORS)
+    if _has(text, REGISTRATION_ENCRYPTION_FALSE_TERMS) and not _has(text, REGISTRATION_ENCRYPTION_ANCHORS):
+        return False
+    return _has(text, REGISTRATION_ENCRYPTION_STRONG_TERMS) and _has(text, REGISTRATION_ENCRYPTION_ANCHORS)
 
 
 def _has_lattice_advanced_primitives(text: str) -> bool:
