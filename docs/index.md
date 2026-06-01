@@ -9,6 +9,7 @@ Safety baseline: manual-only usage, dry-run default, explicit low-load mode, no-
 - [Manual operations runbook](manual-operations-runbook.md): safe daily operating commands, command safety matrix, generated artifact boundaries.
 - [Workflow command center](workflow-command-center.md): `daily`, `weekly`, `full`, `status`, and `doctor` command behavior.
 - [Manual low-load workflow](manual-low-load-workflow.md): explicit `--low-load`, `--no-network`, and `--offline` usage.
+- [Research scope taxonomy](research-scope-taxonomy.md): topical sections, inclusion rules, exclusion rules, and golden examples.
 
 ## Recovery and safety
 
@@ -28,6 +29,7 @@ Safety baseline: manual-only usage, dry-run default, explicit low-load mode, no-
 ## Release notes
 
 - [Release checklist](release-checklist.md)
+- [v0.3.2 release notes](releases/v0.3.2.md)
 - [v0.3.1 release notes](releases/v0.3.1.md)
 - [v0.3.0 release notes](releases/v0.3.0.md)
 - [v0.2.0 release notes](releases/v0.2.0.md)
@@ -39,4 +41,3 @@ Safety baseline: manual-only usage, dry-run default, explicit low-load mode, no-
 - reading queue manual statuses / local state live in `state/reading-queue.json` and should be preserved.
 - generated artifacts must not be committed by default.
 - `exports/`, `audits/`, `research_artifacts/`, `.pytest_tmp/`, `__pycache__/`, local logs, caches, and local test outputs are local artifacts unless an explicit release or digest publishing process says otherwise.
-

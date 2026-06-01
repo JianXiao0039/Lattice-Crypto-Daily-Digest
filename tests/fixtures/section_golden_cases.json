@@ -235,5 +235,275 @@
       "Paper Plan Candidates"
     ],
     "notes": "Falcon with signature and implementation context should trigger PQC and implementation sections."
+  },
+  {
+    "id": "true_positive_rlwe_private_federated_finetuning",
+    "title": "Differentially Private Federated Fine-Tuning with RLWE Secure Aggregation",
+    "abstract": "This paper studies DP-SGD, LLM fine-tuning and federated learning with RLWE-based secure aggregation and lattice-based homomorphic encryption for ML.",
+    "keywords": [
+      "differential privacy",
+      "federated fine-tuning",
+      "RLWE-based secure aggregation"
+    ],
+    "source": "arxiv",
+    "relevance_label": "A",
+    "relevance_score": 86,
+    "expected_sections": [
+      "LWE / RLWE / MLWE",
+      "Lattice + Privacy / FL / LLM Fine-tuning",
+      "General Cryptography / Privacy"
+    ],
+    "forbidden_sections": [],
+    "expected_report_buckets": [
+      "High-Priority Papers",
+      "Idea Bank Candidates",
+      "Paper Plan Candidates"
+    ],
+    "notes": "Privacy/FL/LLM terms co-occur with RLWE and lattice HE anchors."
+  },
+  {
+    "id": "true_positive_lattice_secure_aggregation_fl",
+    "title": "Lattice-Based Secure Aggregation for Federated Learning",
+    "abstract": "A lattice-based homomorphic encryption protocol supports secure aggregation for federated learning.",
+    "keywords": [
+      "lattice-based HE",
+      "secure aggregation",
+      "federated learning"
+    ],
+    "source": "iacr_eprint",
+    "relevance_label": "B",
+    "relevance_score": 76,
+    "expected_sections": [
+      "Lattice + Privacy / FL / LLM Fine-tuning",
+      "General Cryptography / Privacy"
+    ],
+    "forbidden_sections": [
+      "AI-assisted Lattice Cryptanalysis"
+    ],
+    "expected_report_buckets": [
+      "Idea Bank Candidates",
+      "Paper Plan Candidates"
+    ],
+    "notes": "Lattice secure aggregation for FL is privacy/FL, not AI4Lattice."
+  },
+  {
+    "id": "true_positive_lattice_isomorphism_pqc",
+    "title": "The Lattice Isomorphism Problem for Post-Quantum Cryptography",
+    "abstract": "We study lattice isomorphism, lattice automorphism and structured lattice isomorphism as advanced lattice assumptions.",
+    "keywords": [
+      "lattice isomorphism problem",
+      "lattice automorphism"
+    ],
+    "source": "iacr_eprint",
+    "relevance_label": "A",
+    "relevance_score": 84,
+    "expected_sections": [
+      "Lattice Isomorphism / Advanced Lattice Assumptions",
+      "PQC Standards / ML-KEM / ML-DSA / Falcon"
+    ],
+    "forbidden_sections": [
+      "LWE / RLWE / MLWE"
+    ],
+    "expected_report_buckets": [
+      "High-Priority Papers",
+      "Idea Bank Candidates",
+      "Paper Plan Candidates"
+    ],
+    "notes": "Explicit lattice isomorphism should trigger the advanced assumptions section."
+  },
+  {
+    "id": "true_positive_lwe_registration_based_encryption",
+    "title": "LWE-Based Registration-Based Encryption",
+    "abstract": "A public-key encryption with registration construction uses LWE and registration-based key management.",
+    "keywords": [
+      "registration-based encryption",
+      "LWE"
+    ],
+    "source": "iacr_eprint",
+    "relevance_label": "A",
+    "relevance_score": 85,
+    "expected_sections": [
+      "LWE / RLWE / MLWE",
+      "Registration-Based Encryption / Advanced Encryption Primitives"
+    ],
+    "forbidden_sections": [],
+    "expected_report_buckets": [
+      "High-Priority Papers",
+      "Idea Bank Candidates",
+      "Paper Plan Candidates"
+    ],
+    "notes": "Registration-based encryption plus LWE is an advanced encryption primitive case."
+  },
+  {
+    "id": "true_positive_lattice_anonymous_credential",
+    "title": "Lattice-Based Anonymous Credentials from Module-SIS Commitments",
+    "abstract": "The primitive combines lattice-based zero-knowledge proof, anonymous credential, ring signature and Module-SIS commitment.",
+    "keywords": [
+      "lattice-based anonymous credential",
+      "Module-SIS commitment"
+    ],
+    "source": "iacr_eprint",
+    "relevance_label": "A",
+    "relevance_score": 88,
+    "expected_sections": [
+      "SIS / NTRU / Commitments / Chameleon Hash",
+      "Lattice Advanced Primitives",
+      "General Cryptography / Privacy"
+    ],
+    "forbidden_sections": [
+      "AI-assisted Lattice Cryptanalysis"
+    ],
+    "expected_report_buckets": [
+      "High-Priority Papers",
+      "Idea Bank Candidates",
+      "Paper Plan Candidates"
+    ],
+    "notes": "Advanced primitive with lattice and Module-SIS evidence."
+  },
+  {
+    "id": "true_positive_lattice_zk_proof",
+    "title": "Lattice-Based Zero-Knowledge Proofs for Module-SIS Relations",
+    "abstract": "We construct lattice-based proof systems and zero-knowledge arguments for Module-SIS relations.",
+    "keywords": [
+      "lattice-based proof",
+      "zero-knowledge",
+      "Module-SIS"
+    ],
+    "source": "iacr_eprint",
+    "relevance_label": "A",
+    "relevance_score": 87,
+    "expected_sections": [
+      "SIS / NTRU / Commitments / Chameleon Hash",
+      "Lattice Advanced Primitives",
+      "General Cryptography / Privacy"
+    ],
+    "forbidden_sections": [],
+    "expected_report_buckets": [
+      "High-Priority Papers",
+      "Idea Bank Candidates",
+      "Paper Plan Candidates"
+    ],
+    "notes": "Lattice-based ZK with Module-SIS evidence belongs to advanced primitives."
+  },
+  {
+    "id": "false_positive_generic_dp_sgd_llm",
+    "title": "DP-SGD for LLM Fine-Tuning",
+    "abstract": "Differential privacy for federated fine-tuning of large language models using optimizer-level clipping and noise.",
+    "keywords": [
+      "DP-SGD",
+      "LLM fine-tuning"
+    ],
+    "source": "arxiv",
+    "relevance_label": "B",
+    "relevance_score": 70,
+    "expected_sections": [
+      "Other / Watchlist"
+    ],
+    "forbidden_sections": [
+      "Lattice + Privacy / FL / LLM Fine-tuning",
+      "LWE / RLWE / MLWE",
+      "AI-assisted Lattice Cryptanalysis"
+    ],
+    "expected_report_buckets": [],
+    "notes": "Generic DP/LLM work without lattice/PQC/HE anchors is not lattice privacy."
+  },
+  {
+    "id": "false_positive_generic_federated_learning",
+    "title": "Communication-Efficient Federated Learning",
+    "abstract": "A generic federated learning optimizer for mobile devices without cryptography.",
+    "keywords": [
+      "federated learning"
+    ],
+    "source": "crossref",
+    "relevance_label": "B",
+    "relevance_score": 70,
+    "expected_sections": [
+      "Other / Watchlist"
+    ],
+    "forbidden_sections": [
+      "Lattice + Privacy / FL / LLM Fine-tuning",
+      "General Cryptography / Privacy"
+    ],
+    "expected_report_buckets": [],
+    "notes": "FL alone is not enough."
+  },
+  {
+    "id": "false_positive_graph_isomorphism",
+    "title": "Graph Isomorphism Algorithms for Neural Models",
+    "abstract": "This paper studies graph isomorphism and model isomorphism in neural networks.",
+    "keywords": [
+      "graph isomorphism"
+    ],
+    "source": "arxiv",
+    "relevance_label": "B",
+    "relevance_score": 70,
+    "expected_sections": [
+      "Other / Watchlist"
+    ],
+    "forbidden_sections": [
+      "Lattice Isomorphism / Advanced Lattice Assumptions"
+    ],
+    "expected_report_buckets": [],
+    "notes": "Graph/model isomorphism should not trigger lattice isomorphism."
+  },
+  {
+    "id": "false_positive_user_account_registration",
+    "title": "User Account Registration System",
+    "abstract": "We study account registration workflows, login UX and database account management.",
+    "keywords": [
+      "registration"
+    ],
+    "source": "crossref",
+    "relevance_label": "B",
+    "relevance_score": 70,
+    "expected_sections": [
+      "Other / Watchlist"
+    ],
+    "forbidden_sections": [
+      "Registration-Based Encryption / Advanced Encryption Primitives"
+    ],
+    "expected_report_buckets": [],
+    "notes": "Generic user registration is not RBE."
+  },
+  {
+    "id": "false_positive_generic_zk",
+    "title": "Generic Zero-Knowledge Proofs for Anonymous Credentials",
+    "abstract": "A generic zero-knowledge proof system for anonymous credentials using standard discrete-log style examples.",
+    "keywords": [
+      "zero-knowledge",
+      "anonymous credential"
+    ],
+    "source": "dblp",
+    "relevance_label": "B",
+    "relevance_score": 70,
+    "expected_sections": [
+      "General Cryptography / Privacy"
+    ],
+    "forbidden_sections": [
+      "Lattice Advanced Primitives",
+      "SIS / NTRU / Commitments / Chameleon Hash"
+    ],
+    "expected_report_buckets": [],
+    "notes": "Generic ZK/privacy primitive goes to general privacy without lattice/PQC evidence."
+  },
+  {
+    "id": "false_positive_homomorphic_sounding_ml",
+    "title": "Homomorphic Feature Matching for Machine Learning",
+    "abstract": "A homomorphic-sounding representation learning method for ML features and neural embedding alignment.",
+    "keywords": [
+      "homomorphic feature matching"
+    ],
+    "source": "arxiv",
+    "relevance_label": "B",
+    "relevance_score": 70,
+    "expected_sections": [
+      "Other / Watchlist"
+    ],
+    "forbidden_sections": [
+      "Lattice + Privacy / FL / LLM Fine-tuning",
+      "General Cryptography / Privacy"
+    ],
+    "expected_report_buckets": [],
+    "notes": "Homomorphic-sounding ML without cryptographic HE/FHE evidence is not a lattice privacy hit."
   }
 ]

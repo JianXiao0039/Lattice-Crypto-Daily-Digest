@@ -12,6 +12,10 @@ LATTICE_REDUCTION_ATTACKS = "BKZ / LLL / G6K / Lattice Reduction / Attacks"
 PQC_STANDARDS = "PQC Standards / ML-KEM / ML-DSA / Falcon"
 AI_LATTICE = "AI-assisted Lattice Cryptanalysis"
 IMPLEMENTATION_SYSTEMS = "Implementation / Side-channel / Systems"
+LATTICE_PRIVACY_FL = "Lattice + Privacy / FL / LLM Fine-tuning"
+LATTICE_ISOMORPHISM = "Lattice Isomorphism / Advanced Lattice Assumptions"
+REGISTRATION_ENCRYPTION = "Registration-Based Encryption / Advanced Encryption Primitives"
+LATTICE_ADVANCED_PRIMITIVES = "Lattice Advanced Primitives"
 GENERAL_CRYPTO_PRIVACY = "General Cryptography / Privacy"
 OTHER_WATCHLIST = "Other / Watchlist"
 IDEA_BANK_CANDIDATES = "Idea Bank Candidates"
@@ -25,6 +29,10 @@ TOPICAL_SECTION_ORDER: tuple[str, ...] = (
     PQC_STANDARDS,
     AI_LATTICE,
     IMPLEMENTATION_SYSTEMS,
+    LATTICE_PRIVACY_FL,
+    LATTICE_ISOMORPHISM,
+    REGISTRATION_ENCRYPTION,
+    LATTICE_ADVANCED_PRIMITIVES,
     GENERAL_CRYPTO_PRIVACY,
     OTHER_WATCHLIST,
 )
@@ -229,6 +237,135 @@ GENERAL_CRYPTO_PRIVACY_TERMS = (
     "gbdt",
 )
 
+PRIVACY_FL_LLM_TERMS = (
+    "differential privacy",
+    "dp-sgd",
+    "federated learning",
+    "federated fine-tuning",
+    "federated fine tuning",
+    "llm fine-tuning",
+    "llm fine tuning",
+    "private fine-tuning",
+    "private fine tuning",
+    "privacy-preserving training",
+    "privacy preserving training",
+    "homomorphic encryption for ml",
+    "secure aggregation",
+    "pqc-secure federated learning",
+)
+
+PRIVACY_FL_LLM_ANCHORS = (
+    "lattice",
+    "lattice-based",
+    "post-quantum",
+    "pqc",
+    "lwe",
+    "rlwe",
+    "ring-lwe",
+    "mlwe",
+    "module-lwe",
+    "sis",
+    "module-sis",
+    "ntru",
+    "homomorphic encryption",
+    "fully homomorphic encryption",
+    "fhe",
+    "ckks",
+    "bfv",
+    "bgv",
+    "tfhe",
+    "lattice-based he",
+    "rlwe-based secure aggregation",
+)
+
+LATTICE_ISOMORPHISM_TERMS = (
+    "lattice isomorphism",
+    "lattice isomorphism problem",
+    "isomorphism of lattices",
+    "lattice automorphism",
+    "structured lattice isomorphism",
+)
+
+LATTICE_ISOMORPHISM_ABBREVIATIONS = ("lip",)
+
+LATTICE_ISOMORPHISM_ABBREVIATION_CONTEXT = (
+    "lattice",
+    "isomorphism",
+    "post-quantum",
+    "pqc",
+)
+
+LATTICE_ISOMORPHISM_FALSE_TERMS = (
+    "graph isomorphism",
+    "model isomorphism",
+    "code isomorphism",
+    "neural isomorphism",
+    "chemical isomorphism",
+)
+
+REGISTRATION_ENCRYPTION_STRONG_TERMS = (
+    "registration-based encryption",
+    "registered encryption",
+    "registered identity-based encryption",
+    "registration-based key management",
+    "public-key encryption with registration",
+)
+
+REGISTRATION_ENCRYPTION_WEAK_TERMS = (
+    "rbe",
+    "registration",
+    "registered",
+)
+
+REGISTRATION_ENCRYPTION_ANCHORS = (
+    "encryption",
+    "public key",
+    "public-key",
+    "identity-based",
+    "ibe",
+    "abe",
+    "lattice",
+    "lwe",
+    "pqc",
+    "post-quantum",
+    "cryptographic primitive",
+)
+
+ADVANCED_PRIMITIVE_TERMS = (
+    "chameleon hash",
+    "commitment",
+    "commitments",
+    "trapdoor commitment",
+    "accumulator",
+    "ring signature",
+    "linkable ring signature",
+    "group signature",
+    "anonymous credential",
+    "attribute-based encryption",
+    "functional encryption",
+    "predicate encryption",
+    "zero-knowledge",
+    "zero knowledge",
+    "lattice-based proof",
+    "module-sis primitive",
+    "mlwe primitive",
+)
+
+ADVANCED_PRIMITIVE_ANCHORS = (
+    "lattice",
+    "lattice-based",
+    "post-quantum",
+    "pqc",
+    "lwe",
+    "rlwe",
+    "mlwe",
+    "module-lwe",
+    "sis",
+    "module-sis",
+    "ring-sis",
+    "ntru",
+)
+
 CRYPTO_CONTEXT_TERMS = (
     "cryptography",
     "cryptographic",
@@ -338,6 +475,28 @@ def _has_general_crypto_privacy(text: str) -> bool:
     return _has(text, GENERAL_CRYPTO_PRIVACY_TERMS)
 
 
+def _has_lattice_privacy_fl(text: str) -> bool:
+    return _has(text, PRIVACY_FL_LLM_TERMS) and _has(text, PRIVACY_FL_LLM_ANCHORS)
+
+
+def _has_lattice_isomorphism(text: str) -> bool:
+    has_explicit = _has(text, LATTICE_ISOMORPHISM_TERMS)
+    has_abbreviation = _has(text, LATTICE_ISOMORPHISM_ABBREVIATIONS) and _has(text, LATTICE_ISOMORPHISM_ABBREVIATION_CONTEXT)
+    if not (has_explicit or has_abbreviation):
+        return False
+    return not (_has(text, LATTICE_ISOMORPHISM_FALSE_TERMS) and not "lattice isomorphism" in text)
+
+
+def _has_registration_encryption(text: str) -> bool:
+    if _has(text, REGISTRATION_ENCRYPTION_STRONG_TERMS):
+        return True
+    return _has(text, REGISTRATION_ENCRYPTION_WEAK_TERMS) and _has(text, REGISTRATION_ENCRYPTION_ANCHORS)
+
+
+def _has_lattice_advanced_primitives(text: str) -> bool:
+    return _has(text, ADVANCED_PRIMITIVE_TERMS) and _has(text, ADVANCED_PRIMITIVE_ANCHORS)
+
+
 def _is_include_label(record: PaperRecord) -> bool:
     return record.relevance_label in {"A", "B", "C"}
 
@@ -361,6 +520,14 @@ def assign_research_sections(record: PaperRecord) -> list[str]:
         sections.append(AI_LATTICE)
     if _has(text, IMPLEMENTATION_TERMS):
         sections.append(IMPLEMENTATION_SYSTEMS)
+    if _has_lattice_privacy_fl(text):
+        sections.append(LATTICE_PRIVACY_FL)
+    if _has_lattice_isomorphism(text):
+        sections.append(LATTICE_ISOMORPHISM)
+    if _has_registration_encryption(text):
+        sections.append(REGISTRATION_ENCRYPTION)
+    if _has_lattice_advanced_primitives(text):
+        sections.append(LATTICE_ADVANCED_PRIMITIVES)
     if _has_general_crypto_privacy(text):
         sections.append(GENERAL_CRYPTO_PRIVACY)
     if _is_include_label(record) and not sections:
@@ -381,6 +548,10 @@ def is_idea_bank_candidate(record: PaperRecord) -> bool:
             PQC_STANDARDS,
             AI_LATTICE,
             IMPLEMENTATION_SYSTEMS,
+            LATTICE_PRIVACY_FL,
+            LATTICE_ISOMORPHISM,
+            REGISTRATION_ENCRYPTION,
+            LATTICE_ADVANCED_PRIMITIVES,
         }
     )
 
@@ -397,6 +568,10 @@ def is_paper_plan_candidate(record: PaperRecord) -> bool:
             SIS_NTRU_COMMITMENTS,
             LATTICE_REDUCTION_ATTACKS,
             IMPLEMENTATION_SYSTEMS,
+            LATTICE_PRIVACY_FL,
+            LATTICE_ISOMORPHISM,
+            REGISTRATION_ENCRYPTION,
+            LATTICE_ADVANCED_PRIMITIVES,
         }
     )
 
@@ -423,6 +598,14 @@ def candidate_reason(record: PaperRecord, section: str) -> str:
             return "命中 BKZ/LLL/G6K 或经典攻击，可沉淀为实验或 baseline idea。"
         if IMPLEMENTATION_SYSTEMS in sections:
             return "命中实现安全/侧信道/系统方向，可作为 PQC 落地安全线索。"
+        if LATTICE_PRIVACY_FL in sections:
+            return "命中 lattice/PQC/HE 与 privacy/FL/LLM fine-tuning 交叉方向，可作为隐私计算研究线索。"
+        if LATTICE_ISOMORPHISM in sections:
+            return "命中 lattice isomorphism 或高级格假设，可作为 post-quantum assumption 线索。"
+        if REGISTRATION_ENCRYPTION in sections:
+            return "命中 registration-based encryption 或高级加密原语，可保留为构造型研究线索。"
+        if LATTICE_ADVANCED_PRIMITIVES in sections:
+            return "命中 lattice/PQC advanced primitives，可沉淀为原语、证明或应用场景 idea。"
         return "相关性达到候选阈值，可先保留为研究线索。"
     if section == PAPER_PLAN_CANDIDATES:
         if SIS_NTRU_COMMITMENTS in sections:
@@ -431,6 +614,14 @@ def candidate_reason(record: PaperRecord, section: str) -> str:
             return "满足较高相关性，且可转化为 AI-assisted lattice cryptanalysis 子程序计划。"
         if LATTICE_REDUCTION_ATTACKS in sections:
             return "满足较高相关性，且可支撑可复现攻击 baseline 或参数实验计划。"
+        if LATTICE_PRIVACY_FL in sections:
+            return "满足较高相关性，且可规划 lattice/PQC/HE 支撑隐私训练或 secure aggregation 的研究计划。"
+        if LATTICE_ISOMORPHISM in sections:
+            return "满足较高相关性，且可规划高级格假设或 isomorphism 方向的调研与实验边界。"
+        if REGISTRATION_ENCRYPTION in sections:
+            return "满足较高相关性，且可规划 registration-based encryption 或相关高级加密原语。"
+        if LATTICE_ADVANCED_PRIMITIVES in sections:
+            return "满足较高相关性，且可规划 lattice advanced primitives 的构造、证明或 artifact。"
         return "满足较高相关性，适合进入 paper plan 候选池，但需人工核验贡献边界。"
     return "由标题、摘要、关键词或 taxonomy 的确定性匹配分入该研究板块。"
 

@@ -26,6 +26,10 @@ EXPERIMENT_SECTIONS = {
     "Implementation / Side-channel / Systems",
     "BKZ / LLL / G6K / Lattice Reduction / Attacks",
     "AI-assisted Lattice Cryptanalysis",
+    "Lattice + Privacy / FL / LLM Fine-tuning",
+    "Lattice Isomorphism / Advanced Lattice Assumptions",
+    "Registration-Based Encryption / Advanced Encryption Primitives",
+    "Lattice Advanced Primitives",
 }
 
 
