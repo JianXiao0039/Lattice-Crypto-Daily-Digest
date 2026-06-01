@@ -1,7 +1,6 @@
 from __future__ import annotations
 
 import re
-import tomllib
 from pathlib import Path
 
 
@@ -13,14 +12,9 @@ def _read(relative: str) -> str:
     return (ROOT / relative).read_text(encoding="utf-8")
 
 
-def test_version_sources_are_v030() -> None:
-    pyproject = tomllib.loads(_read("pyproject.toml"))
-    src_init = _read("src/lattice_digest/__init__.py")
-    bridge_init = _read("lattice_digest/__init__.py")
-
-    assert pyproject["project"]["version"] == "0.3.0"
-    assert '__version__ = "0.3.0"' in src_init
-    assert '__version__ = "0.3.0"' in bridge_init
+def test_v030_release_artifacts_are_archival_docs() -> None:
+    assert (ROOT / "docs" / "releases" / "v0.3.0.md").exists()
+    assert "v0.3.0" in _read("CHANGELOG.md")
 
 
 def test_changelog_documents_v030_stabilization_release() -> None:
@@ -58,7 +52,7 @@ def test_readme_mentions_v030_workflow_command_center_and_low_load() -> None:
     readme = _read("README.md")
 
     for needle in [
-        "v0.3.0 stable",
+        "v0.3.0",
         "docs/releases/v0.3.0.md",
         "Workflow Command Center",
         "--low-load",

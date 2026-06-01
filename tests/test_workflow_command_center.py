@@ -67,6 +67,25 @@ def test_weekly_dry_run_writes_no_files() -> None:
     assert not (root / "exports").exists()
 
 
+def test_daily_dry_run_does_not_invoke_runner_or_write_files() -> None:
+    with TemporaryDirectory() as tmp:
+        root = Path(tmp)
+        runner = FakeRunner()
+        result = run_daily_workflow(
+            WorkflowOptions(
+                workflow="daily",
+                skip_hygiene=True,
+                output_dir=root / "exports" / "workflow-runs",
+            ),
+            runner,
+        )
+
+    assert result["dry_run"] is True
+    assert result["summary"]["planned"] == 1
+    assert runner.calls == []
+    assert not (root / "exports").exists()
+
+
 def test_weekly_execute_invokes_steps_and_writes_manifest() -> None:
     with TemporaryDirectory() as tmp:
         root = Path(tmp)
@@ -262,12 +281,35 @@ def test_low_load_profile_is_reflected_in_planned_steps() -> None:
 
 
 def test_no_network_profile_skips_daily_fetch() -> None:
+    runner = FakeRunner()
     options = WorkflowOptions(workflow="daily", execute=True, no_network=True, skip_hygiene=True)
-    result = run_daily_workflow(options, FakeRunner())
+    result = run_daily_workflow(options, runner)
 
     assert result["profile"]["name"] == "offline/no-network"
     assert result["steps"][0]["status"] == "skipped"
     assert result["summary"]["skipped"] == 1
+    assert runner.calls == []
+
+
+def test_low_load_execute_remains_manual_and_creates_no_scheduler_files() -> None:
+    with TemporaryDirectory() as tmp:
+        root = Path(tmp)
+        runner = FakeRunner()
+        result = run_daily_workflow(
+            WorkflowOptions(
+                workflow="daily",
+                execute=True,
+                low_load=True,
+                skip_hygiene=True,
+                output_dir=root / "exports" / "workflow-runs",
+            ),
+            runner,
+        )
+        created = [path.name.lower() for path in root.rglob("*") if path.is_file()]
+
+    assert result["profile"]["name"] == "low-load"
+    assert runner.calls == [("daily", False)]
+    assert not any("scheduler" in name or "cron" in name or "watcher" in name for name in created)
 
 
 def test_skip_progress_skips_progress_step_on_execute() -> None:

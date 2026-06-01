@@ -2,12 +2,14 @@ from __future__ import annotations
 
 from typing import Any
 
-from pydantic import BaseModel, Field
+from pydantic import BaseModel, ConfigDict, Field
 
 from lattice_digest.text import normalize_title
 
 
 class PaperRecord(BaseModel):
+    model_config = ConfigDict(extra="forbid", validate_assignment=True)
+
     title: str
     normalized_title: str = ""
     chinese_title: str = ""
@@ -32,10 +34,6 @@ class PaperRecord(BaseModel):
     reason: str = ""
     reading_priority: int = 99
 
-    class Config:
-        extra = "forbid"
-        validate_assignment = True
-
 
 def make_paper_record(**data: Any) -> PaperRecord:
     title = str(data.get("title") or "").strip()
@@ -52,13 +50,8 @@ def make_paper_record(**data: Any) -> PaperRecord:
 
 
 def record_to_dict(record: PaperRecord) -> dict[str, Any]:
-    if hasattr(record, "model_dump"):
-        return record.model_dump(mode="json")
-    return record.dict()
+    return record.model_dump(mode="json")
 
 
 def copy_record(record: PaperRecord) -> PaperRecord:
-    if hasattr(record, "model_copy"):
-        return record.model_copy(deep=True)
-    return record.copy(deep=True)
-
+    return record.model_copy(deep=True)
