@@ -1,0 +1,239 @@
+[
+  {
+    "id": "false_positive_falcon_x_time_series",
+    "title": "Falcon-X: a Time Series Foundation Model for Heterogeneous Multivariate Modeling",
+    "abstract": "We introduce a Falcon foundation model for time series forecasting and heterogeneous multivariate modeling.",
+    "keywords": [
+      "time series",
+      "foundation model"
+    ],
+    "source": "arxiv",
+    "relevance_label": "A",
+    "relevance_score": 85,
+    "expected_sections": [
+      "Other / Watchlist"
+    ],
+    "forbidden_sections": [
+      "PQC Standards / ML-KEM / ML-DSA / Falcon",
+      "AI-assisted Lattice Cryptanalysis",
+      "LWE / RLWE / MLWE"
+    ],
+    "expected_report_buckets": [
+      "High-Priority Papers"
+    ],
+    "notes": "Falcon is a model name here, not the lattice signature scheme."
+  },
+  {
+    "id": "false_positive_anonymous_two_party_gbdt",
+    "title": "Practical Anonymous Two-Party Gradient Boosting Decision Tree",
+    "abstract": "This work studies privacy-preserving machine learning for anonymous two-party computation and secure gradient boosting decision trees.",
+    "keywords": [
+      "privacy-preserving machine learning",
+      "two-party computation",
+      "GBDT"
+    ],
+    "source": "crossref",
+    "relevance_label": "A",
+    "relevance_score": 82,
+    "expected_sections": [
+      "General Cryptography / Privacy"
+    ],
+    "forbidden_sections": [
+      "AI-assisted Lattice Cryptanalysis",
+      "LWE / RLWE / MLWE",
+      "SIS / NTRU / Commitments / Chameleon Hash",
+      "PQC Standards / ML-KEM / ML-DSA / Falcon"
+    ],
+    "expected_report_buckets": [
+      "High-Priority Papers"
+    ],
+    "notes": "Privacy-preserving ML should not become AI4Lattice without lattice or cryptanalysis evidence."
+  },
+  {
+    "id": "false_positive_generic_transformer_foundation_model",
+    "title": "A Generic Transformer Foundation Model for Scientific Time Series",
+    "abstract": "We train a neural foundation model for forecasting and representation learning on scientific time series.",
+    "keywords": [
+      "transformer",
+      "foundation model"
+    ],
+    "source": "arxiv",
+    "relevance_label": "B",
+    "relevance_score": 70,
+    "expected_sections": [
+      "Other / Watchlist"
+    ],
+    "forbidden_sections": [
+      "AI-assisted Lattice Cryptanalysis",
+      "LWE / RLWE / MLWE",
+      "BKZ / LLL / G6K / Lattice Reduction / Attacks"
+    ],
+    "expected_report_buckets": [],
+    "notes": "Generic AI without lattice/LWE/cryptanalysis anchors stays in watchlist."
+  },
+  {
+    "id": "false_positive_pir_without_lattice",
+    "title": "Fast Private Information Retrieval for Cloud Databases",
+    "abstract": "A PIR protocol improves client privacy for database queries using communication-efficient secure retrieval.",
+    "keywords": [
+      "PIR",
+      "private information retrieval"
+    ],
+    "source": "dblp",
+    "relevance_label": "B",
+    "relevance_score": 70,
+    "expected_sections": [
+      "General Cryptography / Privacy"
+    ],
+    "forbidden_sections": [
+      "LWE / RLWE / MLWE",
+      "SIS / NTRU / Commitments / Chameleon Hash",
+      "PQC Standards / ML-KEM / ML-DSA / Falcon"
+    ],
+    "expected_report_buckets": [],
+    "notes": "PIR is routed to general privacy unless lattice/PQC evidence appears."
+  },
+  {
+    "id": "false_positive_generic_implementation_audit",
+    "title": "Production Implementation Audit for Distributed Systems",
+    "abstract": "We audit implementation bugs, software performance, and benchmark regressions in production distributed systems.",
+    "keywords": [
+      "implementation",
+      "audit",
+      "benchmark"
+    ],
+    "source": "crossref",
+    "relevance_label": "C",
+    "relevance_score": 50,
+    "expected_sections": [
+      "Implementation / Side-channel / Systems"
+    ],
+    "forbidden_sections": [
+      "PQC Standards / ML-KEM / ML-DSA / Falcon",
+      "LWE / RLWE / MLWE"
+    ],
+    "expected_report_buckets": [],
+    "notes": "Implementation evidence alone should not imply PQC."
+  },
+  {
+    "id": "true_positive_transformer_for_lwe",
+    "title": "Transformer for LWE Coordinate Selection",
+    "abstract": "A neural Transformer is used as an AI-assisted lattice cryptanalysis subroutine for LWE coordinate selection.",
+    "keywords": [
+      "Transformer LWE",
+      "AI-assisted lattice cryptanalysis"
+    ],
+    "source": "arxiv",
+    "relevance_label": "A",
+    "relevance_score": 92,
+    "expected_sections": [
+      "AI-assisted Lattice Cryptanalysis",
+      "LWE / RLWE / MLWE"
+    ],
+    "forbidden_sections": [],
+    "expected_report_buckets": [
+      "High-Priority Papers",
+      "Idea Bank Candidates",
+      "Paper Plan Candidates"
+    ],
+    "notes": "Explicit Transformer + LWE + lattice cryptanalysis should trigger AI4Lattice and LWE."
+  },
+  {
+    "id": "true_positive_bkz_attack_sparse_lwe",
+    "title": "BKZ Attack on Sparse LWE with Hybrid Guessing",
+    "abstract": "The paper studies sparse LWE, BKZ cost estimates, dual attack, primal attack, and hybrid attack strategies.",
+    "keywords": [
+      "BKZ",
+      "sparse LWE",
+      "hybrid attack"
+    ],
+    "source": "iacr_eprint",
+    "relevance_label": "B",
+    "relevance_score": 78,
+    "expected_sections": [
+      "BKZ / LLL / G6K / Lattice Reduction / Attacks",
+      "LWE / RLWE / MLWE"
+    ],
+    "forbidden_sections": [
+      "AI-assisted Lattice Cryptanalysis"
+    ],
+    "expected_report_buckets": [
+      "Idea Bank Candidates",
+      "Paper Plan Candidates"
+    ],
+    "notes": "No AI/ML terms are present, so attack + LWE should not trigger AI4Lattice."
+  },
+  {
+    "id": "true_positive_ml_dsa_implementation_audit",
+    "title": "ML-DSA Production Implementation Audit",
+    "abstract": "We audit constant-time behavior, side-channel leakage, and fault handling in Dilithium and ML-DSA implementations.",
+    "keywords": [
+      "ML-DSA",
+      "Dilithium",
+      "constant-time",
+      "fault"
+    ],
+    "source": "usenix",
+    "relevance_label": "B",
+    "relevance_score": 78,
+    "expected_sections": [
+      "PQC Standards / ML-KEM / ML-DSA / Falcon",
+      "Implementation / Side-channel / Systems"
+    ],
+    "forbidden_sections": [],
+    "expected_report_buckets": [
+      "Idea Bank Candidates",
+      "Paper Plan Candidates"
+    ],
+    "notes": "PQC scheme plus implementation/security evidence should trigger both sections."
+  },
+  {
+    "id": "true_positive_module_sis_chameleon_hash",
+    "title": "Module-SIS Chameleon Hash Commitments",
+    "abstract": "A lattice-based commitment and chameleon hash construction from the Module-SIS assumption.",
+    "keywords": [
+      "Module-SIS",
+      "chameleon hash",
+      "commitment"
+    ],
+    "source": "iacr_eprint",
+    "relevance_label": "A",
+    "relevance_score": 88,
+    "expected_sections": [
+      "SIS / NTRU / Commitments / Chameleon Hash"
+    ],
+    "forbidden_sections": [
+      "LWE / RLWE / MLWE",
+      "AI-assisted Lattice Cryptanalysis"
+    ],
+    "expected_report_buckets": [
+      "High-Priority Papers",
+      "Idea Bank Candidates",
+      "Paper Plan Candidates"
+    ],
+    "notes": "Module-SIS primitive case should stay in SIS/NTRU/commitment section."
+  },
+  {
+    "id": "true_positive_falcon_signature_implementation",
+    "title": "Falcon Signature Implementation on Embedded Devices",
+    "abstract": "Constant-time implementation and side-channel evaluation of the Falcon post-quantum signature scheme.",
+    "keywords": [
+      "Falcon signature",
+      "post-quantum signature",
+      "constant-time"
+    ],
+    "source": "ches",
+    "relevance_label": "B",
+    "relevance_score": 78,
+    "expected_sections": [
+      "PQC Standards / ML-KEM / ML-DSA / Falcon",
+      "Implementation / Side-channel / Systems"
+    ],
+    "forbidden_sections": [],
+    "expected_report_buckets": [
+      "Idea Bank Candidates",
+      "Paper Plan Candidates"
+    ],
+    "notes": "Falcon with signature and implementation context should trigger PQC and implementation sections."
+  }
+]
