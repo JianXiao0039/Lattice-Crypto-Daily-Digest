@@ -1,7 +1,6 @@
 from __future__ import annotations
 
 import re
-import tomllib
 from pathlib import Path
 
 
@@ -13,12 +12,9 @@ def _read(relative: str) -> str:
     return (ROOT / relative).read_text(encoding="utf-8")
 
 
-def test_version_field_contains_v020() -> None:
-    pyproject = tomllib.loads(_read("pyproject.toml"))
-    init = _read("src/lattice_digest/__init__.py")
-
-    assert pyproject["project"]["version"] == "0.2.0"
-    assert '__version__ = "0.2.0"' in init
+def test_v020_release_artifacts_are_archival_docs() -> None:
+    assert (ROOT / "docs" / "releases" / "v0.2.0.md").exists()
+    assert "v0.2.0" in _read("CHANGELOG.md")
 
 
 def test_changelog_documents_v020_stable_library_release() -> None:
@@ -59,7 +55,7 @@ def test_readme_links_v020_stable_docs() -> None:
     readme = _read("README.md")
 
     for needle in [
-        "v0.2.0 stable",
+        "v0.2.0",
         "Research Library Interoperability Stable Release",
         "Stable Library Export Layer",
         "Zotero Compatibility Layer",

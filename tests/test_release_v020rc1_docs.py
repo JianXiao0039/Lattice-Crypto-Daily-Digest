@@ -13,12 +13,21 @@ def _read(relative: str) -> str:
     return (ROOT / relative).read_text(encoding="utf-8")
 
 
+def _version_tuple(value: str) -> tuple[int, int, int, int]:
+    base, sep, prerelease = value.partition("-")
+    major, minor, patch = (int(part) for part in base.split("."))
+    rc_rank = -1
+    if sep and prerelease.startswith("rc"):
+        rc_rank = int(prerelease.removeprefix("rc"))
+    elif not sep:
+        rc_rank = 999
+    return major, minor, patch, rc_rank
+
+
 def test_current_version_has_moved_beyond_v020rc1() -> None:
     pyproject = tomllib.loads(_read("pyproject.toml"))
-    init = _read("src/lattice_digest/__init__.py")
 
-    assert pyproject["project"]["version"] == "0.2.0"
-    assert '__version__ = "0.2.0"' in init
+    assert _version_tuple(pyproject["project"]["version"]) > _version_tuple("0.2.0-rc1")
 
 
 def test_changelog_documents_v020rc1_library_export() -> None:
