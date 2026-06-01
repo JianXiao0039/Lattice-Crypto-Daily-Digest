@@ -1,7 +1,6 @@
 from __future__ import annotations
 
 import re
-import tomllib
 from pathlib import Path
 
 
@@ -13,14 +12,9 @@ def _read(relative: str) -> str:
     return (ROOT / relative).read_text(encoding="utf-8")
 
 
-def test_version_sources_are_v031() -> None:
-    pyproject = tomllib.loads(_read("pyproject.toml"))
-    src_init = _read("src/lattice_digest/__init__.py")
-    bridge_init = _read("lattice_digest/__init__.py")
-
-    assert pyproject["project"]["version"] == "0.3.1"
-    assert '__version__ = "0.3.1"' in src_init
-    assert '__version__ = "0.3.1"' in bridge_init
+def test_v031_release_artifacts_are_archival_docs() -> None:
+    assert (ROOT / "docs" / "releases" / "v0.3.1.md").exists()
+    assert "v0.3.1" in _read("CHANGELOG.md")
 
 
 def test_changelog_documents_v031_patch_release() -> None:
@@ -56,18 +50,13 @@ def test_v031_release_doc_exists_and_states_manual_only_boundaries() -> None:
         assert needle in release_doc
 
 
-def test_readme_links_v031_release_doc() -> None:
+def test_v031_release_does_not_require_readme_current_release_wording() -> None:
     readme = _read("README.md")
+    release_doc = _read("docs/releases/v0.3.1.md")
 
-    for needle in [
-        "v0.3.1 patch release",
-        "docs/releases/v0.3.1.md",
-        "docs/manual-operations-runbook.md",
-        "docs/recovery-playbook.md",
-        "docs/artifact-retention-policy.md",
-        "docs/troubleshooting.md",
-    ]:
-        assert needle in readme
+    assert "v0.3.1 patch release" not in readme
+    assert "v0.3.1" in release_doc
+    assert "patch release" in release_doc or "Manual Operations Patch Release" in release_doc
 
 
 def test_v031_operator_docs_exist() -> None:
