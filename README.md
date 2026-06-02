@@ -66,7 +66,7 @@ Windows 11 PowerShell 最短本地验收命令：
 ```powershell
 Set-Location "D:\Code\CodexProjects\lattice-crypto-daily-digest"
 python -m pip install -e ".[dev]"
-python -m pytest
+python -m pytest tests --basetemp=.pytest_tmp
 python -m lattice_digest.run --since 36h --output markdown,json --send none
 ```
 
@@ -114,7 +114,7 @@ GitHub Actions secrets 在仓库页面配置：`Settings -> Secrets and variable
 ```powershell
 Set-Location "D:\Code\CodexProjects\lattice-crypto-daily-digest"
 python -m pip install -e ".[dev]"
-python -m pytest
+python -m pytest tests --basetemp=.pytest_tmp
 python -m lattice_digest.run --since 36h --output markdown,json --send none
 ```
 
@@ -238,7 +238,7 @@ powershell.exe -ExecutionPolicy Bypass -File scripts\export_zotero.ps1 -Days 7 -
 
 - 每天 `01:17 UTC` 运行，约为 `09:17 Asia/Shanghai / Asia/Singapore`。
 - 支持 `Run workflow` 手动触发。
-- 运行 `python -m pytest`。
+- 运行 `python -m pytest tests --basetemp=.pytest_tmp`。
 - 运行 `python -m lattice_digest.run --since 36h --output markdown,json --send none --collector github_actions --quality-status provisional --run-mode daily`。
 - 验证 Markdown、JSON 和 `papers.db`。
 - 只自动提交 `digests/*.md`、`data/*.json` 和 `papers.db`。
@@ -312,7 +312,7 @@ git push
 
 ```powershell
 Set-Location "D:\Code\CodexProjects\lattice-crypto-daily-digest"
-python -m pytest
+python -m pytest tests --basetemp=.pytest_tmp
 ```
 
 ## 不推荐 watcher 自启动
@@ -428,7 +428,7 @@ Run the following commands in Windows 11 PowerShell from the project root:
 ```powershell
 Set-Location "D:\Code\CodexProjects\lattice-crypto-daily-digest"
 python -m pip install -e ".[dev]"
-python -m pytest
+python -m pytest tests --basetemp=.pytest_tmp
 python -m lattice_digest.run --since 36h --output markdown,json --send none
 ```
 
@@ -518,7 +518,7 @@ The local workflow command center is manually triggered and does not configure s
 
 - Runs daily at `01:17 UTC`, roughly `09:17 Asia/Shanghai / Asia/Singapore`.
 - Supports manual `Run workflow`.
-- Runs `python -m pytest`.
+- Runs `python -m pytest tests --basetemp=.pytest_tmp`.
 - Runs `python -m lattice_digest.run --since 36h --output markdown,json --send none --collector github_actions --quality-status provisional --run-mode daily`.
 - Verifies Markdown, JSON, and `papers.db`.
 - Commits only `digests/*.md`, `data/*.json`, and `papers.db`.
@@ -585,7 +585,7 @@ Local validation:
 
 ```powershell
 Set-Location "D:\Code\CodexProjects\lattice-crypto-daily-digest"
-python -m pytest
+python -m pytest tests --basetemp=.pytest_tmp
 ```
 
 ## Files Not To Commit

@@ -27,7 +27,7 @@ The helper script `scripts\manual_publish_to_github.bat` must be double-clicked 
 - Stop on conflicts.
 - Pull/rebase before push.
 - Validate before commit.
-- Project validation should use `python -m pytest tests` so pytest only collects repository tests and does not recurse into external packages.
+- Project validation should use `python -m pytest tests --basetemp=.pytest_tmp` so pytest only collects repository tests and writes temporary files under the repository-local ignored `.pytest_tmp/` directory.
 - GitHub Actions should remain the validation gate after push.
 - Generated artifacts must not be committed unless intentionally handled in a separate artifact publish.
 
@@ -81,14 +81,15 @@ The helper:
 3. shows the current branch;
 4. fetches origin;
 5. pulls with `git pull --rebase origin main`;
-6. runs `python -m pytest tests`;
-7. runs `python scripts/check_release_hygiene.py`;
-8. runs `git diff --check`;
-9. shows `git status -sb`;
-10. blocks forbidden staged files;
-11. asks for a commit message;
-12. commits already-staged files;
-13. pushes with `git push origin main`.
+6. sets `TEMP` and `TMP` to repository-local `.pytest_tmp/`;
+7. runs `python -m pytest tests --basetemp=.pytest_tmp`;
+8. runs `python scripts/check_release_hygiene.py`;
+9. runs `git diff --check`;
+10. shows `git status -sb`;
+11. blocks forbidden staged files;
+12. asks for a commit message;
+13. commits already-staged files;
+14. pushes with `git push origin main`.
 
 ## 5. Conflict handling
 
@@ -115,7 +116,9 @@ After `git push origin main`, GitHub Actions remains the validation gate. If CI 
 Use project-scoped pytest commands:
 
 ```powershell
-python -m pytest tests
+python -m pytest tests --basetemp=.pytest_tmp
 ```
 
 Do not rely on bare pytest collection from arbitrary working directories. On Windows, external packages such as pywin32 may include their own tests under global or environment paths; project validation must not collect `site-packages`, `.venv`, `Lib`, `Scripts`, or other external directories.
+
+`.pytest_tmp/` is local, ignored, and safe to delete after tests. For cmd users, the manual helper `scripts\run_project_tests.bat` creates `.pytest_tmp/`, points `TEMP` and `TMP` at it, and runs the scoped pytest command.

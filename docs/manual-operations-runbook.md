@@ -153,7 +153,7 @@ Generated artifacts must not be committed by default. 默认不要提交：
 ```powershell
 Set-Location "D:\Code\CodexProjects\lattice-crypto-daily-digest"
 git status -sb
-python -m pytest
+python -m pytest tests --basetemp=.pytest_tmp
 python scripts\check_release_hygiene.py
 git diff --check
 ```

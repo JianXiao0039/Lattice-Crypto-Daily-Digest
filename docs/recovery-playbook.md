@@ -110,7 +110,7 @@ Copy-Item "papers.db" "papers.db.backup.$(Get-Date -Format yyyyMMdd-HHmmss)"
 4. 重新运行相关测试：
 
 ```powershell
-python -m pytest tests\test_storage_sqlite_cleanup.py tests\test_backfill_metadata.py tests\test_source_health.py
+python -m pytest tests\test_storage_sqlite_cleanup.py tests\test_backfill_metadata.py tests\test_source_health.py --basetemp=.pytest_tmp
 ```
 
 ## 6. tzdata / ZoneInfo issue
@@ -148,7 +148,7 @@ CI 失败时按顺序看：
 本地复现：
 
 ```powershell
-python -m pytest
+python -m pytest tests --basetemp=.pytest_tmp
 python scripts\check_release_hygiene.py
 git diff --check
 ```

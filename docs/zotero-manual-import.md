@@ -26,7 +26,7 @@
 ```powershell
 Set-Location "D:\Code\CodexProjects\lattice-crypto-daily-digest"
 python -m pip install -e ".[dev]"
-python -m pytest
+python -m pytest tests --basetemp=.pytest_tmp
 powershell.exe -ExecutionPolicy Bypass -File scripts\qa_zotero_manual_import.ps1 -Days 7
 powershell.exe -ExecutionPolicy Bypass -File scripts\export_zotero.ps1 -Days 7
 ```
@@ -36,7 +36,7 @@ powershell.exe -ExecutionPolicy Bypass -File scripts\export_zotero.ps1 -Days 7
 ```cmd
 cd /d D:\Code\CodexProjects\lattice-crypto-daily-digest
 python -m pip install -e ".[dev]"
-python -m pytest
+python -m pytest tests --basetemp=.pytest_tmp
 powershell.exe -ExecutionPolicy Bypass -File scripts\qa_zotero_manual_import.ps1 -Days 7
 powershell.exe -ExecutionPolicy Bypass -File scripts\export_zotero.ps1 -Days 7
 ```

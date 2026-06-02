@@ -54,21 +54,21 @@ PowerShell：
 
 ```powershell
 Set-Location "D:\Code\CodexProjects\lattice-crypto-daily-digest"
-python -m pytest tests\test_e2e_workflow_acceptance.py
+python -m pytest tests\test_e2e_workflow_acceptance.py --basetemp=.pytest_tmp
 ```
 
 cmd：
 
 ```cmd
 cd /d D:\Code\CodexProjects\lattice-crypto-daily-digest
-python -m pytest tests\test_e2e_workflow_acceptance.py
+python -m pytest tests\test_e2e_workflow_acceptance.py --basetemp=.pytest_tmp
 ```
 
 完整验证：
 
 ```powershell
 Set-Location "D:\Code\CodexProjects\lattice-crypto-daily-digest"
-python -m pytest
+python -m pytest tests --basetemp=.pytest_tmp
 python scripts\check_release_hygiene.py
 git diff --check
 git status -sb

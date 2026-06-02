@@ -15,6 +15,10 @@ if errorlevel 1 (
   exit /b 1
 )
 
+if not exist ".pytest_tmp" mkdir ".pytest_tmp"
+set "TEMP=%CD%\.pytest_tmp"
+set "TMP=%CD%\.pytest_tmp"
+
 git rev-parse --is-inside-work-tree >nul 2>&1
 if errorlevel 1 (
   echo This directory is not a git repository.
@@ -47,7 +51,7 @@ if errorlevel 1 (
 )
 
 echo Running tests...
-python -m pytest tests
+python -m pytest tests --basetemp=.pytest_tmp
 if errorlevel 1 (
   echo pytest failed. Stop before commit.
   pause

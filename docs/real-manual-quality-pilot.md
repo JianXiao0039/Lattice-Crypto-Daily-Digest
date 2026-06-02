@@ -8,6 +8,8 @@ This document defines the real manual pilot mode for quality-first content gener
 
 Manual-only usage is mandatory.
 
+For Codex copy/paste usage, use the manual-only prompt in [Manual Codex Quality Run Prompt](manual-codex-quality-run-prompt.md). Do not place that prompt into a recurring automation.
+
 No scheduled automation is configured. Do not add:
 
 - Windows Task Scheduler integration

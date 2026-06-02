@@ -54,7 +54,7 @@ def test_github_actions_use_project_scoped_pytest() -> None:
         lines = _pytest_command_lines(workflow)
 
         assert lines
-        assert all("python -m pytest tests" in line for line in lines)
+        assert all("python -m pytest tests --basetemp=.pytest_tmp" in line for line in lines)
         assert not re.search(r"(?m)^\s*(?:run:\s*)?python -m pytest\s*$", workflow)
 
 
@@ -62,7 +62,7 @@ def test_manual_publish_uses_project_scoped_pytest() -> None:
     bat = _read("scripts/manual_publish_to_github.bat")
     lines = _pytest_command_lines(bat)
 
-    assert lines == ["python -m pytest tests"]
+    assert lines == ["python -m pytest tests --basetemp=.pytest_tmp"]
     assert not re.search(r"(?m)^\s*python -m pytest\s*$", bat)
     assert "git add ." not in bat.lower()
     assert "push --force" not in bat.lower()

@@ -63,7 +63,7 @@ python -m venv .venv
 .\.venv\Scripts\Activate.ps1
 python -m pip install --upgrade pip
 python -m pip install -e .
-python -m pytest
+python -m pytest tests --basetemp=.pytest_tmp
 python -m lattice_digest.run --since 36h --output markdown,json --send none
 ```
 
@@ -78,7 +78,7 @@ python -m venv .venv
 .venv\Scripts\activate.bat
 python -m pip install --upgrade pip
 python -m pip install -e .
-python -m pytest
+python -m pytest tests --basetemp=.pytest_tmp
 python -m lattice_digest.run --since 36h --output markdown,json --send none
 ```
 
@@ -95,7 +95,7 @@ python3 -m venv .venv
 source .venv/bin/activate
 python -m pip install --upgrade pip
 python -m pip install -e .
-python -m pytest
+python -m pytest tests --basetemp=.pytest_tmp
 python -m lattice_digest.run --since 36h --output markdown,json --send none
 ```
 
@@ -288,7 +288,7 @@ Remove-Item -LiteralPath .pytest_tmp -Recurse -Force
 ```powershell
 git checkout -b feature/xxx
 # 修改代码
-python -m pytest
+python -m pytest tests --basetemp=.pytest_tmp
 git diff --check
 git add README.md docs tests scripts .env.example
 git commit -m "..."
@@ -353,7 +353,7 @@ python -m venv .venv
 .\.venv\Scripts\Activate.ps1
 python -m pip install --upgrade pip
 python -m pip install -e .
-python -m pytest
+python -m pytest tests --basetemp=.pytest_tmp
 python -m lattice_digest.run --since 36h --output markdown,json --send none
 ```
 
@@ -366,7 +366,7 @@ python -m venv .venv
 .venv\Scripts\activate.bat
 python -m pip install --upgrade pip
 python -m pip install -e .
-python -m pytest
+python -m pytest tests --basetemp=.pytest_tmp
 python -m lattice_digest.run --since 36h --output markdown,json --send none
 ```
 
@@ -381,7 +381,7 @@ python3 -m venv .venv
 source .venv/bin/activate
 python -m pip install --upgrade pip
 python -m pip install -e .
-python -m pytest
+python -m pytest tests --basetemp=.pytest_tmp
 python -m lattice_digest.run --since 36h --output markdown,json --send none
 ```
 
@@ -457,7 +457,7 @@ Feature development:
 
 ```powershell
 git checkout -b feature/xxx
-python -m pytest
+python -m pytest tests --basetemp=.pytest_tmp
 git diff --check
 git add README.md docs tests scripts .env.example
 git commit -m "..."

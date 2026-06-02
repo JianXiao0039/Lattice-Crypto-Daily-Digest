@@ -49,7 +49,7 @@ Generated artifacts must not be committed by default. 默认不要提交：
 1. 不是本地测试临时生成物；
 2. 与功能代码提交分开；
 3. 已确认没有密钥或本地绝对路径；
-4. `python -m pytest` 通过；
+4. `python -m pytest tests --basetemp=.pytest_tmp` 通过；
 5. source health warning 不代表失败，但需要保留诊断信息。
 
 ## 5. Audits and exports

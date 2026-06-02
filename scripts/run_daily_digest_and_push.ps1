@@ -5,6 +5,11 @@ $ProjectRoot = Split-Path -Parent $ScriptDir
 
 Set-Location $ProjectRoot
 
+$PytestTmp = Join-Path $ProjectRoot ".pytest_tmp"
+New-Item -ItemType Directory -Force $PytestTmp | Out-Null
+$env:TEMP = $PytestTmp
+$env:TMP = $PytestTmp
+
 function Test-DirectoryWritable {
     param(
         [Parameter(Mandatory=$true)]
@@ -65,7 +70,7 @@ Invoke-CheckedCommand "Generating daily lattice crypto digest" {
 }
 
 Invoke-CheckedCommand "Running tests" {
-    python -m pytest
+    python -m pytest tests --basetemp=.pytest_tmp
 }
 
 Invoke-CheckedCommand "Staging generated outputs only" {

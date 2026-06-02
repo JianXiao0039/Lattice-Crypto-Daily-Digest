@@ -8,7 +8,7 @@
 
 ```powershell
 git status -sb
-python -m pytest
+python -m pytest tests --basetemp=.pytest_tmp
 git diff --check
 ```
 
@@ -91,7 +91,7 @@ v0.2.0-rc1 是 Library Interoperability Release Candidate，不是 stable v0.2.0
 - `scripts/export_library.ps1` exists.
 - `schemas/library-item.schema.json` exists.
 - `tests/test_library_export.py` passes.
-- `python -m pytest` passes.
+- `python -m pytest tests --basetemp=.pytest_tmp` passes.
 - export dry-run passes.
 - actual export passes.
 - `exports/library/` cleaned before commit.
@@ -126,7 +126,7 @@ v0.2.0 是 Research Library Interoperability Stable Release。发布前确认：
 - library export audit tests pass.
 - Zotero compatibility tests pass.
 - Zotero manual import QA docs exist.
-- `python -m pytest` passes.
+- `python -m pytest tests --basetemp=.pytest_tmp` passes.
 - library export dry-run passes.
 - actual library export passes.
 - library audit dry-run passes.
@@ -200,7 +200,7 @@ First public research automation release for lattice cryptography paper intellig
 
 ## Validation
 
-- `python -m pytest`
+- `python -m pytest tests --basetemp=.pytest_tmp`
 - `powershell.exe -ExecutionPolicy Bypass -File scripts\check_deployment.ps1`
 ```
 

@@ -64,7 +64,7 @@ python -m lattice_digest.workflow weekly --low-load --skip-hygiene
 
 ```powershell
 Get-Process python -ErrorAction SilentlyContinue
-python -m pytest tests\test_storage_sqlite_cleanup.py
+python -m pytest tests\test_storage_sqlite_cleanup.py --basetemp=.pytest_tmp
 ```
 
 关闭持有数据库的 Python、编辑器插件或 SQLite GUI 后重试。不要直接删除正式 `papers.db`。
@@ -94,7 +94,7 @@ python -m pip install -e ".[dev]"
 先运行：
 
 ```powershell
-python -m pytest tests
+python -m pytest tests --basetemp=.pytest_tmp
 python scripts\check_release_hygiene.py
 git diff --check
 git status -sb
@@ -115,15 +115,24 @@ git status -sb
 
 ### Pytest collects external package tests
 
-症状：Windows 上 `python -m pytest` 误收集全局或环境目录中的外部包测试，例如 `site-packages` / pywin32 `win32comext.taskscheduler`，甚至触发 Python access violation。
+症状：Windows 上 `python -m pytest tests --basetemp=.pytest_tmp` 误收集全局或环境目录中的外部包测试，例如 `site-packages` / pywin32 `win32comext.taskscheduler`，甚至触发 Python access violation。
+
+常见原因：旧的外部 ChatGPT / Codex recurring automation prompt 仍在每天运行，并继续使用陈旧命令 `python -m lattice_digest.run --since 36h --output markdown,json --send none` 与裸 `python -m pytest tests --basetemp=.pytest_tmp`。本项目不推荐任何本地自动每日运行；请停用这类外部 recurring automation，并改用 [manual-codex-quality-run-prompt.md](manual-codex-quality-run-prompt.md) 中的手动 prompt。
 
 处理：
 
 ```powershell
-python -m pytest tests
+python -m pytest tests --basetemp=.pytest_tmp
 ```
 
-项目的 `pyproject.toml` 已将 `testpaths` 限定到 `tests`，并通过 `norecursedirs` 排除 `.venv`、`venv`、`site-packages`、`Lib`、`Scripts`、`exports`、`audits`、`.pytest_tmp`、`__pycache__` 等目录。不要让 pytest 收集外部 site-packages 测试。
+项目的 `pyproject.toml` 已将 `testpaths` 限定到 `tests`，通过 `norecursedirs` 排除 `.venv`、`venv`、`site-packages`、`Lib`、`Scripts`、`exports`、`audits`、`.pytest_tmp`、`__pycache__` 等目录，并通过 `--basetemp=.pytest_tmp` 将测试临时文件写到仓库本地 ignored 目录。不要让 pytest 收集外部 site-packages 测试，也不要让项目测试使用 Windows 系统 Temp 目录。
+
+cmd 用户可运行：
+
+```cmd
+cd /d D:\Code\CodexProjects\lattice-crypto-daily-digest
+scripts\run_project_tests.bat
+```
 
 ### Release hygiene failure
 
