@@ -1,0 +1,141 @@
+{
+  "schema_version": 1,
+  "week_id": "2026-W23",
+  "from_date": "2026-06-01",
+  "to_date": "2026-06-02",
+  "generated_at": "2026-06-02T09:15:10.440873+00:00",
+  "coverage": {
+    "expected_days": 2,
+    "loaded_days": [
+      "2026-06-01",
+      "2026-06-02"
+    ],
+    "missing_days": [],
+    "total_records": 0,
+    "unique_records": 0,
+    "label_counts": {}
+  },
+  "label_counts": {},
+  "sections": {
+    "LWE / RLWE / MLWE": [],
+    "SIS / NTRU / Commitments / Chameleon Hash": [],
+    "BKZ / LLL / G6K / Lattice Reduction / Attacks": [],
+    "PQC Standards / ML-KEM / ML-DSA / Falcon": [],
+    "AI-assisted Lattice Cryptanalysis": [],
+    "Implementation / Side-channel / Systems": [],
+    "Lattice + Privacy / FL / LLM Fine-tuning": [],
+    "Lattice Isomorphism / Advanced Lattice Assumptions": [],
+    "Registration-Based Encryption / Advanced Encryption Primitives": [],
+    "Lattice Advanced Primitives": [],
+    "General Cryptography / Privacy": [],
+    "Other / Watchlist": []
+  },
+  "report_buckets": {
+    "High-Priority Papers": [],
+    "Idea Bank Candidates": [],
+    "Paper Plan Candidates": []
+  },
+  "idea_bank_candidates": [],
+  "paper_plan_candidates": [],
+  "source_health_summary": {
+    "available": true,
+    "sources": [
+      "arxiv",
+      "crossref",
+      "dblp",
+      "iacr_eprint",
+      "openalex",
+      "semantic_scholar"
+    ],
+    "status_counts": {
+      "red": 8,
+      "yellow": 4
+    },
+    "records": [
+      {
+        "date": "2026-06-01",
+        "source": "arxiv",
+        "status": "yellow",
+        "final_count": 0,
+        "error_type": "rate_limit"
+      },
+      {
+        "date": "2026-06-01",
+        "source": "crossref",
+        "status": "yellow",
+        "final_count": 0,
+        "error_type": null
+      },
+      {
+        "date": "2026-06-01",
+        "source": "dblp",
+        "status": "yellow",
+        "final_count": 0,
+        "error_type": "server_error"
+      },
+      {
+        "date": "2026-06-01",
+        "source": "iacr_eprint",
+        "status": "red",
+        "final_count": 0,
+        "error_type": "warning"
+      },
+      {
+        "date": "2026-06-01",
+        "source": "openalex",
+        "status": "yellow",
+        "final_count": 0,
+        "error_type": null
+      },
+      {
+        "date": "2026-06-01",
+        "source": "semantic_scholar",
+        "status": "red",
+        "final_count": 0,
+        "error_type": "rate_limit"
+      },
+      {
+        "date": "2026-06-02",
+        "source": "arxiv",
+        "status": "red",
+        "final_count": 0,
+        "error_type": "warning"
+      },
+      {
+        "date": "2026-06-02",
+        "source": "crossref",
+        "status": "red",
+        "final_count": 0,
+        "error_type": "warning"
+      },
+      {
+        "date": "2026-06-02",
+        "source": "dblp",
+        "status": "red",
+        "final_count": 0,
+        "error_type": "warning"
+      },
+      {
+        "date": "2026-06-02",
+        "source": "iacr_eprint",
+        "status": "red",
+        "final_count": 0,
+        "error_type": "warning"
+      },
+      {
+        "date": "2026-06-02",
+        "source": "openalex",
+        "status": "red",
+        "final_count": 0,
+        "error_type": "warning"
+      },
+      {
+        "date": "2026-06-02",
+        "source": "semantic_scholar",
+        "status": "red",
+        "final_count": 0,
+        "error_type": "warning"
+      }
+    ]
+  }
+}
