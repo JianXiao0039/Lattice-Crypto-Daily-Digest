@@ -359,24 +359,8 @@ def render_markdown(payload: dict[str, Any]) -> str:
         f"- Label counts: {payload['label_counts']}",
         "",
     ]
-    section_titles = [
-        "High-Priority Papers This Week",
-        "LWE / RLWE / MLWE",
-        "SIS / NTRU / Commitments / Chameleon Hash",
-        "BKZ / LLL / G6K / Lattice Reduction / Attacks",
-        "PQC Standards / ML-KEM / ML-DSA / Falcon",
-        "AI-assisted Lattice Cryptanalysis",
-        "Implementation / Side-channel / Systems",
-    ]
-    section_lookup = {
-        "High-Priority Papers This Week": "High-Priority Papers",
-        "LWE / RLWE / MLWE": "LWE / RLWE / MLWE",
-        "SIS / NTRU / Commitments / Chameleon Hash": "SIS / NTRU / Commitments / Chameleon Hash",
-        "BKZ / LLL / G6K / Lattice Reduction / Attacks": "BKZ / LLL / G6K / Lattice Reduction / Attacks",
-        "PQC Standards / ML-KEM / ML-DSA / Falcon": "PQC Standards / ML-KEM / ML-DSA / Falcon",
-        "AI-assisted Lattice Cryptanalysis": "AI-assisted Lattice Cryptanalysis",
-        "Implementation / Side-channel / Systems": "Implementation / Side-channel / Systems",
-    }
+    section_titles = ["High-Priority Papers This Week", *TOPICAL_SECTION_ORDER]
+    section_lookup = {"High-Priority Papers This Week": "High-Priority Papers", **{section: section for section in TOPICAL_SECTION_ORDER}}
     sections = payload.get("sections", {})
     report_buckets = payload.get("report_buckets", {})
     for title in section_titles:

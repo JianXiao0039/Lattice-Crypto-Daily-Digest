@@ -12,9 +12,13 @@ from lattice_digest.digest_sections import (
     AI_LATTICE,
     IDEA_BANK_CANDIDATES,
     LATTICE_REDUCTION_ATTACKS,
+    LATTICE_ADVANCED_PRIMITIVES,
+    LATTICE_ISOMORPHISM,
+    LATTICE_PRIVACY_FL,
     LWE_FAMILY,
     PAPER_PLAN_CANDIDATES,
     SIS_NTRU_COMMITMENTS,
+    REGISTRATION_ENCRYPTION,
 )
 from lattice_digest.weekly_synthesis import build_weekly_synthesis, dedup_key
 from lattice_digest.zotero_compat import record_to_zotero_item, render_bibtex, render_ris
@@ -27,8 +31,12 @@ TRACK_PRIORITY = {
     LWE_FAMILY: 1,
     LATTICE_REDUCTION_ATTACKS: 2,
     SIS_NTRU_COMMITMENTS: 3,
-    "PQC Standards / ML-KEM / ML-DSA / Falcon": 4,
-    "Implementation / Side-channel / Systems": 5,
+    LATTICE_ADVANCED_PRIMITIVES: 4,
+    REGISTRATION_ENCRYPTION: 5,
+    LATTICE_PRIVACY_FL: 6,
+    LATTICE_ISOMORPHISM: 7,
+    "PQC Standards / ML-KEM / ML-DSA / Falcon": 8,
+    "Implementation / Side-channel / Systems": 9,
 }
 DEFAULT_FORMATS = ("obsidian", "advisor", "backlog", "zotero")
 

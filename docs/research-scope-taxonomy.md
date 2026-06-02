@@ -157,3 +157,13 @@ This taxonomy expansion does not add:
 - automatic runs
 
 It does not change fetcher behavior, ranking weights, A/B/C/D thresholds, reading queue status semantics, or workflow execution semantics.
+
+## 10. Query expansion and negative keywords
+
+Phase 9O 的查询扩展遵循同一条边界：新增召回词必须带 lattice / PQC / HE / FHE / LWE / RLWE / MLWE / SIS / Module-SIS / NTRU 等锚点。配置中可以搜索 `lattice-based secure aggregation federated learning`、`RLWE-based secure aggregation federated learning`、`FHE private LLM fine-tuning RLWE`、`lattice-based registration-based encryption`、`lattice isomorphism problem`、`Module-SIS chameleon hash`、`lattice-based zero-knowledge proof` 等 anchored queries。
+
+不应把 `federated learning`、`LLM fine-tuning`、`DP-SGD`、`registration encryption`、`zero-knowledge proof`、`anonymous credential`、`commitment scheme`、`functional encryption` 等泛词作为独立查询加入。它们只有在同一查询或论文元数据中出现 lattice / PQC / HE / FHE / LWE / RLWE / MLWE / SIS / Module-SIS 等明确锚点时，才可进入格密码科研跟踪。
+
+负面关键词用于减少显然非格密码的误报，例如 user/account/domain registration、medical image registration、point cloud registration、graph/code/model/neural/chemical isomorphism，以及 homomorphic-sounding 但并非密码学 HE/FHE 的机器学习表达。硬负面词在缺少密码学上下文时可以过滤；软负面词只记录风险上下文，不能误杀带有 lattice/PQC 锚点的真阳性。
+
+English summary: query expansion is anchored by lattice/PQC/HE/FHE evidence. Generic privacy, registration, isomorphism, ZK, credential, commitment, and FE terms are insufficient as standalone lattice-tracking queries. Negative keywords reduce obvious non-lattice false positives while preserving anchored true positives.

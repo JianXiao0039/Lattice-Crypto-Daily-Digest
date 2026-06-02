@@ -95,6 +95,20 @@ hard_negative:
     - lattice polytope
     - lattice polytope without cryptographic relevance
     - lattice points in polytopes
+    - user registration
+    - account registration
+    - registration system
+    - domain registration
+    - certificate registration
+    - registered user encryption
+    - medical image registration
+    - image registration
+    - point cloud registration
+    - graph isomorphism
+    - code isomorphism
+    - model isomorphism
+    - neural isomorphism
+    - chemical isomorphism
 
   quantum_computing_non_crypto:
     - lattice surgery
@@ -119,6 +133,18 @@ soft_negative:
   - social lattice
   - graph lattice
   - cellular lattice
+  - DP-SGD
+  - federated learning
+  - LLM fine-tuning
+  - private training
+  - secure aggregation
+  - zero-knowledge
+  - anonymous credential
+  - commitment scheme
+  - functional encryption
+  - homomorphic feature matching
+  - homomorphic representation learning
+  - homomorphic embedding
 
 crypto_context_required_if_only_lattice:
   - cryptography

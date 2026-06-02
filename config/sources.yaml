@@ -108,6 +108,77 @@ sources:
       - neural lattice reduction
       - Transformer LWE
       - machine learning LWE
+      - lattice-based secure aggregation federated learning
+      - RLWE-based secure aggregation federated learning
+      - LWE-based secure aggregation federated learning
+      - homomorphic encryption private federated learning RLWE
+      - FHE private LLM fine-tuning RLWE
+      - post-quantum secure aggregation federated learning
+      - lattice-based privacy-preserving training
+      - RLWE encrypted gradient aggregation
+      - lattice-based registration-based encryption
+      - LWE-based registration-based encryption
+      - SIS-based registration-based encryption
+      - post-quantum registration-based encryption
+      - PQC registration-based encryption
+      - registration-based encryption from lattices
+      - lattice isomorphism problem
+      - isomorphism of lattices
+      - lattice automorphism cryptography
+      - lattice isomorphism post-quantum
+      - structured lattice isomorphism
+      - Module-SIS chameleon hash
+      - SIS-based commitment
+      - lattice-based commitment
+      - lattice-based anonymous credential
+      - lattice-based ring signature
+      - LWE-based functional encryption
+      - lattice-based zero-knowledge proof
+      - PQC attribute-based encryption
+    query_groups:
+      - - lattice cryptography
+      - - Learning with Errors
+      - - Ring-LWE
+        - RLWE
+      - - Module-LWE
+        - MLWE
+      - - SIS
+        - Short Integer Solution
+      - - Kyber
+        - ML-KEM
+      - - Dilithium
+        - ML-DSA
+      - - BKZ
+        - lattice reduction
+      - - neural lattice reduction
+      - - Transformer LWE
+      - - lattice-based secure aggregation federated learning
+      - - RLWE-based secure aggregation federated learning
+      - - LWE-based secure aggregation federated learning
+      - - homomorphic encryption private federated learning RLWE
+      - - FHE private LLM fine-tuning RLWE
+      - - post-quantum secure aggregation federated learning
+      - - lattice-based privacy-preserving training
+      - - RLWE encrypted gradient aggregation
+      - - lattice-based registration-based encryption
+      - - LWE-based registration-based encryption
+      - - SIS-based registration-based encryption
+      - - post-quantum registration-based encryption
+      - - PQC registration-based encryption
+      - - registration-based encryption from lattices
+      - - lattice isomorphism problem
+      - - isomorphism of lattices
+      - - lattice automorphism cryptography
+      - - lattice isomorphism post-quantum
+      - - structured lattice isomorphism
+      - - Module-SIS chameleon hash
+      - - SIS-based commitment
+      - - lattice-based commitment
+      - - lattice-based anonymous credential
+      - - lattice-based ring signature
+      - - LWE-based functional encryption
+      - - lattice-based zero-knowledge proof
+      - - PQC attribute-based encryption
     max_results: 100
 
   - name: dblp
@@ -148,6 +219,12 @@ sources:
       - Kyber ML-KEM Dilithium ML-DSA Falcon
       - fully homomorphic encryption CKKS BFV BGV TFHE
       - lattice reduction cryptanalysis
+      - lattice-based secure aggregation federated learning
+      - FHE private LLM fine-tuning RLWE
+      - lattice-based registration-based encryption
+      - lattice isomorphism problem
+      - Module-SIS chameleon hash
+      - lattice-based zero-knowledge proof
     require_strong_title_when_no_abstract: true
     note: "DBLP is useful for venue coverage, but year-only records must still pass date reliability and strong relevance filters. DBLP title-only records must have strong title evidence or be merged with another confirming source."
 
@@ -171,6 +248,12 @@ sources:
       - Dilithium
       - ML-DSA
       - Falcon
+      - lattice-based secure aggregation federated learning
+      - homomorphic encryption private federated learning RLWE
+      - lattice-based registration-based encryption
+      - lattice isomorphism problem
+      - Module-SIS chameleon hash
+      - lattice-based commitment
     note: "OpenAlex 429/rate-limit responses should be recorded as warnings and must not stop the main run."
 
   - name: crossref
@@ -195,6 +278,12 @@ sources:
       - Dilithium
       - ML-DSA
       - Falcon
+      - lattice-based secure aggregation federated learning
+      - post-quantum secure aggregation federated learning
+      - lattice-based registration-based encryption
+      - lattice isomorphism post-quantum
+      - SIS-based commitment
+      - PQC attribute-based encryption
     note: "Crossref is a supplemental source; candidates must pass hard negative and strong relevance filters before inclusion."
 
   - name: semantic_scholar
@@ -219,6 +308,12 @@ sources:
       - Dilithium
       - ML-DSA
       - Falcon
+      - RLWE-based secure aggregation federated learning
+      - FHE private LLM fine-tuning RLWE
+      - LWE-based registration-based encryption
+      - structured lattice isomorphism
+      - lattice-based anonymous credential
+      - LWE-based functional encryption
     note: "Semantic Scholar records with only year and no publicationDate/updatedAt must not enter a 36h digest."
 
   - name: crypto_venues
