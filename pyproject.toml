@@ -28,3 +28,18 @@ where = ["src"]
 pythonpath = ["src"]
 testpaths = ["tests"]
 addopts = "-q"
+norecursedirs = [
+  ".git",
+  ".venv",
+  "venv",
+  "env",
+  "build",
+  "dist",
+  "site-packages",
+  "Lib",
+  "Scripts",
+  "exports",
+  "audits",
+  ".pytest_tmp",
+  "__pycache__",
+]

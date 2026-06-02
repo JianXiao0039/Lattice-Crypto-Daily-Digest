@@ -94,7 +94,7 @@ python -m pip install -e ".[dev]"
 先运行：
 
 ```powershell
-python -m pytest
+python -m pytest tests
 python scripts\check_release_hygiene.py
 git diff --check
 git status -sb
@@ -112,6 +112,18 @@ git status -sb
 - generated artifacts 被误追踪；
 - LF/CRLF git diff --check warning；
 - 文档断言缺失 README link。
+
+### Pytest collects external package tests
+
+症状：Windows 上 `python -m pytest` 误收集全局或环境目录中的外部包测试，例如 `site-packages` / pywin32 `win32comext.taskscheduler`，甚至触发 Python access violation。
+
+处理：
+
+```powershell
+python -m pytest tests
+```
+
+项目的 `pyproject.toml` 已将 `testpaths` 限定到 `tests`，并通过 `norecursedirs` 排除 `.venv`、`venv`、`site-packages`、`Lib`、`Scripts`、`exports`、`audits`、`.pytest_tmp`、`__pycache__` 等目录。不要让 pytest 收集外部 site-packages 测试。
 
 ### Release hygiene failure
 

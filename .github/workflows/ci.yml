@@ -41,7 +41,7 @@ jobs:
           python -m pip install -e ".[dev]"
 
       - name: Run tests
-        run: python -m pytest
+        run: python -m pytest tests
 
       - name: Release hygiene
         run: python scripts/check_release_hygiene.py
