@@ -41,6 +41,11 @@ def parse_args(argv: list[str] | None = None) -> argparse.Namespace:
         action="store_true",
         help="Manually retry sources that only have a failed same-day attempt marker, without bypassing successful caches.",
     )
+    parser.add_argument(
+        "--include-latest-sources",
+        action="store_true",
+        help="Manually include source-native latest feeds, allowing safe latest-source recovery for failed same-day attempts.",
+    )
     return parser.parse_args(argv)
 
 
@@ -265,7 +270,7 @@ def _print_source_health(source_health: list[dict[str, object]]) -> None:
         print(
             "- {source}: raw={raw}, normalized={normalized}, date_filtered={date_filtered}, "
             "deduped={deduped}, relevance_filtered={relevance}, threshold={threshold}, "
-            "final={final}, status={status}, error_type={error_type}, retryable={retryable}, "
+            "final={final}, latest={latest_status}/{latest_records}, status={status}, error_type={error_type}, retryable={retryable}, "
             "warnings={warnings}, errors={errors}".format(
                 source=item.get("source", "unknown"),
                 raw=item.get("raw_count", item.get("raw_candidates", 0)),
@@ -275,6 +280,8 @@ def _print_source_health(source_health: list[dict[str, object]]) -> None:
                 relevance=item.get("relevance_filtered_candidates", 0),
                 threshold=item.get("scoring_threshold_candidates", 0),
                 final=item.get("final_count", item.get("final_records", 0)),
+                latest_status=item.get("latest_feed_status") or "n/a",
+                latest_records=item.get("latest_feed_records", 0),
                 status=item.get("health_status", item.get("status", "unknown")),
                 error_type=item.get("error_type") or "none",
                 retryable=item.get("retryable"),
@@ -336,6 +343,7 @@ def main(argv: list[str] | None = None) -> int:
         per_domain_min_interval_seconds=float(request_config.get("per_domain_min_interval_seconds", 1.0)),
         max_retries=int(request_config.get("max_retries", 2)),
         retry_failed_sources=args.retry_failed_sources,
+        include_latest_sources=args.include_latest_sources,
         api_keys={
             "SEMANTIC_SCHOLAR_API_KEY": os.getenv("SEMANTIC_SCHOLAR_API_KEY", ""),
             "OPENAI_API_KEY": os.getenv("OPENAI_API_KEY", ""),

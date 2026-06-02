@@ -25,6 +25,12 @@ class SourceHealth:
     query_groups_success: int = 0
     query_groups_failed: int = 0
     api_key_used: bool | None = None
+    latest_feed_status: str | None = None
+    latest_feed_reachable: bool | None = None
+    latest_feed_parsed: bool | None = None
+    latest_feed_records: int = 0
+    latest_feed_missing_expected: list[str] = field(default_factory=list)
+    latest_feed_skipped_by_guard: bool = False
 
     def _problem_text(self) -> str:
         values = [*self.errors, *self.warnings]
@@ -99,6 +105,12 @@ class SourceHealth:
             "query_groups_success": self.query_groups_success,
             "query_groups_failed": self.query_groups_failed,
             "api_key_used": self.api_key_used,
+            "latest_feed_status": self.latest_feed_status,
+            "latest_feed_reachable": self.latest_feed_reachable,
+            "latest_feed_parsed": self.latest_feed_parsed,
+            "latest_feed_records": self.latest_feed_records,
+            "latest_feed_missing_expected": list(self.latest_feed_missing_expected),
+            "latest_feed_skipped_by_guard": self.latest_feed_skipped_by_guard,
             "warnings": list(self.warnings),
             "errors": list(self.errors),
         }
@@ -116,6 +128,7 @@ class FetchContext:
     per_domain_min_interval_seconds: float = 1.0
     max_retries: int = 2
     retry_failed_sources: bool = False
+    include_latest_sources: bool = False
     api_keys: dict[str, str] = field(default_factory=dict)
     warnings: list[str] = field(default_factory=list)
     source_health: dict[str, SourceHealth] = field(default_factory=dict)
@@ -154,6 +167,30 @@ class FetchContext:
             health.normalized_candidates = normalized
         if date_filtered is not None:
             health.date_filtered_candidates = date_filtered
+
+    def set_latest_feed_state(
+        self,
+        source_name: str,
+        *,
+        status: str,
+        reachable: bool | None = None,
+        parsed: bool | None = None,
+        records: int | None = None,
+        missing_expected: list[str] | None = None,
+        skipped_by_guard: bool | None = None,
+    ) -> None:
+        health = self.health(source_name)
+        health.latest_feed_status = status
+        if reachable is not None:
+            health.latest_feed_reachable = reachable
+        if parsed is not None:
+            health.latest_feed_parsed = parsed
+        if records is not None:
+            health.latest_feed_records = records
+        if missing_expected is not None:
+            health.latest_feed_missing_expected = list(missing_expected)
+        if skipped_by_guard is not None:
+            health.latest_feed_skipped_by_guard = skipped_by_guard
 
     def source_health_summary(self) -> list[dict[str, object]]:
         return [

@@ -4,6 +4,8 @@ from datetime import datetime, timezone
 from pathlib import Path
 
 import lattice_digest.sources.iacr as iacr_module
+from lattice_digest.config import load_config_bundle
+from lattice_digest.ranker import rank_records
 from lattice_digest.sources.base import FetchContext
 from lattice_digest.sources.iacr import parse_iacr_feed
 
@@ -50,22 +52,71 @@ def _sample_iacr_xml() -> str:
     """
 
 
-def _context(tmp_path: Path, *, retry_failed_sources: bool = False) -> FetchContext:
+def _latest_iacr_xml() -> str:
+    items = [
+        (
+            "The Fact of the MATTER: Efficient Hardware Accelerators for Wide-Block Memory Encryption",
+            "2026/1115",
+            "We study cryptographic hardware acceleration for memory encryption.",
+        ),
+        (
+            "Fast Difficulty Adjustment in Proof-of-Work Consensus",
+            "2026/1116",
+            "We study proof-of-work consensus difficulty adjustment.",
+        ),
+        (
+            "On the Secrecy of the Encapsulation Coin in ML-KEM",
+            "2026/1117",
+            "We analyze ML-KEM encapsulation coin secrecy for post-quantum KEM implementations.",
+        ),
+        (
+            "AuditPay: Anonymous Payments with Controlled Oversight",
+            "2026/1118",
+            "We study anonymous payments with controlled oversight.",
+        ),
+    ]
+    body = "\n".join(
+        f"""
+        <item>
+          <title>{title}</title>
+          <link>https://eprint.iacr.org/{eprint_id}</link>
+          <description>{description}</description>
+          <dc:creator>Alice Example</dc:creator>
+          <pubDate>Sun, 31 May 2026 01:00:00 GMT</pubDate>
+        </item>
+        """
+        for title, eprint_id, description in items
+    )
+    return f"""<?xml version="1.0"?>
+    <rss version="2.0" xmlns:dc="http://purl.org/dc/elements/1.1/">
+      <channel>{body}</channel>
+    </rss>
+    """
+
+
+def _context(
+    tmp_path: Path,
+    *,
+    retry_failed_sources: bool = False,
+    include_latest_sources: bool = False,
+) -> FetchContext:
     return FetchContext(
         root=tmp_path,
         since=datetime(2026, 5, 30, tzinfo=timezone.utc),
         dry_run=False,
         cache_dir=tmp_path / "cache",
         retry_failed_sources=retry_failed_sources,
+        include_latest_sources=include_latest_sources,
     )
 
 
-def _source() -> iacr_module.IacrEprintSource:
+def _source(*, expected_latest_ids: list[str] | None = None) -> iacr_module.IacrEprintSource:
     return iacr_module.IacrEprintSource(
         {
             "name": "iacr_eprint",
             "type": "iacr_eprint",
             "url": "https://eprint.iacr.org/rss/rss.xml",
+            "expected_latest_ids": expected_latest_ids or [],
         }
     )
 
@@ -122,6 +173,51 @@ def test_iacr_failed_attempt_requires_manual_retry_to_fetch_again(tmp_path: Path
     assert recovered_health["raw_count"] == 1
     assert recovered_health["date_filtered_count"] == 1
     assert "manual retry enabled" in str(recovered_health["warnings"][0])
+
+
+def test_iacr_latest_feed_parser_discovers_phase_9s2_sample_ids() -> None:
+    records = parse_iacr_feed(_latest_iacr_xml())
+    by_id = {record.eprint_id: record for record in records}
+
+    assert set(by_id) == {"2026/1115", "2026/1116", "2026/1117", "2026/1118"}
+    assert by_id["2026/1117"].title == "On the Secrecy of the Encapsulation Coin in ML-KEM"
+
+
+def test_iacr_latest_feed_mlkem_sample_enters_ranking_path() -> None:
+    records = parse_iacr_feed(_latest_iacr_xml())
+    configs = load_config_bundle(None)
+
+    ranked = rank_records(records, configs["taxonomy"], configs["keywords"], configs["negative"])
+    by_id = {record.eprint_id: record for record in ranked}
+
+    assert by_id["2026/1117"].title == "On the Secrecy of the Encapsulation Coin in ML-KEM"
+    assert by_id["2026/1117"].relevance_label == "A"
+    assert by_id["2026/1117"].relevance_score == 100
+
+
+def test_iacr_include_latest_sources_recovers_failed_attempt_and_reports_latest_state(
+    tmp_path: Path,
+    monkeypatch,
+) -> None:
+    today = datetime.now(timezone.utc).date().isoformat()
+    cache_dir = tmp_path / "cache"
+    cache_dir.mkdir()
+    (cache_dir / f"iacr_eprint_{today}.attempt").write_text("failed earlier", encoding="utf-8")
+
+    def latest_fetch_text(context, url, source_name):  # noqa: ANN001
+        return _latest_iacr_xml()
+
+    monkeypatch.setattr(iacr_module, "fetch_text", latest_fetch_text)
+    context = _context(tmp_path, include_latest_sources=True)
+    records = _source(expected_latest_ids=["2026/1115", "2026/1116", "2026/1117", "2026/1118"]).fetch(context)
+    health = context.source_health_summary()[0]
+
+    assert {record.eprint_id for record in records} == {"2026/1115", "2026/1116", "2026/1117", "2026/1118"}
+    assert health["latest_feed_status"] == "manual_latest_retry"
+    assert health["latest_feed_parsed"] is True
+    assert health["latest_feed_records"] == 4
+    assert health["latest_feed_missing_expected"] == []
+    assert health["latest_feed_skipped_by_guard"] is False
 
 
 def test_iacr_manual_retry_does_not_introduce_scheduler_code() -> None:

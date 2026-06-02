@@ -194,20 +194,20 @@ git status -sb
 
 原因：IACR ePrint 采用礼貌缓存与 once-per-UTC-day guard。成功抓取会写入当天 RSS cache，后续运行复用 cache；失败抓取会留下 same-day attempt marker。为了避免高频请求，普通运行看到 attempt marker 会跳过 IACR。
 
-手动恢复：确认这是你主动触发的一次恢复运行后，使用 `--retry-failed-sources` 允许对失败 attempt 做一次手动 retry。成功 cache 仍然不会被绕过。
+手动恢复：确认这是你主动触发的一次恢复运行后，使用 `--retry-failed-sources` 允许对失败 attempt 做一次手动 retry。若目的是显式恢复 source-native latest feed，可同时使用 `--include-latest-sources`。成功 cache 仍然不会被绕过。
 
 PowerShell：
 
 ```powershell
 Set-Location "D:\Code\CodexProjects\lattice-crypto-daily-digest"
-python -m lattice_digest.run --since 7d --output markdown,json --send none --retry-failed-sources
+python -m lattice_digest.run --since 7d --output markdown,json --send none --retry-failed-sources --include-latest-sources
 ```
 
 cmd：
 
 ```cmd
 cd /d D:\Code\CodexProjects\lattice-crypto-daily-digest
-python -m lattice_digest.run --since 7d --output markdown,json --send none --retry-failed-sources
+python -m lattice_digest.run --since 7d --output markdown,json --send none --retry-failed-sources --include-latest-sources
 ```
 
 注意：
@@ -215,6 +215,7 @@ python -m lattice_digest.run --since 7d --output markdown,json --send none --ret
 - 这是手动恢复路径，不是后台任务。
 - 不要把它放进 Windows Task Scheduler、cron、startup task 或 background service。
 - 不要用它做高频循环请求。
+- `--include-latest-sources` 当前用于让 IACR ePrint RSS/latest feed 的状态进入 source health，并允许对失败 attempt 做一次显式手动 latest recovery。
 - 如果需要回填历史日期，优先使用明确的 backfill 流程，并在运行前检查 `git status -sb`。
 
 ## 8. Generated artifacts accidentally changed
