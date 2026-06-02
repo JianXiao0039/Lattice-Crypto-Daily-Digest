@@ -47,6 +47,13 @@ Phase 9S.1 separated failed attempts from successful caches. Phase 9S.2 adds `--
 
 ## Specific 2026/1117 ML-KEM recovery logic
 
+Exact project source path:
+
+- `config/sources.yaml` defines `iacr_eprint` with URL `https://eprint.iacr.org/rss/rss.xml`.
+- `src/lattice_digest/sources/iacr.py` implements `IacrEprintSource.fetch`.
+- `src/lattice_digest/sources/iacr.py` calls `parse_iacr_feed` on the RSS/latest feed content.
+- `src/lattice_digest/run.py` wires manual flags into `FetchContext`.
+
 The IACR source still reads `https://eprint.iacr.org/rss/rss.xml`.
 
 Successful fetch behavior:
@@ -68,6 +75,15 @@ The known sample `2026/1117` is covered by tests:
 - the ePrint ID is parsed;
 - it can enter the existing ranker;
 - the existing ranker classifies it as A / 100.
+- it can enter the normal `run.main` collect / rank / JSON serialization path through a temporary IACR-only config and mocked RSS feed.
+
+Relevant tests:
+
+- `tests/test_iacr_parser.py::test_iacr_latest_feed_parser_discovers_phase_9s2_sample_ids`
+- `tests/test_iacr_parser.py::test_iacr_latest_feed_mlkem_sample_enters_ranking_path`
+- `tests/test_iacr_parser.py::test_iacr_include_latest_sources_recovers_failed_attempt_and_reports_latest_state`
+- `tests/test_iacr_parser.py::test_iacr_latest_feed_enters_run_and_ranking_path`
+- `tests/test_source_latest_audit.py::test_source_latest_audit_classifies_configured_sources`
 
 ## Cross-source latest coverage table
 
@@ -82,6 +98,8 @@ The known sample `2026/1117` is covered by tests:
 | `crypto_venues` | unsupported / unknown | disabled source | none | Disabled HTML fallback; not part of normal ingestion. |
 | `security_venues` | unsupported / unknown | disabled source | none | Disabled HTML fallback; not part of normal ingestion. |
 | `ai_venues_low_priority` | unsupported / unknown | disabled source | none | Disabled HTML fallback; not part of normal ingestion. |
+
+This table is represented in code by `src/lattice_digest/source_latest_audit.py`. It is deterministic and reads the configured sources without network calls.
 
 ## Which sources are latest-feed capable
 

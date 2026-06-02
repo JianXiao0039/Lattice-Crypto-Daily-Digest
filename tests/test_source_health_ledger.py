@@ -31,6 +31,8 @@ def _sample_source_health() -> list[dict[str, object]]:
             "errors": [],
             "error_type": None,
             "retryable": False,
+            "latest_feed_status": "cache_hit",
+            "latest_feed_records": 5,
         }
     ]
 
@@ -68,6 +70,8 @@ def test_source_health_ledger_writes_json() -> None:
     assert payload["sources"][0]["status"] == "green"
     assert payload["sources"][0]["threshold_count"] == 1
     assert payload["sources"][0]["warnings_count"] == 1
+    assert payload["sources"][0]["latest_feed_status"] == "cache_hit"
+    assert payload["sources"][0]["latest_feed_records"] == 5
 
 
 def test_source_health_ledger_writes_markdown() -> None:
@@ -77,8 +81,8 @@ def test_source_health_ledger_writes_markdown() -> None:
         markdown = markdown_path.read_text(encoding="utf-8")
 
     assert "# Source Health Ledger - 2026-05-27" in markdown
-    assert "| Source | Status | Raw | Normalized | Final | Error Type | Retryable | Warnings | Errors |" in markdown
-    assert "| arxiv | green | 5 | 4 | 1 | none | False | 1 | 0 |" in markdown
+    assert "| Source | Status | Latest | Raw | Normalized | Final | Error Type | Retryable | Warnings | Errors |" in markdown
+    assert "| arxiv | green | cache_hit/5 | 5 | 4 | 1 | none | False | 1 | 0 |" in markdown
 
 
 def test_source_health_ledger_handles_empty_sources() -> None:

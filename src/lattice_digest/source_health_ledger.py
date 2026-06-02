@@ -59,6 +59,12 @@ def normalize_source_health(source_health: list[dict[str, object]] | None) -> li
                 "errors_count": _as_int(item.get("errors_count"), len(errors)),
                 "error_type": item.get("error_type"),
                 "retryable": bool(item.get("retryable")),
+                "latest_feed_status": item.get("latest_feed_status"),
+                "latest_feed_reachable": item.get("latest_feed_reachable"),
+                "latest_feed_parsed": item.get("latest_feed_parsed"),
+                "latest_feed_records": _as_int(item.get("latest_feed_records")),
+                "latest_feed_missing_expected": _as_list(item.get("latest_feed_missing_expected")),
+                "latest_feed_skipped_by_guard": bool(item.get("latest_feed_skipped_by_guard")),
                 "warnings": warnings,
                 "errors": errors,
             }
@@ -104,17 +110,23 @@ def render_source_health_markdown(payload: dict[str, object]) -> str:
 
     lines.extend(
         [
-            "| Source | Status | Raw | Normalized | Final | Error Type | Retryable | Warnings | Errors |",
-            "|---|---:|---:|---:|---:|---|---:|---:|---:|",
+            "| Source | Status | Latest | Raw | Normalized | Final | Error Type | Retryable | Warnings | Errors |",
+            "|---|---:|---|---:|---:|---:|---|---:|---:|---:|",
         ]
     )
     for item in rows:
         if not isinstance(item, dict):
             continue
         lines.append(
-            "| {source} | {status} | {raw} | {normalized} | {final} | {error_type} | {retryable} | {warnings} | {errors} |".format(
+            "| {source} | {status} | {latest} | {raw} | {normalized} | {final} | {error_type} | {retryable} | {warnings} | {errors} |".format(
                 source=_escape_table_text(item.get("source")),
                 status=_escape_table_text(item.get("status")),
+                latest=_escape_table_text(
+                    "{status}/{records}".format(
+                        status=item.get("latest_feed_status") or "n/a",
+                        records=item.get("latest_feed_records", 0),
+                    )
+                ),
                 raw=_escape_table_text(item.get("raw_count", 0)),
                 normalized=_escape_table_text(item.get("normalized_count", 0)),
                 final=_escape_table_text(item.get("final_count", 0)),

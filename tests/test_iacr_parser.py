@@ -1,8 +1,10 @@
 from __future__ import annotations
 
+import json
 from datetime import datetime, timezone
 from pathlib import Path
 
+import lattice_digest.run as run_module
 import lattice_digest.sources.iacr as iacr_module
 from lattice_digest.config import load_config_bundle
 from lattice_digest.ranker import rank_records
@@ -218,6 +220,72 @@ def test_iacr_include_latest_sources_recovers_failed_attempt_and_reports_latest_
     assert health["latest_feed_records"] == 4
     assert health["latest_feed_missing_expected"] == []
     assert health["latest_feed_skipped_by_guard"] is False
+
+
+def test_iacr_latest_feed_enters_run_and_ranking_path(
+    tmp_path: Path,
+    monkeypatch,
+) -> None:
+    config_dir = tmp_path / "config"
+    config_dir.mkdir()
+    (config_dir / "sources.yaml").write_text(
+        """
+request:
+  timeout_seconds: 1
+sources:
+  - name: iacr_eprint
+    type: iacr_eprint
+    enabled: true
+    url: "https://eprint.iacr.org/rss/rss.xml"
+    expected_latest_ids:
+      - 2026/1115
+      - 2026/1116
+      - 2026/1117
+      - 2026/1118
+""".strip(),
+        encoding="utf-8",
+    )
+    for name in ("taxonomy.yaml", "keywords.yaml", "negative_keywords.yaml"):
+        (config_dir / name).write_text(Path("config", name).read_text(encoding="utf-8"), encoding="utf-8")
+
+    today = datetime.now(timezone.utc).date().isoformat()
+    cache_dir = tmp_path / "cache"
+    cache_dir.mkdir()
+    (cache_dir / f"iacr_eprint_{today}.attempt").write_text("failed earlier", encoding="utf-8")
+
+    def latest_fetch_text(context, url, source_name):  # noqa: ANN001
+        return _latest_iacr_xml()
+
+    monkeypatch.setattr(iacr_module, "fetch_text", latest_fetch_text)
+    monkeypatch.setattr(run_module, "project_root", lambda: tmp_path)
+
+    result = run_module.main(
+        [
+            "--target-date",
+            "2026-06-01",
+            "--since",
+            "7d",
+            "--output",
+            "json",
+            "--send",
+            "none",
+            "--config-dir",
+            str(config_dir),
+            "--include-latest-sources",
+        ]
+    )
+
+    assert result == 0
+    payload = json.loads((tmp_path / "data" / "2026-06-01.json").read_text(encoding="utf-8"))
+    by_id = {record.get("eprint_id"): record for record in payload["records"]}
+
+    assert by_id["2026/1117"]["title"] == "On the Secrecy of the Encapsulation Coin in ML-KEM"
+    assert by_id["2026/1117"]["relevance_label"] == "A"
+    assert by_id["2026/1117"]["relevance_score"] == 100
+    assert "2026/1115" not in by_id
+    assert payload["source_health"][0]["latest_feed_status"] == "manual_latest_retry"
+    assert payload["source_health"][0]["latest_feed_records"] == 4
+    assert payload["source_health"][0]["latest_feed_missing_expected"] == []
 
 
 def test_iacr_manual_retry_does_not_introduce_scheduler_code() -> None:
