@@ -115,6 +115,7 @@ class FetchContext:
     http_cache_ttl_seconds: int = 12 * 60 * 60
     per_domain_min_interval_seconds: float = 1.0
     max_retries: int = 2
+    retry_failed_sources: bool = False
     api_keys: dict[str, str] = field(default_factory=dict)
     warnings: list[str] = field(default_factory=list)
     source_health: dict[str, SourceHealth] = field(default_factory=dict)

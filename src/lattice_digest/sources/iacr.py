@@ -111,8 +111,18 @@ class IacrEprintSource(SourceAdapter):
         if cache_path.exists():
             xml_text = cache_path.read_text(encoding="utf-8")
         elif attempt_path.exists():
-            context.add_warning("IACR ePrint already requested today; skipped to honor max once per day", self.name)
-            return []
+            if not context.retry_failed_sources:
+                context.add_warning("IACR ePrint already requested today; skipped to honor max once per day", self.name)
+                return []
+            context.add_warning(
+                "manual retry enabled for IACR ePrint after previous failed same-day attempt",
+                self.name,
+            )
+            attempt_path.write_text(datetime.now(timezone.utc).isoformat(), encoding="utf-8")
+            xml_text = fetch_text(context, url, source_name=self.name)
+            if xml_text is None:
+                return []
+            cache_path.write_text(xml_text, encoding="utf-8")
         else:
             attempt_path.write_text(datetime.now(timezone.utc).isoformat(), encoding="utf-8")
             xml_text = fetch_text(context, url, source_name=self.name)

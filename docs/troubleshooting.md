@@ -183,6 +183,40 @@ git status -sb
 
 这些通常应记录为 source health red/yellow，而不是直接让主流程崩溃。若需要降低压力，先使用 `--low-load` 或扩大到本地 backfill。
 
+### IACR ePrint failed attempt blocks same-day retry
+
+症状：
+
+- Source Health 中 `iacr_eprint` 为 red；
+- warning 包含 `URLError` 或 `already requested today`；
+- IACR RSS 或单篇 ePrint 页面后来已经可访问，但当天本地 retry 仍然没有重新抓取；
+- 典型漏报样例：`2026/1117`，`On the Secrecy of the Encapsulation Coin in ML-KEM`。
+
+原因：IACR ePrint 采用礼貌缓存与 once-per-UTC-day guard。成功抓取会写入当天 RSS cache，后续运行复用 cache；失败抓取会留下 same-day attempt marker。为了避免高频请求，普通运行看到 attempt marker 会跳过 IACR。
+
+手动恢复：确认这是你主动触发的一次恢复运行后，使用 `--retry-failed-sources` 允许对失败 attempt 做一次手动 retry。成功 cache 仍然不会被绕过。
+
+PowerShell：
+
+```powershell
+Set-Location "D:\Code\CodexProjects\lattice-crypto-daily-digest"
+python -m lattice_digest.run --since 7d --output markdown,json --send none --retry-failed-sources
+```
+
+cmd：
+
+```cmd
+cd /d D:\Code\CodexProjects\lattice-crypto-daily-digest
+python -m lattice_digest.run --since 7d --output markdown,json --send none --retry-failed-sources
+```
+
+注意：
+
+- 这是手动恢复路径，不是后台任务。
+- 不要把它放进 Windows Task Scheduler、cron、startup task 或 background service。
+- 不要用它做高频循环请求。
+- 如果需要回填历史日期，优先使用明确的 backfill 流程，并在运行前检查 `git status -sb`。
+
 ## 8. Generated artifacts accidentally changed
 
 查看：

@@ -36,6 +36,11 @@ def parse_args(argv: list[str] | None = None) -> argparse.Namespace:
     )
     parser.add_argument("--run-mode", choices=("daily", "backfill", "dry_run"), default="daily")
     parser.add_argument("--force", action="store_true", help="Overwrite authoritative reports for the target date.")
+    parser.add_argument(
+        "--retry-failed-sources",
+        action="store_true",
+        help="Manually retry sources that only have a failed same-day attempt marker, without bypassing successful caches.",
+    )
     return parser.parse_args(argv)
 
 
@@ -330,6 +335,7 @@ def main(argv: list[str] | None = None) -> int:
         http_cache_ttl_seconds=int(request_config.get("cache_ttl_seconds", 12 * 60 * 60)),
         per_domain_min_interval_seconds=float(request_config.get("per_domain_min_interval_seconds", 1.0)),
         max_retries=int(request_config.get("max_retries", 2)),
+        retry_failed_sources=args.retry_failed_sources,
         api_keys={
             "SEMANTIC_SCHOLAR_API_KEY": os.getenv("SEMANTIC_SCHOLAR_API_KEY", ""),
             "OPENAI_API_KEY": os.getenv("OPENAI_API_KEY", ""),
