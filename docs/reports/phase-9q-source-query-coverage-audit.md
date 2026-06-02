@@ -1,190 +1,237 @@
-# Phase 9Q Source Query Coverage Audit
+# Phase 9Q: Source Query Coverage Audit
 
-本报告基于 Phase 9P real-run false positive review、当前查询配置、负面关键词配置以及 2026-05-31 到 2026-06-02 的 daily / weekly artifacts。此阶段只做审计和未来 patch plan，不修改 query、negative keyword、taxonomy、ranking、section classifier、fetcher、workflow、生成日报、生成 JSON 或 `papers.db`。
+Date: 2026-06-03
+
+This is a manual one-time audit report. It does not change source queries, negative keywords, taxonomy, ranking, section classification, fetchers, workflow behavior, generated daily / weekly artifacts, generated JSON files, or `papers.db`.
 
 ## Executive summary
 
-- 当前 `config/sources.yaml` 的 Phase 9O query expansion 基本符合 lattice/PQC anchored 原则。未发现 `federated learning`、`LLM fine-tuning`、`DP-SGD`、`registration encryption`、`zero-knowledge proof`、`anonymous credential`、`commitment scheme`、`functional encryption` 这类泛词作为独立 query 出现。
-- 主要覆盖缺口不是 query 不足，而是 source health / network starvation：`2026-06-01` 和 `2026-06-02` daily artifacts 均为空，且多个 source 为 red/yellow。
-- Phase 9P 中最明确的误报，如 `Falcon-X` 和 `Practical Anonymous Two-Party Gradient Boosting Decision Tree`，根因更像 section classifier ambiguity 与 ranking score inflation，而不是 source query 太宽。
-- `config/negative_keywords.yaml` 已覆盖 registration / image registration / graph isomorphism / generic FL / DP-SGD / LLM fine-tuning / generic ZK / credential / commitment / FE 等主要误报族。
-- 不建议在 Phase 9Q 直接改 query 或 negative keywords。最小后续 patch 应优先做 section classifier golden-case guard；source health 方向应进入单独 Phase 9S 诊断。
+- Phase 9P shows the strongest quality issues are false-positive classification and section over-assignment, not a simple missing-query problem.
+- Phase 9S and Phase 9S.2 show that the missing IACR ePrint `2026/1117`, `On the Secrecy of the Encapsulation Coin in ML-KEM`, was a source ingestion / source health / latest enumeration issue. It is not a taxonomy problem: when it enters the parser/ranker path, the current ranker treats it as A-level, observed as A / 100 in diagnostics.
+- `config/sources.yaml` is mostly lattice/PQC anchored. The broad-looking terms that deserve future review are not obviously wrong, but they need anchor guards: `isomorphism of lattices`, `registration-based encryption from lattices`, `Learning with Errors`, `Short Integer Solution`, `SVP`, `CVP`, `sieving`, `enumeration`, `G6K`, `fplll`, and `bootstrapping` are acceptable in lattice context but risky if a source search engine interprets them loosely.
+- Negative keywords already cover many non-lattice false-positive families: image registration, graph isomorphism, generic federated learning, DP-SGD, generic LLM fine-tuning, generic secure aggregation, generic zero-knowledge, generic anonymous credential, generic commitment, generic functional encryption, and homomorphic-sounding non-cryptographic ML terms.
+- Do not patch query or negative keyword config in Phase 9Q. The next minimal patch should be small and test-driven: section / ranking guard golden cases for `Falcon-X`, generic privacy-preserving ML, generic EKE, and generic signatures, while keeping source-health recovery separate.
 
 ## Inputs inspected
 
 | Input | Status | Audit note |
-|---|---|---|
-| `docs/reports/phase-9p-real-run-review.md` | inspected | 提取 false positives、missing coverage、A-level audit、section audit、source health issues |
-| `config/sources.yaml` | inspected | 查询扩展已包含 Phase 9O anchored topics |
-| `config/negative_keywords.yaml` | inspected | 已覆盖主要泛 registration / isomorphism / FL / DP / ZK / credential / commitment false positives |
-| `config/taxonomy.yaml` | inspected | 包含 LWE/SIS/NTRU/FHE/PQC/implementation/AI4Lattice 等 taxonomy families |
-| `data/2026-05-31.json` | inspected | records=0；source health mixed, no final records |
-| `data/2026-06-01.json` | inspected | records=0；source health mixed, no final records |
-| `data/2026-06-02.json` | inspected | records=0；all source records red, no final records |
-| `data/weekly/2026-W22.json` | inspected | unique_records=12；A=9, B=1, C=2 |
-| `data/weekly/2026-W23.json` | inspected | unique_records=0；source health degraded |
-| Markdown daily/weekly digests | inspected | 用于确认日报/周报呈现与 JSON 一致 |
+| --- | --- | --- |
+| `docs/reports/phase-9p-real-run-review.md` | inspected | Extracted false positives, suspicious A-level papers, weak section assignments, and source health concerns. |
+| `docs/reports/phase-9s-iacr-source-health-diagnostics.md` | inspected | Confirmed IACR `2026/1115..1118` absence from local artifacts and source-health root cause for `2026/1117`. |
+| `docs/reports/phase-9s2-source-latest-enumerator.md` | inspected | Confirmed IACR RSS/latest path, manual latest recovery flag, and cross-source latest capability table. |
+| `config/sources.yaml` | inspected | Audited query terms, query groups, IACR RSS URL, enabled sources, and disabled HTML fallbacks. |
+| `config/negative_keywords.yaml` | inspected | Audited hard / soft negative coverage and overblocking safeguards. |
+| `config/taxonomy.yaml` | inspected | Confirmed broad lattice/PQC/implementation/AI4Lattice taxonomy families exist. |
+| `src/lattice_digest/source_latest_audit.py` | inspected when present | Confirms deterministic source latest/query capability classification. |
+| `src/lattice_digest/source_health_ledger.py` | inspected | Confirms source health ledger can expose `latest_feed_*` observability. |
+| `src/lattice_digest/sources/` | inspected | Confirms configured source adapters: IACR, arXiv, DBLP, OpenAlex, Crossref, Semantic Scholar. |
+| Daily artifacts `2026-05-31..2026-06-02` | inspected | All three daily JSONs had `records = 0`; source health was degraded. |
+| Weekly artifacts `2026-W22`, `2026-W23` | inspected | W22 has usable but noisy records; W23 has no unique records and degraded source health. |
 
 ## Phase 9P issue mapping
 
-| Issue from Phase 9P | Likely root cause | Evidence | Future action |
-|---|---|---|---|
-| `Falcon-X` enters PQC Falcon and A-level | section classifier ambiguity; ranking score inflation; metadata/title ambiguity | Title contains `Falcon-X` but abstract is time-series foundation model; no lattice/PQC/FN-DSA/signature anchor | Add Falcon scheme context gate; golden test before logic change |
-| `Practical Anonymous Two-Party GBDT` enters AI-assisted lattice, SIS/NTRU, PQC, A=100 | section classifier ambiguity; ranking score inflation; expected acceptable noise at source query level | It contains HE/LWE-like signals, but is privacy-preserving ML, not lattice cryptanalysis | Demote/reroute via section gates; avoid hard negative unless no HE/LWE anchor |
-| EKE over P-256 enters PQC / Implementation section | section classifier ambiguity; missing lattice/PQC section anchor | C=45 is acceptable as generic crypto, but section assignment is misleading | Keep generic C/Other; require lattice/PQC scheme context for PQC section |
-| Doubly Aggregatable Signatures enters PQC / Implementation section | section classifier ambiguity; generic signature term | No visible lattice/PQC anchor | Keep C/Other unless lattice/PQC construction exists |
-| CKKS bootstrapping lands in Other / Watchlist | missing section route | Genuine CKKS/FHE paper hidden under Other | Add FHE/CKKS section routing in future section patch |
-| W23 has no records | source health / network starvation | W23 source health red/yellow only; daily 2026-06-01/02 records=0 | Treat as source health diagnostics problem, not taxonomy evidence |
+| Issue | Likely root cause | Evidence | Future action |
+| --- | --- | --- | --- |
+| `Falcon-X: A Time Series Foundation Model...` entered PQC/Falcon and A-level tracking | section classifier ambiguity; ranking score inflation; source query acceptable noise | `Falcon-X` is a model name, not Falcon / FN-DSA lattice signature. No visible lattice/PQC anchor. | Add positive Falcon context gate: require signature, FN-DSA, lattice, PQC, side-channel/fault, implementation security, or NIST context. |
+| `Practical Anonymous Two-Party Gradient Boosting Decision Tree` over-ranked and over-sectioned | ranking inflation; AI/privacy ambiguity; section classifier over-propagation | It may mention HE/LWE, but appears privacy-preserving ML / secure computation, not AI-assisted lattice cryptanalysis. | Keep only as background if lattice HE is central; exclude from AI-assisted lattice and PQC/Falcon/SIS sections unless explicit. |
+| `Beyond 128 Bits: The Concrete Security of EKE` entered PQC/implementation sections | section classifier ambiguity; generic security terms | EKE over classical elliptic-curve context is not lattice/PQC. | Gate PQC implementation sections by explicit ML-KEM/ML-DSA/Falcon/lattice/PQC implementation target. |
+| `Doubly Aggregatable Signatures` entered PQC/implementation sections | generic signature ambiguity | Signature alone is not lattice signature. | Require lattice/PQC construction or scheme anchor for PQC signature sections. |
+| `Streamlined Symmetric PIR via Renyi Divergence` looks A-ish but over-sectioned | metadata / ranking nuance; section over-assignment | LWE/post-quantum privacy may be relevant, but SIS/NTRU/PQC Falcon sections are overbroad. | Review manually; route to LWE/privacy/FHE background if confirmed. |
+| CKKS bootstrapping paper routed to `Other / Watchlist` | missing FHE section routing | It is genuine CKKS/FHE and should not be hidden in Other. | Add or restore FHE/CKKS/BFV/BGV/TFHE section routing in a future report-quality phase. |
+
+## Phase 9S / 9S.2 source health implications
+
+| Finding | Root cause class | Implication |
+| --- | --- | --- |
+| `2026/1117` absent from local artifacts but reachable in IACR RSS/latest | source health / network starvation plus failed attempt guard | Do not tune taxonomy or ranking for this miss. Use manual IACR recovery path. |
+| IACR source path is `https://eprint.iacr.org/rss/rss.xml` | source-native latest feed exists | IACR is the highest-confidence latest-feed source and should remain source-native, not query-only. |
+| `--include-latest-sources` + `--retry-failed-sources` provide manual recovery | manual latest recovery | This should remain manual and bounded; do not schedule it. |
+| Source health ledger exposes `latest_feed_*` fields | observability improvement | Future audits can distinguish RSS/latest failure from ranking/filtering failure. |
+| W23 empty daily/weekly outputs had red/yellow source health | source health / network starvation | Empty output does not prove no relevant papers existed. |
 
 ## Source query coverage table
 
-| Source | Query count observed | Anchored coverage judgment | Potential overbroad candidates | Notes |
-|---|---:|---|---|---|
-| `iacr_eprint` | 0 explicit query terms | N/A | none | RSS/OAI source; not query-expanded in config |
-| `arxiv` | 104 total query strings including query groups | Good | `Learning with Errors`, `Short Integer Solution`, `LLL`, `SVP`, `CVP`, `sieving`, `enumeration`, `G6K`, `fplll`, `bootstrapping` look unanchored by string regex but are lattice/FHE hard-scope terms | arXiv has broadest coverage and highest query pressure; query groups = 37 in source health |
-| `dblp` | 11 | Good | none | Anchored phrases only; DBLP source health degraded in real run |
-| `openalex` | 17 | Good | none | Anchored phrases only |
-| `crossref` | 17 | Good | none | Anchored phrases only; supplemental source with strong relevance filter |
-| `semantic_scholar` | 17 | Good | none | Anchored phrases only; 429/rate-limit was visible |
+| Source | Current configured mode | Query / feed coverage | Anchor quality | Audit judgment |
+| --- | --- | --- | --- | --- |
+| IACR ePrint | source-native RSS/latest | `https://eprint.iacr.org/rss/rss.xml` | Strong: source-native latest feed, no broad query terms | Keep. Missing `2026/1117` was ingestion/health, not query coverage. |
+| arXiv | query groups | 37 configured query groups; includes lattice/PQC/FHE/AI4Lattice expanded topics | Mostly anchored. Some short technical terms are broad outside crypto: `SVP`, `CVP`, `sieving`, `enumeration`, `G6K`, `fplll`, `bootstrapping`. | Keep for now; future patch should add downstream guards, not remove queries immediately. |
+| DBLP | query search | 11 broad venue/query strings | Anchored: all include lattice/PQC/FHE/BKZ/Module-SIS/ZK or related terms | Keep; sparse daily windows and venue metadata limits are bigger risks. |
+| OpenAlex | query search | Lattice/PQC/FHE/implementation/privacy topics | Anchored | Keep; monitor rate limits and metadata quality. |
+| Crossref | supplemental query search | Lattice/PQC/FHE/registration/isomorphism/SIS/PQC ABE | Anchored but supplemental-only | Keep; require strong relevance as currently configured. |
+| Semantic Scholar | configured query source, optional metadata cross-check | Lattice/PQC/FHE/structured topics | Anchored | Existing code implements it as a source; also useful for optional enrichment. Do not require API key. |
+| Disabled HTML fallbacks | disabled / unknown | Crypto/security/AI venue pages | Not active | Do not enable in this phase. |
+
+## Source-native latest coverage table
+
+| Source | Latest/RSS capable | Query-only | Enrichment-only | Unknown / unsupported | Notes |
+| --- | ---: | ---: | ---: | ---: | --- |
+| IACR ePrint | yes | no | no | no | RSS/latest feed is the concrete latest enumerator. |
+| arXiv | not currently wired as latest | yes | no | no | API query groups are configured; no separate source-native latest feed path in current project. |
+| DBLP | not currently wired as latest | yes | no | no | Venue/query metadata source; daily latest completeness is limited. |
+| OpenAlex | not currently wired as latest | yes | no | no | Query metadata source; avoid paid-only sort behavior. |
+| Crossref | not currently wired as latest | yes | no | no | Supplemental query source with strong relevance filters. |
+| Semantic Scholar | not currently wired as latest | yes | optional cross-check only | no | Existing source can query; `SEMANTIC_SCHOLAR_API_KEY` is optional and must not be logged. |
+| `crypto_venues`, `security_venues`, `ai_venues_low_priority` | no | no | no | disabled | HTML fallback only; intentionally disabled. |
 
 ## Missing query anchor candidates
 
-| Anchor candidate | Current status | Recommendation |
-|---|---|---|
-| lattice-based registration-based encryption | present | Keep |
-| LWE-based registration-based encryption | present | Keep |
-| SIS-based registration-based encryption | present | Keep |
-| LWE / RLWE / MLWE | present | Keep |
-| SIS / Short Integer Solution | present | Keep |
-| Module-SIS standalone | partially covered through `Module-SIS chameleon hash`; no standalone `Module-SIS` query in all source query strings | Consider adding standalone `Module-SIS` query only if future real-run evidence shows missed Module-SIS papers; postpone |
-| NTRU | present | Keep |
-| lattice-based commitment | present | Keep |
-| SIS-based commitment | present | Keep |
-| Module-SIS chameleon hash | present | Keep |
-| lattice-based zero-knowledge proof | present | Keep |
-| lattice-based anonymous credential | present | Keep |
-| PQC attribute-based encryption | present | Keep |
-| lattice-based privacy-preserving training | present | Keep |
-| RLWE-based secure aggregation federated learning | present | Keep |
-| FHE private LLM fine-tuning RLWE | present | Keep |
-| lattice isomorphism problem | present | Keep |
+These are topics that appear important to the user's research profile and should remain covered. Most are already present in `config/sources.yaml`; future work should verify successful source health before adding more query terms.
+
+| Topic | Current coverage judgment | Future action |
+| --- | --- | --- |
+| LWE / RLWE / MLWE / Module-LWE | covered by arXiv, DBLP, OpenAlex, Crossref, Semantic Scholar | Keep; add golden false-positive tests before changing. |
+| SIS / Module-SIS | covered, including `Module-SIS chameleon hash` and `SIS-based commitment` | Keep; consider more precise Module-SIS primitive tests later. |
+| NTRU | covered in core query sets | Keep. |
+| ML-KEM / Kyber | covered in query sets and IACR latest can recover `2026/1117` | Keep; source health is the main risk. |
+| ML-DSA / Dilithium | covered | Keep; ensure implementation security section gates are precise. |
+| Falcon / FN-DSA | covered but ambiguous | Keep query, but add positive context gate so `Falcon-X` model names do not count. |
+| BKZ / LLL / lattice reduction / attacks | covered | Keep; ensure `dual`, `primal`, `hybrid` only count in lattice attack context. |
+| sparse LWE | not visibly explicit in `sources.yaml` | Candidate for future query patch if source health stabilizes. |
+| Module-SIS chameleon hash | covered in arXiv/DBLP/OpenAlex | Keep. |
+| lattice-based commitment / ring signature / ZK / anonymous credential | covered in selected sources | Keep with lattice/PQC/SIS/LWE anchor requirement. |
+| PQC attribute-based encryption | covered in arXiv/Crossref | Keep with PQC/lattice anchor requirement. |
+| lattice-based registration-based encryption | covered | Keep; avoid generic registration queries. |
+| lattice isomorphism problem | covered | Keep; avoid graph/code/model/image isomorphism. |
+| RLWE/FHE secure aggregation / privacy-preserving ML / LLM fine-tuning | covered with anchored variants | Keep; do not use generic FL/DP/LLM terms as standalone queries. |
 
 ## Overbroad query candidates
 
-No generic standalone privacy/registration/isomorphism/ZK/credential/commitment/FE queries were found.
+The following are not necessarily wrong, but require careful downstream anchors:
 
-The following arXiv query strings may look broad in a naive regex audit but are acceptable because they are core lattice/FHE terms:
-
-- `Learning with Errors`
-- `Short Integer Solution`
-- `LLL`
-- `SVP`
-- `CVP`
-- `sieving`
-- `enumeration`
-- `G6K`
-- `fplll`
-- `bootstrapping`
-
-Risk note: `Falcon` remains semantically ambiguous. The current problem is not source query breadth alone; it is downstream interpretation of the token `Falcon` without scheme context.
+| Query / topic | Why risky | Recommended future guard |
+| --- | --- | --- |
+| `Falcon` | Can match ML model/product names such as `Falcon-X`. | Require Falcon signature / FN-DSA / lattice / PQC context. |
+| `bootstrapping` | Can be generic statistics/ML bootstrapping. | Require FHE/CKKS/BFV/BGV/TFHE or cryptographic context. |
+| `sieving`, `enumeration`, `G6K`, `fplll` | Could be general algorithms, but usually useful in lattice context. | Require lattice reduction / SVP / CVP / BKZ context. |
+| `SVP`, `CVP` | Short acronyms can be ambiguous. | Require lattice / cryptography / reduction context. |
+| `isomorphism of lattices` | Better than generic isomorphism but still may be math-only. | Require cryptography/PQC/lattice cryptanalysis context for A/B. |
+| `registration-based encryption from lattices` | Correctly anchored, but related generic registration terms are dangerous. | Never add standalone account/user/domain/image registration terms. |
+| privacy-preserving ML / secure aggregation anchored queries | Useful but can pull application papers. | Require explicit LWE/RLWE/FHE/HE construction or proof for high priority. |
 
 ## Negative keyword gaps
 
-Current negative keyword coverage is strong for the requested generic false-positive families:
+`config/negative_keywords.yaml` already covers many obvious families. Future minimal patch candidates are:
 
-| False-positive family | Covered? | Config location |
-|---|---:|---|
-| account / user / domain registration | yes | hard negative |
-| image / medical image / point cloud registration | yes | hard negative |
-| graph / code / model / neural / chemical isomorphism | yes | hard negative |
-| generic federated learning | yes | soft negative |
-| generic DP-SGD | yes | soft negative |
-| generic LLM fine-tuning | yes | soft negative |
-| generic secure aggregation | yes | soft negative |
-| generic zero-knowledge | yes | soft negative |
-| generic anonymous credential | yes | soft negative |
-| generic commitment scheme | yes | soft negative |
-| generic functional encryption | yes | soft negative |
-| homomorphic-sounding ML terms | partial | soft negative covers homomorphic feature matching / representation learning / embedding |
-
-Potential future additions, only after more evidence:
-
-- `Falcon-X` as a soft negative or explicit false-positive alias. This is not recommended as the first fix; a Falcon positive-context gate is safer.
-- Generic `foundation model` should not be a hard negative because AI4Lattice may legitimately mention foundation models if paired with LWE/BKZ/cryptanalysis.
+| Gap candidate | Why it matters | Suggested treatment |
+| --- | --- | --- |
+| `Falcon-X` / foundation model names | Current false positive is scheme-name ambiguity rather than a generic negative family. | Prefer positive Falcon context gate over hard negative; optionally add exact `Falcon-X` as soft negative if repeated. |
+| generic time-series foundation model | Helps avoid ML model papers with PQC scheme-name collisions. | Soft negative unless lattice/PQC context exists. |
+| generic EKE / PAKE without PQC/lattice | Classical crypto papers can enter PQC sections. | Section guard rather than hard negative. |
+| generic aggregate signatures | Signature alone is not lattice signature. | Section guard requiring lattice/PQC anchor. |
+| generic privacy-preserving ML with HE mention | May be background, not AI4Lattice. | Demote unless LWE/RLWE/FHE construction is central. |
 
 ## Negative keyword overblocking risks
 
-| Risk | Why it matters | Current judgment |
-|---|---|---|
-| `zero-knowledge` soft negative | Lattice ZK papers are in-scope when lattice/PQC anchored | Acceptable as soft negative; should not hard-filter anchored true positives |
-| `anonymous credential` soft negative | Lattice-based anonymous credentials are in-scope | Acceptable as soft negative; requires section classifier to preserve lattice/PQC anchored papers |
-| `federated learning` soft negative | RLWE/FHE secure aggregation for FL is in-scope | Acceptable as soft negative; do not hard-filter |
-| `commitment scheme` soft negative | SIS/Module-SIS commitments are in-scope | Acceptable as soft negative; do not hard-filter |
-| `functional encryption` soft negative | LWE/lattice FE is in-scope | Acceptable as soft negative; do not hard-filter |
+Do not add hard negative rules that suppress true positives containing:
 
-Current config includes lattice/PQC/HE/FHE/LWE/RLWE/MLWE/SIS/Module-SIS/NTRU anchors in `crypto_context_required_if_only_lattice`, so the major overblocking risk is manageable if downstream logic respects strong context.
+- lattice
+- LWE / RLWE / MLWE / Module-LWE
+- SIS / Module-SIS / Ring-SIS
+- NTRU
+- PQC / post-quantum
+- ML-KEM / Kyber
+- ML-DSA / Dilithium
+- Falcon / FN-DSA when used as lattice signature context
+- FHE / CKKS / BFV / BGV / TFHE
+- homomorphic encryption in the cryptographic sense
+- lattice-based commitment, credential, ZK, FE, registration-based encryption
+
+Soft negatives should continue to allow recovery when strong crypto context exists.
 
 ## Source health observations
 
-| Artifact | Source health | Coverage interpretation |
-|---|---|---|
-| `data/2026-05-31.json` | arXiv yellow, Crossref yellow, DBLP red, IACR red, OpenAlex yellow, Semantic Scholar red | Low confidence. Empty daily records may reflect date filtering plus source failures. |
-| `data/2026-06-01.json` | arXiv yellow, Crossref yellow, DBLP yellow, IACR red, OpenAlex yellow, Semantic Scholar red | Low confidence. Crossref had date-filtered candidates but no final records. |
-| `data/2026-06-02.json` | all sources red | Very low confidence. Treat as source-starved run, not evidence of no papers. |
+| Artifact | Source health | Coverage implication |
+| --- | --- | --- |
+| `data/2026-05-31.json` | arXiv yellow, Crossref yellow, DBLP red, IACR red, OpenAlex yellow, Semantic Scholar red | Low-confidence empty report. |
+| `data/2026-06-01.json` | arXiv yellow, Crossref yellow, DBLP yellow, IACR red, OpenAlex yellow, Semantic Scholar red | Low-confidence empty report. |
+| `data/2026-06-02.json` | all inspected sources red | Very low-confidence empty 7d report. |
 | `data/weekly/2026-W22.json` | source health available; 2 green, 15 yellow, 7 red | Usable for false-positive review, but still not perfect coverage. |
-| `data/weekly/2026-W23.json` | 8 red, 4 yellow; no unique records | Not reliable for false-negative conclusions. |
+| `data/weekly/2026-W23.json` | source health available; 8 red, 4 yellow | Empty weekly output is not reliable evidence of no relevant papers. |
 
 Distinction:
 
-- `Falcon-X`, GBDT, EKE, and generic signatures are not source health issues; they are downstream classification issues.
-- Empty W23 and empty 2026-06-02 daily are source health / network starvation issues; do not patch taxonomy based on these alone.
+- `2026/1117` missing: source-native latest / source health / retry guard issue.
+- `Falcon-X`, GBDT, EKE, generic signatures: classification / section / ranking issue.
+- Empty W23: source health / network starvation issue.
+
+## Semantic Scholar enrichment note
+
+Semantic Scholar is currently configured as a source and may also be useful as optional metadata cross-check. Do not require a real API key for this phase or for tests. If an API key is used in future operations, it must come only from the environment variable name `SEMANTIC_SCHOLAR_API_KEY`.
+
+Do not print, store, log, or commit any Semantic Scholar API key.
 
 ## Recommended minimal future patch
 
-Recommended next step: Phase 9Q.1 should be a small section-classifier / golden-test patch, not a query rewrite.
+Recommended next implementation phase: **Phase 9Q.1 Minimal Query / Negative Keyword Patch**, but keep it narrow and mostly test-driven.
 
-Minimal patch scope:
+Minimal patch plan:
 
-1. Add real-run golden tests from Phase 9P:
+1. Add golden-case tests for:
    - `Falcon-X` must not enter PQC Falcon or A-level lattice tracking.
-   - `Practical Anonymous Two-Party Gradient Boosting Decision Tree` must not enter AI-assisted lattice cryptanalysis, SIS/NTRU, or PQC Falcon.
-   - `Beyond 128 Bits: The Concrete Security of EKE` must not enter PQC/Implementation sections without lattice/PQC anchors.
-   - `Doubly Aggregatable Signatures` must not enter PQC/Implementation sections without lattice/PQC anchors.
-   - `Sparse Hermite Interpolation Method for Discrete-CKKS Functional Bootstrapping` should route to FHE/CKKS, not only Other/Watchlist.
-2. Add positive-context gates:
-   - Falcon counts only with Falcon signature / FN-DSA / lattice signature / NIST PQC / implementation security / side-channel/fault context.
-   - AI-assisted lattice cryptanalysis requires AI/ML plus lattice cryptanalysis/LWE/BKZ/attack-interface evidence.
-   - SIS/NTRU/Commitment section requires explicit SIS/NTRU/commitment/chameleon/trapdoor primitive evidence.
-   - PQC Standards section requires explicit PQC scheme or standardization/deployment context, not generic signature or unrelated model names.
-3. Preserve ranking thresholds and query/negative configs initially.
+   - `Practical Anonymous Two-Party Gradient Boosting Decision Tree` must not enter AI-assisted lattice cryptanalysis, SIS/NTRU, or PQC Falcon without explicit lattice cryptanalysis evidence.
+   - Generic EKE must not enter PQC/implementation sections without lattice/PQC anchors.
+   - Generic aggregate signatures must not enter PQC/implementation sections without lattice/PQC anchors.
+2. Add positive context gates:
+   - Falcon requires Falcon/FN-DSA signature or lattice/PQC implementation/security context.
+   - AI4Lattice requires AI/ML plus lattice/LWE/RLWE/MLWE/BKZ/cryptanalysis attack-interface context.
+   - SIS/NTRU/commitment/chameleon section requires explicit SIS/NTRU/commitment/chameleon/trapdoor primitive evidence.
+3. Add FHE/CKKS routing polish later in Phase 9R rather than mixing it into query patch.
+4. Keep IACR source recovery in Phase 9S.3 if runtime evidence still shows failures.
+5. Keep Semantic Scholar metadata work for Phase 9U.
 
 ## Changes explicitly not recommended
 
-Do not do the following based on current evidence:
+Do not do these based on this audit alone:
 
-- Do not remove Phase 9O anchored queries.
-- Do not add broad hard negatives for `federated learning`, `LLM fine-tuning`, `zero-knowledge`, `anonymous credential`, `commitment`, or `functional encryption`.
-- Do not change A/B/C/D thresholds from this review alone.
-- Do not rewrite fetchers.
-- Do not treat W23 empty result as a clean negative signal.
-- Do not add scheduled automation, cron, Task Scheduler, watcher, background service, startup task, or automatic run.
-- Do not modify generated daily/weekly artifacts as part of the audit.
+- Do not remove the Phase 9O expanded anchored queries yet.
+- Do not add broad hard negatives for HE, FHE, zero-knowledge, commitment, functional encryption, or privacy-preserving ML.
+- Do not lower all A-level scores globally because some true A-level papers are present.
+- Do not treat W23 empty output as evidence that no papers existed.
+- Do not convert manual IACR recovery into scheduled automation.
+- Do not add or require Semantic Scholar API-key integration in this phase.
+- Do not modify generated daily/weekly artifacts or `papers.db`.
 
 ## Manual reviewer checklist
 
-- [ ] Confirm `Falcon-X` is ordinary ML and should be excluded from Falcon/FN-DSA tracking.
-- [ ] Confirm whether GBDT paper has actual LWE/HE construction depth; if yes, route to General Privacy / FHE background rather than AI4Lattice.
-- [ ] Verify whether CKKS functional bootstrapping should become a dedicated FHE high-priority route.
-- [ ] Review W23 after a healthier source run before declaring missing coverage.
-- [ ] Keep query expansion unchanged until at least one more successful real run.
-- [ ] Prefer golden tests before classifier/ranking adjustments.
+- [ ] Confirm `Falcon-X` is an ML time-series model and unrelated to Falcon / FN-DSA.
+- [ ] Inspect `Practical Anonymous Two-Party GBDT` for actual LWE/HE depth before deciding B/C/D.
+- [ ] Check whether `Streamlined SPIR via Renyi Divergence` has central LWE construction/proof or is background privacy.
+- [ ] Verify extraordinary claims in `Module Lattice Security (Part IV)` before using it in advisor discussion.
+- [ ] Confirm `Sparse Hermite Interpolation Method for Discrete-CKKS Functional Bootstrapping` should route to FHE/CKKS rather than Other.
+- [ ] Treat 2026-W23 as source-starved and low-confidence.
+- [ ] Use IACR manual latest recovery for `2026/1117` style misses; do not tune taxonomy for them.
+- [ ] Before changing query/negative config, add deterministic golden tests.
 
-## Decision
+## Decision recommendation
 
-Recommended path:
+Recommended ordering:
 
-1. Proceed to Phase 9Q.1 patch for section-classifier golden cases and context gates.
-2. In parallel or next, run Phase 9S source health diagnostics for arXiv/Semantic Scholar/DBLP/Crossref network starvation.
-3. Defer Phase 9R report polish until section over-assignment is reduced, otherwise polished reports may still surface misleading A-level candidates.
+1. **Phase 9Q.1 Minimal Query / Negative Keyword Patch**: add golden tests and small positive context gates for the known false positives. Avoid broad query deletion.
+2. **Phase 9R Research Report Quality Polish**: improve section routing, especially FHE/CKKS and General Privacy/background separation.
+3. **Phase 9S.3 Source Runtime Debug**: if IACR/arXiv/Semantic Scholar/DBLP source health still red/yellow in real runs, debug runtime behavior separately from ranking.
+4. **Phase 9U Semantic Scholar Metadata Enrichment**: optional only; use `SEMANTIC_SCHOLAR_API_KEY` by environment variable name, never as a stored or logged value.
+5. **v0.3.3 Maintenance Release Prep**: after 9Q.1 and 9R/9S.3 selected fixes pass clean validation.
 
-Decision summary: Phase 9Q.1 patch first, Phase 9S diagnostics second, Phase 9R report polish after classifier correction.
+Primary recommendation: start with Phase 9Q.1, but make it a guard/test patch rather than a broad query rewrite.
+
+## What was intentionally not changed
+
+This audit did not change:
+
+- `config/sources.yaml`
+- `config/negative_keywords.yaml`
+- taxonomy config
+- ranking code
+- section classifier code
+- fetcher/source code
+- workflow code
+- generated daily/weekly digest Markdown
+- generated JSON files
+- `papers.db`
+- `.env`
+- any API key or secret
+- scheduled automation
+- Windows Task Scheduler
+- cron
+- background services
+- startup tasks
