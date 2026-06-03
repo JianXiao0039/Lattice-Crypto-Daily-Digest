@@ -13,6 +13,12 @@ from lattice_digest.digest_sections import (
 )
 from lattice_digest.models import PaperRecord
 from lattice_digest.ranking_explainability import concise_ranking_explanation
+from lattice_digest.report_quality import (
+    anchor_evidence_text,
+    false_positive_risk_text,
+    semantic_scholar_advisory_text,
+    source_health_caveat_text,
+)
 
 
 TOPIC_TERMS: dict[str, tuple[str, ...]] = {
@@ -868,8 +874,11 @@ def _basic_paper_lines(record: PaperRecord) -> list[str]:
         f"- 日期/年份：{record.publication_date or record.update_date or 'unknown'}",
         f"- 来源：{record.source}",
         f"- 链接：{link}",
+        f"- 论文事实：以上为 source metadata；如作者、日期或 venue 缺失，进入精读前需手动核验。",
         f"- 分类/分数：{record.relevance_label} / {record.relevance_score}",
         f"- {concise_ranking_explanation(record)}",
+        f"- {anchor_evidence_text(record)}",
+        f"- false-positive risk note：{false_positive_risk_text(record)}",
         f"- priority：{intel['priority']}",
         f"- reading_priority_score：{intel['reading_priority_score']}",
         f"- priority_label：{intel['priority_label']}",
@@ -877,6 +886,7 @@ def _basic_paper_lines(record: PaperRecord) -> list[str]:
         f"- research_tags：{', '.join(intel['tags']) if intel['tags'] else 'unknown'}",
         f"- why_it_matters：{intel['why_it_matters']}",
         f"- suggested_action：{_action_text(record)}",
+        f"- Semantic Scholar advisory metadata：{semantic_scholar_advisory_text(record)}",
         f"- research_hooks：{'；'.join(str(item) for item in hooks) if hooks else '暂无'}",
         f"- advisor_questions：{'；'.join(str(item) for item in questions) if questions else '暂无'}",
     ]
@@ -1098,6 +1108,7 @@ def _append_source_health_and_empty(
     lines.append(f"- D 类/过滤数量：{filtered_count}")
     lines.append(f"- Warning 数量：{len(warnings or [])}")
     lines.append(f"- Source health 摘要：{_source_health_brief(source_health)}")
+    lines.append(f"- Source health caveat：{source_health_caveat_text(source_health)}")
     lines.append("")
     if source_health:
         lines.append("| Source | Raw | Norm | Date | Dedup | Rel | Threshold | Final | 状态 | Error Type | Retryable |")

@@ -186,7 +186,7 @@ def _record_line(record: dict[str, Any]) -> str:
     url = _clean(record.get("source_url") or record.get("url") or "unknown")
     return (
         f"- [{_action_for(record)}] {title}｜{label} / {score}｜{source}｜{url}\n"
-        f"  - Anchor evidence: {anchor_evidence_text(record)}\n"
+        f"  - {anchor_evidence_text(record)}\n"
         f"  - False-positive risk: {false_positive_risk_text(record)}\n"
         f"  - Semantic Scholar advisory: {semantic_scholar_advisory_text(record)}"
     )

@@ -183,6 +183,28 @@ git status -sb
 
 这些通常应记录为 source health red/yellow，而不是直接让主流程崩溃。若需要降低压力，先使用 `--low-load` 或扩大到本地 backfill。
 
+### Semantic Scholar enrichment skipped or rate-limited
+
+Semantic Scholar metadata enrichment 是可选补充层，不是 primary source，也不是 ranking authority。缺少 `SEMANTIC_SCHOLAR_API_KEY` 时，enrichment 应该显示为 skipped；这不应阻止日报、周报、workflow doctor 或 CI。
+
+如果你本地配置了 key：
+
+- 只通过环境变量 `SEMANTIC_SCHOLAR_API_KEY` 设置；
+- 不要提交 `.env` 或任何真实 API key；
+- key 只应通过 `x-api-key` header 发送；
+- 每秒最多 1 个请求；
+- HTTP 429 / timeout / 503 应视为 retryable / non-fatal；
+- `citationCount` 与 `influentialCitationCount` 只作为人工参考，不直接改变 A/B/C ranking。
+
+手动 dry-run：
+
+```powershell
+Set-Location "D:\Code\CodexProjects\lattice-crypto-daily-digest"
+python -m lattice_digest.semantic_scholar_enrichment --input data\2026-06-03.json --dry-run
+```
+
+详情见 [Semantic Scholar enrichment](semantic-scholar-enrichment.md)。
+
 ### IACR ePrint failed attempt blocks same-day retry
 
 症状：

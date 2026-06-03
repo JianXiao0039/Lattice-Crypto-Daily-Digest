@@ -348,7 +348,7 @@ def _record_line(record: dict[str, Any]) -> str:
     dates = ", ".join(record.get("seen_dates", [])) if isinstance(record.get("seen_dates"), list) else ""
     return (
         f"- {title}｜{label} / {score}｜sources: {sources}｜seen: {dates}｜{url}\n"
-        f"  - Anchor evidence: {anchor_evidence_text(record)}\n"
+        f"  - {anchor_evidence_text(record)}\n"
         f"  - False-positive risk: {false_positive_risk_text(record)}\n"
         f"  - Semantic Scholar advisory: {semantic_scholar_advisory_text(record)}"
     )

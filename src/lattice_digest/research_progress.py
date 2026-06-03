@@ -100,7 +100,7 @@ def _record_line(record: dict[str, Any]) -> str:
     sections = record.get("research_sections") if isinstance(record.get("research_sections"), list) else []
     return (
         f"- {title}｜{label} / {score}｜{', '.join(str(item) for item in sections) or 'unclassified'}｜{url}\n"
-        f"  - Anchor evidence: {anchor_evidence_text(record)}\n"
+        f"  - {anchor_evidence_text(record)}\n"
         f"  - False-positive risk: {false_positive_risk_text(record)}\n"
         f"  - Semantic Scholar advisory: {semantic_scholar_advisory_text(record)}"
     )

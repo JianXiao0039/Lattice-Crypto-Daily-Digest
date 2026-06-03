@@ -33,6 +33,7 @@ Safety baseline: manual-only usage, dry-run default, explicit low-load mode, no-
 ## Release notes
 
 - [Release checklist](release-checklist.md)
+- [v0.3.3 release notes](releases/v0.3.3.md)
 - [v0.3.2 release notes](releases/v0.3.2.md)
 - [v0.3.1 release notes](releases/v0.3.1.md)
 - [v0.3.0 release notes](releases/v0.3.0.md)
