@@ -10,6 +10,8 @@ This is a manual one-time audit report. It does not change source queries, negat
 - Phase 9S and Phase 9S.2 show that the missing IACR ePrint `2026/1117`, `On the Secrecy of the Encapsulation Coin in ML-KEM`, was a source ingestion / source health / latest enumeration issue. It is not a taxonomy problem: when it enters the parser/ranker path, the current ranker treats it as A-level, observed as A / 100 in diagnostics.
 - `config/sources.yaml` is mostly lattice/PQC anchored. The broad-looking terms that deserve future review are not obviously wrong, but they need anchor guards: `isomorphism of lattices`, `registration-based encryption from lattices`, `Learning with Errors`, `Short Integer Solution`, `SVP`, `CVP`, `sieving`, `enumeration`, `G6K`, `fplll`, and `bootstrapping` are acceptable in lattice context but risky if a source search engine interprets them loosely.
 - Negative keywords already cover many non-lattice false-positive families: image registration, graph isomorphism, generic federated learning, DP-SGD, generic LLM fine-tuning, generic secure aggregation, generic zero-knowledge, generic anonymous credential, generic commitment, generic functional encryption, and homomorphic-sounding non-cryptographic ML terms.
+- The local environment was checked without printing secrets: `SEMANTIC_SCHOLAR_API_KEY` is currently not present / not non-empty. This is acceptable for Phase 9Q because Semantic Scholar must remain optional and gracefully degraded.
+- The 2026-06-03 daily artifacts are present and show recovery compared with W23 starvation: `data/2026-06-03.json` has 20 records; IACR ePrint is green with 100 raw candidates and 18 final records, while Semantic Scholar remains red / `rate_limit` / retryable.
 - Do not patch query or negative keyword config in Phase 9Q. The next minimal patch should be small and test-driven: section / ranking guard golden cases for `Falcon-X`, generic privacy-preserving ML, generic EKE, and generic signatures, while keeping source-health recovery separate.
 
 ## Inputs inspected
@@ -26,7 +28,9 @@ This is a manual one-time audit report. It does not change source queries, negat
 | `src/lattice_digest/source_health_ledger.py` | inspected | Confirms source health ledger can expose `latest_feed_*` observability. |
 | `src/lattice_digest/sources/` | inspected | Confirms configured source adapters: IACR, arXiv, DBLP, OpenAlex, Crossref, Semantic Scholar. |
 | Daily artifacts `2026-05-31..2026-06-02` | inspected | All three daily JSONs had `records = 0`; source health was degraded. |
+| Daily artifacts `2026-06-03` | inspected | `data/2026-06-03.json` exists with 20 records and 6 source-health entries; `digests/2026-06-03.md` exists. |
 | Weekly artifacts `2026-W22`, `2026-W23` | inspected | W22 has usable but noisy records; W23 has no unique records and degraded source health. |
+| `SEMANTIC_SCHOLAR_API_KEY` environment readiness | checked without printing value | Present: false; non-empty: false. No API call was made and no key value was logged. |
 
 ## Phase 9P issue mapping
 
@@ -145,6 +149,7 @@ Soft negatives should continue to allow recovery when strong crypto context exis
 | `data/2026-05-31.json` | arXiv yellow, Crossref yellow, DBLP red, IACR red, OpenAlex yellow, Semantic Scholar red | Low-confidence empty report. |
 | `data/2026-06-01.json` | arXiv yellow, Crossref yellow, DBLP yellow, IACR red, OpenAlex yellow, Semantic Scholar red | Low-confidence empty report. |
 | `data/2026-06-02.json` | all inspected sources red | Very low-confidence empty 7d report. |
+| `data/2026-06-03.json` | arXiv yellow timeout; Crossref green; DBLP yellow warning; IACR ePrint green; OpenAlex yellow; Semantic Scholar red rate-limit | Higher-confidence daily report than prior W23 artifacts; IACR latest/source recovery appears effective for this run, but Semantic Scholar is still degraded. |
 | `data/weekly/2026-W22.json` | source health available; 2 green, 15 yellow, 7 red | Usable for false-positive review, but still not perfect coverage. |
 | `data/weekly/2026-W23.json` | source health available; 8 red, 4 yellow | Empty weekly output is not reliable evidence of no relevant papers. |
 
@@ -154,11 +159,30 @@ Distinction:
 - `Falcon-X`, GBDT, EKE, generic signatures: classification / section / ranking issue.
 - Empty W23: source health / network starvation issue.
 
-## Semantic Scholar enrichment note
+## Semantic Scholar key readiness note
+
+The environment was checked in secret-safe mode only:
+
+- `SEMANTIC_SCHOLAR_API_KEY` present: false
+- `SEMANTIC_SCHOLAR_API_KEY` non-empty: false
+
+No key value was printed, stored, logged, or committed. No live Semantic Scholar API smoke test was required for this audit. The absence of the key should not block local validation, CI, daily digest generation, or source query coverage review.
+
+Operational implication: Semantic Scholar should be treated as optional and retryable. When it is red / `rate_limit`, as seen in `data/2026-06-03.json`, the digest must continue with other sources and source health should make the degradation visible.
+
+## Semantic Scholar enrichment-only recommendation
 
 Semantic Scholar is currently configured as a source and may also be useful as optional metadata cross-check. Do not require a real API key for this phase or for tests. If an API key is used in future operations, it must come only from the environment variable name `SEMANTIC_SCHOLAR_API_KEY`.
 
 Do not print, store, log, or commit any Semantic Scholar API key.
+
+Future Semantic Scholar work should be scoped as metadata enrichment / cross-source confirmation unless the project deliberately promotes it to a stronger primary source. Recommended constraints:
+
+- Keep `SEMANTIC_SCHOLAR_API_KEY` optional.
+- Use it only from the process environment.
+- Never serialize key material into reports, source health ledger, `.env.example`, generated artifacts, or logs.
+- Treat HTTP 429 / rate-limit as degraded and retryable, not as a main-flow failure.
+- Prefer IACR source-native latest/RSS and arXiv query groups for first-pass discovery; use Semantic Scholar for title/author/URL/abstract/semantic metadata cross-check when available.
 
 ## Recommended minimal future patch
 
