@@ -9,9 +9,11 @@ ANCHOR_PATTERNS: tuple[tuple[str, tuple[str, ...]], ...] = (
     ("NTRU", ("ntru",)),
     ("ML-KEM/Kyber", ("ml-kem", "kyber")),
     ("ML-DSA/Dilithium", ("ml-dsa", "dilithium")),
+    ("Falcon/FN-DSA", ("fn-dsa", "falcon signature", "falcon/fn-dsa")),
     ("FHE/HE", ("fully homomorphic encryption", "homomorphic encryption", "fhe", "ckks", "bfv", "bgv", "tfhe")),
-    ("lattice-based primitive", ("lattice-based", "commitment", "chameleon hash", "zero-knowledge", "signature", "kem")),
+    ("lattice-based primitive", ("lattice-based", "lattice commitment", "sis commitment", "module-sis commitment", "chameleon hash")),
     ("PQC anchor", ("post-quantum", "pqc", "nist pqc", "quantum-safe", "quantum resistant")),
+    ("lattice", ("lattice cryptography", "lattice-based", "lattice scheme", "lattice schemes")),
     ("BKZ/lattice attack", ("bkz", "lll", "g6k", "fplll", "lattice reduction", "primal attack", "dual attack", "hybrid attack")),
     ("AI-assisted lattice", ("ai-assisted lattice", "neural lattice", "transformer lwe", "machine learning lwe")),
 )
@@ -47,6 +49,7 @@ def record_text(record: Any) -> str:
     for key in (
         "title",
         "abstract",
+        "summary",
         "reason",
         "reason_for_priority",
         "why_it_matters",
@@ -60,6 +63,18 @@ def record_text(record: Any) -> str:
     parts.extend(_list_field(record, "keywords_matched"))
     parts.extend(_list_field(record, "research_tags", "tags"))
     parts.extend(_list_field(record, "research_sections"))
+    ranking = _field(record, "ranking_explanation")
+    if isinstance(ranking, dict):
+        for key in ("matched_taxonomy", "positive_signals", "negative_signals", "notes"):
+            parts.extend(_list_field(ranking, key))
+    metadata = _semantic_metadata(record)
+    if metadata:
+        parts.append(str(metadata.get("title") or ""))
+        parts.append(str(metadata.get("abstract") or ""))
+        parts.append(str(metadata.get("venue") or ""))
+        external = metadata.get("externalIds")
+        if isinstance(external, dict):
+            parts.extend(str(value) for value in external.values() if value)
     return " ".join(parts).lower()
 
 
@@ -75,8 +90,8 @@ def lattice_pqc_anchor_evidence(record: Any) -> list[str]:
 def anchor_evidence_text(record: Any) -> str:
     anchors = lattice_pqc_anchor_evidence(record)
     if not anchors:
-        return "未发现明确 lattice/PQC anchor；需人工核验后再用于组会或阅读队列。"
-    return "；".join(anchors)
+        return "lattice/PQC anchor evidence: not detected; manual review required"
+    return "lattice/PQC anchor evidence: " + "；".join(anchors)
 
 
 def false_positive_risk_notes(record: Any) -> list[str]:
@@ -84,11 +99,8 @@ def false_positive_risk_notes(record: Any) -> list[str]:
     anchors = lattice_pqc_anchor_evidence(record)
     notes: list[str] = []
     for label, patterns in GENERIC_RISK_PATTERNS:
-        if any(pattern in text for pattern in patterns):
-            if not anchors:
-                notes.append(f"{label}: 未见明确 lattice/PQC anchor，避免过度声称。")
-            elif label != "generic Falcon-name collision":
-                notes.append(f"{label}: 已有 anchor 但仍需确认不是泛隐私/系统背景。")
+        if any(pattern in text for pattern in patterns) and not anchors:
+            notes.append(f"{label}: 未见明确 lattice/PQC anchor，避免过度声称。")
     return notes
 
 

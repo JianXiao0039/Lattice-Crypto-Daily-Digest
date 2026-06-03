@@ -119,10 +119,10 @@ def test_daily_report_surfaces_a_level_anchor_evidence_and_caveats() -> None:
 def test_generic_non_lattice_item_is_not_overclaimed() -> None:
     record = {
         "title": "Practical Anonymous Two-Party Gradient Boosting Decision Tree",
-        "abstract": "A privacy-preserving federated learning method for GBDT without lattice cryptography.",
+        "abstract": "A privacy-preserving federated learning method for GBDT and analytics.",
     }
 
-    assert "未发现明确 lattice/PQC anchor" in anchor_evidence_text(record)
+    assert anchor_evidence_text(record) == "lattice/PQC anchor evidence: not detected; manual review required"
     assert "generic privacy/FL/LLM" in false_positive_risk_text(record)
 
 
@@ -140,7 +140,7 @@ def test_weekly_report_has_top_a_level_and_source_health_caveat() -> None:
     markdown = render_markdown(_weekly_payload())
 
     assert "## Top A-level Papers" in markdown
-    assert "Anchor evidence: ML-KEM/Kyber" in markdown
+    assert "lattice/PQC anchor evidence: ML-KEM/Kyber" in markdown
     assert "Semantic Scholar advisory" in markdown
     assert "citationCount=7" in markdown
     assert "Caveat:" in markdown
@@ -153,7 +153,7 @@ def test_advisor_update_separates_facts_ranking_and_advisory_metadata() -> None:
     text = render_advisor_update(payload, records, date(2026, 6, 1), date(2026, 6, 7))
 
     assert "Manual Review Caveats" in text
-    assert "Anchor evidence" in text
+    assert "lattice/PQC anchor evidence" in text
     assert "Semantic Scholar advisory" in text
     assert "does not override A/B/C relevance ranking" in text
 
