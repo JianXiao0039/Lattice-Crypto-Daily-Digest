@@ -7,6 +7,8 @@ from datetime import date, datetime, timedelta, timezone
 from pathlib import Path
 from typing import Any
 
+from lattice_digest.report_quality import anchor_evidence_text, false_positive_risk_text, semantic_scholar_advisory_text
+
 from lattice_digest.digest_sections import HIGH_PRIORITY
 from lattice_digest.weekly_synthesis import dedup_key
 
@@ -96,7 +98,12 @@ def _record_line(record: dict[str, Any]) -> str:
     score = int(record.get("relevance_score") or 0)
     url = _clean(record.get("source_url") or record.get("url") or "unknown")
     sections = record.get("research_sections") if isinstance(record.get("research_sections"), list) else []
-    return f"- {title}｜{label} / {score}｜{', '.join(str(item) for item in sections) or 'unclassified'}｜{url}"
+    return (
+        f"- {title}｜{label} / {score}｜{', '.join(str(item) for item in sections) or 'unclassified'}｜{url}\n"
+        f"  - Anchor evidence: {anchor_evidence_text(record)}\n"
+        f"  - False-positive risk: {false_positive_risk_text(record)}\n"
+        f"  - Semantic Scholar advisory: {semantic_scholar_advisory_text(record)}"
+    )
 
 
 def _queue_line(record: dict[str, Any]) -> str:
@@ -262,6 +269,7 @@ def render_advisor_update(context: dict[str, Any]) -> str:
         f"- Window: {context['from_date']} .. {context['to_date']}",
         "- This draft is generated from existing digest metadata and local reading status only.",
         "- All candidate directions below are not yet verified.",
+        "- Semantic Scholar citation metadata, if present, is advisory only and does not override relevance ranking.",
         "",
         "## High-Priority Papers Found",
         "",
