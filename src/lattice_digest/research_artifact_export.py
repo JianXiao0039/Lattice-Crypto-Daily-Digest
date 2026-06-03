@@ -20,6 +20,11 @@ from lattice_digest.digest_sections import (
     SIS_NTRU_COMMITMENTS,
     REGISTRATION_ENCRYPTION,
 )
+from lattice_digest.report_quality import (
+    anchor_evidence_text,
+    false_positive_risk_text,
+    semantic_scholar_advisory_text,
+)
 from lattice_digest.weekly_synthesis import build_weekly_synthesis, dedup_key
 from lattice_digest.zotero_compat import record_to_zotero_item, render_bibtex, render_ris
 
@@ -179,7 +184,12 @@ def _record_line(record: dict[str, Any]) -> str:
         or "unknown"
     )
     url = _clean(record.get("source_url") or record.get("url") or "unknown")
-    return f"- [{_action_for(record)}] {title}｜{label} / {score}｜{source}｜{url}"
+    return (
+        f"- [{_action_for(record)}] {title}｜{label} / {score}｜{source}｜{url}\n"
+        f"  - Anchor evidence: {anchor_evidence_text(record)}\n"
+        f"  - False-positive risk: {false_positive_risk_text(record)}\n"
+        f"  - Semantic Scholar advisory: {semantic_scholar_advisory_text(record)}"
+    )
 
 
 def _frontmatter(title: str, from_date: date, to_date: date) -> str:
@@ -268,7 +278,13 @@ def render_advisor_update(payload: dict[str, Any], records: list[dict[str, Any]]
     lines.extend(
         [
             "",
-            "## 3. Questions For Discussion",
+            "## 3. Manual Review Caveats",
+            "",
+            "- Separate paper facts, ranking explanation, source health uncertainty, research relevance, and action recommendation.",
+            "- Treat Semantic Scholar citation metadata as advisory only; it does not override A/B/C relevance ranking.",
+            "- Generic privacy/FL/LLM/ZK/registration/isomorphism items require explicit lattice/PQC anchors before paper-plan use.",
+            "",
+            "## 4. Questions For Discussion",
             "",
             "- Which candidates are worth reading first?",
             "- Are any Module-SIS / commitment / chameleon-hash items close enough to short-term paper planning?",

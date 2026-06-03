@@ -25,6 +25,12 @@ from lattice_digest.digest_sections import (
     candidate_reason,
 )
 from lattice_digest.models import make_paper_record
+from lattice_digest.report_quality import (
+    anchor_evidence_text,
+    false_positive_risk_text,
+    semantic_scholar_advisory_text,
+    source_health_caveat_text,
+)
 
 
 SCHEMA_VERSION = 1
@@ -340,7 +346,12 @@ def _record_line(record: dict[str, Any]) -> str:
     url = str(record.get("source_url") or record.get("url") or "unknown")
     sources = ", ".join(record.get("seen_sources", [])) if isinstance(record.get("seen_sources"), list) else str(record.get("source") or "unknown")
     dates = ", ".join(record.get("seen_dates", [])) if isinstance(record.get("seen_dates"), list) else ""
-    return f"- {title}｜{label} / {score}｜sources: {sources}｜seen: {dates}｜{url}"
+    return (
+        f"- {title}｜{label} / {score}｜sources: {sources}｜seen: {dates}｜{url}\n"
+        f"  - Anchor evidence: {anchor_evidence_text(record)}\n"
+        f"  - False-positive risk: {false_positive_risk_text(record)}\n"
+        f"  - Semantic Scholar advisory: {semantic_scholar_advisory_text(record)}"
+    )
 
 
 def render_markdown(payload: dict[str, Any]) -> str:
@@ -363,6 +374,21 @@ def render_markdown(payload: dict[str, Any]) -> str:
     section_lookup = {"High-Priority Papers This Week": "High-Priority Papers", **{section: section for section in TOPICAL_SECTION_ORDER}}
     sections = payload.get("sections", {})
     report_buckets = payload.get("report_buckets", {})
+    top_a = [
+        record
+        for bucket_records in (report_buckets.values() if isinstance(report_buckets, dict) else [])
+        for record in (bucket_records if isinstance(bucket_records, list) else [])
+        if str(record.get("relevance_label") or "D") == "A"
+    ]
+    top_a = sorted({dedup_key(record): record for record in top_a}.values(), key=_display_sort_key)[:5]
+    lines.extend(["## Top A-level Papers", ""])
+    if top_a:
+        lines.append("- These are surfaced for manual inspection; citation metadata is advisory only.")
+        for record in top_a:
+            lines.append(_record_line(record))
+        lines.append("")
+    else:
+        lines.extend(["- No A-level papers in the selected window.", ""])
     for title in section_titles:
         lines.extend([f"## {title}", ""])
         if title == "High-Priority Papers This Week":
@@ -395,6 +421,7 @@ def render_markdown(payload: dict[str, Any]) -> str:
     else:
         lines.append(f"- Sources: {', '.join(health.get('sources', []))}")
         lines.append(f"- Status counts: {health.get('status_counts', {})}")
+        lines.append(f"- Caveat: {source_health_caveat_text(health)}")
         lines.append("")
 
     lines.extend(
