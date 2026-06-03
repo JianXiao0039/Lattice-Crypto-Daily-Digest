@@ -13,15 +13,15 @@ def _read(relative: str) -> str:
     return (ROOT / relative).read_text(encoding="utf-8")
 
 
-def test_version_sources_are_v032() -> None:
+def test_v032_release_artifacts_are_archival_docs() -> None:
     pyproject = tomllib.loads(_read("pyproject.toml"))
     src_init = _read("src/lattice_digest/__init__.py")
     bridge_path = ROOT / "lattice_digest" / "__init__.py"
 
-    assert pyproject["project"]["version"] == "0.3.2"
-    assert '__version__ = "0.3.2"' in src_init
+    assert pyproject["project"]["version"] != "0.3.2"
+    assert '__version__ = "0.3.2"' not in src_init
     if bridge_path.exists():
-        assert '__version__ = "0.3.2"' in bridge_path.read_text(encoding="utf-8")
+        assert '__version__ = "0.3.2"' not in bridge_path.read_text(encoding="utf-8")
 
 
 def test_v032_release_doc_and_changelog_exist() -> None:
@@ -94,4 +94,3 @@ def test_v032_release_docs_do_not_contain_secret_patterns() -> None:
     for pattern in SECRET_PATTERNS:
         assert pattern not in combined
     assert not re.search(r"github_pat_[A-Za-z0-9_]+", combined)
-
