@@ -1,5 +1,48 @@
 # Changelog
 
+## v0.3.3 - 2026-06-03
+
+### Release type
+
+- Maintenance release.
+- IACR recovery, optional metadata enrichment, and research report quality polish.
+- Does not change fetcher semantics, ranking thresholds, taxonomy semantics, source health semantics, section classifier semantics, query expansion, negative keywords, daily / weekly workflow behavior, reading queue, Obsidian scaffold, research progress, Zotero export, release hygiene semantics, or workflow behavior.
+
+### Added / fixed since v0.3.2
+
+- IACR failed attempt manual retry recovery so failed source attempts do not permanently block later manual recovery retries.
+- IACR latest/RSS source recovery and latest-feed observability through `latest_feed_*` source health fields.
+- Cross-source latest/query/enrichment audit documenting latest-feed, query-only, enrichment-only, and unknown source roles.
+- Source query coverage audit for source coverage review and manual troubleshooting.
+- Optional Semantic Scholar metadata enrichment for existing papers.
+- Semantic Scholar key safety through `SEMANTIC_SCHOLAR_API_KEY`; no real API key is stored, logged, printed, or committed.
+- Research report quality polish for daily, weekly, artifact, and advisor/progress reports.
+- Daily report `lattice/PQC anchor evidence` for high-priority papers.
+- Manual quality-first workflow remains supported.
+
+### Stable guarantees
+
+- No scheduled automation is added: no Windows Task Scheduler integration, cron job, startup task, background service, watcher, daemon, or automatic scheduled local run.
+- No ranking threshold changes are included.
+- No taxonomy semantic changes are included.
+- Semantic Scholar citation metadata is advisory only and never overrides A/B/C/D ranking.
+- Low-load / no-network / dry-run modes remain fallback modes for reduced pressure, diagnostics, and safety checks; they do not replace manual quality-first generation.
+
+### Upgrade notes
+
+- Pull latest `main`.
+- Run `python -m pytest tests\test_release_v033_docs.py --basetemp=.pytest_tmp`.
+- Run `python -m pytest tests --basetemp=.pytest_tmp` or `scripts\run_project_tests.bat`.
+- Run `python scripts\check_release_hygiene.py`.
+- Run `git diff --check`.
+- Keep `exports/`, `audits/`, `research_artifacts/`, `.pytest_tmp/`, `__pycache__/`, `state/reading-queue.json`, local test `data/*.json`, `digests/*.md`, `papers.db`, `.env`, and local caches out of feature commits.
+
+### English summary
+
+v0.3.3 is a maintenance release after v0.3.2. It packages IACR failed attempt manual retry recovery, IACR latest/RSS source recovery and latest-feed observability, cross-source latest/query/enrichment audit, source query coverage audit, optional Semantic Scholar metadata enrichment with `SEMANTIC_SCHOLAR_API_KEY` safety, and research report quality polish including daily `lattice/PQC anchor evidence` for high-priority papers.
+
+No scheduled automation is added. There is no Windows Task Scheduler integration, cron job, startup task, background service, watcher, daemon, or automatic scheduled local run. No ranking threshold changes and no taxonomy semantic changes are included. Semantic Scholar citation metadata remains advisory only.
+
 ## v0.3.2 - 2026-06-01
 
 ### Release type
