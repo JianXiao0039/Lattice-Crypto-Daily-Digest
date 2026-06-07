@@ -45,9 +45,11 @@ python -m lattice_digest.workflow daily --no-network --skip-hygiene
 
 ## Documentation map
 
-文档入口见 [docs/index.md](docs/index.md)。它汇总 manual operations、workflow command center、manual low-load workflow、recovery、artifact retention、troubleshooting、pilot feedback triage 和 release notes。
+文档入口见 [docs/index.md](docs/index.md)。它汇总 manual operations、workflow command center、manual low-load workflow、weekly handoff、recovery、artifact retention、troubleshooting、pilot feedback triage 和 release notes。
 
 Core direct links: [docs/manual-operations-runbook.md](docs/manual-operations-runbook.md), [docs/workflow-command-center.md](docs/workflow-command-center.md), [docs/manual-low-load-workflow.md](docs/manual-low-load-workflow.md), [docs/research-scope-taxonomy.md](docs/research-scope-taxonomy.md), [docs/recovery-playbook.md](docs/recovery-playbook.md), [docs/artifact-retention-policy.md](docs/artifact-retention-policy.md), [docs/troubleshooting.md](docs/troubleshooting.md), [docs/one-week-manual-pilot.md](docs/one-week-manual-pilot.md), [docs/pilot-acceptance-checklist.md](docs/pilot-acceptance-checklist.md), [docs/pilot-issue-log-template.md](docs/pilot-issue-log-template.md), [docs/pilot-feedback-triage.md](docs/pilot-feedback-triage.md), [docs/pilot-feedback-summary-template.md](docs/pilot-feedback-summary-template.md), [docs/pilot-fix-prioritization.md](docs/pilot-fix-prioritization.md).
+
+Weekly handoff manual links: [docs/research_tracks/manual_weekly_handoff_runbook_v0.1.md](docs/research_tracks/manual_weekly_handoff_runbook_v0.1.md), [docs/research_tracks/full_manual_quality_run_with_handoff_v0.1.md](docs/research_tracks/full_manual_quality_run_with_handoff_v0.1.md), [docs/research_tracks/weekly_public_synthesis_with_handoff_v0.1.md](docs/research_tracks/weekly_public_synthesis_with_handoff_v0.1.md), and [docs/research_tracks/weekly_handoff_generator_usage_v0.2.md](docs/research_tracks/weekly_handoff_generator_usage_v0.2.md). These are manual-only public research radar tools; they do not create scheduled automation or private PhD application material.
 
 Quality-first manual pilot links: [docs/real-manual-quality-pilot.md](docs/real-manual-quality-pilot.md) and [docs/manual-github-publish.md](docs/manual-github-publish.md). The project supports manual full-quality runs for real content generation; low-load is optional fallback for laptops, diagnostics, or reduced-pressure checks, and no-network / dry-run modes are also fallback modes rather than quality defaults. No scheduled automation is configured.
 
@@ -227,6 +229,7 @@ powershell.exe -ExecutionPolicy Bypass -File scripts\export_zotero.ps1 -Days 7 -
 6. 将高价值 idea 升级为 Paper Plan，用于组会、导师讨论和短期论文设计。
 7. 从 Paper Plan 生成 Research Artifact scaffold，进入可复现实验和论文写作阶段。
 8. 使用 `python -m lattice_digest.workflow weekly --low-load` 做手动低负载 dry-run；需要写文件时再显式加入 `--execute`。
+9. 如需 Module-SIS chameleon hash / Xingye bridge / AI4Lattice track triage，可手动运行 `scripts\run_weekly_handoff.bat` 或 `python -m lattice_digest.weekly_handoff --latest`，生成 `handoffs/weekly/` 下的 handoff packets。
 
 该工作流服务两个目标：短期形成可执行的小论文或 artifact，长期沉淀 PhD 研究主线。
 

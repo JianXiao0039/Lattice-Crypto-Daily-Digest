@@ -15,6 +15,16 @@ Safety baseline: manual-only usage, dry-run default, explicit low-load mode, no-
 - [Query expansion and negative keywords](query-expansion-and-negative-keywords.md): anchored query expansion and false-positive suppression boundaries.
 - [Semantic Scholar enrichment](semantic-scholar-enrichment.md): optional metadata enrichment for existing papers; no API key is required for CI or normal digest generation.
 
+## Research tracks and weekly handoff
+
+- [Manual weekly handoff runbook](research_tracks/manual_weekly_handoff_runbook_v0.1.md): manual-only weekly handoff generation from existing weekly JSON.
+- [Full manual quality run with handoff](research_tracks/full_manual_quality_run_with_handoff_v0.1.md): optional handoff step for quality-first manual public refreshes.
+- [Weekly public synthesis with handoff](research_tracks/weekly_public_synthesis_with_handoff_v0.1.md): weekly synthesis review followed by explicit handoff generation.
+- [Weekly handoff generator usage v0.2](research_tracks/weekly_handoff_generator_usage_v0.2.md): standalone generator commands and review procedure.
+- [Weekly handoff schema v0.2](research_tracks/weekly_handoff_schema_v0.2.md): packet schema and field meanings.
+- [Weekly handoff non-claims policy v0.2](research_tracks/weekly_handoff_non_claims_policy_v0.2.md): security, novelty, PI-topic, and publication claim boundaries.
+- [Weekly handoff troubleshooting](research_tracks/weekly_handoff_troubleshooting_v0.1.md): missing weekly JSON, empty output, pytest scope, and no-private-write checks.
+
 ## Recovery and safety
 
 - [Recovery playbook](recovery-playbook.md): cleanup commands, reading queue backup, `papers.db` recovery, Windows SQLite file lock, tzdata / ZoneInfo.
