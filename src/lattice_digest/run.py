@@ -22,7 +22,14 @@ from lattice_digest.text import parse_duration_to_hours
 
 def parse_args(argv: list[str] | None = None) -> argparse.Namespace:
     parser = argparse.ArgumentParser(description="Generate a daily Chinese digest for lattice cryptography papers.")
-    parser.add_argument("--since", default="36h", help="Lookback window, e.g. 36h or 7d.")
+    date_window = parser.add_mutually_exclusive_group()
+    date_window.add_argument("--since", default=None, help="Lookback window, e.g. 36h or 7d. Defaults to 36h.")
+    date_window.add_argument(
+        "--date",
+        type=_parse_cli_date,
+        default=None,
+        help="Generate artifacts for exactly one Asia/Singapore calendar date in YYYY-MM-DD format.",
+    )
     parser.add_argument("--output", default="markdown,json", help="Comma-separated outputs: markdown,json.")
     parser.add_argument("--send", default="none", help="Delivery backend. Currently only 'none' is implemented.")
     parser.add_argument("--dry-run", action="store_true", help="Run without network writes or output artifact writes.")
@@ -46,7 +53,20 @@ def parse_args(argv: list[str] | None = None) -> argparse.Namespace:
         action="store_true",
         help="Manually include source-native latest feeds, allowing safe latest-source recovery for failed same-day attempts.",
     )
-    return parser.parse_args(argv)
+    args = parser.parse_args(argv)
+    if args.date is not None and args.target_date is not None:
+        parser.error("--date cannot be combined with legacy --target-date")
+    return args
+
+
+def _parse_cli_date(value: str) -> date:
+    try:
+        parsed = date.fromisoformat(value)
+    except ValueError as exc:
+        raise argparse.ArgumentTypeError(f"invalid date {value!r}; expected YYYY-MM-DD") from exc
+    if parsed.isoformat() != value:
+        raise argparse.ArgumentTypeError(f"invalid date {value!r}; expected YYYY-MM-DD")
+    return parsed
 
 
 def _enabled_source_configs(sources_config: dict) -> list[dict]:
@@ -114,6 +134,12 @@ def _coverage_window(target_date: date, hours: int, target_date_was_explicit: bo
     else:
         coverage_end = datetime.now(timezone.utc)
     return coverage_end - timedelta(hours=hours), coverage_end
+
+
+def _exact_date_coverage_window(target_date: date) -> tuple[datetime, datetime]:
+    local_start = datetime.combine(target_date, time.min, ZoneInfo("Asia/Singapore"))
+    local_end = datetime.combine(target_date + timedelta(days=1), time.min, ZoneInfo("Asia/Singapore"))
+    return local_start.astimezone(timezone.utc), local_end.astimezone(timezone.utc)
 
 
 def _record_effective_datetime(record: PaperRecord) -> datetime | None:
@@ -311,10 +337,15 @@ def main(argv: list[str] | None = None) -> int:
     root = project_root()
     _load_dotenv(root)
     configs = load_config_bundle(args.config_dir)
-    hours = parse_duration_to_hours(args.since)
     run_datetime = datetime.now(ZoneInfo("Asia/Singapore"))
-    digest_date = _parse_target_date(args.target_date, run_datetime)
-    coverage_start, coverage_end = _coverage_window(digest_date, hours, args.target_date is not None)
+    exact_date = args.date
+    since_window = "24h" if exact_date is not None else (args.since or "36h")
+    hours = parse_duration_to_hours(since_window)
+    digest_date = exact_date or _parse_target_date(args.target_date, run_datetime)
+    if exact_date is not None:
+        coverage_start, coverage_end = _exact_date_coverage_window(digest_date)
+    else:
+        coverage_start, coverage_end = _coverage_window(digest_date, hours, args.target_date is not None)
     since = coverage_start
     collector = args.collector or "local_codex"
     quality_status = args.quality_status or ("provisional" if collector == "github_actions" else "authoritative")
@@ -329,7 +360,7 @@ def main(argv: list[str] | None = None) -> int:
         run_mode=run_mode,
         coverage_start=coverage_start,
         coverage_end=coverage_end,
-        since_window=args.since,
+        since_window=since_window,
         supersedes=supersedes,
     )
     request_config = configs["sources"].get("request", {})
@@ -354,7 +385,7 @@ def main(argv: list[str] | None = None) -> int:
     source_configs = _enabled_source_configs(configs["sources"])
     records = _collect_records(source_configs, context)
     ranked = rank_records(records, configs["taxonomy"], configs["keywords"], configs["negative"])
-    if args.target_date is not None:
+    if args.target_date is not None or exact_date is not None:
         ranked, coverage_dropped = _filter_records_to_coverage(ranked, coverage_start, coverage_end)
         if coverage_dropped:
             context.warnings.append(f"coverage filter dropped {coverage_dropped} records outside target_date window")
@@ -377,7 +408,7 @@ def main(argv: list[str] | None = None) -> int:
                 print(f"- {warning}")
         _print_source_health(source_health)
         print("\nMarkdown preview:")
-        print(generate_markdown(ordered, digest_date, dropped_count, source_health, context.warnings, args.since, metadata))
+        print(generate_markdown(ordered, digest_date, dropped_count, source_health, context.warnings, since_window, metadata))
         return 0
 
     write_source_health_ledger(source_health, root, digest_date, run_datetime)
@@ -399,7 +430,7 @@ def main(argv: list[str] | None = None) -> int:
     if quality_status == "authoritative_backfill" and supersedes:
         written.extend(_archive_existing_provisional(root, digest_date, existing_metadata))
     if "json" in outputs:
-        written.append(write_json(ordered, root / "data", digest_date, source_health, context.warnings, args.since, metadata))
+        written.append(write_json(ordered, root / "data", digest_date, source_health, context.warnings, since_window, metadata))
     if "markdown" in outputs or "md" in outputs:
         written.append(
             write_markdown(
@@ -409,7 +440,7 @@ def main(argv: list[str] | None = None) -> int:
                 dropped_count,
                 source_health,
                 context.warnings,
-                args.since,
+                since_window,
                 metadata,
             )
         )

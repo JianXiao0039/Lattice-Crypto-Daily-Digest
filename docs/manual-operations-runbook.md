@@ -12,6 +12,7 @@ English summary: this project is operated manually. No scheduled automation is c
 - `python -m lattice_digest.workflow doctor`：只读环境检查。
 - `python -m lattice_digest.workflow weekly --low-load --skip-hygiene`：低负载周流程 dry-run。
 - `python -m lattice_digest.workflow weekly --execute --low-load --skip-hygiene`：确认后才写入周流程产物。
+- `scripts\run_weekly_handoff.bat`：手动生成 weekly handoff packets，用于公开 research radar triage。
 
 不要配置：
 
@@ -101,6 +102,8 @@ python -m lattice_digest.workflow daily --offline --skip-hygiene
 | `python -m lattice_digest.workflow daily --low-load --skip-hygiene` | Dry-run plan | No | May plan network fetches | Yes | `--low-load` applies only because it is explicitly passed. |
 | `python -m lattice_digest.workflow daily --no-network --skip-hygiene` | Dry-run plan | No | Skips network fetch where supported | Optional | Use for offline or no-network checks. |
 | `python -m lattice_digest.workflow weekly --execute --low-load --skip-hygiene` | Not read-only | Yes | Uses local artifacts | Yes | Writes weekly outputs, reading queue updates, progress logs, and manifests. |
+| `scripts\run_weekly_handoff.bat` | Not read-only | Yes | No network fetch | N/A | Manual-only helper; writes ignored `handoffs/weekly/` packet JSON/Markdown. |
+| `powershell.exe -ExecutionPolicy Bypass -File scripts\run_weekly_handoff.ps1` | Not read-only | Yes | No network fetch | N/A | PowerShell version of the manual weekly handoff helper. |
 | `python -m lattice_digest.run --since 36h --output markdown,json --send none` | Not read-only | Yes | Fetches configured sources | No workflow profile | Writes daily Markdown, JSON, and `papers.db`. |
 | `python -m lattice_digest.obsidian_scaffold generate` | Not read-only | Yes | No network fetch expected | No workflow profile | Writes Obsidian scaffold output only when intentionally run. |
 
@@ -126,6 +129,8 @@ python -m lattice_digest.workflow daily --offline --skip-hygiene
 | `python -m lattice_digest.run --since 36h --output markdown,json --send none` | `data/YYYY-MM-DD.json`, `digests/YYYY-MM-DD.md`, `papers.db` |
 | `python -m lattice_digest.weekly_synthesis --days 7` | `data/weekly/YYYY-Www.json`, `digests/weekly/YYYY-Www.md` |
 | `python -m lattice_digest.workflow weekly --execute --low-load --skip-hygiene` | weekly JSON/Markdown, reading queue, research progress, workflow manifest |
+| `scripts\run_weekly_handoff.bat` | `handoffs/weekly/YYYY-Www-handoff-packets.json`, `handoffs/weekly/YYYY-Www-handoff-packets.md` |
+| `powershell.exe -ExecutionPolicy Bypass -File scripts\run_weekly_handoff.ps1` | `handoffs/weekly/YYYY-Www-handoff-packets.json`, `handoffs/weekly/YYYY-Www-handoff-packets.md` |
 | `python -m lattice_digest.obsidian_scaffold generate` | Obsidian paper note scaffolds |
 | `python -m lattice_digest.research_progress generate` | advisor update and verification backlog |
 
@@ -134,6 +139,7 @@ python -m lattice_digest.workflow daily --offline --skip-hygiene
 Generated artifacts must not be committed by default. 默认不要提交：
 
 - `exports/`
+- `handoffs/`
 - `audits/`
 - `.pytest_tmp/`
 - `__pycache__/`

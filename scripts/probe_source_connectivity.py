@@ -75,27 +75,79 @@ def classify_error(exc: BaseException) -> dict[str, Any]:
         retryable = code in {408, 425, 429, 500, 502, 503, 504}
         if code == 429:
             error_type = "rate_limit"
+            failure_class = "rate_limit"
         elif code in {401, 403}:
             error_type = "auth_or_forbidden"
+            failure_class = "api_key_or_auth"
         elif code >= 500:
             error_type = "server_error"
+            failure_class = "http_status"
         else:
             error_type = "http_error"
-        return {"error_type": error_type, "status_code": code, "retryable": retryable, "message": str(exc.reason)}
+            failure_class = "http_status"
+        return {
+            "failure_class": failure_class,
+            "error_type": error_type,
+            "status_code": code,
+            "retryable": retryable,
+            "message": str(exc.reason),
+        }
     if isinstance(exc, urllib.error.URLError):
         reason = exc.reason
         if isinstance(reason, ssl.SSLError):
-            return {"error_type": "tls_error", "status_code": None, "retryable": True, "message": str(reason)}
+            return {
+                "failure_class": "tls",
+                "error_type": "tls_error",
+                "status_code": None,
+                "retryable": True,
+                "message": str(reason),
+            }
         if isinstance(reason, socket.gaierror):
-            return {"error_type": "dns_error", "status_code": None, "retryable": True, "message": str(reason)}
+            return {
+                "failure_class": "dns",
+                "error_type": "dns_error",
+                "status_code": None,
+                "retryable": True,
+                "message": str(reason),
+            }
         if isinstance(reason, TimeoutError) or isinstance(reason, socket.timeout):
-            return {"error_type": "timeout", "status_code": None, "retryable": True, "message": str(reason)}
-        return {"error_type": "url_error", "status_code": None, "retryable": True, "message": str(reason)}
+            return {
+                "failure_class": "timeout",
+                "error_type": "timeout",
+                "status_code": None,
+                "retryable": True,
+                "message": str(reason),
+            }
+        return {
+            "failure_class": "unknown_url_error",
+            "error_type": "url_error",
+            "status_code": None,
+            "retryable": True,
+            "message": str(reason),
+        }
     if isinstance(exc, TimeoutError) or isinstance(exc, socket.timeout):
-        return {"error_type": "timeout", "status_code": None, "retryable": True, "message": str(exc)}
+        return {
+            "failure_class": "timeout",
+            "error_type": "timeout",
+            "status_code": None,
+            "retryable": True,
+            "message": str(exc),
+        }
     if isinstance(exc, ssl.SSLError):
-        return {"error_type": "tls_error", "status_code": None, "retryable": True, "message": str(exc)}
-    return {"error_type": type(exc).__name__, "status_code": None, "retryable": False, "message": str(exc)}
+        return {
+            "failure_class": "tls",
+            "error_type": "tls_error",
+            "status_code": None,
+            "retryable": True,
+            "message": str(exc),
+        }
+    return {
+        "failure_class": "unknown",
+        "error_type": type(exc).__name__,
+        "status_code": None,
+        "retryable": False,
+        "message": str(exc),
+    }
 
 
 def iacr_cache_state(cache_dir: Path | None = None, now: datetime | None = None) -> dict[str, Any]:
@@ -146,6 +198,7 @@ def probe_target(target: dict[str, str], timeout: float) -> dict[str, Any]:
         "url": target["url"],
         "reachable": False,
         "status_code": None,
+        "failure_class": "not_run",
         "error_type": None,
         "timeout_seconds": timeout,
         "tls_error": False,
@@ -161,10 +214,14 @@ def probe_target(target: dict[str, str], timeout: float) -> dict[str, Any]:
             content = response.read(512_000)
             result["reachable"] = True
             result["status_code"] = int(getattr(response, "status", 200))
+            result["failure_class"] = "reachable"
             result["retryable"] = False
             result["notes"].append(f"read_bytes={len(content)}")
             if target["source"] == "iacr_eprint":
                 result.update(_parse_iacr_records(content))
+                if result.get("parser_status") == "parser_failure":
+                    result["failure_class"] = "parser"
+                    result["retryable"] = False
     except Exception as exc:
         classified = classify_error(exc)
         result.update(classified)
@@ -172,6 +229,8 @@ def probe_target(target: dict[str, str], timeout: float) -> dict[str, Any]:
         result["dns_error"] = classified["error_type"] == "dns_error"
         message = str(classified.get("message") or "").lower()
         result["proxy_related_clue"] = "proxy" in message or bool(_proxy_notes())
+        if result["proxy_related_clue"] and result.get("failure_class") in {"unknown_url_error", "timeout", "tls"}:
+            result["failure_class"] = "proxy"
         if target["source"] == "iacr_eprint":
             result.update({"parser_status": "not_run", "records": 0, "parser_error": None})
     finally:

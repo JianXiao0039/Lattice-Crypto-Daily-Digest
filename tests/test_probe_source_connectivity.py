@@ -33,6 +33,7 @@ def test_classify_dns_url_error() -> None:
     classified = classify_error(error)
 
     assert classified["error_type"] == "dns_error"
+    assert classified["failure_class"] == "dns"
     assert classified["retryable"] is True
 
 
@@ -42,6 +43,7 @@ def test_classify_tls_url_error() -> None:
     classified = classify_error(error)
 
     assert classified["error_type"] == "tls_error"
+    assert classified["failure_class"] == "tls"
     assert classified["retryable"] is True
 
 
@@ -51,7 +53,30 @@ def test_classify_http_rate_limit() -> None:
     classified = classify_error(error)
 
     assert classified["error_type"] == "rate_limit"
+    assert classified["failure_class"] == "rate_limit"
     assert classified["status_code"] == 429
+    assert classified["retryable"] is True
+
+
+def test_classify_http_auth_failure() -> None:
+    error = urllib.error.HTTPError("https://example.test", 403, "Forbidden", hdrs=None, fp=None)
+
+    classified = classify_error(error)
+
+    assert classified["error_type"] == "auth_or_forbidden"
+    assert classified["failure_class"] == "api_key_or_auth"
+    assert classified["status_code"] == 403
+    assert classified["retryable"] is False
+
+
+def test_classify_http_server_error() -> None:
+    error = urllib.error.HTTPError("https://example.test", 500, "Internal Server Error", hdrs=None, fp=None)
+
+    classified = classify_error(error)
+
+    assert classified["error_type"] == "server_error"
+    assert classified["failure_class"] == "http_status"
+    assert classified["status_code"] == 500
     assert classified["retryable"] is True
 
 
