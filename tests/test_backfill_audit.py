@@ -1,124 +1,49 @@
 from __future__ import annotations
 
+import importlib.util
 import json
 from pathlib import Path
-from tempfile import TemporaryDirectory
-
-from lattice_digest.audit import audit_payload, stable_id, write_audit
 
 
-def _record(
-    title: str,
-    *,
-    source: str = "iacr_eprint",
-    url: str = "https://example.test/paper",
-    priority_label: str = "可略读",
-    score: int = 55,
-    **extra: object,
-) -> dict[str, object]:
-    record = {
-        "title": title,
-        "source": source,
-        "url": url,
-        "reading_priority_score": score,
-        "priority_label": priority_label,
-        "reason_for_priority": "测试原因",
-    }
-    record.update(extra)
-    return record
+SCRIPT_PATH = Path(__file__).resolve().parents[1] / "scripts" / "audit_backfill_2026_06_04_to_2026_06_10.py"
+SPEC = importlib.util.spec_from_file_location("audit_backfill", SCRIPT_PATH)
+MODULE = importlib.util.module_from_spec(SPEC)
+assert SPEC.loader is not None
+SPEC.loader.exec_module(MODULE)
 
 
-def _payload(records: list[dict[str, object]], *, collector: str, quality: str, health: list[dict[str, object]] | None = None) -> dict[str, object]:
-    return {
-        "metadata": {
-            "target_date": "2026-05-29",
-            "run_date": "2026-05-29",
-            "collector": collector,
-            "quality_status": quality,
-        },
+def write_daily(root: Path, date: str, records: list[dict], source_health: list[dict]) -> None:
+    (root / "data").mkdir(parents=True, exist_ok=True)
+    (root / "digests").mkdir(parents=True, exist_ok=True)
+    payload = {
+        "metadata": {"target_date": date, "total_records": len(records)},
         "records": records,
-        "source_health": health or [],
+        "source_health": source_health,
     }
+    (root / "data" / f"{date}.json").write_text(json.dumps(payload), encoding="utf-8")
+    (root / "digests" / f"{date}.md").write_text("# digest\n", encoding="utf-8")
 
 
-def test_stable_id_prefers_doi_arxiv_and_title_hash() -> None:
-    assert stable_id(_record("Paper A", doi="10.1000/ABC")) == "doi:10.1000/abc"
-    assert stable_id(_record("Paper A", arxiv_id="2601.12345")) == "arxiv:2601.12345"
-    first = stable_id(_record("A  LWE: Attack!", url=""))
-    second = stable_id(_record("a lwe attack", url=""))
+def test_source_starved_and_missing_days_are_detected(tmp_path: Path, monkeypatch) -> None:
+    monkeypatch.setattr(MODULE, "git_log_for_path", lambda project_root, relative_path: [])
+    all_red = [{"source": name, "status": "red", "retryable": True} for name in ("arxiv", "iacr_eprint")]
+    write_daily(tmp_path, "2026-06-04", [], all_red)
 
-    assert first == second
-    assert first.startswith("url:") is False
-    assert first.startswith("title_hash:")
+    row = MODULE.audit_date(tmp_path, "2026-06-04")
+    missing = MODULE.audit_date(tmp_path, "2026-06-05")
 
-
-def test_added_missing_high_priority_and_source_delta_counts() -> None:
-    provisional = _payload(
-        [
-            _record("Common LWE", doi="10.1/common", priority_label="建议精读", score=80),
-            _record("GitHub Only", doi="10.1/github", priority_label="可略读", score=55),
-        ],
-        collector="github_actions",
-        quality="provisional",
-        health=[
-            {"source": "arxiv", "raw_count": 2, "date_filtered_count": 1, "final_count": 1, "health_status": "red"},
-        ],
-    )
-    authoritative = _payload(
-        [
-            _record("Common LWE", doi="10.1/common", priority_label="建议精读", score=80),
-            _record("Local Must Read", doi="10.1/local", priority_label="必须精读", score=92),
-        ],
-        collector="local_codex",
-        quality="authoritative_backfill",
-        health=[
-            {"source": "arxiv", "raw_count": 5, "date_filtered_count": 3, "final_count": 2, "health_status": "green"},
-        ],
-    )
-
-    result = audit_payload("2026-05-29", provisional, authoritative)
-
-    assert result["counts"]["added_by_backfill_count"] == 1
-    assert result["counts"]["missing_from_backfill_count"] == 1
-    assert result["counts"]["high_priority_added_count"] == 1
-    assert result["counts"]["high_priority_missing_count"] == 0
-    arxiv = next(row for row in result["source_health_comparison"] if row["source"] == "arxiv")
-    assert arxiv["delta_raw"] == 3
-    assert arxiv["delta_date_filtered"] == 2
-    assert arxiv["delta_final"] == 1
-    assert arxiv["status_change"] == "red->green"
-    assert result["quality_judgment"]["replacement_recommended"] is True
+    assert row["source_starved"] is True
+    assert "source-starved run" in "; ".join(row["TODO_VERIFY"])
+    assert missing["data_json_exists"] is False
+    assert "data JSON missing" in missing["TODO_VERIFY"]
 
 
-def test_provisional_missing_does_not_crash_and_writes_audit_outputs() -> None:
-    with TemporaryDirectory() as tmp:
-        root = Path(tmp)
-        data_dir = root / "data"
-        data_dir.mkdir()
-        (data_dir / "2026-05-29.json").write_text(
-            json.dumps(
-                _payload([_record("Local Only", doi="10.1/local")], collector="local_codex", quality="authoritative_backfill"),
-                ensure_ascii=False,
-            ),
-            encoding="utf-8",
-        )
-
-        json_path, markdown_path, result = write_audit(root, "2026-05-29")
-
-        assert json_path.exists()
-        assert markdown_path.exists()
-        assert result["metadata"]["provisional_available"] is False
-        assert result["quality_judgment"]["replacement_recommended"] is True
-        markdown = markdown_path.read_text(encoding="utf-8")
-        for section in [
-            "## 1. 审计结论",
-            "## 2. 数量对比",
-            "## 3. 本地回填新增论文",
-            "## 4. GitHub provisional 独有论文",
-            "## 5. 高优先级差异",
-            "## 6. Source Health 差异",
-            "## 7. 风险与处理建议",
-        ]:
-            assert section in markdown
-        payload = json.loads(json_path.read_text(encoding="utf-8"))
-        assert "quality_judgment" in payload
+def test_summary_marks_incomplete_window_as_insufficient_evidence() -> None:
+    rows = [
+        {"date": "2026-06-04", "data_json_exists": True, "digest_markdown_exists": True, "source_starved": False, "source_red_count": 0},
+        {"date": "2026-06-05", "data_json_exists": False, "digest_markdown_exists": False, "source_starved": False, "source_red_count": 0},
+        {"date": "2026-06-10", "data_json_exists": True, "digest_markdown_exists": True, "source_starved": False, "source_red_count": 0},
+    ]
+    decision = MODULE.summarize_decision(rows)
+    assert decision["daily_decision"] == "insufficient_evidence"
+    assert decision["weekly_decision"] == "keep_active_with_source_starved_warning"
