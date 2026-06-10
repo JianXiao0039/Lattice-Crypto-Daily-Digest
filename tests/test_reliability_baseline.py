@@ -61,8 +61,9 @@ def test_reliability_baseline_contains_required_fields(tmp_path: Path) -> None:
         "TODO_VERIFY",
     }
     assert required.issubset(payload)
-    assert payload["latest_daily_artifact"] == "data\\2026-06-08.json"
-    assert payload["latest_handoff_artifact"] == "handoffs\\weekly\\2026-W23-handoff-packets.json"
+    assert payload["latest_daily_artifact"] == "data/2026-06-08.json"
+    assert payload["latest_weekly_artifact"] == "data/weekly/2026-W23.json"
+    assert payload["latest_handoff_artifact"] == "handoffs/weekly/2026-W23-handoff-packets.json"
     assert payload["active_automation_modules"] == ["Daily Public Digest Run", "Weekly Public Synthesis Run"]
     assert payload["paused_automation_modules"] == ["Full Manual Quality Run"]
     assert payload["source_reachability_rate"] == 1.0
