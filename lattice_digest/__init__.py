@@ -10,4 +10,4 @@ SRC_PACKAGE = Path(__file__).resolve().parents[1] / "src" / "lattice_digest"
 if SRC_PACKAGE.exists():
     __path__.append(str(SRC_PACKAGE))  # type: ignore[name-defined]
 
-__version__ = "0.3.3"
+__version__ = "0.4.1"

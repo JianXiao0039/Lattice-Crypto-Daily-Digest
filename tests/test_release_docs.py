@@ -16,8 +16,8 @@ def test_version_metadata_contains_current_release() -> None:
     pyproject = tomllib.loads(_read("pyproject.toml"))
     init = _read("src/lattice_digest/__init__.py")
 
-    assert pyproject["project"]["version"] == "0.3.3"
-    assert '__version__ = "0.3.3"' in init
+    assert pyproject["project"]["version"] == "0.4.1"
+    assert '__version__ = "0.4.1"' in init
 
 
 def test_changelog_documents_v010_capabilities_and_limits() -> None:
@@ -66,8 +66,9 @@ def test_readme_links_release_docs() -> None:
     readme = _read("README.md")
 
     assert "CHANGELOG.md" in readme
+    assert "docs/releases/v0.4.1.md" in readme
     assert "docs/releases/v0.3.3.md" in readme
     assert "docs/index.md" in readme
     assert "docs/release-checklist.md" in readme
-    assert "v0.3.3" in readme
+    assert "v0.4.1" in readme
     assert re.search(r"local (authoritative )?backfill", readme, flags=re.IGNORECASE)

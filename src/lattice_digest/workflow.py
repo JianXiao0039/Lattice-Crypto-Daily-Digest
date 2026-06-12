@@ -114,6 +114,14 @@ def _run_git_status() -> tuple[bool, str]:
     return bool(output), "dirty" if output else "clean"
 
 
+def _doctor_release_hygiene() -> list[str]:
+    from scripts.check_release_hygiene import run_checks
+
+    # Doctor reports environment and repository health. Staging policy remains
+    # enforced by the explicit release-hygiene command and workflow gates.
+    return run_checks(check_staged=False)
+
+
 class WorkflowRunner:
     def hygiene(self) -> dict[str, Any]:
         from scripts.check_release_hygiene import run_checks
@@ -517,7 +525,7 @@ def doctor_report(*, strict: bool = False) -> tuple[int, dict[str, Any]]:
     for path in [Path("data"), Path("digests"), Path("src") / "lattice_digest"]:
         add(f"directory {path}", path.exists(), "exists" if path.exists() else "missing", critical=path.parts[-1] == "lattice_digest")
     try:
-        messages = WorkflowRunner().hygiene()["messages"]
+        messages = _doctor_release_hygiene()
     except Exception as exc:  # noqa: BLE001
         add("release hygiene", False, str(exc), critical=True)
     else:

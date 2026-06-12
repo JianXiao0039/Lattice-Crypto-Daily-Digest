@@ -182,10 +182,26 @@ def test_status_report_reads_fixture_files() -> None:
 def test_doctor_checks_asia_singapore_zoneinfo() -> None:
     code, report = workflow.doctor_report(strict=True)
     zone = next(item for item in report["checks"] if item["name"] == "Asia/Singapore timezone")
+    failed_critical = [item for item in report["checks"] if item["critical"] and not item["ok"]]
 
-    assert code == 0
+    assert code == 0, f"critical doctor failures: {failed_critical}"
     assert zone["ok"] is True
     assert "Asia/Singapore" in zone["detail"]
+
+
+def test_doctor_preserves_real_critical_failures(monkeypatch) -> None:
+    def fail_hygiene() -> list[str]:
+        raise RuntimeError("release metadata is invalid")
+
+    monkeypatch.setattr(workflow, "_doctor_release_hygiene", fail_hygiene)
+
+    code, report = workflow.doctor_report(strict=True)
+    hygiene = next(item for item in report["checks"] if item["name"] == "release hygiene")
+
+    assert code == 1
+    assert hygiene["ok"] is False
+    assert hygiene["critical"] is True
+    assert "release metadata is invalid" in hygiene["detail"]
 
 
 def test_manifest_shape_is_stable() -> None:

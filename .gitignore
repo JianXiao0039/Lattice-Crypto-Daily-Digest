@@ -39,7 +39,6 @@ digests/*-error.md
 # Generated research/export artifacts
 exports/
 exports/workflow-runs/
-handoffs/
 audits/
 state/reading-queue.json
 state/reading-queue.lock

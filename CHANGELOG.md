@@ -1,5 +1,31 @@
 # Changelog
 
+## v0.4.1 - 2026-06-12
+
+### Release type
+
+- Corrective maintenance release preparation.
+- Preserves the immutable `v0.4.0` tag as historical evidence; that tag points to package metadata `0.3.3`.
+- Aligns active package version sources to `0.4.1` without moving or recreating `v0.4.0`.
+
+### Fixed
+
+- Reliability dashboard artifact paths are serialized as repository-relative POSIX paths on every operating system.
+- Strict workflow doctor remains sensitive to genuine critical health failures but no longer changes result because unrelated generated files are staged; explicit release hygiene still enforces staging policy.
+- Regression coverage preserves `Asia/Singapore` as a real critical `ZoneInfo` check.
+
+### Known release blockers
+
+- The first post-tag Daily run generated and validated its artifacts but did not persist them because the commit step encountered ignored generated paths.
+- Windows CI evidence must be refreshed after the portable-path correction.
+- A clean release index is required before `python scripts/check_release_hygiene.py` can pass.
+
+### Unchanged semantics
+
+- No ranking, taxonomy, query expansion, negative keyword, section classifier, fetcher, source relevance, or digest relevance semantics changed.
+- No scheduled task, cron job, startup task, or background service was added.
+- No `v0.4.1` tag is created by this preparation phase.
+
 ## v0.3.3 - 2026-06-03
 
 ### Release type

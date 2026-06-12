@@ -79,15 +79,16 @@ def forbidden_tracked_paths(paths: list[str], *, strict_generated: bool = False)
     return sorted(path for path in paths if _matches(path, patterns))
 
 
-def run_checks(*, strict_tracked_generated: bool = False) -> list[str]:
+def run_checks(*, strict_tracked_generated: bool = False, check_staged: bool = True) -> list[str]:
     messages: list[str] = []
     version = _read_current_version()
     _check_release_docs(version)
     messages.append(f"version ok: {version}")
 
-    staged = forbidden_staged_paths(_run_git(["diff", "--cached", "--name-only"]))
-    if staged:
-        raise HygieneError("Forbidden generated artifacts are staged: " + ", ".join(staged))
+    if check_staged:
+        staged = forbidden_staged_paths(_run_git(["diff", "--cached", "--name-only"]))
+        if staged:
+            raise HygieneError("Forbidden generated artifacts are staged: " + ", ".join(staged))
 
     tracked = forbidden_tracked_paths(_run_git(["ls-files"]), strict_generated=strict_tracked_generated)
     if tracked:
