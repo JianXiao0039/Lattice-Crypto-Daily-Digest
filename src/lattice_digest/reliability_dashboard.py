@@ -307,12 +307,12 @@ def build_reliability_dashboard(
         "notes": notes,
         "TODO_VERIFY": todo_items,
         "artifacts": {
-            "daily_json": str(daily_json.relative_to(project_root)) if daily_json else None,
-            "daily_markdown": str(corresponding_markdown_path(daily_json, project_root).relative_to(project_root))
+            "daily_json": daily_json.relative_to(project_root).as_posix() if daily_json else None,
+            "daily_markdown": corresponding_markdown_path(daily_json, project_root).relative_to(project_root).as_posix()
             if daily_json and daily_markdown_exists
             else None,
-            "weekly_json": str(weekly_json.relative_to(project_root)) if weekly_json else None,
-            "weekly_handoff_json": str(handoff_json.relative_to(project_root)) if handoff_json else None,
+            "weekly_json": weekly_json.relative_to(project_root).as_posix() if weekly_json else None,
+            "weekly_handoff_json": handoff_json.relative_to(project_root).as_posix() if handoff_json else None,
         },
         "probe_summary": {
             "probe_available": bool(probe_payload),
