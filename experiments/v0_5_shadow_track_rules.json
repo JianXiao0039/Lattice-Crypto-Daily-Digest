@@ -1,0 +1,47 @@
+{
+  "schema_version": 1,
+  "experimental_only": true,
+  "production_consumption_allowed": false,
+  "tracks": {
+    "module_sis_sanitizable_signatures": {
+      "positive_terms": [
+        "module-sis", "module sis", "ring-sis", "ring sis", "chameleon hash",
+        "sanitizable signature", "sanitisable signature", "accountable sanitization",
+        "lattice commitment", "lattice trapdoor", "exposure model"
+      ],
+      "anchor_terms": ["lattice", "module-sis", "module sis", "ring-sis", "ring sis", "sis"],
+      "exclusion_terms": ["isogeny", "generic commitment"]
+    },
+    "xingye_lu_bridge": {
+      "positive_terms": [
+        "lattice ring signature", "linkable ring signature", "programmable hash",
+        "hash-then-one-way", "blind lattice signature", "privacy-preserving lattice",
+        "anonymous lattice", "lattice authentication"
+      ],
+      "anchor_terms": ["lattice", "lwe", "rlwe", "mlwe", "sis", "post-quantum", "pqc"],
+      "exclusion_terms": ["xingye lu", "author name only", "generic privacy"]
+    },
+    "ai4lattice_cryptanalysis": {
+      "positive_terms": [
+        "lattice cryptanalysis", "bkz", "lattice reduction", "primal attack",
+        "dual attack", "hybrid attack", "sparse lwe", "sparse rlwe", "sparse mlwe",
+        "coordinate selection", "learning-guided", "neural lattice", "salsa", "cool-and-cruel"
+      ],
+      "anchor_terms": ["lattice", "lwe", "rlwe", "mlwe", "bkz", "svp", "cvp", "ntru"],
+      "exclusion_terms": ["generic machine learning", "time series", "computer vision"]
+    },
+    "core_pqc_and_implementation": {
+      "positive_terms": [
+        "ml-kem", "ml-dsa", "kyber", "dilithium", "falcon", "fn-dsa", "ntru",
+        "threshold ml-kem", "threshold ml-dsa", "fully homomorphic encryption", "fhe",
+        "ckks", "bfv", "bgv", "tfhe", "side-channel", "fault attack", "constant-time",
+        "masked implementation", "hardware implementation", "software implementation"
+      ],
+      "anchor_terms": [
+        "lattice", "lwe", "rlwe", "mlwe", "sis", "ntru", "ml-kem", "ml-dsa",
+        "kyber", "dilithium", "falcon", "fn-dsa", "fhe", "ckks", "bfv", "bgv", "tfhe", "pqc"
+      ],
+      "exclusion_terms": ["falcon time series", "isogeny-only", "generic implementation"]
+    }
+  }
+}
