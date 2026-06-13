@@ -1,0 +1,2631 @@
+{
+  "schema_version": 1,
+  "pilot_type": "manual_offline_non_production",
+  "production_logic_changed": false,
+  "selected_sample_count": 25,
+  "broader_candidate_pool_count": 62,
+  "human_gold_count": 0,
+  "human_gold_metrics": {
+    "eligible": false,
+    "valid_gold_count": 0,
+    "per_track": null,
+    "macro_f1": null,
+    "false_positive_rate": null,
+    "false_negative_rate": null
+  },
+  "production_shadow_agreement_count": 27,
+  "production_shadow_disagreement_count": 35,
+  "production_shadow_agreement_rate": 0.43548387096774194,
+  "disagreement_counts": {
+    "exact_match": 27,
+    "primary_track_disagreement": 23,
+    "production_labeled_shadow_irrelevant": 10,
+    "secondary_track_disagreement": 2
+  },
+  "explanation_completeness_rate": 1.0,
+  "metadata_insufficiency_rate": 0.0,
+  "error_taxonomy": {
+    "shadow_undercoverage": 10,
+    "track_b_undercoverage": 6,
+    "track_d_bucket_drift": 21
+  },
+  "codex_review_confusion_matrix_not_gold": {
+    "ai4lattice_cryptanalysis": {
+      "ai4lattice_cryptanalysis": 3,
+      "core_pqc_and_implementation": 6
+    },
+    "ambiguous": {
+      "core_pqc_and_implementation": 4,
+      "irrelevant": 3
+    },
+    "core_pqc_and_implementation": {
+      "core_pqc_and_implementation": 25
+    },
+    "irrelevant": {
+      "core_pqc_and_implementation": 3,
+      "irrelevant": 8
+    },
+    "module_sis_sanitizable_signatures": {
+      "module_sis_sanitizable_signatures": 1,
+      "core_pqc_and_implementation": 2,
+      "irrelevant": 1
+    },
+    "xingye_lu_bridge": {
+      "core_pqc_and_implementation": 6
+    }
+  },
+  "false_positive_cases_not_gold": [
+    {
+      "sample_id": "v05-0003",
+      "track": "core_pqc_and_implementation",
+      "title": "Inner Product Ring LWE Problem, Reduction, New Trapdoor Algorithm for Inner Product Ring LWE Problem and Ring SIS Problem"
+    },
+    {
+      "sample_id": "v05-0006",
+      "track": "core_pqc_and_implementation",
+      "title": "New NTRU Records with Improved Lattice Bases"
+    },
+    {
+      "sample_id": "v05-0009",
+      "track": "core_pqc_and_implementation",
+      "title": "Module Lattice Security (Part II): Module Lattice Reduction via Optimal Sign Selection"
+    },
+    {
+      "sample_id": "v05-0010",
+      "track": "core_pqc_and_implementation",
+      "title": "Module Lattice Security (Part IV): Probabilistic Polynomial Quantum Attack on Module-LWE over 2-Power Cyclotomics"
+    },
+    {
+      "sample_id": "v05-0012",
+      "track": "core_pqc_and_implementation",
+      "title": "Improved Dual Attack and Trapdoor Sampling via Quantum Rejection Sampling"
+    },
+    {
+      "sample_id": "v05-0014",
+      "track": "core_pqc_and_implementation",
+      "title": "Falcon-X: A Time Series Foundation Model for Heterogeneous Multivariate Modeling"
+    },
+    {
+      "sample_id": "v05-0016",
+      "track": "core_pqc_and_implementation",
+      "title": "Q-FE: A Quantum-Native 6G Far-Edge Architecture Securing Industrial IoT Digital Twins via CSIDH-PQC and Asynchronous Federated Learning"
+    },
+    {
+      "sample_id": "v05-0018",
+      "track": "core_pqc_and_implementation",
+      "title": "Towards Worst-case Hardness for Low-Noise LPN"
+    },
+    {
+      "sample_id": "v05-0025",
+      "track": "core_pqc_and_implementation",
+      "title": "CoNAN: A Structure-Aware Framework for Lattice Cryptanalysis"
+    },
+    {
+      "sample_id": "v05-0027",
+      "track": "core_pqc_and_implementation",
+      "title": "Ciphertext-Updatable Attribute-Based and Predicate Encryption from Lattices"
+    },
+    {
+      "sample_id": "v05-0028",
+      "track": "core_pqc_and_implementation",
+      "title": "Unified Dual Attack Analyses: Covariance-Based Score Distribution Prediction for LWE"
+    },
+    {
+      "sample_id": "v05-0031",
+      "track": "core_pqc_and_implementation",
+      "title": "Decentralizing Traitor Tracing: A Multi-Authority Approach"
+    },
+    {
+      "sample_id": "v05-0032",
+      "track": "core_pqc_and_implementation",
+      "title": "Authenticated and Incremental Single-Server Private Information Retrieval"
+    },
+    {
+      "sample_id": "v05-0034",
+      "track": "core_pqc_and_implementation",
+      "title": "Witness Pseudorandom Functions for Vector Commitments and Applications"
+    },
+    {
+      "sample_id": "v05-0035",
+      "track": "core_pqc_and_implementation",
+      "title": "From Perfect to Approximate Hints: Efficient LWE Secret Recovery Leveraging Low Hamming Weight"
+    },
+    {
+      "sample_id": "v05-0036",
+      "track": "core_pqc_and_implementation",
+      "title": "BRaccoon: Concurrently Secure Blind Lattice Signatures from Raccoon"
+    },
+    {
+      "sample_id": "v05-0037",
+      "track": "core_pqc_and_implementation",
+      "title": "FlipFields-New Building Blocks for Cryptograpic Primitives?"
+    },
+    {
+      "sample_id": "v05-0040",
+      "track": "core_pqc_and_implementation",
+      "title": "Asymmetric Message Franking in the Plain Model: Generic and Efficient Constructions"
+    },
+    {
+      "sample_id": "v05-0045",
+      "track": "core_pqc_and_implementation",
+      "title": "HRA-Secure Lattice-based Proxy Re-Encryption without Noise Flooding"
+    },
+    {
+      "sample_id": "v05-0048",
+      "track": "core_pqc_and_implementation",
+      "title": "New Constructions of Functional Adaptor Signatures: Broader Functions and Improved Efficiency"
+    },
+    {
+      "sample_id": "v05-0049",
+      "track": "core_pqc_and_implementation",
+      "title": "Permissionless Consensus from a Common Random String"
+    },
+    {
+      "sample_id": "v05-0062",
+      "track": "core_pqc_and_implementation",
+      "title": "Achieving Shannon Capacity for Computationally Bounded Errors"
+    }
+  ],
+  "false_negative_cases_not_gold": [
+    {
+      "sample_id": "v05-0006",
+      "track": "ai4lattice_cryptanalysis",
+      "title": "New NTRU Records with Improved Lattice Bases"
+    },
+    {
+      "sample_id": "v05-0010",
+      "track": "ai4lattice_cryptanalysis",
+      "title": "Module Lattice Security (Part IV): Probabilistic Polynomial Quantum Attack on Module-LWE over 2-Power Cyclotomics"
+    },
+    {
+      "sample_id": "v05-0012",
+      "track": "ai4lattice_cryptanalysis",
+      "title": "Improved Dual Attack and Trapdoor Sampling via Quantum Rejection Sampling"
+    },
+    {
+      "sample_id": "v05-0012",
+      "track": "module_sis_sanitizable_signatures",
+      "title": "Improved Dual Attack and Trapdoor Sampling via Quantum Rejection Sampling"
+    },
+    {
+      "sample_id": "v05-0027",
+      "track": "xingye_lu_bridge",
+      "title": "Ciphertext-Updatable Attribute-Based and Predicate Encryption from Lattices"
+    },
+    {
+      "sample_id": "v05-0028",
+      "track": "ai4lattice_cryptanalysis",
+      "title": "Unified Dual Attack Analyses: Covariance-Based Score Distribution Prediction for LWE"
+    },
+    {
+      "sample_id": "v05-0031",
+      "track": "xingye_lu_bridge",
+      "title": "Decentralizing Traitor Tracing: A Multi-Authority Approach"
+    },
+    {
+      "sample_id": "v05-0032",
+      "track": "xingye_lu_bridge",
+      "title": "Authenticated and Incremental Single-Server Private Information Retrieval"
+    },
+    {
+      "sample_id": "v05-0034",
+      "track": "module_sis_sanitizable_signatures",
+      "title": "Witness Pseudorandom Functions for Vector Commitments and Applications"
+    },
+    {
+      "sample_id": "v05-0034",
+      "track": "xingye_lu_bridge",
+      "title": "Witness Pseudorandom Functions for Vector Commitments and Applications"
+    },
+    {
+      "sample_id": "v05-0035",
+      "track": "ai4lattice_cryptanalysis",
+      "title": "From Perfect to Approximate Hints: Efficient LWE Secret Recovery Leveraging Low Hamming Weight"
+    },
+    {
+      "sample_id": "v05-0036",
+      "track": "module_sis_sanitizable_signatures",
+      "title": "BRaccoon: Concurrently Secure Blind Lattice Signatures from Raccoon"
+    },
+    {
+      "sample_id": "v05-0036",
+      "track": "xingye_lu_bridge",
+      "title": "BRaccoon: Concurrently Secure Blind Lattice Signatures from Raccoon"
+    },
+    {
+      "sample_id": "v05-0040",
+      "track": "xingye_lu_bridge",
+      "title": "Asymmetric Message Franking in the Plain Model: Generic and Efficient Constructions"
+    },
+    {
+      "sample_id": "v05-0045",
+      "track": "xingye_lu_bridge",
+      "title": "HRA-Secure Lattice-based Proxy Re-Encryption without Noise Flooding"
+    },
+    {
+      "sample_id": "v05-0054",
+      "track": "ai4lattice_cryptanalysis",
+      "title": "Rank Ceiling for Twiddle-Perturbation Faults on the Forward NTT"
+    },
+    {
+      "sample_id": "v05-0056",
+      "track": "module_sis_sanitizable_signatures",
+      "title": "Grand Danois: Succinct Multilinear Polynomial Commitments over Lattices"
+    },
+    {
+      "sample_id": "v05-0059",
+      "track": "ai4lattice_cryptanalysis",
+      "title": "Preimage sampleable function families without discrete Gaussians"
+    },
+    {
+      "sample_id": "v05-0059",
+      "track": "module_sis_sanitizable_signatures",
+      "title": "Preimage sampleable function families without discrete Gaussians"
+    }
+  ],
+  "ambiguous_cases": [
+    {
+      "sample_id": "v05-0016",
+      "title": "Q-FE: A Quantum-Native 6G Far-Edge Architecture Securing Industrial IoT Digital Twins via CSIDH-PQC and Asynchronous Federated Learning",
+      "shadow": "core_pqc_and_implementation"
+    },
+    {
+      "sample_id": "v05-0022",
+      "title": "Quantum and Post-Quantum Blockchain: A Systematic Survey",
+      "shadow": "irrelevant"
+    },
+    {
+      "sample_id": "v05-0037",
+      "title": "FlipFields-New Building Blocks for Cryptograpic Primitives?",
+      "shadow": "core_pqc_and_implementation"
+    },
+    {
+      "sample_id": "v05-0043",
+      "title": "KAT-Seeded Fuzzing of Stateful Hash-Based Signature Verification in liboqs",
+      "shadow": "irrelevant"
+    },
+    {
+      "sample_id": "v05-0044",
+      "title": "Identity-Based Revocable and Linkable Ring Signature",
+      "shadow": "irrelevant"
+    },
+    {
+      "sample_id": "v05-0048",
+      "title": "New Constructions of Functional Adaptor Signatures: Broader Functions and Improved Efficiency",
+      "shadow": "core_pqc_and_implementation"
+    },
+    {
+      "sample_id": "v05-0049",
+      "title": "Permissionless Consensus from a Common Random String",
+      "shadow": "core_pqc_and_implementation"
+    }
+  ],
+  "shadow_pilot_status": "shadow_pilot_complete_without_gold_metrics",
+  "shadow_mode_gate": "manual_shadow_pilot_only_pending_user_annotation",
+  "production_gate": "blocked_by_multiple_conditions",
+  "records": [
+    {
+      "record_id": "047d705a601297340100e20128ba09416256a9a4",
+      "sample_id": "v05-0001",
+      "title": "ILTRU: An NTRU-Like Public Key Cryptosystem Over Ideal Lattices",
+      "source": "semantic_scholar",
+      "production_primary_track": "ai4lattice_cryptanalysis",
+      "production_secondary_tracks": [],
+      "production_detail": "LWE/RLWE/MLWE Cryptanalysis: attack analysis",
+      "shadow_primary_track": "core_pqc_and_implementation",
+      "shadow_secondary_tracks": [],
+      "confidence": 0.73,
+      "explanation": "Experimental match for core_pqc_and_implementation; positive terms: ntru; anchors: lattice, lwe, ntru, sis. This is not a production or human-gold label.",
+      "matched_positive_rules": [
+        "core_pqc_and_implementation:ntru",
+        "core_pqc_and_implementation:lattice",
+        "core_pqc_and_implementation:lwe",
+        "core_pqc_and_implementation:ntru",
+        "core_pqc_and_implementation:sis"
+      ],
+      "matched_exclusion_rules": [],
+      "disagreement_category": "primary_track_disagreement",
+      "human_review_status": "not_reviewed",
+      "TODO_VERIFY": [
+        "user review is required before any label counts as human gold",
+        "shadow output must not be consumed by Daily or Weekly production workflows"
+      ],
+      "selected_annotation_pack": false,
+      "codex_reviewed_primary_track": "core_pqc_and_implementation",
+      "codex_reviewed_secondary_tracks": [],
+      "human_gold_primary_track": null,
+      "human_gold_secondary_tracks": [],
+      "valid_human_gold": false,
+      "metadata_insufficient": false,
+      "source_provenance": [
+        "data/2026-05-22.json"
+      ]
+    },
+    {
+      "record_id": "10.1016/j.ins.2026.123598",
+      "sample_id": "v05-0002",
+      "title": "Privacy-preserving collective reinforcement learning using fully homomorphic encryption in usage-based insurance",
+      "source": "crossref",
+      "production_primary_track": "core_pqc_and_implementation",
+      "production_secondary_tracks": [],
+      "production_detail": "FHE / Parameter Security: fhe / parameters",
+      "shadow_primary_track": "core_pqc_and_implementation",
+      "shadow_secondary_tracks": [],
+      "confidence": 0.66,
+      "explanation": "Experimental match for core_pqc_and_implementation; positive terms: fhe, fully homomorphic encryption; anchors: fhe. This is not a production or human-gold label.",
+      "matched_positive_rules": [
+        "core_pqc_and_implementation:fhe",
+        "core_pqc_and_implementation:fully homomorphic encryption",
+        "core_pqc_and_implementation:fhe"
+      ],
+      "matched_exclusion_rules": [],
+      "disagreement_category": "exact_match",
+      "human_review_status": "not_reviewed",
+      "TODO_VERIFY": [
+        "user review is required before any label counts as human gold",
+        "shadow output must not be consumed by Daily or Weekly production workflows"
+      ],
+      "selected_annotation_pack": false,
+      "codex_reviewed_primary_track": "core_pqc_and_implementation",
+      "codex_reviewed_secondary_tracks": [],
+      "human_gold_primary_track": null,
+      "human_gold_secondary_tracks": [],
+      "valid_human_gold": false,
+      "metadata_insufficient": false,
+      "source_provenance": [
+        "data/2026-06-03.json",
+        "data/2026-06-08.json",
+        "data/2026-06-10.json"
+      ]
+    },
+    {
+      "record_id": "1c973def72854d32a7bca035be36020faad78299",
+      "sample_id": "v05-0003",
+      "title": "Inner Product Ring LWE Problem, Reduction, New Trapdoor Algorithm for Inner Product Ring LWE Problem and Ring SIS Problem",
+      "source": "semantic_scholar",
+      "production_primary_track": "module_sis_sanitizable_signatures",
+      "production_secondary_tracks": [],
+      "production_detail": "Module-SIS Primitive: commitment / chameleon hash",
+      "shadow_primary_track": "module_sis_sanitizable_signatures",
+      "shadow_secondary_tracks": [
+        "core_pqc_and_implementation"
+      ],
+      "confidence": 0.76,
+      "explanation": "Experimental match for module_sis_sanitizable_signatures; positive terms: ring sis, ring-sis; anchors: ring sis, ring-sis, sis. This is not a production or human-gold label.",
+      "matched_positive_rules": [
+        "module_sis_sanitizable_signatures:ring sis",
+        "module_sis_sanitizable_signatures:ring-sis",
+        "module_sis_sanitizable_signatures:ring sis",
+        "module_sis_sanitizable_signatures:ring-sis",
+        "module_sis_sanitizable_signatures:sis"
+      ],
+      "matched_exclusion_rules": [],
+      "disagreement_category": "secondary_track_disagreement",
+      "human_review_status": "not_reviewed",
+      "TODO_VERIFY": [
+        "user review is required before any label counts as human gold",
+        "shadow output must not be consumed by Daily or Weekly production workflows"
+      ],
+      "selected_annotation_pack": false,
+      "codex_reviewed_primary_track": "module_sis_sanitizable_signatures",
+      "codex_reviewed_secondary_tracks": [],
+      "human_gold_primary_track": null,
+      "human_gold_secondary_tracks": [],
+      "valid_human_gold": false,
+      "metadata_insufficient": false,
+      "source_provenance": [
+        "data/2026-05-22.json"
+      ]
+    },
+    {
+      "record_id": "4c2fcd42aa91a63fe7528e15a1fed4b2b425167a",
+      "sample_id": "v05-0004",
+      "title": "Practical Improvements on BKZ Algorithm",
+      "source": "semantic_scholar",
+      "production_primary_track": "ai4lattice_cryptanalysis",
+      "production_secondary_tracks": [],
+      "production_detail": "BKZ / Lattice Reduction: attack cost model",
+      "shadow_primary_track": "ai4lattice_cryptanalysis",
+      "shadow_secondary_tracks": [],
+      "confidence": 0.63,
+      "explanation": "Experimental match for ai4lattice_cryptanalysis; positive terms: bkz; anchors: bkz, lattice. This is not a production or human-gold label.",
+      "matched_positive_rules": [
+        "ai4lattice_cryptanalysis:bkz",
+        "ai4lattice_cryptanalysis:bkz",
+        "ai4lattice_cryptanalysis:lattice"
+      ],
+      "matched_exclusion_rules": [],
+      "disagreement_category": "exact_match",
+      "human_review_status": "not_reviewed",
+      "TODO_VERIFY": [
+        "user review is required before any label counts as human gold",
+        "shadow output must not be consumed by Daily or Weekly production workflows"
+      ],
+      "selected_annotation_pack": false,
+      "codex_reviewed_primary_track": "ai4lattice_cryptanalysis",
+      "codex_reviewed_secondary_tracks": [],
+      "human_gold_primary_track": null,
+      "human_gold_secondary_tracks": [],
+      "valid_human_gold": false,
+      "metadata_insufficient": false,
+      "source_provenance": [
+        "data/2026-05-22.json"
+      ]
+    },
+    {
+      "record_id": "5a03c4f1e80374f3a3f7b901e0ac4d64c5421bbb",
+      "sample_id": "v05-0005",
+      "title": "CRPSF and NTRU Signatures over cyclotomic fields",
+      "source": "semantic_scholar",
+      "production_primary_track": "ai4lattice_cryptanalysis",
+      "production_secondary_tracks": [],
+      "production_detail": "LWE/RLWE/MLWE Cryptanalysis: attack analysis",
+      "shadow_primary_track": "core_pqc_and_implementation",
+      "shadow_secondary_tracks": [],
+      "confidence": 0.91,
+      "explanation": "Experimental match for core_pqc_and_implementation; positive terms: falcon, ntru; anchors: falcon, lattice, lwe, ntru, pqc, sis. This is not a production or human-gold label.",
+      "matched_positive_rules": [
+        "core_pqc_and_implementation:falcon",
+        "core_pqc_and_implementation:ntru",
+        "core_pqc_and_implementation:falcon",
+        "core_pqc_and_implementation:lattice",
+        "core_pqc_and_implementation:lwe",
+        "core_pqc_and_implementation:ntru",
+        "core_pqc_and_implementation:pqc",
+        "core_pqc_and_implementation:sis"
+      ],
+      "matched_exclusion_rules": [],
+      "disagreement_category": "primary_track_disagreement",
+      "human_review_status": "not_reviewed",
+      "TODO_VERIFY": [
+        "user review is required before any label counts as human gold",
+        "shadow output must not be consumed by Daily or Weekly production workflows"
+      ],
+      "selected_annotation_pack": false,
+      "codex_reviewed_primary_track": "core_pqc_and_implementation",
+      "codex_reviewed_secondary_tracks": [],
+      "human_gold_primary_track": null,
+      "human_gold_secondary_tracks": [],
+      "valid_human_gold": false,
+      "metadata_insufficient": false,
+      "source_provenance": [
+        "data/2026-05-22.json"
+      ]
+    },
+    {
+      "record_id": "902f7237543d1d63ea289b1b943ff3d4a677c49c",
+      "sample_id": "v05-0006",
+      "title": "New NTRU Records with Improved Lattice Bases",
+      "source": "semantic_scholar",
+      "production_primary_track": "ai4lattice_cryptanalysis",
+      "production_secondary_tracks": [],
+      "production_detail": "LWE/RLWE/MLWE Cryptanalysis: attack analysis",
+      "shadow_primary_track": "core_pqc_and_implementation",
+      "shadow_secondary_tracks": [],
+      "confidence": 0.73,
+      "explanation": "Experimental match for core_pqc_and_implementation; positive terms: ntru; anchors: lattice, lwe, ntru, sis. This is not a production or human-gold label.",
+      "matched_positive_rules": [
+        "core_pqc_and_implementation:ntru",
+        "core_pqc_and_implementation:lattice",
+        "core_pqc_and_implementation:lwe",
+        "core_pqc_and_implementation:ntru",
+        "core_pqc_and_implementation:sis"
+      ],
+      "matched_exclusion_rules": [],
+      "disagreement_category": "primary_track_disagreement",
+      "human_review_status": "queued_for_user",
+      "TODO_VERIFY": [
+        "user review is required before any label counts as human gold",
+        "shadow output must not be consumed by Daily or Weekly production workflows"
+      ],
+      "selected_annotation_pack": true,
+      "codex_reviewed_primary_track": "ai4lattice_cryptanalysis",
+      "codex_reviewed_secondary_tracks": [],
+      "human_gold_primary_track": null,
+      "human_gold_secondary_tracks": [],
+      "valid_human_gold": false,
+      "metadata_insufficient": false,
+      "source_provenance": [
+        "data/2026-05-22.json"
+      ]
+    },
+    {
+      "record_id": "9f33e1b9547d554accbf11c71f30fcb4b621e7c2",
+      "sample_id": "v05-0007",
+      "title": "Several Improvements on BKZ Algorithm",
+      "source": "semantic_scholar",
+      "production_primary_track": "ai4lattice_cryptanalysis",
+      "production_secondary_tracks": [],
+      "production_detail": "BKZ / Lattice Reduction: attack cost model",
+      "shadow_primary_track": "ai4lattice_cryptanalysis",
+      "shadow_secondary_tracks": [],
+      "confidence": 0.63,
+      "explanation": "Experimental match for ai4lattice_cryptanalysis; positive terms: bkz; anchors: bkz, lattice. This is not a production or human-gold label.",
+      "matched_positive_rules": [
+        "ai4lattice_cryptanalysis:bkz",
+        "ai4lattice_cryptanalysis:bkz",
+        "ai4lattice_cryptanalysis:lattice"
+      ],
+      "matched_exclusion_rules": [],
+      "disagreement_category": "exact_match",
+      "human_review_status": "not_reviewed",
+      "TODO_VERIFY": [
+        "user review is required before any label counts as human gold",
+        "shadow output must not be consumed by Daily or Weekly production workflows"
+      ],
+      "selected_annotation_pack": false,
+      "codex_reviewed_primary_track": "ai4lattice_cryptanalysis",
+      "codex_reviewed_secondary_tracks": [],
+      "human_gold_primary_track": null,
+      "human_gold_secondary_tracks": [],
+      "valid_human_gold": false,
+      "metadata_insufficient": false,
+      "source_provenance": [
+        "data/2026-05-22.json"
+      ]
+    },
+    {
+      "record_id": "arxiv:2510.10436",
+      "sample_id": "v05-0008",
+      "title": "Post-Quantum Cryptography and Quantum-Safe Security: A Comprehensive Survey",
+      "source": "arxiv",
+      "production_primary_track": "core_pqc_and_implementation",
+      "production_secondary_tracks": [],
+      "production_detail": "ML-KEM / ML-DSA Implementation Security: implementation security",
+      "shadow_primary_track": "core_pqc_and_implementation",
+      "shadow_secondary_tracks": [],
+      "confidence": 0.95,
+      "explanation": "Experimental match for core_pqc_and_implementation; positive terms: dilithium, kyber, ml-dsa, ml-kem, side-channel; anchors: dilithium, kyber, lattice, ml-dsa, ml-kem, pqc, sis. This is not a production or human-gold label.",
+      "matched_positive_rules": [
+        "core_pqc_and_implementation:dilithium",
+        "core_pqc_and_implementation:kyber",
+        "core_pqc_and_implementation:ml-dsa",
+        "core_pqc_and_implementation:ml-kem",
+        "core_pqc_and_implementation:side-channel",
+        "core_pqc_and_implementation:dilithium",
+        "core_pqc_and_implementation:kyber",
+        "core_pqc_and_implementation:lattice",
+        "core_pqc_and_implementation:ml-dsa",
+        "core_pqc_and_implementation:ml-kem",
+        "core_pqc_and_implementation:pqc",
+        "core_pqc_and_implementation:sis"
+      ],
+      "matched_exclusion_rules": [
+        "module_sis_sanitizable_signatures:isogeny"
+      ],
+      "disagreement_category": "exact_match",
+      "human_review_status": "not_reviewed",
+      "TODO_VERIFY": [
+        "user review is required before any label counts as human gold",
+        "shadow output must not be consumed by Daily or Weekly production workflows"
+      ],
+      "selected_annotation_pack": false,
+      "codex_reviewed_primary_track": "core_pqc_and_implementation",
+      "codex_reviewed_secondary_tracks": [],
+      "human_gold_primary_track": null,
+      "human_gold_secondary_tracks": [],
+      "valid_human_gold": false,
+      "metadata_insufficient": false,
+      "source_provenance": [
+        "data/2026-06-08.json",
+        "data/2026-06-10.json"
+      ]
+    },
+    {
+      "record_id": "arxiv:2604.22900",
+      "sample_id": "v05-0009",
+      "title": "Module Lattice Security (Part II): Module Lattice Reduction via Optimal Sign Selection",
+      "source": "arxiv",
+      "production_primary_track": "ai4lattice_cryptanalysis",
+      "production_secondary_tracks": [],
+      "production_detail": "BKZ / Lattice Reduction: attack cost model",
+      "shadow_primary_track": "ai4lattice_cryptanalysis",
+      "shadow_secondary_tracks": [
+        "core_pqc_and_implementation"
+      ],
+      "confidence": 0.86,
+      "explanation": "Experimental match for ai4lattice_cryptanalysis; positive terms: bkz, lattice reduction; anchors: bkz, lattice, lwe, mlwe, ntru. This is not a production or human-gold label.",
+      "matched_positive_rules": [
+        "ai4lattice_cryptanalysis:bkz",
+        "ai4lattice_cryptanalysis:lattice reduction",
+        "ai4lattice_cryptanalysis:bkz",
+        "ai4lattice_cryptanalysis:lattice",
+        "ai4lattice_cryptanalysis:lwe",
+        "ai4lattice_cryptanalysis:mlwe",
+        "ai4lattice_cryptanalysis:ntru"
+      ],
+      "matched_exclusion_rules": [],
+      "disagreement_category": "secondary_track_disagreement",
+      "human_review_status": "not_reviewed",
+      "TODO_VERIFY": [
+        "user review is required before any label counts as human gold",
+        "shadow output must not be consumed by Daily or Weekly production workflows"
+      ],
+      "selected_annotation_pack": false,
+      "codex_reviewed_primary_track": "ai4lattice_cryptanalysis",
+      "codex_reviewed_secondary_tracks": [],
+      "human_gold_primary_track": null,
+      "human_gold_secondary_tracks": [],
+      "valid_human_gold": false,
+      "metadata_insufficient": false,
+      "source_provenance": [
+        "data/2026-06-08.json"
+      ]
+    },
+    {
+      "record_id": "arxiv:2605.17412",
+      "sample_id": "v05-0010",
+      "title": "Module Lattice Security (Part IV): Probabilistic Polynomial Quantum Attack on Module-LWE over 2-Power Cyclotomics",
+      "source": "arxiv",
+      "production_primary_track": "ai4lattice_cryptanalysis",
+      "production_secondary_tracks": [],
+      "production_detail": "LWE/RLWE/MLWE Cryptanalysis: attack analysis",
+      "shadow_primary_track": "core_pqc_and_implementation",
+      "shadow_secondary_tracks": [],
+      "confidence": 0.95,
+      "explanation": "Experimental match for core_pqc_and_implementation; positive terms: falcon, kyber, ml-kem, ntru; anchors: falcon, kyber, lattice, lwe, ml-kem, ntru, pqc, sis. This is not a production or human-gold label.",
+      "matched_positive_rules": [
+        "core_pqc_and_implementation:falcon",
+        "core_pqc_and_implementation:kyber",
+        "core_pqc_and_implementation:ml-kem",
+        "core_pqc_and_implementation:ntru",
+        "core_pqc_and_implementation:falcon",
+        "core_pqc_and_implementation:kyber",
+        "core_pqc_and_implementation:lattice",
+        "core_pqc_and_implementation:lwe",
+        "core_pqc_and_implementation:ml-kem",
+        "core_pqc_and_implementation:ntru",
+        "core_pqc_and_implementation:pqc",
+        "core_pqc_and_implementation:sis"
+      ],
+      "matched_exclusion_rules": [],
+      "disagreement_category": "primary_track_disagreement",
+      "human_review_status": "queued_for_user",
+      "TODO_VERIFY": [
+        "user review is required before any label counts as human gold",
+        "shadow output must not be consumed by Daily or Weekly production workflows"
+      ],
+      "selected_annotation_pack": true,
+      "codex_reviewed_primary_track": "ai4lattice_cryptanalysis",
+      "codex_reviewed_secondary_tracks": [],
+      "human_gold_primary_track": null,
+      "human_gold_secondary_tracks": [],
+      "valid_human_gold": false,
+      "metadata_insufficient": false,
+      "source_provenance": [
+        "data/2026-05-26.json",
+        "data/2026-05-28.json"
+      ]
+    },
+    {
+      "record_id": "arxiv:2605.22237",
+      "sample_id": "v05-0011",
+      "title": "Decision-Aware Quadratic ReLU Replacement for HE-Friendly Inference",
+      "source": "arxiv",
+      "production_primary_track": "core_pqc_and_implementation",
+      "production_secondary_tracks": [],
+      "production_detail": "FHE / Parameter Security: fhe / parameters",
+      "shadow_primary_track": "core_pqc_and_implementation",
+      "shadow_secondary_tracks": [],
+      "confidence": 0.79,
+      "explanation": "Experimental match for core_pqc_and_implementation; positive terms: ckks, fhe, fully homomorphic encryption; anchors: ckks, fhe. This is not a production or human-gold label.",
+      "matched_positive_rules": [
+        "core_pqc_and_implementation:ckks",
+        "core_pqc_and_implementation:fhe",
+        "core_pqc_and_implementation:fully homomorphic encryption",
+        "core_pqc_and_implementation:ckks",
+        "core_pqc_and_implementation:fhe"
+      ],
+      "matched_exclusion_rules": [],
+      "disagreement_category": "exact_match",
+      "human_review_status": "not_reviewed",
+      "TODO_VERIFY": [
+        "user review is required before any label counts as human gold",
+        "shadow output must not be consumed by Daily or Weekly production workflows"
+      ],
+      "selected_annotation_pack": false,
+      "codex_reviewed_primary_track": "core_pqc_and_implementation",
+      "codex_reviewed_secondary_tracks": [],
+      "human_gold_primary_track": null,
+      "human_gold_secondary_tracks": [],
+      "valid_human_gold": false,
+      "metadata_insufficient": false,
+      "source_provenance": [
+        "data/2026-05-22.json"
+      ]
+    },
+    {
+      "record_id": "arxiv:2605.24798",
+      "sample_id": "v05-0012",
+      "title": "Improved Dual Attack and Trapdoor Sampling via Quantum Rejection Sampling",
+      "source": "arxiv",
+      "production_primary_track": "module_sis_sanitizable_signatures",
+      "production_secondary_tracks": [],
+      "production_detail": "Module-SIS Primitive: commitment / chameleon hash",
+      "shadow_primary_track": "core_pqc_and_implementation",
+      "shadow_secondary_tracks": [],
+      "confidence": 0.86,
+      "explanation": "Experimental match for core_pqc_and_implementation; positive terms: fhe, kyber; anchors: fhe, kyber, lattice, pqc, sis. This is not a production or human-gold label.",
+      "matched_positive_rules": [
+        "core_pqc_and_implementation:fhe",
+        "core_pqc_and_implementation:kyber",
+        "core_pqc_and_implementation:fhe",
+        "core_pqc_and_implementation:kyber",
+        "core_pqc_and_implementation:lattice",
+        "core_pqc_and_implementation:pqc",
+        "core_pqc_and_implementation:sis"
+      ],
+      "matched_exclusion_rules": [],
+      "disagreement_category": "primary_track_disagreement",
+      "human_review_status": "queued_for_user",
+      "TODO_VERIFY": [
+        "user review is required before any label counts as human gold",
+        "shadow output must not be consumed by Daily or Weekly production workflows"
+      ],
+      "selected_annotation_pack": true,
+      "codex_reviewed_primary_track": "ai4lattice_cryptanalysis",
+      "codex_reviewed_secondary_tracks": [
+        "module_sis_sanitizable_signatures"
+      ],
+      "human_gold_primary_track": null,
+      "human_gold_secondary_tracks": [],
+      "valid_human_gold": false,
+      "metadata_insufficient": false,
+      "source_provenance": [
+        "data/2026-05-28.json"
+      ]
+    },
+    {
+      "record_id": "arxiv:2605.26903",
+      "sample_id": "v05-0013",
+      "title": "Practical Anonymous Two-Party Gradient Boosting Decision Tree",
+      "source": "arxiv",
+      "production_primary_track": "ai4lattice_cryptanalysis",
+      "production_secondary_tracks": [],
+      "production_detail": "AI4Lattice: learning-guided attack pipeline",
+      "shadow_primary_track": "core_pqc_and_implementation",
+      "shadow_secondary_tracks": [],
+      "confidence": 0.81,
+      "explanation": "Experimental match for core_pqc_and_implementation; positive terms: fhe, ntru; anchors: fhe, lwe, ntru, sis. This is not a production or human-gold label.",
+      "matched_positive_rules": [
+        "core_pqc_and_implementation:fhe",
+        "core_pqc_and_implementation:ntru",
+        "core_pqc_and_implementation:fhe",
+        "core_pqc_and_implementation:lwe",
+        "core_pqc_and_implementation:ntru",
+        "core_pqc_and_implementation:sis"
+      ],
+      "matched_exclusion_rules": [],
+      "disagreement_category": "primary_track_disagreement",
+      "human_review_status": "queued_for_user",
+      "TODO_VERIFY": [
+        "user review is required before any label counts as human gold",
+        "shadow output must not be consumed by Daily or Weekly production workflows"
+      ],
+      "selected_annotation_pack": true,
+      "codex_reviewed_primary_track": "core_pqc_and_implementation",
+      "codex_reviewed_secondary_tracks": [],
+      "human_gold_primary_track": null,
+      "human_gold_secondary_tracks": [],
+      "valid_human_gold": false,
+      "metadata_insufficient": false,
+      "source_provenance": [
+        "data/2026-05-27.json",
+        "data/2026-05-28.json"
+      ]
+    },
+    {
+      "record_id": "arxiv:2605.27286",
+      "sample_id": "v05-0014",
+      "title": "Falcon-X: A Time Series Foundation Model for Heterogeneous Multivariate Modeling",
+      "source": "arxiv",
+      "production_primary_track": "core_pqc_and_implementation",
+      "production_secondary_tracks": [],
+      "production_detail": "PQC Systems: deployment / systems",
+      "shadow_primary_track": "core_pqc_and_implementation",
+      "shadow_secondary_tracks": [],
+      "confidence": 0.68,
+      "explanation": "Experimental match for core_pqc_and_implementation; positive terms: falcon; anchors: falcon, lattice, pqc. This is not a production or human-gold label.",
+      "matched_positive_rules": [
+        "core_pqc_and_implementation:falcon",
+        "core_pqc_and_implementation:falcon",
+        "core_pqc_and_implementation:lattice",
+        "core_pqc_and_implementation:pqc"
+      ],
+      "matched_exclusion_rules": [
+        "ai4lattice_cryptanalysis:time series"
+      ],
+      "disagreement_category": "exact_match",
+      "human_review_status": "not_reviewed",
+      "TODO_VERIFY": [
+        "user review is required before any label counts as human gold",
+        "shadow output must not be consumed by Daily or Weekly production workflows"
+      ],
+      "selected_annotation_pack": false,
+      "codex_reviewed_primary_track": "irrelevant",
+      "codex_reviewed_secondary_tracks": [],
+      "human_gold_primary_track": null,
+      "human_gold_secondary_tracks": [],
+      "valid_human_gold": false,
+      "metadata_insufficient": false,
+      "source_provenance": [
+        "data/2026-05-27.json"
+      ]
+    },
+    {
+      "record_id": "arxiv:2606.01211",
+      "sample_id": "v05-0015",
+      "title": "GPU Acceleration of Learning With Errors KEMs Using OpenACC for Post-Quantum Cryptography",
+      "source": "arxiv",
+      "production_primary_track": "core_pqc_and_implementation",
+      "production_secondary_tracks": [],
+      "production_detail": "ML-KEM / ML-DSA Implementation Security: implementation security",
+      "shadow_primary_track": "core_pqc_and_implementation",
+      "shadow_secondary_tracks": [],
+      "confidence": 0.91,
+      "explanation": "Experimental match for core_pqc_and_implementation; positive terms: kyber, ntru; anchors: kyber, lattice, lwe, ntru, pqc, sis. This is not a production or human-gold label.",
+      "matched_positive_rules": [
+        "core_pqc_and_implementation:kyber",
+        "core_pqc_and_implementation:ntru",
+        "core_pqc_and_implementation:kyber",
+        "core_pqc_and_implementation:lattice",
+        "core_pqc_and_implementation:lwe",
+        "core_pqc_and_implementation:ntru",
+        "core_pqc_and_implementation:pqc",
+        "core_pqc_and_implementation:sis"
+      ],
+      "matched_exclusion_rules": [],
+      "disagreement_category": "exact_match",
+      "human_review_status": "not_reviewed",
+      "TODO_VERIFY": [
+        "user review is required before any label counts as human gold",
+        "shadow output must not be consumed by Daily or Weekly production workflows"
+      ],
+      "selected_annotation_pack": false,
+      "codex_reviewed_primary_track": "core_pqc_and_implementation",
+      "codex_reviewed_secondary_tracks": [],
+      "human_gold_primary_track": null,
+      "human_gold_secondary_tracks": [],
+      "valid_human_gold": false,
+      "metadata_insufficient": false,
+      "source_provenance": [
+        "data/2026-06-03.json"
+      ]
+    },
+    {
+      "record_id": "arxiv:2606.03611",
+      "sample_id": "v05-0016",
+      "title": "Q-FE: A Quantum-Native 6G Far-Edge Architecture Securing Industrial IoT Digital Twins via CSIDH-PQC and Asynchronous Federated Learning",
+      "source": "arxiv",
+      "production_primary_track": "core_pqc_and_implementation",
+      "production_secondary_tracks": [],
+      "production_detail": "PQC Systems: deployment / systems",
+      "shadow_primary_track": "core_pqc_and_implementation",
+      "shadow_secondary_tracks": [],
+      "confidence": 0.86,
+      "explanation": "Experimental match for core_pqc_and_implementation; positive terms: kyber, ml-kem; anchors: kyber, lattice, ml-kem, pqc, sis. This is not a production or human-gold label.",
+      "matched_positive_rules": [
+        "core_pqc_and_implementation:kyber",
+        "core_pqc_and_implementation:ml-kem",
+        "core_pqc_and_implementation:kyber",
+        "core_pqc_and_implementation:lattice",
+        "core_pqc_and_implementation:ml-kem",
+        "core_pqc_and_implementation:pqc",
+        "core_pqc_and_implementation:sis"
+      ],
+      "matched_exclusion_rules": [
+        "module_sis_sanitizable_signatures:isogeny"
+      ],
+      "disagreement_category": "exact_match",
+      "human_review_status": "not_reviewed",
+      "TODO_VERIFY": [
+        "user review is required before any label counts as human gold",
+        "shadow output must not be consumed by Daily or Weekly production workflows"
+      ],
+      "selected_annotation_pack": false,
+      "codex_reviewed_primary_track": "ambiguous",
+      "codex_reviewed_secondary_tracks": [],
+      "human_gold_primary_track": null,
+      "human_gold_secondary_tracks": [],
+      "valid_human_gold": false,
+      "metadata_insufficient": false,
+      "source_provenance": [
+        "data/2026-06-08.json"
+      ]
+    },
+    {
+      "record_id": "arxiv:2606.04443",
+      "sample_id": "v05-0017",
+      "title": "What Can Verifiable Decapsulation Tests Certify? Pass Bounds and Fault-Recognition Limits for FO-Based KEMs",
+      "source": "arxiv",
+      "production_primary_track": "core_pqc_and_implementation",
+      "production_secondary_tracks": [],
+      "production_detail": "ML-KEM / ML-DSA Implementation Security: implementation security",
+      "shadow_primary_track": "core_pqc_and_implementation",
+      "shadow_secondary_tracks": [],
+      "confidence": 0.81,
+      "explanation": "Experimental match for core_pqc_and_implementation; positive terms: kyber, ml-kem; anchors: kyber, lattice, ml-kem, pqc. This is not a production or human-gold label.",
+      "matched_positive_rules": [
+        "core_pqc_and_implementation:kyber",
+        "core_pqc_and_implementation:ml-kem",
+        "core_pqc_and_implementation:kyber",
+        "core_pqc_and_implementation:lattice",
+        "core_pqc_and_implementation:ml-kem",
+        "core_pqc_and_implementation:pqc"
+      ],
+      "matched_exclusion_rules": [],
+      "disagreement_category": "exact_match",
+      "human_review_status": "not_reviewed",
+      "TODO_VERIFY": [
+        "user review is required before any label counts as human gold",
+        "shadow output must not be consumed by Daily or Weekly production workflows"
+      ],
+      "selected_annotation_pack": false,
+      "codex_reviewed_primary_track": "core_pqc_and_implementation",
+      "codex_reviewed_secondary_tracks": [],
+      "human_gold_primary_track": null,
+      "human_gold_secondary_tracks": [],
+      "valid_human_gold": false,
+      "metadata_insufficient": false,
+      "source_provenance": [
+        "data/2026-06-08.json"
+      ]
+    },
+    {
+      "record_id": "arxiv:2606.05834",
+      "sample_id": "v05-0018",
+      "title": "Towards Worst-case Hardness for Low-Noise LPN",
+      "source": "arxiv",
+      "production_primary_track": "ai4lattice_cryptanalysis",
+      "production_secondary_tracks": [],
+      "production_detail": "LWE/RLWE/MLWE Cryptanalysis: attack analysis",
+      "shadow_primary_track": "core_pqc_and_implementation",
+      "shadow_secondary_tracks": [],
+      "confidence": 0.68,
+      "explanation": "Experimental match for core_pqc_and_implementation; positive terms: ntru; anchors: lwe, ntru, sis. This is not a production or human-gold label.",
+      "matched_positive_rules": [
+        "core_pqc_and_implementation:ntru",
+        "core_pqc_and_implementation:lwe",
+        "core_pqc_and_implementation:ntru",
+        "core_pqc_and_implementation:sis"
+      ],
+      "matched_exclusion_rules": [],
+      "disagreement_category": "primary_track_disagreement",
+      "human_review_status": "queued_for_user",
+      "TODO_VERIFY": [
+        "user review is required before any label counts as human gold",
+        "shadow output must not be consumed by Daily or Weekly production workflows"
+      ],
+      "selected_annotation_pack": true,
+      "codex_reviewed_primary_track": "irrelevant",
+      "codex_reviewed_secondary_tracks": [],
+      "human_gold_primary_track": null,
+      "human_gold_secondary_tracks": [],
+      "valid_human_gold": false,
+      "metadata_insufficient": false,
+      "source_provenance": [
+        "data/2026-06-08.json",
+        "data/2026-06-10.json"
+      ]
+    },
+    {
+      "record_id": "arxiv:2606.09412",
+      "sample_id": "v05-0019",
+      "title": "Towards Post-Quantum Secure Pharmacovigilance with ML-KEM and ML-DSA",
+      "source": "arxiv",
+      "production_primary_track": "core_pqc_and_implementation",
+      "production_secondary_tracks": [],
+      "production_detail": "ML-KEM / ML-DSA Implementation Security: implementation security",
+      "shadow_primary_track": "core_pqc_and_implementation",
+      "shadow_secondary_tracks": [],
+      "confidence": 0.95,
+      "explanation": "Experimental match for core_pqc_and_implementation; positive terms: dilithium, kyber, ml-dsa, ml-kem; anchors: dilithium, kyber, lattice, ml-dsa, ml-kem, pqc. This is not a production or human-gold label.",
+      "matched_positive_rules": [
+        "core_pqc_and_implementation:dilithium",
+        "core_pqc_and_implementation:kyber",
+        "core_pqc_and_implementation:ml-dsa",
+        "core_pqc_and_implementation:ml-kem",
+        "core_pqc_and_implementation:dilithium",
+        "core_pqc_and_implementation:kyber",
+        "core_pqc_and_implementation:lattice",
+        "core_pqc_and_implementation:ml-dsa",
+        "core_pqc_and_implementation:ml-kem",
+        "core_pqc_and_implementation:pqc"
+      ],
+      "matched_exclusion_rules": [],
+      "disagreement_category": "exact_match",
+      "human_review_status": "not_reviewed",
+      "TODO_VERIFY": [
+        "user review is required before any label counts as human gold",
+        "shadow output must not be consumed by Daily or Weekly production workflows"
+      ],
+      "selected_annotation_pack": false,
+      "codex_reviewed_primary_track": "core_pqc_and_implementation",
+      "codex_reviewed_secondary_tracks": [],
+      "human_gold_primary_track": null,
+      "human_gold_secondary_tracks": [],
+      "valid_human_gold": false,
+      "metadata_insufficient": false,
+      "source_provenance": [
+        "data/2026-06-10.json"
+      ]
+    },
+    {
+      "record_id": "iacr:2026/1015",
+      "sample_id": "v05-0020",
+      "title": "Comments on \"Server-Aided Public Key Authenticated Searchable Encryption With Constant Ciphertext and Constant Trapdoor\"",
+      "source": "iacr_eprint",
+      "production_primary_track": "module_sis_sanitizable_signatures",
+      "production_secondary_tracks": [],
+      "production_detail": "Module-SIS Primitive: commitment / chameleon hash",
+      "shadow_primary_track": "irrelevant",
+      "shadow_secondary_tracks": [],
+      "confidence": 0.35,
+      "explanation": "No experimental rule had both a positive term and a lattice/PQC anchor.",
+      "matched_positive_rules": [],
+      "matched_exclusion_rules": [],
+      "disagreement_category": "production_labeled_shadow_irrelevant",
+      "human_review_status": "not_reviewed",
+      "TODO_VERIFY": [
+        "user review is required before any label counts as human gold",
+        "shadow output must not be consumed by Daily or Weekly production workflows"
+      ],
+      "selected_annotation_pack": false,
+      "codex_reviewed_primary_track": "irrelevant",
+      "codex_reviewed_secondary_tracks": [],
+      "human_gold_primary_track": null,
+      "human_gold_secondary_tracks": [],
+      "valid_human_gold": false,
+      "metadata_insufficient": false,
+      "source_provenance": [
+        "data/2026-05-22.json"
+      ]
+    },
+    {
+      "record_id": "iacr:2026/1016",
+      "sample_id": "v05-0021",
+      "title": "Efficient Homomorphic String Search via TFHE",
+      "source": "iacr_eprint",
+      "production_primary_track": "core_pqc_and_implementation",
+      "production_secondary_tracks": [],
+      "production_detail": "FHE / Parameter Security: fhe / parameters",
+      "shadow_primary_track": "core_pqc_and_implementation",
+      "shadow_secondary_tracks": [],
+      "confidence": 0.84,
+      "explanation": "Experimental match for core_pqc_and_implementation; positive terms: bgv, fhe, tfhe; anchors: bgv, fhe, tfhe. This is not a production or human-gold label.",
+      "matched_positive_rules": [
+        "core_pqc_and_implementation:bgv",
+        "core_pqc_and_implementation:fhe",
+        "core_pqc_and_implementation:tfhe",
+        "core_pqc_and_implementation:bgv",
+        "core_pqc_and_implementation:fhe",
+        "core_pqc_and_implementation:tfhe"
+      ],
+      "matched_exclusion_rules": [],
+      "disagreement_category": "exact_match",
+      "human_review_status": "not_reviewed",
+      "TODO_VERIFY": [
+        "user review is required before any label counts as human gold",
+        "shadow output must not be consumed by Daily or Weekly production workflows"
+      ],
+      "selected_annotation_pack": false,
+      "codex_reviewed_primary_track": "core_pqc_and_implementation",
+      "codex_reviewed_secondary_tracks": [],
+      "human_gold_primary_track": null,
+      "human_gold_secondary_tracks": [],
+      "valid_human_gold": false,
+      "metadata_insufficient": false,
+      "source_provenance": [
+        "data/2026-05-22.json"
+      ]
+    },
+    {
+      "record_id": "iacr:2026/1017",
+      "sample_id": "v05-0022",
+      "title": "Quantum and Post-Quantum Blockchain: A Systematic Survey",
+      "source": "iacr_eprint",
+      "production_primary_track": "core_pqc_and_implementation",
+      "production_secondary_tracks": [],
+      "production_detail": "PQC Systems: deployment / systems",
+      "shadow_primary_track": "irrelevant",
+      "shadow_secondary_tracks": [],
+      "confidence": 0.35,
+      "explanation": "No experimental rule had both a positive term and a lattice/PQC anchor.",
+      "matched_positive_rules": [],
+      "matched_exclusion_rules": [],
+      "disagreement_category": "production_labeled_shadow_irrelevant",
+      "human_review_status": "queued_for_user",
+      "TODO_VERIFY": [
+        "user review is required before any label counts as human gold",
+        "shadow output must not be consumed by Daily or Weekly production workflows"
+      ],
+      "selected_annotation_pack": true,
+      "codex_reviewed_primary_track": "ambiguous",
+      "codex_reviewed_secondary_tracks": [],
+      "human_gold_primary_track": null,
+      "human_gold_secondary_tracks": [],
+      "valid_human_gold": false,
+      "metadata_insufficient": false,
+      "source_provenance": [
+        "data/2026-05-22.json"
+      ]
+    },
+    {
+      "record_id": "iacr:2026/1026",
+      "sample_id": "v05-0023",
+      "title": "Sparse Hermite Interpolation Method for Discrete-CKKS Functional Bootstrapping",
+      "source": "iacr_eprint",
+      "production_primary_track": "core_pqc_and_implementation",
+      "production_secondary_tracks": [],
+      "production_detail": "FHE / Parameter Security: fhe / parameters",
+      "shadow_primary_track": "core_pqc_and_implementation",
+      "shadow_secondary_tracks": [],
+      "confidence": 0.71,
+      "explanation": "Experimental match for core_pqc_and_implementation; positive terms: ckks, fhe; anchors: ckks, fhe. This is not a production or human-gold label.",
+      "matched_positive_rules": [
+        "core_pqc_and_implementation:ckks",
+        "core_pqc_and_implementation:fhe",
+        "core_pqc_and_implementation:ckks",
+        "core_pqc_and_implementation:fhe"
+      ],
+      "matched_exclusion_rules": [],
+      "disagreement_category": "exact_match",
+      "human_review_status": "not_reviewed",
+      "TODO_VERIFY": [
+        "user review is required before any label counts as human gold",
+        "shadow output must not be consumed by Daily or Weekly production workflows"
+      ],
+      "selected_annotation_pack": false,
+      "codex_reviewed_primary_track": "core_pqc_and_implementation",
+      "codex_reviewed_secondary_tracks": [],
+      "human_gold_primary_track": null,
+      "human_gold_secondary_tracks": [],
+      "valid_human_gold": false,
+      "metadata_insufficient": false,
+      "source_provenance": [
+        "data/2026-05-28.json"
+      ]
+    },
+    {
+      "record_id": "iacr:2026/1032",
+      "sample_id": "v05-0024",
+      "title": "When Removing Reductions Goes Wrong: Auditing Reduction Placement in Production ML-DSA Implementations",
+      "source": "iacr_eprint",
+      "production_primary_track": "core_pqc_and_implementation",
+      "production_secondary_tracks": [],
+      "production_detail": "ML-KEM / ML-DSA Implementation Security: implementation security",
+      "shadow_primary_track": "core_pqc_and_implementation",
+      "shadow_secondary_tracks": [],
+      "confidence": 0.86,
+      "explanation": "Experimental match for core_pqc_and_implementation; positive terms: dilithium, ml-dsa; anchors: dilithium, lattice, ml-dsa, pqc, sis. This is not a production or human-gold label.",
+      "matched_positive_rules": [
+        "core_pqc_and_implementation:dilithium",
+        "core_pqc_and_implementation:ml-dsa",
+        "core_pqc_and_implementation:dilithium",
+        "core_pqc_and_implementation:lattice",
+        "core_pqc_and_implementation:ml-dsa",
+        "core_pqc_and_implementation:pqc",
+        "core_pqc_and_implementation:sis"
+      ],
+      "matched_exclusion_rules": [],
+      "disagreement_category": "exact_match",
+      "human_review_status": "not_reviewed",
+      "TODO_VERIFY": [
+        "user review is required before any label counts as human gold",
+        "shadow output must not be consumed by Daily or Weekly production workflows"
+      ],
+      "selected_annotation_pack": false,
+      "codex_reviewed_primary_track": "core_pqc_and_implementation",
+      "codex_reviewed_secondary_tracks": [],
+      "human_gold_primary_track": null,
+      "human_gold_secondary_tracks": [],
+      "valid_human_gold": false,
+      "metadata_insufficient": false,
+      "source_provenance": [
+        "data/2026-05-28.json"
+      ]
+    },
+    {
+      "record_id": "iacr:2026/1041",
+      "sample_id": "v05-0025",
+      "title": "CoNAN: A Structure-Aware Framework for Lattice Cryptanalysis",
+      "source": "iacr_eprint",
+      "production_primary_track": "ai4lattice_cryptanalysis",
+      "production_secondary_tracks": [],
+      "production_detail": "LWE/RLWE/MLWE Cryptanalysis: attack analysis",
+      "shadow_primary_track": "core_pqc_and_implementation",
+      "shadow_secondary_tracks": [
+        "ai4lattice_cryptanalysis"
+      ],
+      "confidence": 0.78,
+      "explanation": "Experimental match for core_pqc_and_implementation; positive terms: ntru; anchors: lattice, lwe, ntru, pqc, sis. This is not a production or human-gold label.",
+      "matched_positive_rules": [
+        "core_pqc_and_implementation:ntru",
+        "core_pqc_and_implementation:lattice",
+        "core_pqc_and_implementation:lwe",
+        "core_pqc_and_implementation:ntru",
+        "core_pqc_and_implementation:pqc",
+        "core_pqc_and_implementation:sis"
+      ],
+      "matched_exclusion_rules": [],
+      "disagreement_category": "primary_track_disagreement",
+      "human_review_status": "queued_for_user",
+      "TODO_VERIFY": [
+        "user review is required before any label counts as human gold",
+        "shadow output must not be consumed by Daily or Weekly production workflows"
+      ],
+      "selected_annotation_pack": true,
+      "codex_reviewed_primary_track": "ai4lattice_cryptanalysis",
+      "codex_reviewed_secondary_tracks": [],
+      "human_gold_primary_track": null,
+      "human_gold_secondary_tracks": [],
+      "valid_human_gold": false,
+      "metadata_insufficient": false,
+      "source_provenance": [
+        "data/2026-05-28.json"
+      ]
+    },
+    {
+      "record_id": "iacr:2026/1042",
+      "sample_id": "v05-0026",
+      "title": "Doubly Aggregatable Signatures",
+      "source": "iacr_eprint",
+      "production_primary_track": "core_pqc_and_implementation",
+      "production_secondary_tracks": [],
+      "production_detail": "PQC Systems: deployment / systems",
+      "shadow_primary_track": "irrelevant",
+      "shadow_secondary_tracks": [],
+      "confidence": 0.35,
+      "explanation": "No experimental rule had both a positive term and a lattice/PQC anchor.",
+      "matched_positive_rules": [],
+      "matched_exclusion_rules": [],
+      "disagreement_category": "production_labeled_shadow_irrelevant",
+      "human_review_status": "queued_for_user",
+      "TODO_VERIFY": [
+        "user review is required before any label counts as human gold",
+        "shadow output must not be consumed by Daily or Weekly production workflows"
+      ],
+      "selected_annotation_pack": true,
+      "codex_reviewed_primary_track": "irrelevant",
+      "codex_reviewed_secondary_tracks": [],
+      "human_gold_primary_track": null,
+      "human_gold_secondary_tracks": [],
+      "valid_human_gold": false,
+      "metadata_insufficient": false,
+      "source_provenance": [
+        "data/2026-05-28.json"
+      ]
+    },
+    {
+      "record_id": "iacr:2026/1045",
+      "sample_id": "v05-0027",
+      "title": "Ciphertext-Updatable Attribute-Based and Predicate Encryption from Lattices",
+      "source": "iacr_eprint",
+      "production_primary_track": "ai4lattice_cryptanalysis",
+      "production_secondary_tracks": [],
+      "production_detail": "LWE/RLWE/MLWE Cryptanalysis: attack analysis",
+      "shadow_primary_track": "core_pqc_and_implementation",
+      "shadow_secondary_tracks": [],
+      "confidence": 0.73,
+      "explanation": "Experimental match for core_pqc_and_implementation; positive terms: ntru; anchors: lattice, lwe, ntru, sis. This is not a production or human-gold label.",
+      "matched_positive_rules": [
+        "core_pqc_and_implementation:ntru",
+        "core_pqc_and_implementation:lattice",
+        "core_pqc_and_implementation:lwe",
+        "core_pqc_and_implementation:ntru",
+        "core_pqc_and_implementation:sis"
+      ],
+      "matched_exclusion_rules": [],
+      "disagreement_category": "primary_track_disagreement",
+      "human_review_status": "queued_for_user",
+      "TODO_VERIFY": [
+        "user review is required before any label counts as human gold",
+        "shadow output must not be consumed by Daily or Weekly production workflows"
+      ],
+      "selected_annotation_pack": true,
+      "codex_reviewed_primary_track": "xingye_lu_bridge",
+      "codex_reviewed_secondary_tracks": [],
+      "human_gold_primary_track": null,
+      "human_gold_secondary_tracks": [],
+      "valid_human_gold": false,
+      "metadata_insufficient": false,
+      "source_provenance": [
+        "data/2026-05-28.json"
+      ]
+    },
+    {
+      "record_id": "iacr:2026/1048",
+      "sample_id": "v05-0028",
+      "title": "Unified Dual Attack Analyses: Covariance-Based Score Distribution Prediction for LWE",
+      "source": "iacr_eprint",
+      "production_primary_track": "ai4lattice_cryptanalysis",
+      "production_secondary_tracks": [],
+      "production_detail": "LWE/RLWE/MLWE Cryptanalysis: attack analysis",
+      "shadow_primary_track": "core_pqc_and_implementation",
+      "shadow_secondary_tracks": [],
+      "confidence": 0.95,
+      "explanation": "Experimental match for core_pqc_and_implementation; positive terms: dilithium, fhe, kyber, ntru; anchors: dilithium, fhe, kyber, lattice, lwe, ntru, pqc, sis. This is not a production or human-gold label.",
+      "matched_positive_rules": [
+        "core_pqc_and_implementation:dilithium",
+        "core_pqc_and_implementation:fhe",
+        "core_pqc_and_implementation:kyber",
+        "core_pqc_and_implementation:ntru",
+        "core_pqc_and_implementation:dilithium",
+        "core_pqc_and_implementation:fhe",
+        "core_pqc_and_implementation:kyber",
+        "core_pqc_and_implementation:lattice",
+        "core_pqc_and_implementation:lwe",
+        "core_pqc_and_implementation:ntru",
+        "core_pqc_and_implementation:pqc",
+        "core_pqc_and_implementation:sis"
+      ],
+      "matched_exclusion_rules": [],
+      "disagreement_category": "primary_track_disagreement",
+      "human_review_status": "queued_for_user",
+      "TODO_VERIFY": [
+        "user review is required before any label counts as human gold",
+        "shadow output must not be consumed by Daily or Weekly production workflows"
+      ],
+      "selected_annotation_pack": true,
+      "codex_reviewed_primary_track": "ai4lattice_cryptanalysis",
+      "codex_reviewed_secondary_tracks": [],
+      "human_gold_primary_track": null,
+      "human_gold_secondary_tracks": [],
+      "valid_human_gold": false,
+      "metadata_insufficient": false,
+      "source_provenance": [
+        "data/2026-05-28.json"
+      ]
+    },
+    {
+      "record_id": "iacr:2026/1051",
+      "sample_id": "v05-0029",
+      "title": "Streamlined Symmetric Private Information Retrieval via Rényi Divergence",
+      "source": "iacr_eprint",
+      "production_primary_track": "ai4lattice_cryptanalysis",
+      "production_secondary_tracks": [],
+      "production_detail": "LWE/RLWE/MLWE Cryptanalysis: attack analysis",
+      "shadow_primary_track": "core_pqc_and_implementation",
+      "shadow_secondary_tracks": [],
+      "confidence": 0.68,
+      "explanation": "Experimental match for core_pqc_and_implementation; positive terms: ntru; anchors: lwe, ntru, sis. This is not a production or human-gold label.",
+      "matched_positive_rules": [
+        "core_pqc_and_implementation:ntru",
+        "core_pqc_and_implementation:lwe",
+        "core_pqc_and_implementation:ntru",
+        "core_pqc_and_implementation:sis"
+      ],
+      "matched_exclusion_rules": [],
+      "disagreement_category": "primary_track_disagreement",
+      "human_review_status": "not_reviewed",
+      "TODO_VERIFY": [
+        "user review is required before any label counts as human gold",
+        "shadow output must not be consumed by Daily or Weekly production workflows"
+      ],
+      "selected_annotation_pack": false,
+      "codex_reviewed_primary_track": "core_pqc_and_implementation",
+      "codex_reviewed_secondary_tracks": [],
+      "human_gold_primary_track": null,
+      "human_gold_secondary_tracks": [],
+      "valid_human_gold": false,
+      "metadata_insufficient": false,
+      "source_provenance": [
+        "data/2026-05-28.json"
+      ]
+    },
+    {
+      "record_id": "iacr:2026/1053",
+      "sample_id": "v05-0030",
+      "title": "Beyond 128 Bits: The Concrete Security of EKE",
+      "source": "iacr_eprint",
+      "production_primary_track": "core_pqc_and_implementation",
+      "production_secondary_tracks": [],
+      "production_detail": "PQC Systems: deployment / systems",
+      "shadow_primary_track": "irrelevant",
+      "shadow_secondary_tracks": [],
+      "confidence": 0.35,
+      "explanation": "No experimental rule had both a positive term and a lattice/PQC anchor.",
+      "matched_positive_rules": [],
+      "matched_exclusion_rules": [],
+      "disagreement_category": "production_labeled_shadow_irrelevant",
+      "human_review_status": "not_reviewed",
+      "TODO_VERIFY": [
+        "user review is required before any label counts as human gold",
+        "shadow output must not be consumed by Daily or Weekly production workflows"
+      ],
+      "selected_annotation_pack": false,
+      "codex_reviewed_primary_track": "irrelevant",
+      "codex_reviewed_secondary_tracks": [],
+      "human_gold_primary_track": null,
+      "human_gold_secondary_tracks": [],
+      "valid_human_gold": false,
+      "metadata_insufficient": false,
+      "source_provenance": [
+        "data/2026-05-28.json"
+      ]
+    },
+    {
+      "record_id": "iacr:2026/1076",
+      "sample_id": "v05-0031",
+      "title": "Decentralizing Traitor Tracing: A Multi-Authority Approach",
+      "source": "iacr_eprint",
+      "production_primary_track": "ai4lattice_cryptanalysis",
+      "production_secondary_tracks": [],
+      "production_detail": "LWE/RLWE/MLWE Cryptanalysis: attack analysis",
+      "shadow_primary_track": "core_pqc_and_implementation",
+      "shadow_secondary_tracks": [],
+      "confidence": 0.68,
+      "explanation": "Experimental match for core_pqc_and_implementation; positive terms: ntru; anchors: lwe, ntru, sis. This is not a production or human-gold label.",
+      "matched_positive_rules": [
+        "core_pqc_and_implementation:ntru",
+        "core_pqc_and_implementation:lwe",
+        "core_pqc_and_implementation:ntru",
+        "core_pqc_and_implementation:sis"
+      ],
+      "matched_exclusion_rules": [],
+      "disagreement_category": "primary_track_disagreement",
+      "human_review_status": "queued_for_user",
+      "TODO_VERIFY": [
+        "user review is required before any label counts as human gold",
+        "shadow output must not be consumed by Daily or Weekly production workflows"
+      ],
+      "selected_annotation_pack": true,
+      "codex_reviewed_primary_track": "xingye_lu_bridge",
+      "codex_reviewed_secondary_tracks": [],
+      "human_gold_primary_track": null,
+      "human_gold_secondary_tracks": [],
+      "valid_human_gold": false,
+      "metadata_insufficient": false,
+      "source_provenance": [
+        "data/2026-06-03.json"
+      ]
+    },
+    {
+      "record_id": "iacr:2026/1077",
+      "sample_id": "v05-0032",
+      "title": "Authenticated and Incremental Single-Server Private Information Retrieval",
+      "source": "iacr_eprint",
+      "production_primary_track": "ai4lattice_cryptanalysis",
+      "production_secondary_tracks": [],
+      "production_detail": "LWE/RLWE/MLWE Cryptanalysis: attack analysis",
+      "shadow_primary_track": "core_pqc_and_implementation",
+      "shadow_secondary_tracks": [],
+      "confidence": 0.68,
+      "explanation": "Experimental match for core_pqc_and_implementation; positive terms: ntru; anchors: lwe, ntru, sis. This is not a production or human-gold label.",
+      "matched_positive_rules": [
+        "core_pqc_and_implementation:ntru",
+        "core_pqc_and_implementation:lwe",
+        "core_pqc_and_implementation:ntru",
+        "core_pqc_and_implementation:sis"
+      ],
+      "matched_exclusion_rules": [],
+      "disagreement_category": "primary_track_disagreement",
+      "human_review_status": "queued_for_user",
+      "TODO_VERIFY": [
+        "user review is required before any label counts as human gold",
+        "shadow output must not be consumed by Daily or Weekly production workflows"
+      ],
+      "selected_annotation_pack": true,
+      "codex_reviewed_primary_track": "xingye_lu_bridge",
+      "codex_reviewed_secondary_tracks": [],
+      "human_gold_primary_track": null,
+      "human_gold_secondary_tracks": [],
+      "valid_human_gold": false,
+      "metadata_insufficient": false,
+      "source_provenance": [
+        "data/2026-06-03.json"
+      ]
+    },
+    {
+      "record_id": "iacr:2026/1078",
+      "sample_id": "v05-0033",
+      "title": "Post-Quantum HAWK Signature Acceleration with RISC-V-Based Hardware-Software Co-Design",
+      "source": "iacr_eprint",
+      "production_primary_track": "core_pqc_and_implementation",
+      "production_secondary_tracks": [],
+      "production_detail": "ML-KEM / ML-DSA Implementation Security: implementation security",
+      "shadow_primary_track": "core_pqc_and_implementation",
+      "shadow_secondary_tracks": [],
+      "confidence": 0.95,
+      "explanation": "Experimental match for core_pqc_and_implementation; positive terms: dilithium, falcon, fn-dsa, ml-dsa; anchors: dilithium, falcon, fn-dsa, lattice, ml-dsa, pqc. This is not a production or human-gold label.",
+      "matched_positive_rules": [
+        "core_pqc_and_implementation:dilithium",
+        "core_pqc_and_implementation:falcon",
+        "core_pqc_and_implementation:fn-dsa",
+        "core_pqc_and_implementation:ml-dsa",
+        "core_pqc_and_implementation:dilithium",
+        "core_pqc_and_implementation:falcon",
+        "core_pqc_and_implementation:fn-dsa",
+        "core_pqc_and_implementation:lattice",
+        "core_pqc_and_implementation:ml-dsa",
+        "core_pqc_and_implementation:pqc"
+      ],
+      "matched_exclusion_rules": [],
+      "disagreement_category": "exact_match",
+      "human_review_status": "not_reviewed",
+      "TODO_VERIFY": [
+        "user review is required before any label counts as human gold",
+        "shadow output must not be consumed by Daily or Weekly production workflows"
+      ],
+      "selected_annotation_pack": false,
+      "codex_reviewed_primary_track": "core_pqc_and_implementation",
+      "codex_reviewed_secondary_tracks": [],
+      "human_gold_primary_track": null,
+      "human_gold_secondary_tracks": [],
+      "valid_human_gold": false,
+      "metadata_insufficient": false,
+      "source_provenance": [
+        "data/2026-06-03.json"
+      ]
+    },
+    {
+      "record_id": "iacr:2026/1079",
+      "sample_id": "v05-0034",
+      "title": "Witness Pseudorandom Functions for Vector Commitments and Applications",
+      "source": "iacr_eprint",
+      "production_primary_track": "module_sis_sanitizable_signatures",
+      "production_secondary_tracks": [],
+      "production_detail": "Module-SIS Primitive: commitment / chameleon hash",
+      "shadow_primary_track": "core_pqc_and_implementation",
+      "shadow_secondary_tracks": [],
+      "confidence": 0.68,
+      "explanation": "Experimental match for core_pqc_and_implementation; positive terms: ntru; anchors: lwe, ntru, sis. This is not a production or human-gold label.",
+      "matched_positive_rules": [
+        "core_pqc_and_implementation:ntru",
+        "core_pqc_and_implementation:lwe",
+        "core_pqc_and_implementation:ntru",
+        "core_pqc_and_implementation:sis"
+      ],
+      "matched_exclusion_rules": [],
+      "disagreement_category": "primary_track_disagreement",
+      "human_review_status": "queued_for_user",
+      "TODO_VERIFY": [
+        "user review is required before any label counts as human gold",
+        "shadow output must not be consumed by Daily or Weekly production workflows"
+      ],
+      "selected_annotation_pack": true,
+      "codex_reviewed_primary_track": "module_sis_sanitizable_signatures",
+      "codex_reviewed_secondary_tracks": [
+        "xingye_lu_bridge"
+      ],
+      "human_gold_primary_track": null,
+      "human_gold_secondary_tracks": [],
+      "valid_human_gold": false,
+      "metadata_insufficient": false,
+      "source_provenance": [
+        "data/2026-06-03.json"
+      ]
+    },
+    {
+      "record_id": "iacr:2026/1081",
+      "sample_id": "v05-0035",
+      "title": "From Perfect to Approximate Hints: Efficient LWE Secret Recovery Leveraging Low Hamming Weight",
+      "source": "iacr_eprint",
+      "production_primary_track": "ai4lattice_cryptanalysis",
+      "production_secondary_tracks": [],
+      "production_detail": "LWE/RLWE/MLWE Cryptanalysis: attack analysis",
+      "shadow_primary_track": "core_pqc_and_implementation",
+      "shadow_secondary_tracks": [],
+      "confidence": 0.95,
+      "explanation": "Experimental match for core_pqc_and_implementation; positive terms: fhe, fully homomorphic encryption, ntru, side-channel; anchors: fhe, lattice, lwe, ntru, pqc, sis. This is not a production or human-gold label.",
+      "matched_positive_rules": [
+        "core_pqc_and_implementation:fhe",
+        "core_pqc_and_implementation:fully homomorphic encryption",
+        "core_pqc_and_implementation:ntru",
+        "core_pqc_and_implementation:side-channel",
+        "core_pqc_and_implementation:fhe",
+        "core_pqc_and_implementation:lattice",
+        "core_pqc_and_implementation:lwe",
+        "core_pqc_and_implementation:ntru",
+        "core_pqc_and_implementation:pqc",
+        "core_pqc_and_implementation:sis"
+      ],
+      "matched_exclusion_rules": [],
+      "disagreement_category": "primary_track_disagreement",
+      "human_review_status": "queued_for_user",
+      "TODO_VERIFY": [
+        "user review is required before any label counts as human gold",
+        "shadow output must not be consumed by Daily or Weekly production workflows"
+      ],
+      "selected_annotation_pack": true,
+      "codex_reviewed_primary_track": "ai4lattice_cryptanalysis",
+      "codex_reviewed_secondary_tracks": [],
+      "human_gold_primary_track": null,
+      "human_gold_secondary_tracks": [],
+      "valid_human_gold": false,
+      "metadata_insufficient": false,
+      "source_provenance": [
+        "data/2026-06-03.json"
+      ]
+    },
+    {
+      "record_id": "iacr:2026/1084",
+      "sample_id": "v05-0036",
+      "title": "BRaccoon: Concurrently Secure Blind Lattice Signatures from Raccoon",
+      "source": "iacr_eprint",
+      "production_primary_track": "module_sis_sanitizable_signatures",
+      "production_secondary_tracks": [],
+      "production_detail": "Module-SIS Primitive: commitment / chameleon hash",
+      "shadow_primary_track": "core_pqc_and_implementation",
+      "shadow_secondary_tracks": [],
+      "confidence": 0.81,
+      "explanation": "Experimental match for core_pqc_and_implementation; positive terms: dilithium, fhe; anchors: dilithium, fhe, lattice, pqc. This is not a production or human-gold label.",
+      "matched_positive_rules": [
+        "core_pqc_and_implementation:dilithium",
+        "core_pqc_and_implementation:fhe",
+        "core_pqc_and_implementation:dilithium",
+        "core_pqc_and_implementation:fhe",
+        "core_pqc_and_implementation:lattice",
+        "core_pqc_and_implementation:pqc"
+      ],
+      "matched_exclusion_rules": [],
+      "disagreement_category": "primary_track_disagreement",
+      "human_review_status": "queued_for_user",
+      "TODO_VERIFY": [
+        "user review is required before any label counts as human gold",
+        "shadow output must not be consumed by Daily or Weekly production workflows"
+      ],
+      "selected_annotation_pack": true,
+      "codex_reviewed_primary_track": "xingye_lu_bridge",
+      "codex_reviewed_secondary_tracks": [
+        "module_sis_sanitizable_signatures"
+      ],
+      "human_gold_primary_track": null,
+      "human_gold_secondary_tracks": [],
+      "valid_human_gold": false,
+      "metadata_insufficient": false,
+      "source_provenance": [
+        "data/2026-06-03.json"
+      ]
+    },
+    {
+      "record_id": "iacr:2026/1088",
+      "sample_id": "v05-0037",
+      "title": "FlipFields-New Building Blocks for Cryptograpic Primitives?",
+      "source": "iacr_eprint",
+      "production_primary_track": "ai4lattice_cryptanalysis",
+      "production_secondary_tracks": [],
+      "production_detail": "LWE/RLWE/MLWE Cryptanalysis: attack analysis",
+      "shadow_primary_track": "core_pqc_and_implementation",
+      "shadow_secondary_tracks": [],
+      "confidence": 0.78,
+      "explanation": "Experimental match for core_pqc_and_implementation; positive terms: ntru; anchors: lattice, lwe, ntru, pqc, sis. This is not a production or human-gold label.",
+      "matched_positive_rules": [
+        "core_pqc_and_implementation:ntru",
+        "core_pqc_and_implementation:lattice",
+        "core_pqc_and_implementation:lwe",
+        "core_pqc_and_implementation:ntru",
+        "core_pqc_and_implementation:pqc",
+        "core_pqc_and_implementation:sis"
+      ],
+      "matched_exclusion_rules": [],
+      "disagreement_category": "primary_track_disagreement",
+      "human_review_status": "queued_for_user",
+      "TODO_VERIFY": [
+        "user review is required before any label counts as human gold",
+        "shadow output must not be consumed by Daily or Weekly production workflows"
+      ],
+      "selected_annotation_pack": true,
+      "codex_reviewed_primary_track": "ambiguous",
+      "codex_reviewed_secondary_tracks": [],
+      "human_gold_primary_track": null,
+      "human_gold_secondary_tracks": [],
+      "valid_human_gold": false,
+      "metadata_insufficient": false,
+      "source_provenance": [
+        "data/2026-06-03.json"
+      ]
+    },
+    {
+      "record_id": "iacr:2026/1089",
+      "sample_id": "v05-0038",
+      "title": "Faster Polynomial Evaluations for SIMD FHEs and Application to BGV in HElib",
+      "source": "iacr_eprint",
+      "production_primary_track": "core_pqc_and_implementation",
+      "production_secondary_tracks": [],
+      "production_detail": "FHE / Parameter Security: fhe / parameters",
+      "shadow_primary_track": "core_pqc_and_implementation",
+      "shadow_secondary_tracks": [],
+      "confidence": 0.71,
+      "explanation": "Experimental match for core_pqc_and_implementation; positive terms: bgv, fhe; anchors: bgv, fhe. This is not a production or human-gold label.",
+      "matched_positive_rules": [
+        "core_pqc_and_implementation:bgv",
+        "core_pqc_and_implementation:fhe",
+        "core_pqc_and_implementation:bgv",
+        "core_pqc_and_implementation:fhe"
+      ],
+      "matched_exclusion_rules": [],
+      "disagreement_category": "exact_match",
+      "human_review_status": "not_reviewed",
+      "TODO_VERIFY": [
+        "user review is required before any label counts as human gold",
+        "shadow output must not be consumed by Daily or Weekly production workflows"
+      ],
+      "selected_annotation_pack": false,
+      "codex_reviewed_primary_track": "core_pqc_and_implementation",
+      "codex_reviewed_secondary_tracks": [],
+      "human_gold_primary_track": null,
+      "human_gold_secondary_tracks": [],
+      "valid_human_gold": false,
+      "metadata_insufficient": false,
+      "source_provenance": [
+        "data/2026-06-03.json"
+      ]
+    },
+    {
+      "record_id": "iacr:2026/1091",
+      "sample_id": "v05-0039",
+      "title": "Practical Homomorphic LSTM via Programmable Bootstrapping",
+      "source": "iacr_eprint",
+      "production_primary_track": "core_pqc_and_implementation",
+      "production_secondary_tracks": [],
+      "production_detail": "FHE / Parameter Security: fhe / parameters",
+      "shadow_primary_track": "core_pqc_and_implementation",
+      "shadow_secondary_tracks": [],
+      "confidence": 0.92,
+      "explanation": "Experimental match for core_pqc_and_implementation; positive terms: fhe, fully homomorphic encryption, ntru, tfhe; anchors: fhe, ntru, tfhe. This is not a production or human-gold label.",
+      "matched_positive_rules": [
+        "core_pqc_and_implementation:fhe",
+        "core_pqc_and_implementation:fully homomorphic encryption",
+        "core_pqc_and_implementation:ntru",
+        "core_pqc_and_implementation:tfhe",
+        "core_pqc_and_implementation:fhe",
+        "core_pqc_and_implementation:ntru",
+        "core_pqc_and_implementation:tfhe"
+      ],
+      "matched_exclusion_rules": [],
+      "disagreement_category": "exact_match",
+      "human_review_status": "not_reviewed",
+      "TODO_VERIFY": [
+        "user review is required before any label counts as human gold",
+        "shadow output must not be consumed by Daily or Weekly production workflows"
+      ],
+      "selected_annotation_pack": false,
+      "codex_reviewed_primary_track": "core_pqc_and_implementation",
+      "codex_reviewed_secondary_tracks": [],
+      "human_gold_primary_track": null,
+      "human_gold_secondary_tracks": [],
+      "valid_human_gold": false,
+      "metadata_insufficient": false,
+      "source_provenance": [
+        "data/2026-06-03.json"
+      ]
+    },
+    {
+      "record_id": "iacr:2026/1094",
+      "sample_id": "v05-0040",
+      "title": "Asymmetric Message Franking in the Plain Model: Generic and Efficient Constructions",
+      "source": "iacr_eprint",
+      "production_primary_track": "ai4lattice_cryptanalysis",
+      "production_secondary_tracks": [],
+      "production_detail": "LWE/RLWE/MLWE Cryptanalysis: attack analysis",
+      "shadow_primary_track": "core_pqc_and_implementation",
+      "shadow_secondary_tracks": [],
+      "confidence": 0.68,
+      "explanation": "Experimental match for core_pqc_and_implementation; positive terms: ntru; anchors: lwe, ntru, sis. This is not a production or human-gold label.",
+      "matched_positive_rules": [
+        "core_pqc_and_implementation:ntru",
+        "core_pqc_and_implementation:lwe",
+        "core_pqc_and_implementation:ntru",
+        "core_pqc_and_implementation:sis"
+      ],
+      "matched_exclusion_rules": [],
+      "disagreement_category": "primary_track_disagreement",
+      "human_review_status": "queued_for_user",
+      "TODO_VERIFY": [
+        "user review is required before any label counts as human gold",
+        "shadow output must not be consumed by Daily or Weekly production workflows"
+      ],
+      "selected_annotation_pack": true,
+      "codex_reviewed_primary_track": "xingye_lu_bridge",
+      "codex_reviewed_secondary_tracks": [],
+      "human_gold_primary_track": null,
+      "human_gold_secondary_tracks": [],
+      "valid_human_gold": false,
+      "metadata_insufficient": false,
+      "source_provenance": [
+        "data/2026-06-03.json"
+      ]
+    },
+    {
+      "record_id": "iacr:2026/1098",
+      "sample_id": "v05-0041",
+      "title": "A gentle introduction to lattice-based cryptography",
+      "source": "iacr_eprint",
+      "production_primary_track": "core_pqc_and_implementation",
+      "production_secondary_tracks": [],
+      "production_detail": "PQC Systems: deployment / systems",
+      "shadow_primary_track": "core_pqc_and_implementation",
+      "shadow_secondary_tracks": [],
+      "confidence": 0.95,
+      "explanation": "Experimental match for core_pqc_and_implementation; positive terms: dilithium, kyber, ml-dsa, ml-kem; anchors: dilithium, kyber, lattice, ml-dsa, ml-kem, pqc. This is not a production or human-gold label.",
+      "matched_positive_rules": [
+        "core_pqc_and_implementation:dilithium",
+        "core_pqc_and_implementation:kyber",
+        "core_pqc_and_implementation:ml-dsa",
+        "core_pqc_and_implementation:ml-kem",
+        "core_pqc_and_implementation:dilithium",
+        "core_pqc_and_implementation:kyber",
+        "core_pqc_and_implementation:lattice",
+        "core_pqc_and_implementation:ml-dsa",
+        "core_pqc_and_implementation:ml-kem",
+        "core_pqc_and_implementation:pqc"
+      ],
+      "matched_exclusion_rules": [],
+      "disagreement_category": "exact_match",
+      "human_review_status": "not_reviewed",
+      "TODO_VERIFY": [
+        "user review is required before any label counts as human gold",
+        "shadow output must not be consumed by Daily or Weekly production workflows"
+      ],
+      "selected_annotation_pack": false,
+      "codex_reviewed_primary_track": "core_pqc_and_implementation",
+      "codex_reviewed_secondary_tracks": [],
+      "human_gold_primary_track": null,
+      "human_gold_secondary_tracks": [],
+      "valid_human_gold": false,
+      "metadata_insufficient": false,
+      "source_provenance": [
+        "data/2026-06-03.json"
+      ]
+    },
+    {
+      "record_id": "iacr:2026/1102",
+      "sample_id": "v05-0042",
+      "title": "Finite-Field Arithmetic in CKKS",
+      "source": "iacr_eprint",
+      "production_primary_track": "core_pqc_and_implementation",
+      "production_secondary_tracks": [],
+      "production_detail": "FHE / Parameter Security: fhe / parameters",
+      "shadow_primary_track": "core_pqc_and_implementation",
+      "shadow_secondary_tracks": [],
+      "confidence": 0.84,
+      "explanation": "Experimental match for core_pqc_and_implementation; positive terms: bgv, ckks, fhe; anchors: bgv, ckks, fhe. This is not a production or human-gold label.",
+      "matched_positive_rules": [
+        "core_pqc_and_implementation:bgv",
+        "core_pqc_and_implementation:ckks",
+        "core_pqc_and_implementation:fhe",
+        "core_pqc_and_implementation:bgv",
+        "core_pqc_and_implementation:ckks",
+        "core_pqc_and_implementation:fhe"
+      ],
+      "matched_exclusion_rules": [],
+      "disagreement_category": "exact_match",
+      "human_review_status": "not_reviewed",
+      "TODO_VERIFY": [
+        "user review is required before any label counts as human gold",
+        "shadow output must not be consumed by Daily or Weekly production workflows"
+      ],
+      "selected_annotation_pack": false,
+      "codex_reviewed_primary_track": "core_pqc_and_implementation",
+      "codex_reviewed_secondary_tracks": [],
+      "human_gold_primary_track": null,
+      "human_gold_secondary_tracks": [],
+      "valid_human_gold": false,
+      "metadata_insufficient": false,
+      "source_provenance": [
+        "data/2026-06-03.json"
+      ]
+    },
+    {
+      "record_id": "iacr:2026/1107",
+      "sample_id": "v05-0043",
+      "title": "KAT-Seeded Fuzzing of Stateful Hash-Based Signature Verification in liboqs",
+      "source": "iacr_eprint",
+      "production_primary_track": "xingye_lu_bridge",
+      "production_secondary_tracks": [],
+      "production_detail": "ZK-friendly PQ Privacy: privacy primitive",
+      "shadow_primary_track": "irrelevant",
+      "shadow_secondary_tracks": [],
+      "confidence": 0.35,
+      "explanation": "No experimental rule had both a positive term and a lattice/PQC anchor.",
+      "matched_positive_rules": [],
+      "matched_exclusion_rules": [],
+      "disagreement_category": "production_labeled_shadow_irrelevant",
+      "human_review_status": "queued_for_user",
+      "TODO_VERIFY": [
+        "user review is required before any label counts as human gold",
+        "shadow output must not be consumed by Daily or Weekly production workflows"
+      ],
+      "selected_annotation_pack": true,
+      "codex_reviewed_primary_track": "ambiguous",
+      "codex_reviewed_secondary_tracks": [],
+      "human_gold_primary_track": null,
+      "human_gold_secondary_tracks": [],
+      "valid_human_gold": false,
+      "metadata_insufficient": false,
+      "source_provenance": [
+        "data/2026-06-03.json"
+      ]
+    },
+    {
+      "record_id": "iacr:2026/1111",
+      "sample_id": "v05-0044",
+      "title": "Identity-Based Revocable and Linkable Ring Signature",
+      "source": "iacr_eprint",
+      "production_primary_track": "core_pqc_and_implementation",
+      "production_secondary_tracks": [],
+      "production_detail": "PQC Systems: deployment / systems",
+      "shadow_primary_track": "irrelevant",
+      "shadow_secondary_tracks": [],
+      "confidence": 0.35,
+      "explanation": "No experimental rule had both a positive term and a lattice/PQC anchor.",
+      "matched_positive_rules": [],
+      "matched_exclusion_rules": [],
+      "disagreement_category": "production_labeled_shadow_irrelevant",
+      "human_review_status": "queued_for_user",
+      "TODO_VERIFY": [
+        "user review is required before any label counts as human gold",
+        "shadow output must not be consumed by Daily or Weekly production workflows"
+      ],
+      "selected_annotation_pack": true,
+      "codex_reviewed_primary_track": "ambiguous",
+      "codex_reviewed_secondary_tracks": [],
+      "human_gold_primary_track": null,
+      "human_gold_secondary_tracks": [],
+      "valid_human_gold": false,
+      "metadata_insufficient": false,
+      "source_provenance": [
+        "data/2026-06-03.json"
+      ]
+    },
+    {
+      "record_id": "iacr:2026/1113",
+      "sample_id": "v05-0045",
+      "title": "HRA-Secure Lattice-based Proxy Re-Encryption without Noise Flooding",
+      "source": "iacr_eprint",
+      "production_primary_track": "ai4lattice_cryptanalysis",
+      "production_secondary_tracks": [],
+      "production_detail": "LWE/RLWE/MLWE Cryptanalysis: attack analysis",
+      "shadow_primary_track": "core_pqc_and_implementation",
+      "shadow_secondary_tracks": [],
+      "confidence": 0.95,
+      "explanation": "Experimental match for core_pqc_and_implementation; positive terms: bgv, fhe, ntru; anchors: bgv, fhe, lattice, lwe, ntru, sis. This is not a production or human-gold label.",
+      "matched_positive_rules": [
+        "core_pqc_and_implementation:bgv",
+        "core_pqc_and_implementation:fhe",
+        "core_pqc_and_implementation:ntru",
+        "core_pqc_and_implementation:bgv",
+        "core_pqc_and_implementation:fhe",
+        "core_pqc_and_implementation:lattice",
+        "core_pqc_and_implementation:lwe",
+        "core_pqc_and_implementation:ntru",
+        "core_pqc_and_implementation:sis"
+      ],
+      "matched_exclusion_rules": [],
+      "disagreement_category": "primary_track_disagreement",
+      "human_review_status": "queued_for_user",
+      "TODO_VERIFY": [
+        "user review is required before any label counts as human gold",
+        "shadow output must not be consumed by Daily or Weekly production workflows"
+      ],
+      "selected_annotation_pack": true,
+      "codex_reviewed_primary_track": "xingye_lu_bridge",
+      "codex_reviewed_secondary_tracks": [],
+      "human_gold_primary_track": null,
+      "human_gold_secondary_tracks": [],
+      "valid_human_gold": false,
+      "metadata_insufficient": false,
+      "source_provenance": [
+        "data/2026-06-03.json"
+      ]
+    },
+    {
+      "record_id": "iacr:2026/1117",
+      "sample_id": "v05-0046",
+      "title": "On the Secrecy of the Encapsulation Coin in ML-KEM",
+      "source": "iacr_eprint",
+      "production_primary_track": "core_pqc_and_implementation",
+      "production_secondary_tracks": [],
+      "production_detail": "ML-KEM / ML-DSA Implementation Security: implementation security",
+      "shadow_primary_track": "core_pqc_and_implementation",
+      "shadow_secondary_tracks": [],
+      "confidence": 0.81,
+      "explanation": "Experimental match for core_pqc_and_implementation; positive terms: kyber, ml-kem; anchors: kyber, lattice, ml-kem, pqc. This is not a production or human-gold label.",
+      "matched_positive_rules": [
+        "core_pqc_and_implementation:kyber",
+        "core_pqc_and_implementation:ml-kem",
+        "core_pqc_and_implementation:kyber",
+        "core_pqc_and_implementation:lattice",
+        "core_pqc_and_implementation:ml-kem",
+        "core_pqc_and_implementation:pqc"
+      ],
+      "matched_exclusion_rules": [],
+      "disagreement_category": "exact_match",
+      "human_review_status": "not_reviewed",
+      "TODO_VERIFY": [
+        "user review is required before any label counts as human gold",
+        "shadow output must not be consumed by Daily or Weekly production workflows"
+      ],
+      "selected_annotation_pack": false,
+      "codex_reviewed_primary_track": "core_pqc_and_implementation",
+      "codex_reviewed_secondary_tracks": [],
+      "human_gold_primary_track": null,
+      "human_gold_secondary_tracks": [],
+      "valid_human_gold": false,
+      "metadata_insufficient": false,
+      "source_provenance": [
+        "data/2026-06-03.json"
+      ]
+    },
+    {
+      "record_id": "iacr:2026/1122",
+      "sample_id": "v05-0047",
+      "title": "Pseudo-Oil Subspaces and the Geometry of Underdetermined MQ Problems",
+      "source": "iacr_eprint",
+      "production_primary_track": "core_pqc_and_implementation",
+      "production_secondary_tracks": [],
+      "production_detail": "PQC Systems: deployment / systems",
+      "shadow_primary_track": "irrelevant",
+      "shadow_secondary_tracks": [],
+      "confidence": 0.35,
+      "explanation": "No experimental rule had both a positive term and a lattice/PQC anchor.",
+      "matched_positive_rules": [],
+      "matched_exclusion_rules": [],
+      "disagreement_category": "production_labeled_shadow_irrelevant",
+      "human_review_status": "queued_for_user",
+      "TODO_VERIFY": [
+        "user review is required before any label counts as human gold",
+        "shadow output must not be consumed by Daily or Weekly production workflows"
+      ],
+      "selected_annotation_pack": true,
+      "codex_reviewed_primary_track": "irrelevant",
+      "codex_reviewed_secondary_tracks": [],
+      "human_gold_primary_track": null,
+      "human_gold_secondary_tracks": [],
+      "valid_human_gold": false,
+      "metadata_insufficient": false,
+      "source_provenance": [
+        "data/2026-06-03.json"
+      ]
+    },
+    {
+      "record_id": "iacr:2026/1124",
+      "sample_id": "v05-0048",
+      "title": "New Constructions of Functional Adaptor Signatures: Broader Functions and Improved Efficiency",
+      "source": "iacr_eprint",
+      "production_primary_track": "core_pqc_and_implementation",
+      "production_secondary_tracks": [],
+      "production_detail": "FHE / Parameter Security: fhe / parameters",
+      "shadow_primary_track": "core_pqc_and_implementation",
+      "shadow_secondary_tracks": [],
+      "confidence": 0.58,
+      "explanation": "Experimental match for core_pqc_and_implementation; positive terms: fhe; anchors: fhe. This is not a production or human-gold label.",
+      "matched_positive_rules": [
+        "core_pqc_and_implementation:fhe",
+        "core_pqc_and_implementation:fhe"
+      ],
+      "matched_exclusion_rules": [],
+      "disagreement_category": "exact_match",
+      "human_review_status": "not_reviewed",
+      "TODO_VERIFY": [
+        "user review is required before any label counts as human gold",
+        "shadow output must not be consumed by Daily or Weekly production workflows"
+      ],
+      "selected_annotation_pack": false,
+      "codex_reviewed_primary_track": "ambiguous",
+      "codex_reviewed_secondary_tracks": [],
+      "human_gold_primary_track": null,
+      "human_gold_secondary_tracks": [],
+      "valid_human_gold": false,
+      "metadata_insufficient": false,
+      "source_provenance": [
+        "data/2026-06-03.json"
+      ]
+    },
+    {
+      "record_id": "iacr:2026/1179",
+      "sample_id": "v05-0049",
+      "title": "Permissionless Consensus from a Common Random String",
+      "source": "iacr_eprint",
+      "production_primary_track": "ai4lattice_cryptanalysis",
+      "production_secondary_tracks": [],
+      "production_detail": "LWE/RLWE/MLWE Cryptanalysis: attack analysis",
+      "shadow_primary_track": "core_pqc_and_implementation",
+      "shadow_secondary_tracks": [],
+      "confidence": 0.68,
+      "explanation": "Experimental match for core_pqc_and_implementation; positive terms: ntru; anchors: lwe, ntru, sis. This is not a production or human-gold label.",
+      "matched_positive_rules": [
+        "core_pqc_and_implementation:ntru",
+        "core_pqc_and_implementation:lwe",
+        "core_pqc_and_implementation:ntru",
+        "core_pqc_and_implementation:sis"
+      ],
+      "matched_exclusion_rules": [],
+      "disagreement_category": "primary_track_disagreement",
+      "human_review_status": "queued_for_user",
+      "TODO_VERIFY": [
+        "user review is required before any label counts as human gold",
+        "shadow output must not be consumed by Daily or Weekly production workflows"
+      ],
+      "selected_annotation_pack": true,
+      "codex_reviewed_primary_track": "ambiguous",
+      "codex_reviewed_secondary_tracks": [],
+      "human_gold_primary_track": null,
+      "human_gold_secondary_tracks": [],
+      "valid_human_gold": false,
+      "metadata_insufficient": false,
+      "source_provenance": [
+        "data/2026-06-10.json"
+      ]
+    },
+    {
+      "record_id": "iacr:2026/1181",
+      "sample_id": "v05-0050",
+      "title": "AICE: An Arithmetic-Oriented Stream Cipher for Heterogeneous Computing",
+      "source": "iacr_eprint",
+      "production_primary_track": "irrelevant",
+      "production_secondary_tracks": [],
+      "production_detail": "Other",
+      "shadow_primary_track": "irrelevant",
+      "shadow_secondary_tracks": [],
+      "confidence": 0.35,
+      "explanation": "No experimental rule had both a positive term and a lattice/PQC anchor.",
+      "matched_positive_rules": [],
+      "matched_exclusion_rules": [],
+      "disagreement_category": "exact_match",
+      "human_review_status": "not_reviewed",
+      "TODO_VERIFY": [
+        "user review is required before any label counts as human gold",
+        "shadow output must not be consumed by Daily or Weekly production workflows"
+      ],
+      "selected_annotation_pack": false,
+      "codex_reviewed_primary_track": "irrelevant",
+      "codex_reviewed_secondary_tracks": [],
+      "human_gold_primary_track": null,
+      "human_gold_secondary_tracks": [],
+      "valid_human_gold": false,
+      "metadata_insufficient": false,
+      "source_provenance": [
+        "data/2026-06-10.json"
+      ]
+    },
+    {
+      "record_id": "iacr:2026/1182",
+      "sample_id": "v05-0051",
+      "title": "Fast Bounded-Independence Functions and Their Duals",
+      "source": "iacr_eprint",
+      "production_primary_track": "core_pqc_and_implementation",
+      "production_secondary_tracks": [],
+      "production_detail": "PQC Systems: deployment / systems",
+      "shadow_primary_track": "irrelevant",
+      "shadow_secondary_tracks": [],
+      "confidence": 0.35,
+      "explanation": "No experimental rule had both a positive term and a lattice/PQC anchor.",
+      "matched_positive_rules": [],
+      "matched_exclusion_rules": [],
+      "disagreement_category": "production_labeled_shadow_irrelevant",
+      "human_review_status": "not_reviewed",
+      "TODO_VERIFY": [
+        "user review is required before any label counts as human gold",
+        "shadow output must not be consumed by Daily or Weekly production workflows"
+      ],
+      "selected_annotation_pack": false,
+      "codex_reviewed_primary_track": "irrelevant",
+      "codex_reviewed_secondary_tracks": [],
+      "human_gold_primary_track": null,
+      "human_gold_secondary_tracks": [],
+      "valid_human_gold": false,
+      "metadata_insufficient": false,
+      "source_provenance": [
+        "data/2026-06-10.json"
+      ]
+    },
+    {
+      "record_id": "iacr:2026/1186",
+      "sample_id": "v05-0052",
+      "title": "Butterfly Effect: Multi-Key FHE from Ring-LWR",
+      "source": "iacr_eprint",
+      "production_primary_track": "ai4lattice_cryptanalysis",
+      "production_secondary_tracks": [],
+      "production_detail": "LWE/RLWE/MLWE Cryptanalysis: attack analysis",
+      "shadow_primary_track": "core_pqc_and_implementation",
+      "shadow_secondary_tracks": [],
+      "confidence": 0.89,
+      "explanation": "Experimental match for core_pqc_and_implementation; positive terms: fhe, fully homomorphic encryption, ntru; anchors: fhe, lwe, ntru, sis. This is not a production or human-gold label.",
+      "matched_positive_rules": [
+        "core_pqc_and_implementation:fhe",
+        "core_pqc_and_implementation:fully homomorphic encryption",
+        "core_pqc_and_implementation:ntru",
+        "core_pqc_and_implementation:fhe",
+        "core_pqc_and_implementation:lwe",
+        "core_pqc_and_implementation:ntru",
+        "core_pqc_and_implementation:sis"
+      ],
+      "matched_exclusion_rules": [],
+      "disagreement_category": "primary_track_disagreement",
+      "human_review_status": "not_reviewed",
+      "TODO_VERIFY": [
+        "user review is required before any label counts as human gold",
+        "shadow output must not be consumed by Daily or Weekly production workflows"
+      ],
+      "selected_annotation_pack": false,
+      "codex_reviewed_primary_track": "core_pqc_and_implementation",
+      "codex_reviewed_secondary_tracks": [],
+      "human_gold_primary_track": null,
+      "human_gold_secondary_tracks": [],
+      "valid_human_gold": false,
+      "metadata_insufficient": false,
+      "source_provenance": [
+        "data/2026-06-06.json",
+        "data/2026-06-10.json"
+      ]
+    },
+    {
+      "record_id": "iacr:2026/1187",
+      "sample_id": "v05-0053",
+      "title": "HEGIDE: A MIMD Oblivious Processor for Private Function Evaluation over CKKS",
+      "source": "iacr_eprint",
+      "production_primary_track": "core_pqc_and_implementation",
+      "production_secondary_tracks": [],
+      "production_detail": "FHE / Parameter Security: fhe / parameters",
+      "shadow_primary_track": "core_pqc_and_implementation",
+      "shadow_secondary_tracks": [],
+      "confidence": 0.79,
+      "explanation": "Experimental match for core_pqc_and_implementation; positive terms: ckks, constant-time, fhe; anchors: ckks, fhe. This is not a production or human-gold label.",
+      "matched_positive_rules": [
+        "core_pqc_and_implementation:ckks",
+        "core_pqc_and_implementation:constant-time",
+        "core_pqc_and_implementation:fhe",
+        "core_pqc_and_implementation:ckks",
+        "core_pqc_and_implementation:fhe"
+      ],
+      "matched_exclusion_rules": [],
+      "disagreement_category": "exact_match",
+      "human_review_status": "not_reviewed",
+      "TODO_VERIFY": [
+        "user review is required before any label counts as human gold",
+        "shadow output must not be consumed by Daily or Weekly production workflows"
+      ],
+      "selected_annotation_pack": false,
+      "codex_reviewed_primary_track": "core_pqc_and_implementation",
+      "codex_reviewed_secondary_tracks": [],
+      "human_gold_primary_track": null,
+      "human_gold_secondary_tracks": [],
+      "valid_human_gold": false,
+      "metadata_insufficient": false,
+      "source_provenance": [
+        "data/2026-06-06.json",
+        "data/2026-06-10.json"
+      ]
+    },
+    {
+      "record_id": "iacr:2026/1188",
+      "sample_id": "v05-0054",
+      "title": "Rank Ceiling for Twiddle-Perturbation Faults on the Forward NTT",
+      "source": "iacr_eprint",
+      "production_primary_track": "core_pqc_and_implementation",
+      "production_secondary_tracks": [],
+      "production_detail": "ML-KEM / ML-DSA Implementation Security: implementation security",
+      "shadow_primary_track": "core_pqc_and_implementation",
+      "shadow_secondary_tracks": [],
+      "confidence": 0.95,
+      "explanation": "Experimental match for core_pqc_and_implementation; positive terms: dilithium, fault attack, kyber, ml-dsa, ml-kem; anchors: dilithium, kyber, lattice, ml-dsa, ml-kem, pqc. This is not a production or human-gold label.",
+      "matched_positive_rules": [
+        "core_pqc_and_implementation:dilithium",
+        "core_pqc_and_implementation:fault attack",
+        "core_pqc_and_implementation:kyber",
+        "core_pqc_and_implementation:ml-dsa",
+        "core_pqc_and_implementation:ml-kem",
+        "core_pqc_and_implementation:dilithium",
+        "core_pqc_and_implementation:kyber",
+        "core_pqc_and_implementation:lattice",
+        "core_pqc_and_implementation:ml-dsa",
+        "core_pqc_and_implementation:ml-kem",
+        "core_pqc_and_implementation:pqc"
+      ],
+      "matched_exclusion_rules": [],
+      "disagreement_category": "exact_match",
+      "human_review_status": "not_reviewed",
+      "TODO_VERIFY": [
+        "user review is required before any label counts as human gold",
+        "shadow output must not be consumed by Daily or Weekly production workflows"
+      ],
+      "selected_annotation_pack": false,
+      "codex_reviewed_primary_track": "core_pqc_and_implementation",
+      "codex_reviewed_secondary_tracks": [
+        "ai4lattice_cryptanalysis"
+      ],
+      "human_gold_primary_track": null,
+      "human_gold_secondary_tracks": [],
+      "valid_human_gold": false,
+      "metadata_insufficient": false,
+      "source_provenance": [
+        "data/2026-06-06.json",
+        "data/2026-06-10.json"
+      ]
+    },
+    {
+      "record_id": "iacr:2026/1191",
+      "sample_id": "v05-0055",
+      "title": "Accelerating NTRU+ Key Generation via Hierarchical Batch Inversion",
+      "source": "iacr_eprint",
+      "production_primary_track": "core_pqc_and_implementation",
+      "production_secondary_tracks": [],
+      "production_detail": "ML-KEM / ML-DSA Implementation Security: implementation security",
+      "shadow_primary_track": "core_pqc_and_implementation",
+      "shadow_secondary_tracks": [],
+      "confidence": 0.91,
+      "explanation": "Experimental match for core_pqc_and_implementation; positive terms: kyber, ntru; anchors: kyber, lattice, lwe, ntru, pqc, sis. This is not a production or human-gold label.",
+      "matched_positive_rules": [
+        "core_pqc_and_implementation:kyber",
+        "core_pqc_and_implementation:ntru",
+        "core_pqc_and_implementation:kyber",
+        "core_pqc_and_implementation:lattice",
+        "core_pqc_and_implementation:lwe",
+        "core_pqc_and_implementation:ntru",
+        "core_pqc_and_implementation:pqc",
+        "core_pqc_and_implementation:sis"
+      ],
+      "matched_exclusion_rules": [],
+      "disagreement_category": "exact_match",
+      "human_review_status": "not_reviewed",
+      "TODO_VERIFY": [
+        "user review is required before any label counts as human gold",
+        "shadow output must not be consumed by Daily or Weekly production workflows"
+      ],
+      "selected_annotation_pack": false,
+      "codex_reviewed_primary_track": "core_pqc_and_implementation",
+      "codex_reviewed_secondary_tracks": [],
+      "human_gold_primary_track": null,
+      "human_gold_secondary_tracks": [],
+      "valid_human_gold": false,
+      "metadata_insufficient": false,
+      "source_provenance": [
+        "data/2026-06-10.json"
+      ]
+    },
+    {
+      "record_id": "iacr:2026/1196",
+      "sample_id": "v05-0056",
+      "title": "Grand Danois: Succinct Multilinear Polynomial Commitments over Lattices",
+      "source": "iacr_eprint",
+      "production_primary_track": "module_sis_sanitizable_signatures",
+      "production_secondary_tracks": [],
+      "production_detail": "Module-SIS Primitive: commitment / chameleon hash",
+      "shadow_primary_track": "core_pqc_and_implementation",
+      "shadow_secondary_tracks": [],
+      "confidence": 0.73,
+      "explanation": "Experimental match for core_pqc_and_implementation; positive terms: ntru; anchors: lattice, lwe, ntru, sis. This is not a production or human-gold label.",
+      "matched_positive_rules": [
+        "core_pqc_and_implementation:ntru",
+        "core_pqc_and_implementation:lattice",
+        "core_pqc_and_implementation:lwe",
+        "core_pqc_and_implementation:ntru",
+        "core_pqc_and_implementation:sis"
+      ],
+      "matched_exclusion_rules": [],
+      "disagreement_category": "primary_track_disagreement",
+      "human_review_status": "queued_for_user",
+      "TODO_VERIFY": [
+        "user review is required before any label counts as human gold",
+        "shadow output must not be consumed by Daily or Weekly production workflows"
+      ],
+      "selected_annotation_pack": true,
+      "codex_reviewed_primary_track": "module_sis_sanitizable_signatures",
+      "codex_reviewed_secondary_tracks": [
+        "core_pqc_and_implementation"
+      ],
+      "human_gold_primary_track": null,
+      "human_gold_secondary_tracks": [],
+      "valid_human_gold": false,
+      "metadata_insufficient": false,
+      "source_provenance": [
+        "data/2026-06-10.json"
+      ]
+    },
+    {
+      "record_id": "iacr:2026/1199",
+      "sample_id": "v05-0057",
+      "title": "A Post-Quantum Commitment Scheme from Richelot Isogeny Walks on Superspecial Genus-2 Jacobians",
+      "source": "iacr_eprint",
+      "production_primary_track": "module_sis_sanitizable_signatures",
+      "production_secondary_tracks": [],
+      "production_detail": "Module-SIS Primitive: commitment / chameleon hash",
+      "shadow_primary_track": "irrelevant",
+      "shadow_secondary_tracks": [],
+      "confidence": 0.35,
+      "explanation": "No experimental rule had both a positive term and a lattice/PQC anchor.",
+      "matched_positive_rules": [],
+      "matched_exclusion_rules": [
+        "module_sis_sanitizable_signatures:isogeny"
+      ],
+      "disagreement_category": "production_labeled_shadow_irrelevant",
+      "human_review_status": "queued_for_user",
+      "TODO_VERIFY": [
+        "user review is required before any label counts as human gold",
+        "shadow output must not be consumed by Daily or Weekly production workflows"
+      ],
+      "selected_annotation_pack": true,
+      "codex_reviewed_primary_track": "irrelevant",
+      "codex_reviewed_secondary_tracks": [],
+      "human_gold_primary_track": null,
+      "human_gold_secondary_tracks": [],
+      "valid_human_gold": false,
+      "metadata_insufficient": false,
+      "source_provenance": [
+        "data/2026-06-10.json"
+      ]
+    },
+    {
+      "record_id": "iacr:2026/1200",
+      "sample_id": "v05-0058",
+      "title": "Character Block Encodings for Discrete CKKS: Single-Level LUTs and Low-Depth Arithmetic",
+      "source": "iacr_eprint",
+      "production_primary_track": "core_pqc_and_implementation",
+      "production_secondary_tracks": [],
+      "production_detail": "FHE / Parameter Security: fhe / parameters",
+      "shadow_primary_track": "core_pqc_and_implementation",
+      "shadow_secondary_tracks": [],
+      "confidence": 0.76,
+      "explanation": "Experimental match for core_pqc_and_implementation; positive terms: ckks, fhe; anchors: ckks, fhe, sis. This is not a production or human-gold label.",
+      "matched_positive_rules": [
+        "core_pqc_and_implementation:ckks",
+        "core_pqc_and_implementation:fhe",
+        "core_pqc_and_implementation:ckks",
+        "core_pqc_and_implementation:fhe",
+        "core_pqc_and_implementation:sis"
+      ],
+      "matched_exclusion_rules": [],
+      "disagreement_category": "exact_match",
+      "human_review_status": "not_reviewed",
+      "TODO_VERIFY": [
+        "user review is required before any label counts as human gold",
+        "shadow output must not be consumed by Daily or Weekly production workflows"
+      ],
+      "selected_annotation_pack": false,
+      "codex_reviewed_primary_track": "core_pqc_and_implementation",
+      "codex_reviewed_secondary_tracks": [],
+      "human_gold_primary_track": null,
+      "human_gold_secondary_tracks": [],
+      "valid_human_gold": false,
+      "metadata_insufficient": false,
+      "source_provenance": [
+        "data/2026-06-10.json"
+      ]
+    },
+    {
+      "record_id": "iacr:2026/1208",
+      "sample_id": "v05-0059",
+      "title": "Preimage sampleable function families without discrete Gaussians",
+      "source": "iacr_eprint",
+      "production_primary_track": "irrelevant",
+      "production_secondary_tracks": [],
+      "production_detail": "Other",
+      "shadow_primary_track": "irrelevant",
+      "shadow_secondary_tracks": [],
+      "confidence": 0.35,
+      "explanation": "No experimental rule had both a positive term and a lattice/PQC anchor.",
+      "matched_positive_rules": [],
+      "matched_exclusion_rules": [],
+      "disagreement_category": "exact_match",
+      "human_review_status": "not_reviewed",
+      "TODO_VERIFY": [
+        "user review is required before any label counts as human gold",
+        "shadow output must not be consumed by Daily or Weekly production workflows"
+      ],
+      "selected_annotation_pack": false,
+      "codex_reviewed_primary_track": "module_sis_sanitizable_signatures",
+      "codex_reviewed_secondary_tracks": [
+        "ai4lattice_cryptanalysis"
+      ],
+      "human_gold_primary_track": null,
+      "human_gold_secondary_tracks": [],
+      "valid_human_gold": false,
+      "metadata_insufficient": false,
+      "source_provenance": [
+        "data/2026-06-10.json"
+      ]
+    },
+    {
+      "record_id": "iacr:2026/1209",
+      "sample_id": "v05-0060",
+      "title": "Latency-Aware, High-Throughput Homomorphic AES Evaluation with CKKS",
+      "source": "iacr_eprint",
+      "production_primary_track": "core_pqc_and_implementation",
+      "production_secondary_tracks": [],
+      "production_detail": "FHE / Parameter Security: fhe / parameters",
+      "shadow_primary_track": "core_pqc_and_implementation",
+      "shadow_secondary_tracks": [],
+      "confidence": 0.92,
+      "explanation": "Experimental match for core_pqc_and_implementation; positive terms: ckks, fhe, fully homomorphic encryption, tfhe; anchors: ckks, fhe, tfhe. This is not a production or human-gold label.",
+      "matched_positive_rules": [
+        "core_pqc_and_implementation:ckks",
+        "core_pqc_and_implementation:fhe",
+        "core_pqc_and_implementation:fully homomorphic encryption",
+        "core_pqc_and_implementation:tfhe",
+        "core_pqc_and_implementation:ckks",
+        "core_pqc_and_implementation:fhe",
+        "core_pqc_and_implementation:tfhe"
+      ],
+      "matched_exclusion_rules": [],
+      "disagreement_category": "exact_match",
+      "human_review_status": "not_reviewed",
+      "TODO_VERIFY": [
+        "user review is required before any label counts as human gold",
+        "shadow output must not be consumed by Daily or Weekly production workflows"
+      ],
+      "selected_annotation_pack": false,
+      "codex_reviewed_primary_track": "core_pqc_and_implementation",
+      "codex_reviewed_secondary_tracks": [],
+      "human_gold_primary_track": null,
+      "human_gold_secondary_tracks": [],
+      "valid_human_gold": false,
+      "metadata_insufficient": false,
+      "source_provenance": [
+        "data/2026-06-10.json"
+      ]
+    },
+    {
+      "record_id": "iacr:2026/1219",
+      "sample_id": "v05-0061",
+      "title": "Algorithms for solving the isogeny problem with oriented elliptic curves",
+      "source": "iacr_eprint",
+      "production_primary_track": "core_pqc_and_implementation",
+      "production_secondary_tracks": [],
+      "production_detail": "PQC Systems: deployment / systems",
+      "shadow_primary_track": "irrelevant",
+      "shadow_secondary_tracks": [],
+      "confidence": 0.35,
+      "explanation": "No experimental rule had both a positive term and a lattice/PQC anchor.",
+      "matched_positive_rules": [],
+      "matched_exclusion_rules": [
+        "module_sis_sanitizable_signatures:isogeny"
+      ],
+      "disagreement_category": "production_labeled_shadow_irrelevant",
+      "human_review_status": "not_reviewed",
+      "TODO_VERIFY": [
+        "user review is required before any label counts as human gold",
+        "shadow output must not be consumed by Daily or Weekly production workflows"
+      ],
+      "selected_annotation_pack": false,
+      "codex_reviewed_primary_track": "irrelevant",
+      "codex_reviewed_secondary_tracks": [],
+      "human_gold_primary_track": null,
+      "human_gold_secondary_tracks": [],
+      "valid_human_gold": false,
+      "metadata_insufficient": false,
+      "source_provenance": [
+        "data/2026-06-09.json",
+        "data/2026-06-10.json"
+      ]
+    },
+    {
+      "record_id": "iacr:2026/1221",
+      "sample_id": "v05-0062",
+      "title": "Achieving Shannon Capacity for Computationally Bounded Errors",
+      "source": "iacr_eprint",
+      "production_primary_track": "ai4lattice_cryptanalysis",
+      "production_secondary_tracks": [],
+      "production_detail": "LWE/RLWE/MLWE Cryptanalysis: attack analysis",
+      "shadow_primary_track": "core_pqc_and_implementation",
+      "shadow_secondary_tracks": [],
+      "confidence": 0.68,
+      "explanation": "Experimental match for core_pqc_and_implementation; positive terms: ntru; anchors: lwe, ntru, sis. This is not a production or human-gold label.",
+      "matched_positive_rules": [
+        "core_pqc_and_implementation:ntru",
+        "core_pqc_and_implementation:lwe",
+        "core_pqc_and_implementation:ntru",
+        "core_pqc_and_implementation:sis"
+      ],
+      "matched_exclusion_rules": [],
+      "disagreement_category": "primary_track_disagreement",
+      "human_review_status": "queued_for_user",
+      "TODO_VERIFY": [
+        "user review is required before any label counts as human gold",
+        "shadow output must not be consumed by Daily or Weekly production workflows"
+      ],
+      "selected_annotation_pack": true,
+      "codex_reviewed_primary_track": "irrelevant",
+      "codex_reviewed_secondary_tracks": [],
+      "human_gold_primary_track": null,
+      "human_gold_secondary_tracks": [],
+      "valid_human_gold": false,
+      "metadata_insufficient": false,
+      "source_provenance": [
+        "data/2026-06-09.json",
+        "data/2026-06-10.json"
+      ]
+    }
+  ]
+}
