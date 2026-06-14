@@ -1,0 +1,27 @@
+{
+  "schema_version": 1,
+  "human_gold_metrics_available": false,
+  "human_gold_count": 0,
+  "human_gold_rows_with_predictions": 0,
+  "missing_prediction_count": 0,
+  "missing_prediction_sample_ids": [],
+  "invalid_annotation_count": 0,
+  "validation_issue_count": 0,
+  "validation_issues": [],
+  "annotation_row_count": 25,
+  "annotation_coverage": 0.0,
+  "review_queue_count": 25,
+  "unreviewed_shadow_record_count": 67,
+  "shadow_production_disagreement_counts_without_gold": {
+    "exact_match": 29,
+    "primary_track_disagreement": 25,
+    "production_labeled_shadow_irrelevant": 11,
+    "secondary_track_disagreement": 2
+  },
+  "human_gold_metric_status": "no_human_gold_labels",
+  "shadow_mode_metric_status": "shadow_metrics_not_available_no_gold",
+  "metric_gate": "blocked_until_user_annotation",
+  "production_gate": "blocked_by_multiple_conditions",
+  "shadow_vs_human_gold": null,
+  "production_vs_human_gold": null
+}
