@@ -1,0 +1,35 @@
+{
+  "schema_version": 1,
+  "verification_type": "read_only_git_evidence_audit",
+  "active_version": "0.4.1",
+  "historical_tag": {
+    "name": "v0.4.0",
+    "target": "08c5f07967739ecd008773c4b167cd736848df88",
+    "immutable_target_ok": true
+  },
+  "corrective_tag": {
+    "name": "v0.4.1",
+    "exists": true,
+    "target": "95215b5afe18b1f13463d03929bfe27f15788695",
+    "target_commit_time": "2026-06-12T15:16:10+08:00"
+  },
+  "head": "57a7b3af462d4436e320d1f029e88b41ccb0728a",
+  "origin_main": "57a7b3af462d4436e320d1f029e88b41ccb0728a",
+  "evidence_class": "insufficient_evidence",
+  "durable_daily_evidence_exists": false,
+  "run_identifier": null,
+  "automation_name": null,
+  "target_date": null,
+  "markdown_path": null,
+  "json_path": null,
+  "source_health_summary": null,
+  "validation_result": null,
+  "git_persistence": false,
+  "origin_main_verification": false,
+  "ci_traceability": "CI run 27486931415 failed on Ubuntu and Windows at Run tests",
+  "confidence": "high",
+  "TODO_VERIFY": [
+    "Obtain one identifiable Daily run after the persistence contract is published.",
+    "Retain Markdown, JSON, source health, validation, commit, origin/main, and CI evidence."
+  ]
+}

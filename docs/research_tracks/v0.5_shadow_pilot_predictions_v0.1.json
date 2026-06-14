@@ -3,7 +3,7 @@
   "pilot_type": "manual_offline_non_production",
   "production_logic_changed": false,
   "selected_sample_count": 25,
-  "broader_candidate_pool_count": 62,
+  "broader_candidate_pool_count": 67,
   "human_gold_count": 0,
   "human_gold_metrics": {
     "eligible": false,
@@ -13,33 +13,34 @@
     "false_positive_rate": null,
     "false_negative_rate": null
   },
-  "production_shadow_agreement_count": 27,
-  "production_shadow_disagreement_count": 35,
-  "production_shadow_agreement_rate": 0.43548387096774194,
+  "production_shadow_agreement_count": 29,
+  "production_shadow_disagreement_count": 38,
+  "production_shadow_agreement_rate": 0.43283582089552236,
   "disagreement_counts": {
-    "exact_match": 27,
-    "primary_track_disagreement": 23,
-    "production_labeled_shadow_irrelevant": 10,
+    "exact_match": 29,
+    "primary_track_disagreement": 25,
+    "production_labeled_shadow_irrelevant": 11,
     "secondary_track_disagreement": 2
   },
   "explanation_completeness_rate": 1.0,
   "metadata_insufficiency_rate": 0.0,
   "error_taxonomy": {
-    "shadow_undercoverage": 10,
+    "shadow_undercoverage": 11,
     "track_b_undercoverage": 6,
-    "track_d_bucket_drift": 21
+    "track_d_bucket_drift": 22
   },
   "codex_review_confusion_matrix_not_gold": {
     "ai4lattice_cryptanalysis": {
       "ai4lattice_cryptanalysis": 3,
-      "core_pqc_and_implementation": 6
+      "core_pqc_and_implementation": 6,
+      "irrelevant": 1
     },
     "ambiguous": {
       "core_pqc_and_implementation": 4,
       "irrelevant": 3
     },
     "core_pqc_and_implementation": {
-      "core_pqc_and_implementation": 25
+      "core_pqc_and_implementation": 28
     },
     "irrelevant": {
       "core_pqc_and_implementation": 3,
@@ -47,7 +48,7 @@
     },
     "module_sis_sanitizable_signatures": {
       "module_sis_sanitizable_signatures": 1,
-      "core_pqc_and_implementation": 2,
+      "core_pqc_and_implementation": 3,
       "irrelevant": 1
     },
     "xingye_lu_bridge": {
@@ -164,6 +165,11 @@
       "sample_id": "v05-0062",
       "track": "core_pqc_and_implementation",
       "title": "Achieving Shannon Capacity for Computationally Bounded Errors"
+    },
+    {
+      "sample_id": "v05-0064",
+      "track": "core_pqc_and_implementation",
+      "title": "Advancing Pseudorandom Codes: Beyond Parity Checks and Standard-Model CCA1 Security"
     }
   ],
   "false_negative_cases_not_gold": [
@@ -261,6 +267,16 @@
       "sample_id": "v05-0059",
       "track": "module_sis_sanitizable_signatures",
       "title": "Preimage sampleable function families without discrete Gaussians"
+    },
+    {
+      "sample_id": "v05-0063",
+      "track": "ai4lattice_cryptanalysis",
+      "title": "Towards Post-Quantum Secure eSIM Provisioning Protocols"
+    },
+    {
+      "sample_id": "v05-0064",
+      "track": "module_sis_sanitizable_signatures",
+      "title": "Advancing Pseudorandom Codes: Beyond Parity Checks and Standard-Model CCA1 Security"
     }
   ],
   "ambiguous_cases": [
@@ -337,6 +353,19 @@
       "human_gold_secondary_tracks": [],
       "valid_human_gold": false,
       "metadata_insufficient": false,
+      "available_evidence": {
+        "abstract": "",
+        "taxonomy_tags": [
+          "B02_LWR_SIS_NTRU",
+          "lwe_sis_ntru_foundations"
+        ],
+        "keywords_matched": [
+          "NTRU",
+          "ntru"
+        ],
+        "relevance_label": "C",
+        "relevance_score": 50
+      },
       "source_provenance": [
         "data/2026-05-22.json"
       ]
@@ -372,10 +401,25 @@
       "human_gold_secondary_tracks": [],
       "valid_human_gold": false,
       "metadata_insufficient": false,
+      "available_evidence": {
+        "abstract": "",
+        "taxonomy_tags": [
+          "D01_FHE",
+          "fhe"
+        ],
+        "keywords_matched": [
+          "encryption",
+          "fully homomorphic encryption",
+          "homomorphic encryption"
+        ],
+        "relevance_label": "B",
+        "relevance_score": 70
+      },
       "source_provenance": [
         "data/2026-06-03.json",
         "data/2026-06-08.json",
-        "data/2026-06-10.json"
+        "data/2026-06-10.json",
+        "data/2026-06-13.json"
       ]
     },
     {
@@ -413,6 +457,25 @@
       "human_gold_secondary_tracks": [],
       "valid_human_gold": false,
       "metadata_insufficient": false,
+      "available_evidence": {
+        "abstract": "",
+        "taxonomy_tags": [
+          "B01_LWE_Family",
+          "B02_LWR_SIS_NTRU",
+          "lwe_sis_ntru_foundations"
+        ],
+        "keywords_matched": [
+          "LWE",
+          "lwe",
+          "Ring-LWE",
+          "Ring-SIS",
+          "sis",
+          "SIS",
+          "trapdoor"
+        ],
+        "relevance_label": "A",
+        "relevance_score": 80
+      },
       "source_provenance": [
         "data/2026-05-22.json"
       ]
@@ -448,6 +511,20 @@
       "human_gold_secondary_tracks": [],
       "valid_human_gold": false,
       "metadata_insufficient": false,
+      "available_evidence": {
+        "abstract": "",
+        "taxonomy_tags": [
+          "A01_LLL_BKZ_Reduction",
+          "lattice_reduction_cryptanalysis"
+        ],
+        "keywords_matched": [
+          "bkz",
+          "BKZ",
+          "cryptography"
+        ],
+        "relevance_label": "B",
+        "relevance_score": 65
+      },
       "source_provenance": [
         "data/2026-05-22.json"
       ]
@@ -488,6 +565,23 @@
       "human_gold_secondary_tracks": [],
       "valid_human_gold": false,
       "metadata_insufficient": false,
+      "available_evidence": {
+        "abstract": "",
+        "taxonomy_tags": [
+          "B02_LWR_SIS_NTRU",
+          "C03_Falcon_FNDSA",
+          "lwe_sis_ntru_foundations",
+          "pqc_lattice_schemes"
+        ],
+        "keywords_matched": [
+          "NTRU",
+          "ntru",
+          "NTRU signatures",
+          "signature"
+        ],
+        "relevance_label": "B",
+        "relevance_score": 70
+      },
       "source_provenance": [
         "data/2026-05-22.json"
       ]
@@ -525,6 +619,19 @@
       "human_gold_secondary_tracks": [],
       "valid_human_gold": false,
       "metadata_insufficient": false,
+      "available_evidence": {
+        "abstract": "",
+        "taxonomy_tags": [
+          "B02_LWR_SIS_NTRU",
+          "lwe_sis_ntru_foundations"
+        ],
+        "keywords_matched": [
+          "NTRU",
+          "ntru"
+        ],
+        "relevance_label": "C",
+        "relevance_score": 50
+      },
       "source_provenance": [
         "data/2026-05-22.json"
       ]
@@ -560,6 +667,19 @@
       "human_gold_secondary_tracks": [],
       "valid_human_gold": false,
       "metadata_insufficient": false,
+      "available_evidence": {
+        "abstract": "",
+        "taxonomy_tags": [
+          "A01_LLL_BKZ_Reduction",
+          "lattice_reduction_cryptanalysis"
+        ],
+        "keywords_matched": [
+          "bkz",
+          "BKZ"
+        ],
+        "relevance_label": "C",
+        "relevance_score": 50
+      },
       "source_provenance": [
         "data/2026-05-22.json"
       ]
@@ -606,6 +726,48 @@
       "human_gold_secondary_tracks": [],
       "valid_human_gold": false,
       "metadata_insufficient": false,
+      "available_evidence": {
+        "abstract": "Post-quantum cryptography (PQC) is moving from evaluation to deployment as NIST finalizes standards for ML-KEM, ML-DSA, and SLH-DSA. This survey maps the space from foundations to practice. We first develop a taxonomy across lattice-, code-, hash-, multivariate-, isogeny-, and MPC-in-the-Head families, summarizing security assumptions, cryptanalysis, and standardization status. We then compare performance and communication costs using representative, implementation-grounded measurements, and review hardware acceleration (AVX2, FPGA/ASIC) and implementation security with a focus on side-channel resistance. Building upward, we examine protocol integration (TLS, DNSSEC), PKI and certificate hygiene, and deployment in constrained and high-assurance environments (IoT, cloud, finance, blockchain). We also discuss complementarity with quantum technologies (QKD, QRNGs) and the limits of near-term quantum computing. Throughout, we emphasize crypto-agility, hybrid migration, and evidence-based guidance for operators. We conclude with open problems spanning parameter agility, leakage-resilient implementations, and domain-specific rollout playbooks. This survey aims to be a practical reference for researchers and practitioners planning quantum-safe systems, bridging standards, engineering, and operations.",
+        "taxonomy_tags": [
+          "C01_MLKEM_Kyber",
+          "C02_MLDSA_Dilithium",
+          "E03_Software_Optimization",
+          "E04_Hardware_Optimization",
+          "F01_Side_Channel_Attacks",
+          "G01_NIST_PQC",
+          "G02_TLS_IETF_Deployment",
+          "implementation_security",
+          "pqc_lattice_schemes",
+          "standardization_and_deployment"
+        ],
+        "keywords_matched": [
+          "ASIC",
+          "asic",
+          "AVX2",
+          "avx2",
+          "certificate",
+          "cryptanalysis",
+          "cryptography",
+          "FPGA",
+          "fpga",
+          "kem",
+          "KEM",
+          "ML-DSA",
+          "ml-dsa",
+          "ML-KEM",
+          "ml-kem",
+          "post-quantum",
+          "post-quantum cryptography",
+          "pqc",
+          "PQC",
+          "quantum-safe",
+          "side channel",
+          "side-channel",
+          "TLS"
+        ],
+        "relevance_label": "A",
+        "relevance_score": 100
+      },
       "source_provenance": [
         "data/2026-06-08.json",
         "data/2026-06-10.json"
@@ -648,6 +810,25 @@
       "human_gold_secondary_tracks": [],
       "valid_human_gold": false,
       "metadata_insufficient": false,
+      "available_evidence": {
+        "abstract": "We extend the CDPR's quantum attack from ideal lattices to module lattices over $2^k$-th cyclotomic rings. Using trace orthogonality of the power basis, we decompose a rank-$d$ module into mutually orthogonal rank-$1$ submodules, and apply CDPR's analysis to each independently and return the shortest candidate. The Hermite factor $\\exp(\\tilde{O}(\\sqrt{n}))$ matches the ideal case, with a module reduction factor $α_d=O(1)$ independent of the rank, under a balance hypothesis (proved for Gaussian distribution) automatic for MLWE-distributed bases. To enable a bounded-precision implementation, we replace coordinate-wise rounding with Chinese Remainder Theorem-scaled rounding at totally split primes, reducing the Gram-Schmidt rounding radius from $n/2$ to $\\le 1$ at cost $O(d^2 r n \\log n)$. Finally, we reformulate the CDPR's sign-selection step as a mixed-integer linear program and prove its optimum is no more than 1/2 for all $k$ ($\\approx 0.4407$ for all tested $k\\le 12$, conjecturally universal). This replaces the previous heuristic discrepancy $Θ(\\sqrt{nk})$. All results build on the class number condition $h_k^+=1$ established in Part I of this series.",
+        "taxonomy_tags": [
+          "A01_LLL_BKZ_Reduction",
+          "B01_LWE_Family",
+          "B03_Geometric_Lattice_Problems",
+          "lattice_reduction_cryptanalysis",
+          "lwe_sis_ntru_foundations"
+        ],
+        "keywords_matched": [
+          "Hermite factor",
+          "lattice reduction",
+          "mlwe",
+          "MLWE",
+          "module lattice"
+        ],
+        "relevance_label": "A",
+        "relevance_score": 100
+      },
       "source_provenance": [
         "data/2026-06-08.json"
       ]
@@ -692,6 +873,39 @@
       "human_gold_secondary_tracks": [],
       "valid_human_gold": false,
       "metadata_insufficient": false,
+      "available_evidence": {
+        "abstract": "We present a quantum attack on ML-KEM and related 2-power cyclotomic lattice schemes. Combining with Parts I-III, we provide an algorithm and verify the resulting approximation factor satisfies $γ\\le 21 < q/2=1664.5$ for ML-KEM-1024, with a success probability $\\ge 0.99$. We apply a tower decomposition of the Principal Ideal Problem (PIP) through the chain $\\Q\\subset \\Q(ζ_8)\\subset\\cdots\\subset \\Q(ζ_{2^k})$ which yields a polynomial-time quantum algorithm costing $O(n^3 \\log^2 n)$ gates, $O(n^2 \\log n)$ qubits, and poly$(n)$ classical bit operations. We extend the analysis to Falcon, Hawk, and NTRU over 2-power cyclotomic rings with polynomial-time quantum algorithms.",
+        "taxonomy_tags": [
+          "B01_LWE_Family",
+          "B02_LWR_SIS_NTRU",
+          "B03_Geometric_Lattice_Problems",
+          "C01_MLKEM_Kyber",
+          "C03_Falcon_FNDSA",
+          "C04_Other_Lattice_PQC",
+          "lwe_sis_ntru_foundations",
+          "pqc_lattice_schemes"
+        ],
+        "keywords_matched": [
+          "FALCON",
+          "Falcon",
+          "falcon",
+          "hawk",
+          "Hawk",
+          "kem",
+          "KEM",
+          "LWE",
+          "lwe",
+          "ml-kem",
+          "ML-KEM",
+          "module lattice",
+          "module-lwe",
+          "Module-LWE",
+          "ntru",
+          "NTRU"
+        ],
+        "relevance_label": "A",
+        "relevance_score": 100
+      },
       "source_provenance": [
         "data/2026-05-26.json",
         "data/2026-05-28.json"
@@ -730,6 +944,25 @@
       "human_gold_secondary_tracks": [],
       "valid_human_gold": false,
       "metadata_insufficient": false,
+      "available_evidence": {
+        "abstract": "Fully homomorphic encryption (FHE) supports only additions and multiplications, so FHE-only neural-network inference typically replaces ReLU with polynomials fitted over empirical activation intervals. Such interval fitting often requires higher-degree polynomials to control activation error, incurring homomorphic evaluation costs, while classification is determined by the final logit decision. We revisit ReLU replacement from a decision-aware perspective: given a trained single-hidden-layer ReLU MLP and a specified calibration set, can an HE-friendly low-degree polynomial replace ReLU without retraining while preserving calibration-set decisions? We focus on quadratic replacement, the lowest-degree choice that retains a genuine per-unit nonlinearity. For calibration sets positive-margin separable in the lifted space, we formulate quadratic replacement as a linear separation problem, yielding necessary and sufficient conditions for calibration-lossless replacement and a constructive algorithm for the coefficients. When the positive-margin condition fails -- typically due to a few misclassified calibration samples -- we extend the same geometric framework via reduced convex hulls and Lagrangian-dual soft-margin relaxations, which bound the influence of any single sample, converting the problem into smaller convex quadratic programs that yield approximately feasible coefficients with high empirical agreement on calibration-set decisions. In particular, at the maximal weight cap $μ=1$, the reduced-convex-hull relaxation reduces to the convex-hull separation of the strictly separable case; the relaxation thus continuously extends the exact theory. Under CKKS, the quadratic replacement matches plaintext top-1 accuracy on multiple benchmarks, running 3.7--4.1$\\times$ faster than Remez-7 in the activation module and 1.18--1.68$\\times$ faster end-to-end.",
+        "taxonomy_tags": [
+          "D01_FHE",
+          "fhe"
+        ],
+        "keywords_matched": [
+          "CKKS",
+          "ckks",
+          "encryption",
+          "FHE",
+          "fhe",
+          "fully homomorphic encryption",
+          "homomorphic encryption",
+          "homomorphic evaluation"
+        ],
+        "relevance_label": "B",
+        "relevance_score": 65
+      },
       "source_provenance": [
         "data/2026-05-22.json"
       ]
@@ -771,6 +1004,34 @@
       "human_gold_secondary_tracks": [],
       "valid_human_gold": false,
       "metadata_insufficient": false,
+      "available_evidence": {
+        "abstract": "In this work, we revisit the dual attack and GPV trapdoor sampling, focusing on the lattice Gaussian sampling term, which can be a significant bottleneck in the overall complexity. We show that this sampling step can be quantumly accelerated by combining the lower bound underlying Wang and Ling's analysis of Klein's algorithm with the quantum rejection sampling (QRS) framework proposed by Ozols et al. Specifically, this lower bound gives precisely the pointwise domination condition required for quantum rejection sampling when given coherent oracle access to a truncated Klein proposal distribution, which yields a quantum procedure for preparing the truncated dual $q$-ary lattice Gaussian with a quadratic reduction in the sampling complexity. The truncation radius is chosen so that the truncated distribution is negligibly close to the full lattice Gaussian in total variation distance. Substituting this sampler into the dual attack framework results in reduced overall attack-cost estimates. Compared with Pouly and Shen's modern dual attack under the same parameter choices, our estimates reduce the attack cost by \\(9\\), \\(4\\), and \\(13\\) bits for Kyber-512, Kyber-768, and Kyber-1024, respectively. We also report the corresponding estimates with modulus switching. Finally, by replacing the Markov chain Monte Carlo (MCMC) sampler with the QRS algorithm, we achieve a similar quadratic speedup in the GPV signing process.",
+        "taxonomy_tags": [
+          "A03_Primal_Dual_Hybrid_Attacks",
+          "C01_MLKEM_Kyber",
+          "D01_FHE",
+          "E02_Sampling_Trapdoors",
+          "fhe",
+          "G03_Security_Evaluation_Parameters",
+          "implementation_security",
+          "lattice_reduction_cryptanalysis",
+          "pqc_lattice_schemes",
+          "standardization_and_deployment"
+        ],
+        "keywords_matched": [
+          "attack cost",
+          "dual attack",
+          "Gaussian sampling",
+          "gaussian sampling",
+          "Kyber",
+          "kyber",
+          "modulus switching",
+          "rejection sampling",
+          "trapdoor"
+        ],
+        "relevance_label": "A",
+        "relevance_score": 100
+      },
       "source_provenance": [
         "data/2026-05-28.json"
       ]
@@ -809,6 +1070,30 @@
       "human_gold_secondary_tracks": [],
       "valid_human_gold": false,
       "metadata_insufficient": false,
+      "available_evidence": {
+        "abstract": "Structured data is well handled by gradient-boosted decision trees (GBDT), which are usually trained on vertically partitioned features across mutually distrustful parties. High speed and interpretability make GBDTs popular in finance and healthcare, where neural networks may fall short. Enabling secure computation for GBDTs poses unique challenges, requiring secure record alignment for comparison. Relying on private set intersection (PSI) is a de facto approach. Mistaking PSI for a safety measure actually exposes which record identifiers (IDs) are shared between the datasets. Although circuit-PSI could help, it is costly for generic uses. New ideas are needed to efficiently train in a \"dark forest\". Aiming to hide the IDs, we initiate the study of anonymous GBDT training on split data held by two parties. Dual circuit-PSI in our design lets the parties alternate as receiver to run pick-then-sum over local features. Via oblivious programmable pseudorandom functions, we propagate circuit-PSI outputs as shared state across runs. Avoiding universal alignment, we resolve the neglected dilemma that ID hiding incurs a cost that scales with domain size. Next, we halve the cost of ciphertext packing used to convert single-instruction multiple-data homomorphic encryption from (ring) learning with errors in prior secure GBDT (Usenix Security' 23) and related secure machine-learning computations. Comparative experiments show our protocol remains competitive with leaky approaches in efficiency. Enabling ID-hiding aggregation, our techniques can extend to other vertically partitioned analytics.",
+        "taxonomy_tags": [
+          "B01_LWE_Family",
+          "D01_FHE",
+          "E04_Hardware_Optimization",
+          "F04_Countermeasures",
+          "fhe",
+          "implementation_security",
+          "lwe_sis_ntru_foundations"
+        ],
+        "keywords_matched": [
+          "ciphertext packing",
+          "encryption",
+          "hiding",
+          "high-speed",
+          "homomorphic encryption",
+          "Learning With Errors",
+          "learning with errors",
+          "Learning with Errors"
+        ],
+        "relevance_label": "A",
+        "relevance_score": 100
+      },
       "source_provenance": [
         "data/2026-05-27.json",
         "data/2026-05-28.json"
@@ -848,6 +1133,20 @@
       "human_gold_secondary_tracks": [],
       "valid_human_gold": false,
       "metadata_insufficient": false,
+      "available_evidence": {
+        "abstract": "Time series foundation models (TSFMs) are transforming the forecasting paradigm through large-scale cross-domain pretraining. However, most existing TSFMs remain univariate, and recent efforts to enable cross-variate modeling still operate directly within the raw variate space. This design introduces fundamental limitations in semantic alignment and relational expressivity. Specifically, raw-space group mixing lacks a dedicated mechanism to align heterogeneous physical quantities, while standard non-negative attention fails to capture the complex synergistic and antagonistic interactions ubiquitous in real-world systems. To address these challenges, we propose Falcon-X, decouples variates from the raw space and maps them into a unified latent prototype space. Falcon-X employs a Unified Prototype Diff-Attention mechanism that explicitly evaluates both positive and negative semantic affinities to explicitly align heterogeneous variates. Cross-variate interactions are then efficiently performed within this shared space via Latent Entity Attention, naturally facilitating zero-shot structural transfer. Finally, a Variate Reassembly Router robustly reconstructs variate-specific trajectories via a request-and-dispatch mechanism. Extensive evaluations on the GIFT-Eval and fev-bench benchmarks demonstrate that Falcon-X achieves state-of-the-art forecasting performance, offering a principled and scalable paradigm for complex multivariate environments. Falcon-X is publicly released to support future research.",
+        "taxonomy_tags": [
+          "C03_Falcon_FNDSA",
+          "pqc_lattice_schemes"
+        ],
+        "keywords_matched": [
+          "FALCON",
+          "Falcon",
+          "falcon"
+        ],
+        "relevance_label": "A",
+        "relevance_score": 100
+      },
       "source_provenance": [
         "data/2026-05-27.json"
       ]
@@ -888,6 +1187,36 @@
       "human_gold_secondary_tracks": [],
       "valid_human_gold": false,
       "metadata_insufficient": false,
+      "available_evidence": {
+        "abstract": "Shor's algorithm proved that asymmetric cryptographic protocols based on the integer factorization and discrete logarithm problems are no longer safe in a world with large-scale quantum computers. As a result, Post-Quantum Cryptography (PQC) has been developed over the last few years, seeking cryptographic primitives resistant to quantum attacks. One of the main hard problems underlying PQC schemes is the Learning with Errors (LWE) problem, which is significantly more computationally intensive than its classical predecessors. In this work, we present a Key Encapsulation Mechanism (KEM) based on plain LWE and develop a GPU-oriented implementation using OpenACC. We evaluate the performance of our accelerated application in terms of both time-to-solution and energy-to-solution, considering bare-metal and containerized executions across multiple NVIDIA GPU models and generations. Our implementation achieves significant acceleration across all tested GPU platforms. In particular, on the NVIDIA Grace Hopper Superchip, it attains up to a $208\\times$ speedup over a multithreaded CPU baseline and enables the execution of problem sizes that are impractical on CPU architectures due to memory and synchronization constraints. Energy consumption analysis also shows $\\approx 2\\times$ better efficiency when using the Superchip compared to systems equipped with x86-based CPUs and NVIDIA H100 GPUs. These results highlight the effectiveness of GPU acceleration for computationally demanding LWE-based cryptographic workloads.",
+        "taxonomy_tags": [
+          "B01_LWE_Family",
+          "C01_MLKEM_Kyber",
+          "G01_NIST_PQC",
+          "lwe_sis_ntru_foundations",
+          "pqc_lattice_schemes",
+          "standardization_and_deployment"
+        ],
+        "keywords_matched": [
+          "cryptographic",
+          "cryptography",
+          "kem",
+          "KEM",
+          "key encapsulation",
+          "key encapsulation mechanism",
+          "learning with errors",
+          "Learning with Errors",
+          "Learning With Errors",
+          "lwe",
+          "LWE",
+          "post-quantum",
+          "post-quantum cryptography",
+          "PQC",
+          "pqc"
+        ],
+        "relevance_label": "A",
+        "relevance_score": 100
+      },
       "source_provenance": [
         "data/2026-06-03.json"
       ]
@@ -929,6 +1258,30 @@
       "human_gold_secondary_tracks": [],
       "valid_human_gold": false,
       "metadata_insufficient": false,
+      "available_evidence": {
+        "abstract": "Sixth-generation (6G) wireless networks will underpin ultra-dense Industrial IoT (IIoT) ecosystems in which resource-constrained Far-Edge devices -- autonomous mobile robots, industrial actuators, connected vehicles -- must simultaneously satisfy sub-millisecond latency, $10^{-7}$-class reliability, and decades-long cryptographic security. Current architectures delegate Digital Twin (DT) computation to centralised cloud or Mobile Edge Computing (MEC) servers, incurring prohibitive round-trip latency, and rely on classical public-key cryptography vulnerable to quantum attacks under the harvest-now, decrypt-later (HNDL) threat model. We propose Q-FE, a Quantum-Native 6G Far-Edge architecture integrating three co-designed components: (i) Micro-Digital Twins ($μ$DTs) co-located with 6G base stations and high-capability endpoints; (ii) a Cross-Layer Post-Quantum Key Exchange module embedding CSIDH-512 isogeny key material directly within MAC-layer control frames, exploiting the scheme's uniquely compact keys ($\\le 64$ bytes) to avoid packet fragmentation; and (iii) an Asynchronous Federated Learning (AFL) protocol governed by lightweight DAG smart contracts at MEC nodes, eliminating straggler bottlenecks and preventing model-poisoning and Sybil attacks without exposing raw data. End-to-end simulations (NS-3 + PySyft) demonstrate that Q-FE reduces MAC-layer overhead by 62% versus ML-KEM/Kyber-1024, maintains P99.9 URLLC latency at 0.78 ms, and accelerates global-model convergence by 31% over synchronous Federated Learning. Protocol complexity analysis confirms $O(N \\log R)$ per aggregation round, and $μ$DT handover migration completes in $1.9 \\pm 0.3$ ms across $10^4$ simulated events. A formal threat model confirms resilience against quantum eavesdropping, model-poisoning, and Sybil attacks.",
+        "taxonomy_tags": [
+          "C01_MLKEM_Kyber",
+          "G01_NIST_PQC",
+          "pqc_lattice_schemes",
+          "standardization_and_deployment"
+        ],
+        "keywords_matched": [
+          "cryptographic",
+          "cryptography",
+          "KEM",
+          "kem",
+          "kyber",
+          "Kyber",
+          "ML-KEM",
+          "ml-kem",
+          "post-quantum",
+          "pqc",
+          "PQC"
+        ],
+        "relevance_label": "A",
+        "relevance_score": 100
+      },
       "source_provenance": [
         "data/2026-06-08.json"
       ]
@@ -967,6 +1320,25 @@
       "human_gold_secondary_tracks": [],
       "valid_human_gold": false,
       "metadata_insufficient": false,
+      "available_evidence": {
+        "abstract": "Black-box tests for Fujisaki-Okamoto decapsulation observe the sampled execution seen by the harness, whereas the reencryption computation itself is visible only through the values that reach final key derivation. We study confirmation-code-augmented KEM variants under an honest-reference harness in which the reference encapsulation fixes a hidden final-key point $\\langle good,B,W\\rangle$, with $W$ the confirmation witness. For a $q$-localized system under test, acceptance is bounded by honest correctness error, adversarial aliasing, final-key freshness defects, a hit on the localized suffix list $Q_G(B)$, and $2^{-κ}$. A one-query construction from any predictor of $W$ matches this bound up to the fresh-key coincidence term, so the list-hit event is the black-box obstruction measured by the harness. The list-hit term is bounded either by a cUP-faithful harness certificate, which transfers source confirmation-code unpredictability with a $q$-loss, or by an average conditional min-entropy bound, with separate RawEnt and TailEnt hypotheses for short diagnostic and truncation-tail codes. The same model proves a dependency-cone lower bound for non-certification claims. When the black-box observation of an honest-support harness factors through the confirmation-observable final-key target, every operation outside the support-active cone has a coupled erasure implementation with the same transcript distribution; over any implementation class containing that erasure, soundness and completeness errors of an execution certifier satisfy $α+β\\ge 1$. The ML-KEM and HQC case studies distinguish theorem-covered positive rows, finite-catalog artifact rows, and non-certification rows that carry a cone-inactivity certificate. The security of the standard KEM lines is the construction-level security supplied by the cited source analyses.",
+        "taxonomy_tags": [
+          "C01_MLKEM_Kyber",
+          "G02_TLS_IETF_Deployment",
+          "pqc_lattice_schemes",
+          "standardization_and_deployment"
+        ],
+        "keywords_matched": [
+          "certificate",
+          "encryption",
+          "KEM",
+          "kem",
+          "ML-KEM",
+          "ml-kem"
+        ],
+        "relevance_label": "A",
+        "relevance_score": 80
+      },
       "source_provenance": [
         "data/2026-06-08.json"
       ]
@@ -1003,6 +1375,25 @@
       "human_gold_secondary_tracks": [],
       "valid_human_gold": false,
       "metadata_insufficient": false,
+      "available_evidence": {
+        "abstract": "The hardness of the Learning Parity with Noise (LPN) problem is a foundational assumption in cryptography, forming the basis of constructions ranging from symmetric-key primitives to public-key encryption and beyond. A central open question is whether the average-case hardness of LPN can be based on worst-case complexity assumptions, as has been achieved for the analogous Learning With Errors (LWE) problem. Existing worst-case-to-average-case reductions for LPN [BLVW19, YZ21] rely on statistical smoothing of linear codes, which inherently limits the resulting average-case hardness to noise rates as large as $1/2 - 1/\\mathrm{poly}(n)$, which is insufficient for public-key applications. We explore a new approach towards obtaining such reductions: rather than requiring that random sparse combinations of the rows of the generator matrix of a code be statistically close to uniform, we only require that they be computationally indistinguishable from uniform. This leads to a clean win-win structure: we show that any efficient LPN solver can be transformed into a pair of efficient algorithms $(S, D)$ such that for every matrix $A$ of appropriate dimensions over $\\mathbb{F}_2$, either $S$ decodes the code generated by $A$ from random noise, or $D$ distinguishes random noisy codewords of the dual of this code from uniform. By instantiating this reduction with appropriate parameters, we obtain the average-case hardness of LPN with inverse-polynomial noise rate $n^{-α}$ for any constant $α< 1$, assuming the worst-case simultaneous hardness of decoding a code from random noise and distinguishing random noisy codewords of its dual from uniform. In particular, setting $α= 1/2$, our reduction yields LPN hardness in the parameter regime required for Alekhnovich's construction of public-key encryption [Ale03], a regime that was previously inaccessible via worst-case reductions.",
+        "taxonomy_tags": [
+          "B01_LWE_Family",
+          "lwe_sis_ntru_foundations"
+        ],
+        "keywords_matched": [
+          "cryptography",
+          "encryption",
+          "Learning With Errors",
+          "learning with errors",
+          "Learning with Errors",
+          "LWE",
+          "lwe",
+          "worst-case to average-case"
+        ],
+        "relevance_label": "A",
+        "relevance_score": 85
+      },
       "source_provenance": [
         "data/2026-06-08.json",
         "data/2026-06-10.json"
@@ -1046,8 +1437,33 @@
       "human_gold_secondary_tracks": [],
       "valid_human_gold": false,
       "metadata_insufficient": false,
+      "available_evidence": {
+        "abstract": "Pharmacovigilance systems handle sensitive healthcare and drug-safety data, including adverse event reports and clinical observations. As quantum computing advances, classical public-key cryptographic systems such as RSA and elliptic-curve cryptography may become vulnerable, creating long-term risks for healthcare data that must remain confidential for many years. This paper presents an educational prototype of a post-quantum secure pharmacovigilance data pipeline. The system uses ML-KEM-768 for post-quantum key establishment, HKDF-SHA-256 for deriving an AES key, AES-256-GCM for efficient file encryption, and ML-DSA-65 for digital signatures and tamper detection. The pipeline supports multiple file formats, including TXT, CSV, JSON, and PDF, by treating files as raw bytes and preserving metadata for reconstruction at the receiver. The prototype includes separate hospital, gateway, pharma receiver, attacker, benchmarking, and dashboard components. We evaluate the system using synthetic pharmacovigilance datasets of different sizes and formats. Our results show that ML-KEM adds a small constant overhead, while AES encryption and ML-DSA signing dominate runtime as file size increases. This work is not a production-ready healthcare system, but rather an educational systems-level exploration of how post-quantum cryptographic primitives can be integrated into healthcare-style data pipelines.",
+        "taxonomy_tags": [
+          "C01_MLKEM_Kyber",
+          "C02_MLDSA_Dilithium",
+          "pqc_lattice_schemes"
+        ],
+        "keywords_matched": [
+          "cryptographic",
+          "cryptography",
+          "digital signature",
+          "encryption",
+          "KEM",
+          "kem",
+          "ml-dsa",
+          "ML-DSA",
+          "ml-kem",
+          "ML-KEM",
+          "post-quantum",
+          "signature"
+        ],
+        "relevance_label": "A",
+        "relevance_score": 100
+      },
       "source_provenance": [
-        "data/2026-06-10.json"
+        "data/2026-06-10.json",
+        "data/2026-06-13.json"
       ]
     },
     {
@@ -1077,6 +1493,16 @@
       "human_gold_secondary_tracks": [],
       "valid_human_gold": false,
       "metadata_insufficient": false,
+      "available_evidence": {
+        "abstract": "Cheng and Meng (IEEE Transactions on Information Forensics and Security 2024) introduced server-aided public key authenticated encryption with keyword search (SA-PAEKS). In this short note, we give general attacks that the cloud server (tester) can obtain keyword information from both a ciphertext and a trapdoor.",
+        "taxonomy_tags": [],
+        "keywords_matched": [
+          "encryption",
+          "trapdoor"
+        ],
+        "relevance_label": "C",
+        "relevance_score": 50
+      },
       "source_provenance": [
         "data/2026-05-22.json"
       ]
@@ -1115,6 +1541,21 @@
       "human_gold_secondary_tracks": [],
       "valid_human_gold": false,
       "metadata_insufficient": false,
+      "available_evidence": {
+        "abstract": "We present a method for secure pattern matching over encrypted texts using TFHE. Our approach realizes a fully secure binary search algorithm by leveraging two operational modes of integer-input TFHE. While the BGV-based method of Bonte and Iliashenko (CCSW '20) requires $O(|P| \\cdot |T|)$ secure character comparisons to find a pattern $P$ in a text $T$, our method reduces this to $O(|P|\\log |T|)$ comparisons, achieving improved scalability for large texts. As a result, our method can find a pattern of length 100 in an encrypted text containing genomic data of one million characters in less than 5 minutes, where prior work would require approximately 5 days for the same task. These results highlight the practicality of TFHE and its potential for large-scale secure string search.",
+        "taxonomy_tags": [
+          "D01_FHE",
+          "fhe"
+        ],
+        "keywords_matched": [
+          "BGV",
+          "bgv",
+          "TFHE",
+          "tfhe"
+        ],
+        "relevance_label": "A",
+        "relevance_score": 100
+      },
       "source_provenance": [
         "data/2026-05-22.json"
       ]
@@ -1146,6 +1587,20 @@
       "human_gold_secondary_tracks": [],
       "valid_human_gold": false,
       "metadata_insufficient": false,
+      "available_evidence": {
+        "abstract": "This literature review explores the state-of-the-art advancements in quantum and post-quantum blockchain. The realm of quantum computing is on the rise and will disrupt entire tech industries, including classical cryptography, which is the foundation of blockchain. There has been extensive research on classical cryptosystems (i.e., post-quantum) and their integration with blockchain to create quantum-resistant classical blockchains. We have reviewed the state-of-the-art in these post-quantum blockchains in academic research. But to have forward compatibility with the quantum internet and infrastructure in the future and to have quantum mechanical security, research has been conducted to implement blockchain on quantum technologies and quantum cryptography as well. Consequently, we have explored the current state of research in these quantum solutions, known as quantum blockchains.",
+        "taxonomy_tags": [
+          "G01_NIST_PQC",
+          "standardization_and_deployment"
+        ],
+        "keywords_matched": [
+          "cryptography",
+          "post-quantum",
+          "quantum-resistant"
+        ],
+        "relevance_label": "B",
+        "relevance_score": 60
+      },
       "source_provenance": [
         "data/2026-05-22.json"
       ]
@@ -1182,6 +1637,22 @@
       "human_gold_secondary_tracks": [],
       "valid_human_gold": false,
       "metadata_insufficient": false,
+      "available_evidence": {
+        "abstract": "Discrete CKKS is a promising approach for performing high-throughput homomorphic computations over encrypted discrete data. Although it relies on CKKS, an approximate FHE scheme, as the computation engine, discrete CKKS can achieve exact correctness. The core operation of discrete CKKS is functional bootstrapping, a mechanism which enables evaluating an arbitrary function over a bounded discrete domain by representing it as a lookup table and computing it as part of bootstrapping. Simultaneously, the same procedure enables reducing the input ciphertext noise using Hermite interpolation methods. This noise reduction feature is critical for both supporting arbitrary computations and improving the efficiency of their evaluation, by providing more noise budget between bootstrapping invocations. In this paper, we first show that both state-of-the-art Hermite interpolation noise reduction methods by Bae et al. (ASIACRYPT'24) and Alexandru et al. (CRYPTO'25) have a limited noise reduction ability for distinct structural reasons. We then propose a new method that can efficiently overcome these limitations by using a CKKS-friendly *arbitrary-order* Hermite interpolation. We call this method \"sparse\" trigonometric Hermite interpolation because both constraints and coefficients have convenient sparsity properties, which allow us to achieve efficiency comparable to the fastest prior method by Alexandru et al., while attaining superior noise reduction. In the process, we develop a metric that measures the noise budget between consecutive functional bootstrapping invocations, and use it to compare all methods on equal footing. We implement our new method in OpenFHE and experimentally demonstrate its noise reduction advantage over prior methods.",
+        "taxonomy_tags": [
+          "D01_FHE",
+          "fhe"
+        ],
+        "keywords_matched": [
+          "bootstrapping",
+          "CKKS",
+          "ckks",
+          "FHE",
+          "fhe"
+        ],
+        "relevance_label": "A",
+        "relevance_score": 100
+      },
       "source_provenance": [
         "data/2026-05-28.json"
       ]
@@ -1221,6 +1692,31 @@
       "human_gold_secondary_tracks": [],
       "valid_human_gold": false,
       "metadata_insufficient": false,
+      "available_evidence": {
+        "abstract": "Implementing post-quantum signatures correctly in production cryptographic libraries remains challenging even after standardization. ML-DSA implementations rely on NTT-based polynomial arithmetic with lazy Montgomery reductions, and omitting a reduction may be either a valid optimization or a latent arithmetic defect. In practice, reduction calls are often removed for performance, memory, or embedded-deployment reasons, but the required correctness condition is inter-procedural: a site that appears redundant locally may be load-bearing for a later InvNTT stage. In this work, we present a certificate-backed audit methodology for reduction placement in production ML-DSA implementations. Starting from the conservative pq-crystals topology, our analysis propagates coefficient bounds across the full signing path and classifies reduction sites as redundant or necessary. The key technical ingredient is an exact-integer recovery result for sparse-challenge products, which tightens post-InvNTT bounds from (-Q,Q) to [-τη, τη] and separates safe omissions on sparse-product paths from load-bearing dense-product sites. Applying the methodology to eight ML-DSA libraries, we uncover a previously unreported defect in wolfSSL's memory-optimized WOLFSSL-DILITHIUM-SMALL path, where omitted post-matrix-multiplication reductions cause overflow, non-conformant arithmetic, and signing failure while surviving the implementation's existing KAT tests. The site classifications are backed by replayable SMT-LIB2 certificates, with the core integer-bound lemmas cross-checked in an axiom-free Coq development.",
+        "taxonomy_tags": [
+          "C02_MLDSA_Dilithium",
+          "E01_NTT_Polynomial_Arithmetic",
+          "G02_TLS_IETF_Deployment",
+          "implementation_security",
+          "pqc_lattice_schemes",
+          "standardization_and_deployment"
+        ],
+        "keywords_matched": [
+          "certificate",
+          "cryptographic",
+          "Dilithium",
+          "dilithium",
+          "ml-dsa",
+          "ML-DSA",
+          "NTT",
+          "ntt",
+          "post-quantum",
+          "signature"
+        ],
+        "relevance_label": "A",
+        "relevance_score": 100
+      },
       "source_provenance": [
         "data/2026-05-28.json"
       ]
@@ -1261,6 +1757,35 @@
       "human_gold_secondary_tracks": [],
       "valid_human_gold": false,
       "metadata_insufficient": false,
+      "available_evidence": {
+        "abstract": "The security of structured lattice-based schemes is typically evaluated through the estimated cost of the best known lattice attacks, which in turn guides practical parameter selection. However, existing lattice security estimators typically evaluate different algebraic structures in a largely uniform manner, without fully accounting for the additional structure introduced by the underlying algebra. In this work, we show that such structure can, in certain instances, be exploited through algebra-induced homomorphisms to derive lower-dimensional lattice representations, thereby enabling more efficient attacks and yielding more realistic and in some cases significantly lower security estimates. To this end, we introduce CoNAN, a framework for incorporating algebraic structure into the security estimation of lattice-based constructions. We develop our main analysis in the context of NTRU-like constructions and further show that the framework naturally extends to several structured LWE-based schemes. Our framework reproduces known algebraic attacks against lattice-based constructions such as NTRU Composite~(EUROCRYPT 2001), BQTRU~(PQCrypto 2024), and multivariate LWE~(ANTS 2020). Furthermore, it highlights specific schemes, such as LWE over noncommutative group rings and semidirect products (DCC 2022, DCC 2026), where the underlying algebraic structure degrades concrete security by at least 60 bits relative to standard lattice estimator predictions. Beyond cryptanalysis, our work provides practical guidance for the secure design of future lattice-based schemes, particularly those instantiated over structured or noncommutative algebras.",
+        "taxonomy_tags": [
+          "A04_Tools_Estimators_Benchmarks",
+          "B01_LWE_Family",
+          "B02_LWR_SIS_NTRU",
+          "B03_Geometric_Lattice_Problems",
+          "G03_Security_Evaluation_Parameters",
+          "lattice_reduction_cryptanalysis",
+          "lwe_sis_ntru_foundations",
+          "standardization_and_deployment"
+        ],
+        "keywords_matched": [
+          "concrete security",
+          "cryptanalysis",
+          "estimator",
+          "lattice estimator",
+          "lattice-based",
+          "lwe",
+          "LWE",
+          "ntru",
+          "NTRU",
+          "parameter selection",
+          "security estimation",
+          "standard lattice"
+        ],
+        "relevance_label": "A",
+        "relevance_score": 100
+      },
       "source_provenance": [
         "data/2026-05-28.json"
       ]
@@ -1292,6 +1817,19 @@
       "human_gold_secondary_tracks": [],
       "valid_human_gold": false,
       "metadata_insufficient": false,
+      "available_evidence": {
+        "abstract": "Multi-signatures allow many signers to jointly generate a single (short) signature on a message. In this context, we introduce doubly aggregatable signatures, a new primitive that consists of two sets of signers. It enables a layer-1 signer to create a succinct attestation, called the layer-1 signature, to the set of observed layer-0 signatures on the same message, and publicly aggregate many layer-1 signatures into a succinct certificate. This certificate can be verified against the public keys, the message, and a bit map of “who observed whom”. Our security model captures both the standard notion of unforgeability (i.e., the adversary cannot forge layer-0 or layer-1 signatures on behalf of honest parties), and resistance to equivocation attacks, where the adversary tries to create a layer-1 signature attesting to layer-0 signatures it has not observed. We give two concretely efficient constructions in the random-oracle model, both of which attain constant-size aggregate layer-1 signatures. The first scheme enables verification using only group additions and two pairings, but requires linear-sized layer-1 public keys per party. The second scheme achieves constant-size public keys, but requires a linear number of pairings for verification. By leveraging the random modular subset sum (RMSS) problem, both schemes attain purely algebraic verification, enabling commit-and-prove SNARKs to check succinct predicates on the bit map. A major application of doubly aggregatable signatures is incentivizing timely all-to-all vote dissemination in consensus protocols. We demonstrate the concrete efficiency of our schemes with a prototype implementation.",
+        "taxonomy_tags": [
+          "G02_TLS_IETF_Deployment",
+          "standardization_and_deployment"
+        ],
+        "keywords_matched": [
+          "certificate",
+          "signature"
+        ],
+        "relevance_label": "C",
+        "relevance_score": 40
+      },
       "source_provenance": [
         "data/2026-05-28.json"
       ]
@@ -1329,6 +1867,20 @@
       "human_gold_secondary_tracks": [],
       "valid_human_gold": false,
       "metadata_insufficient": false,
+      "available_evidence": {
+        "abstract": "We present a novel variant of attribute-based encryption (ABE) and predicate encryption (PE) which supports ciphertext updates, called ciphertext-updatable ABE (CU-ABE) and PE (CU-PE). Such a feature enhances the usability of the fine-grained encryption paradigm by allowing controlled updates to the ciphertexts. Updating ciphertexts is carried out via update tokens, which can only be generated by the master secret key holder, yet any party with access to the token can convert the ciphertexts. Apart from defining these new primitives and establishing their security in the indistinguishability-based setting, we provide various constructions with different trade-offs. Concretely, we provide a generic transformation from plain ABE to unidirectional and single-hop CU-ABE using only (inner-product) functional encryption (IPFE), which can be instantiated from plain LWE. Then, we show how to combine this CU-ABE with lockable obfuscation to obtain unidirectional and single-hop CU-PE from LWE. These constructions support bounded number of update tokens. While unidirectional and single-hop updates with bounded number of tokens are sufficient for practical applications, we show that we can extend our results to multi-hop and unbounded token setting by constructing both key-policy and ciphertext-policy CU-ABE schemes for all bounded-depth circuits. Proving security of these multi-hop constructions turned out to be non-trivial, which required us to develop novel techniques and rely on public-coin evasive LWE assumption.",
+        "taxonomy_tags": [
+          "B01_LWE_Family",
+          "lwe_sis_ntru_foundations"
+        ],
+        "keywords_matched": [
+          "encryption",
+          "lwe",
+          "LWE"
+        ],
+        "relevance_label": "B",
+        "relevance_score": 70
+      },
       "source_provenance": [
         "data/2026-05-28.json"
       ]
@@ -1373,6 +1925,42 @@
       "human_gold_secondary_tracks": [],
       "valid_human_gold": false,
       "metadata_insufficient": false,
+      "available_evidence": {
+        "abstract": "The Learning with Errors (LWE) problem underpins many post-quantum cryptosystems, including the NIST-selected CRYSTALS-KYBER and CRYSTALS-DILITHIUM. Recent dual attacks have demonstrated remarkable effectiveness against concrete LWE-based schemes, with some claims suggesting that the security of CRYSTALS-KYBER may be reduced below the NIST threshold. However, the analysis of the score distribution for the correct guess in dual attacks has consistently relied on a flawed independence assumption, leading to variance estimates that are far smaller than the true score variance. This issue has been highlighted in several studies. For instance, Bashiri and Wiemers (JMC 2025) proposed an estimate of the variance, yet our experiments reveal that their approach performs poorly in medium-to-high dimensions. On the other hand, many works have characterized the success probability of dual attacks, but these are either based on the BDD problem or limited to specific attack types, lacking a unified analytical framework for dual attacks on LWE. These theoretical gaps motivate us to develop a unified estimation of the expectation and variance of the score in dual attacks. In this paper, we propose a unified predictive model for the expectation and variance of the score, covering three types of dual attacks: the original dual attack, the dual attack with modulus switching, and the dual attack with decoding (Crypto 2025). Our key observation is that the cosine of the angle between different short vectors follows a normal distribution, which we use to estimate the covariance between individual scores. By decomposing the score expression into a combination of simple distributions, we obtain estimates for the expectation and variance of individual scores, and combine these with the covariance to derive closed-form estimates for the total variance. Experiments show that our estimates achieve high accuracy and outperform previous work in medium-to-high dimensions. We also extend the prediction method of Ducas and Pulles (JOC 2026) for the score of incorrect guesses to a more general setting and, together with our predictive model, provide an extended characterization of the tail behavior.",
+        "taxonomy_tags": [
+          "A03_Primal_Dual_Hybrid_Attacks",
+          "B01_LWE_Family",
+          "C01_MLKEM_Kyber",
+          "C02_MLDSA_Dilithium",
+          "D01_FHE",
+          "fhe",
+          "G03_Security_Evaluation_Parameters",
+          "lattice_reduction_cryptanalysis",
+          "lwe_sis_ntru_foundations",
+          "pqc_lattice_schemes",
+          "standardization_and_deployment"
+        ],
+        "keywords_matched": [
+          "BDD",
+          "bdd",
+          "CRYSTALS-Dilithium",
+          "CRYSTALS-Kyber",
+          "Dilithium",
+          "dilithium",
+          "dual attack",
+          "Kyber",
+          "kyber",
+          "learning with errors",
+          "Learning with Errors",
+          "Learning With Errors",
+          "lwe",
+          "LWE",
+          "modulus switching",
+          "post-quantum"
+        ],
+        "relevance_label": "A",
+        "relevance_score": 100
+      },
       "source_provenance": [
         "data/2026-05-28.json"
       ]
@@ -1409,6 +1997,24 @@
       "human_gold_secondary_tracks": [],
       "valid_human_gold": false,
       "metadata_insufficient": false,
+      "available_evidence": {
+        "abstract": "Private Information Retrieval (PIR) protocols allow a client to recover items from a server-held database without revealing the locations of requested items. In Symmetric PIR (SPIR), the client also learns nothing about the database beyond the requested items. Such schemes are critical for maintaining security in applications such as compromised credential checking, where database elements are considered as sensitive as queries. Existing approaches to building SPIR schemes require running multiple cryptographic primitives in parallel. Moreover, they do not naturally translate to the post-quantum setting, even though practical PIR schemes are typically post-quantum due to their reliance on learning with errors (LWE). This work explores the possibility of deriving SPIR from PIR directly, utilising noise flooding to maintain the privacy of the database. While the common analysis based on the statistical distance leads to impractical parameters, we instead utilise arguments based on the Rényi divergence to obtain significantly improved parameters. We obtain simple single-server SPIR from state-of-the-art LWE-based PIR schemes with polynomial noise dimension and ciphertext modulus (concretely of 64 bits in size). Along the way, we note that practical schemes that utilise preprocessing via client-downloaded offline hints require extra protections for the database. Overall, via an implementation of our approach, we show that post-quantum, round-optimal SPIR schemes can be constructed requiring online communication of 8 MB and server computation costs of 302 ms for a database of 1 million 1 kB elements.",
+        "taxonomy_tags": [
+          "B01_LWE_Family",
+          "lwe_sis_ntru_foundations"
+        ],
+        "keywords_matched": [
+          "cryptographic",
+          "learning with errors",
+          "Learning with Errors",
+          "Learning With Errors",
+          "lwe",
+          "LWE",
+          "post-quantum"
+        ],
+        "relevance_label": "A",
+        "relevance_score": 85
+      },
       "source_provenance": [
         "data/2026-05-28.json"
       ]
@@ -1440,6 +2046,21 @@
       "human_gold_secondary_tracks": [],
       "valid_human_gold": false,
       "metadata_insufficient": false,
+      "available_evidence": {
+        "abstract": "Can a relevant cryptographic primitive, when instantiated over the NIST P-256 elliptic curve, achieve a bit-security level exceeding $128$ bits? Yes. We formally prove that the well-known password-authenticated key exchange protocol $\\mathsf{EKE}$, introduced by Bellovin and Merritt (S&P 1992), achieves a generic security level of $128+\\frac{1}{2}\\log_2(N)$ bits, where $N$ denotes the size of the password space. To prove this result, we introduce and develop a new approach for showing that breaking a cryptosystem with a prescribed advantage requires solving many instances of an underlying computational assumption. To this end, we formulate the Hidden-Target Diffie-Hellman assumption. In this assumption, the adversary is given a set of $N$ Diffie-Hellman challenge instances. The Diffie-Hellman key of one uniformly random instance is designated as the hidden target. The adversary does not know which instance is the target, but may output an arbitrary subset of candidate solutions and succeeds only if this subset contains the target. We formally prove that breaking the Hidden-Target Diffie-Hellman assumption with probability greater than $(k-1)/N$ requires solving at least $k$ of the $N$ Diffie-Hellman instances. We then show that the security of $\\mathsf{EKE}$ in the ideal-cipher model is equivalent to the Hidden-Target Diffie-Hellman assumption. A somewhat surprising consequence of this equivalence is that $\\mathsf{EKE}$ achieves the claimed generic security level of $128+\\frac{1}{2}\\log_2(N)$ bits. Moreover, the equivalence implies that $\\mathsf{EKE}$ remains secure even in settings where the hardness of $\\mathsf{DLOG}$ or $\\mathsf{CDH}$ is weaker than expected: an adversary may still need to solve on the order of hundreds or thousands of discrete logarithm instances in order to succeed, a task that may remain infeasible even for powerful attackers, including those equipped with early quantum computers.",
+        "taxonomy_tags": [
+          "A04_Tools_Estimators_Benchmarks",
+          "G03_Security_Evaluation_Parameters",
+          "lattice_reduction_cryptanalysis",
+          "standardization_and_deployment"
+        ],
+        "keywords_matched": [
+          "concrete security",
+          "cryptographic"
+        ],
+        "relevance_label": "C",
+        "relevance_score": 45
+      },
       "source_provenance": [
         "data/2026-05-28.json"
       ]
@@ -1476,6 +2097,20 @@
       "human_gold_secondary_tracks": [],
       "valid_human_gold": false,
       "metadata_insufficient": false,
+      "available_evidence": {
+        "abstract": "Traitor tracing [Chor-Fiat-Naor; CRYPTO'94] has historically been formalized through the lens of a $\\textit{single}$ trusted authority that samples the master keys and that, therefore, can read every ciphertext on its own. This $\\textit{key escrow}$ problem makes traditional traitor tracing fundamentally incompatible with end-to-end encrypted broadcast networks. In this work, we study introduce $\\textit{multi-authority traitor tracing}$ (MA-TT) [Goyal-Yadugiri; ePrint] a new decentralized model for traitor tracing in which the setup is split across $K$ asynchronous and non-interacting authorities, and a user can decrypt only by combining partial keys from $\\textit{every}$ authority. We require that semantic security holds even when an arbitrary set of authorities is corrupted (as long as some honest partial key remains hidden for every user), and that traceability never accuses a user for whom an honest partial key remains hidden. We design MA-TT by combining any multi-authority attribute-based encryption (MA-ABE) scheme with a new primitive that we introduce, distributed mixed functional encryption (DMFE), a careful decentralization of the mixed functional encryption notion [Goyal-Koppula-Waters; STOC'18]. We construct DMFE from LWE via single-key key-homomorphic private constrained PRFs. Plugging in known MA-ABE schemes, we obtain MA-TT from LWE plus pairings with ciphertext size $K \\cdot \\mathsf{poly}(\\lambda, \\log N)$. As feasibility, we also give MA-TT from any PKE (with ciphertexts of size $K \\cdot N \\cdot \\mathsf{poly}(\\lambda)$) and from any multi-authority functional encryption (with fully succinct parameters).",
+        "taxonomy_tags": [
+          "B01_LWE_Family",
+          "lwe_sis_ntru_foundations"
+        ],
+        "keywords_matched": [
+          "encryption",
+          "LWE",
+          "lwe"
+        ],
+        "relevance_label": "B",
+        "relevance_score": 70
+      },
       "source_provenance": [
         "data/2026-06-03.json"
       ]
@@ -1512,6 +2147,19 @@
       "human_gold_secondary_tracks": [],
       "valid_human_gold": false,
       "metadata_insufficient": false,
+      "available_evidence": {
+        "abstract": "Authenticated Private Information Retrieval (Authenticated PIR) allows the client to retrieve the desired database entry without revealing any information about the query, while safely aborting if malicious behavior by the server is detected (presented in USENIX '23). However, two key challenges remain: existing single-server authenticated PIR schemes with sublinear online communication have not yet been clearly and fully implemented; incremental updates to the digest introduce unnecessary overhead. In this paper, we implement the previously outlined idea and present two complete and concrete single-server authenticated PIR schemes with $O(\\sqrt{N})$ online communication, namely LWE-AuthPIR and DDH-AuthPIR, along with detailed security proofs. Furthermore, we introduce the notion of single-server authenticated and incremental PIR and propose a corresponding concrete construction, LWE-AuthIncPIR. LWE-AuthIncPIR supports immediate updates to individual entries and integrates a communication-efficient row aggregation for periodic update scenarios. When 1\\%-8\\% of the entries in a 1GB database are modified, LWE-AuthIncPIR reduces offline preprocessing computation by 19-88$\\times$ compared to previous incremental update method. In the password breach detection, LWE-AuthIncPIR achieves a 67$\\times$ reduction in preprocessing time and a 2.9$\\times$ reduction in communication overhead.",
+        "taxonomy_tags": [
+          "B01_LWE_Family",
+          "lwe_sis_ntru_foundations"
+        ],
+        "keywords_matched": [
+          "LWE",
+          "lwe"
+        ],
+        "relevance_label": "C",
+        "relevance_score": 55
+      },
       "source_provenance": [
         "data/2026-06-03.json"
       ]
@@ -1554,6 +2202,50 @@
       "human_gold_secondary_tracks": [],
       "valid_human_gold": false,
       "metadata_insufficient": false,
+      "available_evidence": {
+        "abstract": "Advances in quantum computing technology have motivated the development of post-quantum cryptography (PQC) algorithms. HAWK is a new post-quantum digital signature scheme and the only lattice-based candidate selected for Round 3 of the \"Additional Digital Signatures\" phase of the NIST PQC Standardization process. HAWK offers compact key and signature sizes compared to NIST standard ML-DSA (Dilithium), and its simple design avoids the use of floating-point arithmetic unlike NIST standard FN-DSA (FALCON). This makes HAWK very well suited for resource-constrained applications. We perform software runtime profiling of HAWK signature computation and verification on a resource-efficient Vex RISC-V processor core, and identify Keccak permutations and polynomial transformations as the most computationally expensive functions. In this work, we demonstrate light-weight hardware-software co-design of HAWK with these operations accelerated using Vex RISC-V Custom Function Units and accompanying custom instructions. We present multiple design variants with different degrees of acceleration, and our best design achieves $\\approx 3 \\times$ speedup and $\\approx 40\\%$ reduction in area-time-product compared to the baseline when implemented on a Xilinx Artix-7 FPGA.",
+        "taxonomy_tags": [
+          "C02_MLDSA_Dilithium",
+          "C03_Falcon_FNDSA",
+          "C04_Other_Lattice_PQC",
+          "E03_Software_Optimization",
+          "E04_Hardware_Optimization",
+          "G01_NIST_PQC",
+          "implementation_security",
+          "pqc_lattice_schemes",
+          "standardization_and_deployment"
+        ],
+        "keywords_matched": [
+          "co-design",
+          "cryptography",
+          "digital signature",
+          "Dilithium",
+          "dilithium",
+          "FALCON",
+          "falcon",
+          "Falcon",
+          "FN-DSA",
+          "fn-dsa",
+          "FPGA",
+          "fpga",
+          "hawk",
+          "Hawk",
+          "lattice-based",
+          "ml-dsa",
+          "ML-DSA",
+          "NIST PQC",
+          "nist pqc",
+          "post-quantum",
+          "post-quantum cryptography",
+          "PQC",
+          "pqc",
+          "risc-v",
+          "RISC-V",
+          "signature"
+        ],
+        "relevance_label": "A",
+        "relevance_score": 100
+      },
       "source_provenance": [
         "data/2026-06-03.json"
       ]
@@ -1592,6 +2284,21 @@
       "human_gold_secondary_tracks": [],
       "valid_human_gold": false,
       "metadata_insufficient": false,
+      "available_evidence": {
+        "abstract": "A witness pseudorandom function (WPRF) is a PRF which has an additional mode of public evaluation. Given the public key, it can be evaluated publicly if one provides a valid NP witness for that input, while the output remains pseudorandom to anyone without such a witness. WPRFs are powerful objects, and general-purpose constructions are currently only known from assumptions that imply indistinguishability obfuscation. In this work, we construct a WPRF for a specific language related to the Libert-Yung vector commitment (TCC 2010). More specifically, public evaluation of the WPRF on an input is possible if a valid local opening for that input is provided. Our construction relies only on standard assumptions on pairing groups and is fully black-box. We further show that this primitive enables us to solve several open problems in the study of communication-efficient secure computation: - Rate-1 Laconic Oblivious Transfer. We construct a laconic oblivious transfer protocol with total communication complexity $2k+\\mathsf{poly}(\\lambda)$ for $k$ executions. Previously, achieving this efficiency required non-falsifiable assumptions such as evasive LWE (Wee, CRYPTO'24). - Near-optimal Laconic Private Set Intersection. We construct laconic private set intersection for which the amortized communication complexity approaches $\\lambda$ bits per element in the sender's set (assuming each set element is represented by $\\lambda$ bits) and is independent of the receiver's set. This is within a constant factor of the information-theoretic lower bound. - Rate-1 Batch Registration-Based Encryption. We construct a registration-based encryption scheme in which, when the encryptor sends multiple messages to multiple receivers, the ciphertext overhead is only two group elements.",
+        "taxonomy_tags": [
+          "B01_LWE_Family",
+          "lwe_sis_ntru_foundations"
+        ],
+        "keywords_matched": [
+          "commitment",
+          "encryption",
+          "LWE",
+          "lwe"
+        ],
+        "relevance_label": "B",
+        "relevance_score": 70
+      },
       "source_provenance": [
         "data/2026-06-03.json"
       ]
@@ -1634,6 +2341,41 @@
       "human_gold_secondary_tracks": [],
       "valid_human_gold": false,
       "metadata_insufficient": false,
+      "available_evidence": {
+        "abstract": "The Learning With Errors (LWE) problem is a cornerstone of lattice-based cryptography and underpins the security of numerous cryptographic schemes. To enhance efficiency, practitioners often employ sparse secrets in LWE, where the secret vector $\\mathbf{s}$ has a significantly lower Hamming weight than its dimension $n$. While this approach improves performance, it raises security concerns, particularly against side-channel attacks that can leak partial information, or “hints,” about the secret key. In this paper, we revisit the LWE with side information framework on sparse ternary secrets, focusing on approximate/perfect hints of the form $(\\mathbf{v}, l)$ satisfying $l = \\langle \\mathbf{v}, \\mathbf{s} \\rangle + e$, where $e$ is a small error term, or $l = \\langle \\mathbf{v}, \\mathbf{s} \\rangle$. While previous results needed about $n/2$ perfect or modular hints to break LWE in polynomial time, we show empirically, supported by a conservative lower-bound analysis under the Gaussian Approximation Assumption (GAA), that the task can be accomplished with only $O(h \\log_2 h)$ hints, where $h$ denotes the Hamming weight of $\\mathbf{s}$. We demonstrate the effectiveness of our algorithm on practical parameter sets used in Fully Homomorphic Encryption (FHE) schemes. For instance, for a sparse-secret FHE bootstrapping regime with $(n, h) = (2^{15}, 32)$, our method requires only 320 approximate/perfect hints to recover the secret key, compared to the $2^{14}$ perfect/modular hints required by previous methods. For the OpenFHE library with $(n, h) = (2^{15}, 192)$, we heuristically confirm secret-key recovery via $O(h \\log_2 h)$ perfect hints; approximate hints have not yet been validated in this setting. After collecting the necessary hints, our algorithm recovers the secret key in polynomial time in dimension $n$.",
+        "taxonomy_tags": [
+          "B01_LWE_Family",
+          "C04_Other_Lattice_PQC",
+          "D01_FHE",
+          "F01_Side_Channel_Attacks",
+          "fhe",
+          "implementation_security",
+          "lwe_sis_ntru_foundations",
+          "pqc_lattice_schemes"
+        ],
+        "keywords_matched": [
+          "bootstrapping",
+          "cryptographic",
+          "cryptography",
+          "encryption",
+          "fhe",
+          "FHE",
+          "FHE bootstrapping",
+          "fully homomorphic encryption",
+          "homomorphic encryption",
+          "lattice-based",
+          "lattice-based cryptography",
+          "learning with errors",
+          "Learning with Errors",
+          "Learning With Errors",
+          "lwe",
+          "LWE",
+          "side channel",
+          "side-channel"
+        ],
+        "relevance_label": "A",
+        "relevance_score": 100
+      },
       "source_provenance": [
         "data/2026-06-03.json"
       ]
@@ -1674,6 +2416,41 @@
       "human_gold_secondary_tracks": [],
       "valid_human_gold": false,
       "metadata_insufficient": false,
+      "available_evidence": {
+        "abstract": "Blind signatures are a central primitive for privacy-preserving applications such as e-cash, anonymous credentials, and e-voting. In the post-quantum setting, existing constructions typically follow one of two paradigms: either signatures are realized as non-interactive zero-knowledge ($\\mathsf{NIZK}$) proofs of valid underlying signatures, or they are obtained from identification schemes via the Fiat--Shamir transform. In both approaches, the resulting signatures deviate syntactically from standard signatures, incurring additional verification overhead and limiting compatibility with existing infrastructures. In contrast, classical constructions such as blind Schnorr yield signatures that are indistinguishable from ordinary ones. Achieving this property in the lattice setting has remained an open problem. We present $\\mathsf{BRaccoon}$, the first lattice-based blind signature scheme that achieves concurrent security while producing signatures that are syntactically identical to those of a standard signature scheme. Our construction builds on the rejection-free lattice signature scheme $\\mathsf{Raccoon}$, and extends the ``blind signatures from a signature assumption'' paradigm of Fuchsbauer and Wolf (EUROCRYPT~2024) to lattices. At a high level, we introduce blinding at the commitment stage and enforce correct challenge and response generation via linearly homomorphic encryption combined with $\\mathsf{NIZK}$ proofs. As a result, $\\mathsf{BRaccoon}$ signatures preserve the algebraic structure of $\\mathsf{Raccoon}$ signatures while remaining compact: in an optimized instantiation, signatures are $32$ KB, public keys are $10$ KB, and total communication is $847$ KB for up to $2^{32}$ signatures. A central technical challenge stems from discrete Gaussian sampling, where blinding induces a non-trivial distributional shift that precludes direct security reductions. To overcome this, we introduce a modified scheme $\\mathsf{Raccoon}^\\star$ that explicitly captures this shift. We prove that one-more unforgeability of $\\mathsf{BRaccoon}$ tightly reduces to the unforgeability of $\\mathsf{Raccoon}^\\star$, which in turn reduces to that of $\\mathsf{Raccoon}$. For a concrete instantiation, we develop a hybrid proof framework that combines lattice-based zero-knowledge arguments for linear relations with arithmetic zk-SNARKs for hash computations, linked via structured commitments. Our work demonstrates that concurrently secure blind signatures with standard-signature syntax can be achieved in the lattice setting, providing a viable path toward practical and interoperable post-quantum privacy-preserving systems.",
+        "taxonomy_tags": [
+          "advanced_lattice_protocols",
+          "C02_MLDSA_Dilithium",
+          "C04_Other_Lattice_PQC",
+          "D01_FHE",
+          "D02_Lattice_ZK_Commitment",
+          "D03_Lattice_IBE_ABE_PRE_FE",
+          "E02_Sampling_Trapdoors",
+          "fhe",
+          "implementation_security",
+          "pqc_lattice_schemes"
+        ],
+        "keywords_matched": [
+          "commitment",
+          "discrete gaussian",
+          "discrete Gaussian sampling",
+          "encryption",
+          "gaussian sampling",
+          "Gaussian sampling",
+          "homomorphic encryption",
+          "lattice signature",
+          "lattice-based",
+          "lattice-based blind signature",
+          "lattice-based zero-knowledge",
+          "post-quantum",
+          "Raccoon",
+          "raccoon",
+          "signature",
+          "zero-knowledge"
+        ],
+        "relevance_label": "A",
+        "relevance_score": 100
+      },
       "source_provenance": [
         "data/2026-06-03.json"
       ]
@@ -1712,6 +2489,33 @@
       "human_gold_secondary_tracks": [],
       "valid_human_gold": false,
       "metadata_insufficient": false,
+      "available_evidence": {
+        "abstract": "$1+1 \\equiv 0$---while looking strange at first glance, this is certainly true in GF(2). In this paper we propose the two field-like structures \\FlipInts\\ and \\FlipPolys\\ as potential alternative building block for crypographic schemes---in particular in the post-quantum setting. Both structures have $2^d$ elements for some positive integer $d$ and are derived from the natural numbers $N$ in the first case and the univariate polynomial ring GF(2)$[t]$ in the second case. We call the generalization of these two structures FlipFields. In addition, we see examples how they can be used for post-quantum cryptography, in particular Unbalanced Oil and Vinegar, Learning with Errors and Saber. There is also a discussion of cryptographic primitives that are most likely not suitable for FlipFields or at least not easy to tweak. As the structures are very new, this paper also includes a list of OpenProblems.",
+        "taxonomy_tags": [
+          "B01_LWE_Family",
+          "C04_Other_Lattice_PQC",
+          "E01_NTT_Polynomial_Arithmetic",
+          "G01_NIST_PQC",
+          "implementation_security",
+          "lwe_sis_ntru_foundations",
+          "pqc_lattice_schemes",
+          "standardization_and_deployment"
+        ],
+        "keywords_matched": [
+          "cryptographic",
+          "cryptography",
+          "learning with errors",
+          "Learning with Errors",
+          "Learning With Errors",
+          "polynomial ring",
+          "post-quantum",
+          "post-quantum cryptography",
+          "saber",
+          "Saber"
+        ],
+        "relevance_label": "A",
+        "relevance_score": 100
+      },
       "source_provenance": [
         "data/2026-06-03.json"
       ]
@@ -1748,6 +2552,26 @@
       "human_gold_secondary_tracks": [],
       "valid_human_gold": false,
       "metadata_insufficient": false,
+      "available_evidence": {
+        "abstract": "The cost of homomorphic multiplications for existing FHEs to evaluate a degree-$D$ polynomial $f(x)$ at some point $x$ is very expensive. When $x$ is encoded in a plaintext slot having a power-of-two degree $d = 2^\\ell$ and $D \\leq d$, one can efficiently evaluate $f(x)$ with \\(O(\\log d)\\) multiplications using the heuristic algorithms of Okada et al. (ASIACRYPT 2023). However, neither $d = 2^\\ell$ nor $D\\leq d$ is satisfied for most practical FHE parameters, and the Paterson–Stockmeyer (P-S) method with \\(O(\\sqrt{D})\\) multiplications remains the state-of-the-art for $d \\neq 2^\\ell$ or $D>d$. In this paper, we first present a polynomial evaluation algorithm with \\(O(\\log d)\\) multiplications for any non-power-of-two $d$ and $D\\leq d$, which achieves the same asymptotic complexity as that of Okada et al. Then, we gave a polynomial evaluation algorithm with $O(\\sqrt{D/d})$ multiplications for plaintext modulus $p>2$ and $d < D\\leq d\\log p$, which beats the P-S method by a factor of $\\sqrt{d}$ and essentially achieves logarithmic multiplication complexity when $D \\leq d \\cdot \\min(\\log^2 D, \\log p)$. As a major application, we implement our algorithms in experiment to evaluate the digit extraction polynomials of the BGV bootstrapping with parameter $d$ ranging from $14$ to $45$ in HElib, and obtain a \\(1.22-2.16\\times\\) speedup over the state-of-the-art work of Ma et al. (EUROCRYPT 2024).",
+        "taxonomy_tags": [
+          "D01_FHE",
+          "E03_Software_Optimization",
+          "fhe",
+          "implementation_security"
+        ],
+        "keywords_matched": [
+          "BGV",
+          "bgv",
+          "bootstrapping",
+          "FHE",
+          "fhe",
+          "SIMD",
+          "simd"
+        ],
+        "relevance_label": "A",
+        "relevance_score": 100
+      },
       "source_provenance": [
         "data/2026-06-03.json"
       ]
@@ -1787,6 +2611,27 @@
       "human_gold_secondary_tracks": [],
       "valid_human_gold": false,
       "metadata_insufficient": false,
+      "available_evidence": {
+        "abstract": "While deep learning is ubiquitous, centralized pro- cessing exposes sensitive sequential data—such as natural lan- guage—to untrusted servers, forcing an unacceptable privacy- utility trade-off. Fully Homomorphic Encryption (FHE) re- solves this by computing directly on encrypted data. However, standard neural networks ported to FHE suffer from severe latency bottlenecks, particularly because continuous non-linear activations dominate the computational budget. To overcome this, we introduce the Blind Spiking LSTM (BSLSTM), a TFHE-optimized recurrent architecture for privacy-preserving sequential inference. By co-designing the network with the cryptographic framework, we replace expen- sive continuous non-linearities with an efficient multi-threshold programmable bootstrapping paradigm. Evaluated on stan- dard NLP tasks, BSLSTM achieves an inference latency of 5.2 seconds for a 128-token sequence, significantly outperform- ing traditional homomorphic approaches while maintaining competitive accuracy. Operating at an amortized cost of 211 microseconds per bootstrapping operation, our work demon- strates the practical viability of low-latency, fully homomorphic inference for real-world applications.",
+        "taxonomy_tags": [
+          "D01_FHE",
+          "fhe"
+        ],
+        "keywords_matched": [
+          "bootstrapping",
+          "cryptographic",
+          "encryption",
+          "FHE",
+          "fhe",
+          "fully homomorphic encryption",
+          "homomorphic encryption",
+          "programmable bootstrapping",
+          "tfhe",
+          "TFHE"
+        ],
+        "relevance_label": "A",
+        "relevance_score": 100
+      },
       "source_provenance": [
         "data/2026-06-03.json"
       ]
@@ -1823,6 +2668,22 @@
       "human_gold_secondary_tracks": [],
       "valid_human_gold": false,
       "metadata_insufficient": false,
+      "available_evidence": {
+        "abstract": "Asymmetric Message Franking (AMF), proposed by Tyagi et al. at Crypto’19, is a sort of signature scheme that aims to provide privacy-preserving content moderation in secure messaging applications. In this work, we present the first generic construction of AMF using a public-key encryption scheme, a signature scheme, and a ZAP proof system for NP languages. This construction yields the first AMF scheme provably secure in the plain model from standard assumptions, and has tight security. To improve the efficiency of AMF in the plain model, we build a concrete scheme from asymmetric pairing groups based on our idea for the generic construction. It achieves a signature size of 47 group elements, which is significantly smaller than an instantiation of the generic construction. Also, we provide a variant of the generic construction that yields a post-quantum secure AMF scheme in the plain model from a polynomially hard LWE assumption, demonstrating its feasibility.",
+        "taxonomy_tags": [
+          "B01_LWE_Family",
+          "lwe_sis_ntru_foundations"
+        ],
+        "keywords_matched": [
+          "encryption",
+          "lwe",
+          "LWE",
+          "post-quantum",
+          "signature"
+        ],
+        "relevance_label": "B",
+        "relevance_score": 70
+      },
       "source_provenance": [
         "data/2026-06-03.json"
       ]
@@ -1865,6 +2726,38 @@
       "human_gold_secondary_tracks": [],
       "valid_human_gold": false,
       "metadata_insufficient": false,
+      "available_evidence": {
+        "abstract": "We present the quantum-safe Kyber key encapsulation mechanism (ML-KEM) and the Dilithium signature scheme (ML-DSA). We also develop the mathematical background on lattices needed to understand why Kyber and Dilithium are regarded as lattice-based cryptosystems, and we provide insight into the computational hardness of the underlying lattice problems. The exposition is intended to be accessible to senior undergraduate students and beginning graduate students.",
+        "taxonomy_tags": [
+          "C01_MLKEM_Kyber",
+          "C02_MLDSA_Dilithium",
+          "C04_Other_Lattice_PQC",
+          "G01_NIST_PQC",
+          "pqc_lattice_schemes",
+          "standardization_and_deployment"
+        ],
+        "keywords_matched": [
+          "cryptography",
+          "Dilithium",
+          "dilithium",
+          "kem",
+          "KEM",
+          "key encapsulation",
+          "key encapsulation mechanism",
+          "kyber",
+          "Kyber",
+          "lattice-based",
+          "lattice-based cryptography",
+          "ml-dsa",
+          "ML-DSA",
+          "ml-kem",
+          "ML-KEM",
+          "quantum-safe",
+          "signature"
+        ],
+        "relevance_label": "A",
+        "relevance_score": 100
+      },
       "source_provenance": [
         "data/2026-06-03.json"
       ]
@@ -1903,6 +2796,26 @@
       "human_gold_secondary_tracks": [],
       "valid_human_gold": false,
       "metadata_insufficient": false,
+      "available_evidence": {
+        "abstract": "We propose a CKKS-based technique for evaluating arithmetic over finite fields F_{p^r} with small characteristic p under homomorphic encryption. The core of our approach is a pair of complementary ciphertext representations. In the so-called spectral encoding, ciphertext addition and multiplication realize addition and multiplication in the field F_{p^r}. In another encoding, coefficient encoding, the same operations act as slotwise addition and multiplication in the slot algebra (F_p)^r. We show that one can switch homomorphically between these encodings at cost linear in r, and that F_p-linear maps, such as taking p-th powers in F_{p^r}, can be folded into these switches or applied directly in either representation. We complement the construction with theoretical and practical correctness-management techniques. To support unbounded computations, we integrate our framework with existing CKKS bootstrapping techniques and benchmark it against BGV-based implementations of F_{p^r}-arithmetic, a natural baseline for high-throughput finite-field computation. Across the fields we tested, this yields speedups ranging from 1.7x to 178x in amortized multiplication time when bootstrapping is taken into account. The gains are parameter-dependent: roughly speaking, our advantage over BGV increases as the characteristic p becomes smaller and the extension degree r becomes larger.",
+        "taxonomy_tags": [
+          "D01_FHE",
+          "fhe",
+          "I02_Benchmarks"
+        ],
+        "keywords_matched": [
+          "benchmark",
+          "BGV",
+          "bgv",
+          "bootstrapping",
+          "CKKS",
+          "ckks",
+          "encryption",
+          "homomorphic encryption"
+        ],
+        "relevance_label": "A",
+        "relevance_score": 100
+      },
       "source_provenance": [
         "data/2026-06-03.json"
       ]
@@ -1934,6 +2847,25 @@
       "human_gold_secondary_tracks": [],
       "valid_human_gold": false,
       "metadata_insufficient": false,
+      "available_evidence": {
+        "abstract": "Stateful hash-based signature schemes such as XMSS and LMS are increasingly important in post-quantum cryptographic deployments, yet their verification paths remain difficult to fuzz effectively because key generation is substantially more expensive than verification. This paper presents a structured libFuzzer methodology for testing stateful hash-based signature verification in liboqs. The proposed approach uses pre-computed Known Answer Test (KAT) vectors to initialise valid public key, signature, and message buffers once during harness setup, enabling high-throughput mutation of verification inputs without repeated key generation. Using this methodology, we implemented and upstreamed two fuzz harnesses targeting XMSS/XMSSMT and LMS/HSS-LMS verification paths in liboqs. A ten-minute AddressSanitizer-enabled fuzzing campaign identified an OID-confusion heap-buffer-overflow in xmssmt_core_sign_open, assigned CVE-2026-46344. The flaw occurs when attacker-controlled public-key OID bytes derive a parameter set whose expected signature length exceeds the caller-allocated buffer, resulting in an out-of-bounds read during signature parsing. The issue was reproduced using a five-byte minimal crashing input and a standalone C reproducer, disclosed through the Open Quantum Safe coordinated disclosure process, and fixed in liboqs 0.16.0. We further identify a mutation-distribution bias affecting short-input LMS fuzzing and resolve it using a round-robin field-rotation strategy. The resulting framework provides a reproducible and upstream-integrated methodology for adversarial testing of stateful post-quantum signature verification implementations.",
+        "taxonomy_tags": [
+          "G01_NIST_PQC",
+          "G02_TLS_IETF_Deployment",
+          "standardization_and_deployment"
+        ],
+        "keywords_matched": [
+          "cryptographic",
+          "liboqs",
+          "Open Quantum Safe",
+          "post-quantum",
+          "quantum safe",
+          "quantum-safe",
+          "signature"
+        ],
+        "relevance_label": "C",
+        "relevance_score": 50
+      },
       "source_provenance": [
         "data/2026-06-03.json"
       ]
@@ -1965,6 +2897,19 @@
       "human_gold_secondary_tracks": [],
       "valid_human_gold": false,
       "metadata_insufficient": false,
+      "available_evidence": {
+        "abstract": "Revocable and linkable ring signatures ($\\mathsf{RLRS}$) provide a practical mechanism for controllable anonymity, enabling a revocation authority (RA) to mandatorily revoke the anonymity of the real signer. However, existing constructions often rely on the assumption of a fully trusted RA, where the correctness of the revocation is not publicly verifiable rendering honest users vulnerable to undetected framing by a compromised RA. Furthermore, the concrete deployment of these schemes is hindered by the certificate management burden of PKI and computation or communication overheads that scale linearly with the ring size, limiting their real-world applicability. In this paper, we formalize the notion of Identity-Based Revocable and Linkable Ring Signatures ($\\mathsf{IB\\text{-}RLRS}$), inherently eliminating cumbersome PKI management. Our primary contribution is the enhancement of \\textit{revocability} alongside a newly adapted property termed \\textit{revocation soundness}, guaranteeing that the real signer's identity can always be extracted, and that a malicious RA cannot frame honest users who did not participate in the signature generation. We present an efficient instantiation of $\\mathsf{IB\\text{-}RLRS}$ scheme, and prove its security in the random oracle model. Specifically, a novel ring signature construction is proposed, which features a transparent setup and achieves a logarithmic signature size, demonstrating its feasibility for large-scale, privacy-preserving applications.",
+        "taxonomy_tags": [
+          "G02_TLS_IETF_Deployment",
+          "standardization_and_deployment"
+        ],
+        "keywords_matched": [
+          "certificate",
+          "signature"
+        ],
+        "relevance_label": "C",
+        "relevance_score": 40
+      },
       "source_provenance": [
         "data/2026-06-03.json"
       ]
@@ -2006,6 +2951,32 @@
       "human_gold_secondary_tracks": [],
       "valid_human_gold": false,
       "metadata_insufficient": false,
+      "available_evidence": {
+        "abstract": "Proxy re-encryption (PRE) enables a semi-trusted proxy to transform a ciphertext under one key into a ciphertext decryptable under another key without learning the underlying plaintext. Existing lattice-based PRE schemes that achieve security against honest re-encryption attacks (HRAs) typically rely on noise flooding during re-encryption to statistically hide dependencies on the original ciphertext and the re-encryption key. However, noise flooding substantially increases ciphertext noise and often causes significant parameter growth. In this work, we present a single-hop owner-encrypted proxy re-encryption (oePRE) scheme that achieves HRA security without statistical noise flooding. In the owner-encrypted setting, ciphertexts are generated directly by the data owner using her secret key, resulting in a simpler noise structure that facilitates efficient re-encryption. Instead of statistically hiding the inherited ciphertext noise, our construction introduces a small deterministic padding error and relies on computational leakage masking. To formalise this approach, we introduce the noisy error-leakage LWE (NEL-LWE) assumption, which models the hardness of distinguishing LWE samples given a noisy version of the error term. We show that NEL-LWE follows from the recent Leaky-LWE framework of Lai, Swarnakar, and Woo (CiC'25). We further define computational re-encryption simulatability for owner-encrypted PRE and prove that our BGV-style construction achieves HRA security under standard LWE and PRF assumptions. Compared with flooding-based HRA-secure lattice PRE schemes, our approach requires only a small additional padding noise and therefore remains much closer to the parameter regime of the underlying IND-CPA-secure construction. Our work demonstrates that computational leakage masking provides a viable alternative to statistical noise flooding for practical single-hop lattice-based proxy re-encryption.",
+        "taxonomy_tags": [
+          "advanced_lattice_protocols",
+          "B01_LWE_Family",
+          "D01_FHE",
+          "D03_Lattice_IBE_ABE_PRE_FE",
+          "F04_Countermeasures",
+          "fhe",
+          "implementation_security",
+          "lwe_sis_ntru_foundations"
+        ],
+        "keywords_matched": [
+          "BGV",
+          "bgv",
+          "encryption",
+          "hiding",
+          "lattice-based",
+          "lattice-based PRE",
+          "lwe",
+          "LWE",
+          "masking"
+        ],
+        "relevance_label": "A",
+        "relevance_score": 100
+      },
       "source_provenance": [
         "data/2026-06-03.json"
       ]
@@ -2044,6 +3015,26 @@
       "human_gold_secondary_tracks": [],
       "valid_human_gold": false,
       "metadata_insufficient": false,
+      "available_evidence": {
+        "abstract": "ML-KEM (FIPS 203) draws a fresh 32-byte coin at each encapsulation. The shared secret is a deterministic function of the public key and this coin, so a known coin is a recovered key. This is elementary. We ask instead how well the coin's secrecy is protected in practice, and we answer by experiment. On six unmodified libraries (OpenSSL 3.5, wolfSSL 5.9, AWS-LC, Go 1.26, Bouncy Castle 1.83, and CIRCL), and a from-scratch reference, the coin-recovery is reachable in every one; what differs is the guard, from a test-walled package in Go to an ordinary production call in wolfSSL. A second path needs no injection function at all: substituting the generator at build time makes the ordinary encapsulation predictable, while the public re-seed interface correctly refuses to. Outside the validated FIPS-140-3 configuration that most deployments do not yet use, the coin's secrecy rests on convention, not construction. The predictability this permits is externally invisible and parameter-controlled, of the class shown once before in Dual_EC_DRBG. We claim no backdoor; we claim only that the door is reachable, and say so while it is still being closed.",
+        "taxonomy_tags": [
+          "C01_MLKEM_Kyber",
+          "G01_NIST_PQC",
+          "G02_TLS_IETF_Deployment",
+          "pqc_lattice_schemes",
+          "standardization_and_deployment"
+        ],
+        "keywords_matched": [
+          "FIPS 203",
+          "kem",
+          "KEM",
+          "ml-kem",
+          "ML-KEM",
+          "OpenSSL"
+        ],
+        "relevance_label": "A",
+        "relevance_score": 100
+      },
       "source_provenance": [
         "data/2026-06-03.json"
       ]
@@ -2075,6 +3066,22 @@
       "human_gold_secondary_tracks": [],
       "valid_human_gold": false,
       "metadata_insufficient": false,
+      "available_evidence": {
+        "abstract": "The concrete security of multivariate post-quantum signature schemes is coming under increasing scrutiny as the NIST standardisation process for additional signatures approaches its final stages. Among the leading candidates, the security of MAYO and QR-UOV relies on the hardness of the underdetermined multivariate quadratic (MQ) problem. This work revisits Hashimoto's algorithm for solving underdetermined systems of MQ equations, reinterpreting it as a computation of a pseudo-oil subspace. In light of this geometric point of view, we design a new algorithm that, by computing richer pseudo-oil structures, distributes algebraic work across more than two Gröbner Basis steps, subdividing the initial MQ problem into multiple subproblems that can be solved separately, while linearising multiple equations. Optimising a set of discrete parameters, we select the best trade-off between algebraic solving and combinatorial search. Concretely, our approach lowers the cost of the direct attack against Security Level I parameter sets of MAYO and QR-UOV by 8 and 10 bits, respectively.",
+        "taxonomy_tags": [
+          "A04_Tools_Estimators_Benchmarks",
+          "G03_Security_Evaluation_Parameters",
+          "lattice_reduction_cryptanalysis",
+          "standardization_and_deployment"
+        ],
+        "keywords_matched": [
+          "concrete security",
+          "post-quantum",
+          "signature"
+        ],
+        "relevance_label": "C",
+        "relevance_score": 45
+      },
       "source_provenance": [
         "data/2026-06-03.json"
       ]
@@ -2109,6 +3116,21 @@
       "human_gold_secondary_tracks": [],
       "valid_human_gold": false,
       "metadata_insufficient": false,
+      "available_evidence": {
+        "abstract": "Functional adaptor signatures (FAS) are a novel cryptographic primitive introduced at CCS'24 that enable privacy-preserving, fine-grained data-payment exchanges between a seller and a buyer in a trustless and atomic manner. In this setup, the seller holds sensitive data \\(x\\) (e.g., patient records, climate data), and the buyer specifies a function \\(f\\) (e.g., aggregate, sum). FAS guarantees that the buyer learns \\(f(x)\\) (and nothing beyond) if and only if the seller receives payment in blockchain-based tokens. Unlike generic smart contracts, FAS-powered solutions excel in privacy, efficiency, and compatibility with diverse blockchain systems. However, prior FAS constructions were limited to linear functions (where $f$ was linear in $x$), restricting their applicability to more complex and prevalent applications including data analytics and ML model evaluations. In this work, we extend the capabilities of FAS to support higher-degree functions \\((\\textit{deg} \\geq 2)\\), significantly broadening its range of applications. Our core contribution is a novel FAS design leveraging homomorphic encryption, which simultaneously achieves enhanced efficiency and compatibility for general functions. This approach diverges fundamentally from the restricted design in CCS'24 which relied on connections to functional encryption. We implement our homomorphic encryption-based FAS for functions arising in applications such as data analytics and machine learning inference. Remarkably, even for linear functions, our new design achieves an order-of-magnitude improvement in performance compared to CCS'24 constructions. Furthermore, our solutions seamlessly integrate with prominent blockchain systems, requiring only a basic signature verification script on standard transactions, thus ensuring practical deployability. As a conceptual contribution, we introduce the general paradigm of a blockchain-based functional fair exchange (FFE) protocol, rigorously define buyer and seller fairness, and show that FAS implies the general goal of FFE.",
+        "taxonomy_tags": [
+          "D01_FHE",
+          "fhe"
+        ],
+        "keywords_matched": [
+          "cryptographic",
+          "encryption",
+          "homomorphic encryption",
+          "signature"
+        ],
+        "relevance_label": "C",
+        "relevance_score": 40
+      },
       "source_provenance": [
         "data/2026-06-03.json"
       ]
@@ -2145,6 +3167,21 @@
       "human_gold_secondary_tracks": [],
       "valid_human_gold": false,
       "metadata_insufficient": false,
+      "available_evidence": {
+        "abstract": "Permissionless consensus enables parties to perform Byzantine agreement without any a priori knowledge about who is participating, except for an upper bound on the number of participants running the protocol (no PKI, etc.). Since Nakamoto’s Bitcoin paper, it has been widely believed that permissionless consensus is feasible provided the (Byzantine) adversary only controls a fraction of the collective computational power. However, all known protocols, including Nakamoto’s, rely on idealized assumptions (or ad hoc instantiations). Is permissionless consensus possible without such assumptions? Surprising little progress had been made towards solving this open question until the recent result by Ball et al. (Crypto 2024), which showed how to achieve permissionless consensus from proofs of work (PoWs) based on fine-grained complexity assumptions in a setting where a randomness beacon is available to all parties running the protocol. Their work left open whether it is possible to remove the beacon assumption; this question is the focus of our work, which we resolve via a new consensus protocol construction that relies on a novel class of distributed samplers and a common random string (that does not need to be structured or sampled precisely at the onset of the protocol execution). To prove our protocol secure, we revisit the concept of distributed samplers and adapt it to a setting where multiple sampler executions need to be simultaneously secure. To address this challenge we introduce the primitive we call d-wise independent distributed samplers and put forward constructions for such samplers based on DDH and LWE. We then present our consensus protocol via a modular design that utilizes a new moderately hard cryptographic primitive we call multi-verifier signatures of work, a sort of “time-based signature” we construct by composing distributed samplers and (fine-grained complexity-based) PoWs, and which may be of independent interest.",
+        "taxonomy_tags": [
+          "B01_LWE_Family",
+          "lwe_sis_ntru_foundations"
+        ],
+        "keywords_matched": [
+          "cryptographic",
+          "LWE",
+          "lwe",
+          "signature"
+        ],
+        "relevance_label": "B",
+        "relevance_score": 70
+      },
       "source_provenance": [
         "data/2026-06-10.json"
       ]
@@ -2176,6 +3213,22 @@
       "human_gold_secondary_tracks": [],
       "valid_human_gold": false,
       "metadata_insufficient": false,
+      "available_evidence": {
+        "abstract": "Heterogeneous computing platforms increasingly rely on high-throughput data paths spanning CPUs and accelerators, yet most high-speed software ciphers are optimized primarily for CPU-centric execution models. We present AICE, an arithmetic-oriented stream cipher over \\(\\mathbb{Z}/2^{16}\\mathbb{Z}\\) with a 37-word (592-bit) internal state, a nonlinear feedback combining modular addition, multiplication, bitwise OR, and rotation, a 370-round initialization with post-initialization key feed-forward, and periodic blank updates. We analyze AICE under several cryptanalytic models, including differential trail screening, linear approximation over the abelian group \\(\\mathbb{Z}/2^{16}\\mathbb{Z}\\), guess-and-determine state recovery, and exact SMT-based cube evaluation, and find that all observable structural phenomena remain confined to reduced-round settings far below the full initialization. On the AI Cores of Huawei Ascend accelerators, AICE reaches a single-core peak throughput of $114.13$ Gbps on the Ascend 950 and $55.36$ Gbps on the Ascend 910B4, and scales to $1.59$ Tbps on $32$ Ascend 910B4 cores, roughly $54\\times$ the throughput of AES-CTR and $107\\times$ that of SM4-CTR on the same $32$-core configuration; on the ARM Kunpeng 920 it remains in the same throughput class as hardware instruction accelerated AES-CTR.",
+        "taxonomy_tags": [
+          "A03_Primal_Dual_Hybrid_Attacks",
+          "E04_Hardware_Optimization",
+          "implementation_security",
+          "lattice_reduction_cryptanalysis"
+        ],
+        "keywords_matched": [
+          "cryptanalytic",
+          "guess and determine",
+          "high-speed"
+        ],
+        "relevance_label": "C",
+        "relevance_score": 45
+      },
       "source_provenance": [
         "data/2026-06-10.json"
       ]
@@ -2207,6 +3260,20 @@
       "human_gold_secondary_tracks": [],
       "valid_human_gold": false,
       "metadata_insufficient": false,
+      "available_evidence": {
+        "abstract": "We continue the study of fast functions, computable by linear-size circuits, that share useful properties of random functions. Motivated by cryptographic applications, we generalize and improve on previous results in this area, obtaining the following results: - For any constant $t$, we construct a fast $t$-wise independent hash function with algebraic degree $\\log_2 t$ (over $\\mathbb F_2$), simultaneously optimizing both asymptotic circuit size and degree. - We simplify and improve a recent construction (ITCS 2026) of a family of fast codes with fast duals, both meeting the Gilbert-Varshamov bound. Unlike the previous construction, our construction has negligible failure probability, can accommodate general fields and rates, supports a systematic encoding, and admits fast universal encoders. - We strengthen the above to support stronger random-like properties, such as optimal combinatorial list-decoding. This is achieved by constructing, for any constant $t$, a family of fast linear functions that map any $t$ linearly independent inputs to uniform and statistically independent outputs. Prior to our work, this was only known for $t=1$. We demonstrate the usefulness of the above results to cryptography. This includes the first nontrivial protocols for perfectly secure multiparty computation whose circuit complexity scales linearly with the number of parties, as well as protocols for computing encrypted matrix-vector products with optimal asymptotic circuit complexity.",
+        "taxonomy_tags": [
+          "G03_Security_Evaluation_Parameters",
+          "standardization_and_deployment"
+        ],
+        "keywords_matched": [
+          "cryptographic",
+          "cryptography",
+          "failure probability"
+        ],
+        "relevance_label": "C",
+        "relevance_score": 40
+      },
       "source_provenance": [
         "data/2026-06-10.json"
       ]
@@ -2246,6 +3313,37 @@
       "human_gold_secondary_tracks": [],
       "valid_human_gold": false,
       "metadata_insufficient": false,
+      "available_evidence": {
+        "abstract": "The Learning with Errors (LWE) problem is a fundamental hardness assumption underlying most fully homomorphic encryption (FHE) schemes. Given the close relationship between the Learning with Rounding (LWR) and LWE problems, several cryptographic constructions have also been developed based on LWR. In particular, LWR-based schemes often benefit from simpler and more efficient implementations, as they eliminate the need for explicit Gaussian error sampling. Despite these advantages, relatively few FHE constructions in the literature are based on the LWR assumption. At AsiaCCS 2025, Goyal and Gangopadhyay proposed a multi-key FHE (MKFHE) scheme based on LWR that adopts a public-key extension mechanism rather than the conventional ciphertext-extension paradigm. The authors also identified the development of a ring-based analogue as an open future direction. In this work, we present two Ring-LWR-based MKFHE constructions that can be viewed as ring analogues of the LWR-based MKFHE scheme of Goyal and Gangopadhyay. To the best of our knowledge, these are the first MKFHE schemes based on the Ring-LWR assumption. Compared with existing Ring-LWE-based multi-key constructions, our schemes achieve improved compactness in terms of storage and communication costs. We provide concrete parameterizations supporting circuits of varying multiplicative depths and present a proof-of-concept implementation to validate our claims.",
+        "taxonomy_tags": [
+          "B01_LWE_Family",
+          "B02_LWR_SIS_NTRU",
+          "D01_FHE",
+          "fhe",
+          "lwe_sis_ntru_foundations"
+        ],
+        "keywords_matched": [
+          "cryptographic",
+          "encryption",
+          "FHE",
+          "fhe",
+          "fully homomorphic encryption",
+          "homomorphic encryption",
+          "Learning With Errors",
+          "learning with errors",
+          "Learning with Errors",
+          "learning with rounding",
+          "Learning With Rounding",
+          "lwe",
+          "LWE",
+          "lwr",
+          "LWR",
+          "Ring-LWE",
+          "ring-lwe"
+        ],
+        "relevance_label": "A",
+        "relevance_score": 100
+      },
       "source_provenance": [
         "data/2026-06-06.json",
         "data/2026-06-10.json"
@@ -2284,6 +3382,26 @@
       "human_gold_secondary_tracks": [],
       "valid_human_gold": false,
       "metadata_insufficient": false,
+      "available_evidence": {
+        "abstract": "While FHE enables computation on encrypted data, protecting the program itself remains a theoretical and practical challenge, often forcing practitioners to choose between exposing proprietary logic or suffering impractical performance penalties. This paper introduces HEGIDE, an oblivious processor based on the (discrete) Cheon-Kim-Kim-Song (CKKS) scheme that bridges the gap between theoretical Private Function Evaluation (PFE) and its practical realization. Central to our contribution is OSReM (Oblivious Shift Register Memory), a novel memory architecture that circumvents the linear complexity of standard FHE-RAM writes. By treating memory as a shift register, OSReM enables low-latency, constant-time writes without the need for expensive full-memory bootstrapping. HEGIDE leverages a MIMD (Multiple Instruction, Multiple Data) design, utilizing CKKS packing to evaluate distinct program threads in parallel, thus maximizing throughput. While the processor architecture natively supports arbitrary word sizes and instructions, we provide a compiler that manages memory scheduling to abstract the complexity of the shift-register design. We provide a proof-of-concept full implementation of HEGIDE using the OpenFHE library. Experimental results demonstrate the efficiency of our approach, achieving an amortized cycle time of just 6.4 ms for a 16-bit processor - two orders of magnitude faster in throughput than comparable approaches - offering a viable path for the secure execution of proprietary algorithms on encrypted data.",
+        "taxonomy_tags": [
+          "D01_FHE",
+          "E03_Software_Optimization",
+          "fhe",
+          "implementation_security"
+        ],
+        "keywords_matched": [
+          "bootstrapping",
+          "ckks",
+          "CKKS",
+          "constant time",
+          "constant-time",
+          "FHE",
+          "fhe"
+        ],
+        "relevance_label": "A",
+        "relevance_score": 100
+      },
       "source_provenance": [
         "data/2026-06-06.json",
         "data/2026-06-10.json"
@@ -2330,6 +3448,39 @@
       "human_gold_secondary_tracks": [],
       "valid_human_gold": false,
       "metadata_insufficient": false,
+      "available_evidence": {
+        "abstract": "NIST standardised a lattice-based key-encapsulation mechanism (ML-KEM) and a lattice-based digital signature scheme (ML-DSA) in 2024 as post-quantum replacements for classical key establishment and digital signatures. Both compute a forward number-theoretic transform (NTT) over secret-bearing polynomials; the NTT's twiddle constants are a documented fault-attack surface. Published attacks zero every twiddle with a single glitch on ML-KEM key generation, or zero individual twiddles on ML-DSA signing. Countermeasures detect or mask such faults, but none bounds the information that survives when an attacker perturbs twiddles one at a time. This paper supplies that bound as an exact per-layer rank ladder, for arbitrary perturbations $\\zeta_k \\mapsto \\zeta_k^{'}$ with bit-flips included. A single twiddle fault leaks exactly the butterfly length of its layer in secret coefficients, a count attained rather than merely bounded, so one fault per layer pins all but two coefficients for ML-KEM and all but one for ML-DSA. The surviving ambiguity is identical whichever twiddle is hit in each layer: $\\mathrm{span}(e_0, e_1)$ for ML-KEM's incomplete NTT, $\\mathrm{span}(e_0)$ for ML-DSA's complete NTT. No combination of twiddle-perturbation faults, however large, shrinks it further, and this rank-and-kernel characterisation is machine-checked in Lean 4. The per-layer leakage rate it exposes gives countermeasure designers a closed-form budget for allocating protection.",
+        "taxonomy_tags": [
+          "C01_MLKEM_Kyber",
+          "C02_MLDSA_Dilithium",
+          "E01_NTT_Polynomial_Arithmetic",
+          "F03_Fault_Attacks",
+          "implementation_security",
+          "pqc_lattice_schemes"
+        ],
+        "keywords_matched": [
+          "countermeasure",
+          "digital signature",
+          "fault attack",
+          "KEM",
+          "kem",
+          "key encapsulation mechanism",
+          "lattice-based",
+          "lattice-based digital signature",
+          "lattice-based key encapsulation",
+          "ML-DSA",
+          "ml-dsa",
+          "ML-KEM",
+          "ml-kem",
+          "NTT",
+          "ntt",
+          "number theoretic transform",
+          "post-quantum",
+          "signature"
+        ],
+        "relevance_label": "A",
+        "relevance_score": 100
+      },
       "source_provenance": [
         "data/2026-06-06.json",
         "data/2026-06-10.json"
@@ -2371,8 +3522,42 @@
       "human_gold_secondary_tracks": [],
       "valid_human_gold": false,
       "metadata_insufficient": false,
+      "available_evidence": {
+        "abstract": "In KEM-based TLS 1.3 key establishment, the client generates a fresh KEM key pair for each connection, placing key generation on the handshake critical path. For NTRU+, a KEM based on the NTRU problem selected in the Korean Post-Quantum Cryptography (KpqC) competition, the dominant cost in this path is the polynomial inversion needed to compute the public key. Although NTRU+ uses an NTT-friendly ring and performs this inversion in the NTT domain, the routine still decomposes into many base inversions, each requiring a modular inversion computed by exponentiation. To accelerate polynomial inversion in the NTT domain, we collect the modular inversions arising from base inversions into a single stage. This makes it possible to apply Montgomery's trick, reducing the number of modular inversions to one at the cost of sequential product and recovery chains. These chains limit instruction-level parallelism (ILP). To address this dependency bottleneck, we apply hierarchical batching to these exposed denominator inversions, splitting the inputs into $k$ groups to expose independent product chains and recursively batching the resulting $k$ group-product inversions. This preserves the arithmetic cost of Montgomery's trick while improving ILP, thereby reducing cycle counts. We evaluate hierarchical batch inversion across all NTRU+ parameter sets in both C and AVX2. For NTRU+$864$, the parameter set with the largest gains, compared with non-batched polynomial inversion, it reduces polynomial inversion latency by 48.91% in C and 59.57% in AVX2. For key generation, the corresponding speedups are 18.91% in C and 9.34% in AVX2.",
+        "taxonomy_tags": [
+          "B02_LWR_SIS_NTRU",
+          "C01_MLKEM_Kyber",
+          "E01_NTT_Polynomial_Arithmetic",
+          "E03_Software_Optimization",
+          "G01_NIST_PQC",
+          "G02_TLS_IETF_Deployment",
+          "implementation_security",
+          "lwe_sis_ntru_foundations",
+          "pqc_lattice_schemes",
+          "standardization_and_deployment"
+        ],
+        "keywords_matched": [
+          "avx2",
+          "AVX2",
+          "cryptography",
+          "KEM",
+          "kem",
+          "NTRU",
+          "ntru",
+          "NTRU problem",
+          "ntru problem",
+          "ntt",
+          "NTT",
+          "post-quantum",
+          "post-quantum cryptography",
+          "TLS"
+        ],
+        "relevance_label": "A",
+        "relevance_score": 100
+      },
       "source_provenance": [
-        "data/2026-06-10.json"
+        "data/2026-06-10.json",
+        "data/2026-06-13.json"
       ]
     },
     {
@@ -2410,6 +3595,21 @@
       "human_gold_secondary_tracks": [],
       "valid_human_gold": false,
       "metadata_insufficient": false,
+      "available_evidence": {
+        "abstract": "We present Grand Danois, a new post-quantum multilinear polynomial commitment scheme from lattices for polynomials over $\\mathbb{F}_q$ that achieves polylogarithmic $O(\\lambda \\ell)$ verification complexity and proof sizes. We build on the general approach introduced in Hachi (ePrint 2026/156) with two key changes. First, we switch to the vanishing Short Integer Solution (vSIS) assumption to obtain structured public parameters for our commitment scheme and utilize this structure to design an adapted sumcheck protocol amenable to succinct verification. Second, we modify the quadratic relation used in Hachi and Greyhound (CRYPTO 2024) so that it becomes compatible with proving norm bounds using Johnson-Lindenstrauss projections. This is achieved through an adaptation of the structured projection strategy introduced in RoK and Roll (ASIACRYPT 2025). This has the benefit for communication complexity in that proving norm bounds and correct polynomial evaluation are integrated into a single protocol, reducing the number of commitments sent by the prover. Furthermore, we impose additional structure on our random projections to reduce the witness size even more aggressively during each round of recursion without sacrificing verification complexity. Under the vSIS assumption, our construction yields an estimated proof size of roughly $80-90$ KB for $2^{32}$-size polynomial evaluations.",
+        "taxonomy_tags": [
+          "B02_LWR_SIS_NTRU",
+          "lwe_sis_ntru_foundations"
+        ],
+        "keywords_matched": [
+          "commitment",
+          "post-quantum",
+          "Short Integer Solution",
+          "short integer solution"
+        ],
+        "relevance_label": "B",
+        "relevance_score": 75
+      },
       "source_provenance": [
         "data/2026-06-10.json"
       ]
@@ -2443,6 +3643,20 @@
       "human_gold_secondary_tracks": [],
       "valid_human_gold": false,
       "metadata_insufficient": false,
+      "available_evidence": {
+        "abstract": "We present a post-quantum commitment scheme based on kernel-tagged punctured Richelot isogeny walks on superspecial genus-2 Jacobians. The puncturing rule skips every step landing in the product locus, detected by I10 = 0, so honest executions remain in the Jacobian locus and avoid the entry point of known product-locus attacks. Each opening is encoded as a deterministic non-backtracking walk together with a kernel tag recording its action on a small public auxiliary torsion basis. The tag is verified as part of the opening and is kept explicit throughout the security analysis. In particular, scalar-related collisions force equality of the ordered kernel sequence and hence equality of the tag, so any nontrivial binding attack yields a short non-scalar endomorphism. Using spectral bounds for the Richelot graph, we show that puncturing preserves rapid mixing for logarithmic walk lengths, which yields statistical hiding for the tagged punctured scheme. We therefore reduce binding to the Short Richelot Endomorphism Problem (SREP), relate SREP to the One-Endomorphism Problem and, under a standard KLPT2 -style heuristic, to the endomorphism-ring problem. A SageMath prototype based on (2, 2)-Kummer isogenies indicates practical performance at standard security levels.",
+        "taxonomy_tags": [
+          "F04_Countermeasures",
+          "implementation_security"
+        ],
+        "keywords_matched": [
+          "commitment",
+          "hiding",
+          "post-quantum"
+        ],
+        "relevance_label": "C",
+        "relevance_score": 40
+      },
       "source_provenance": [
         "data/2026-06-10.json"
       ]
@@ -2480,6 +3694,24 @@
       "human_gold_secondary_tracks": [],
       "valid_human_gold": false,
       "metadata_insufficient": false,
+      "available_evidence": {
+        "abstract": "Functional bootstrapping has made discrete computation practical in the Cheon-Kim-Kim-Song (CKKS) scheme, but it fuses four distinct tasks - lookup table (LUT) evaluation, modular reduction, noise cleaning, and ciphertext refreshing - into a single rigid pipeline. As a consequence, a generic LUT over an alphabet of size $t$ costs multiplicative depth proportional to $\\log_2 t$ and consumes a large share of the modulus budget during a fixed bootstrapping procedure, invoked each time a LUT evaluation or modular reduction is needed. We show that this pipeline can be unbundled by changing the representation, rather than optimizing the bootstrapping, through block encodings. A finite-alphabet value is carried across several CKKS slots whose coordinates form a basis of functions on the alphabet, typically the characters of a finite abelian group. In such a basis, every LUT is an affine plaintext map evaluated in a single multiplicative level, with depth independent of $t$. Modular reduction comes for free: a block encoding cannot represent anything but a residue, so arithmetic modulo $t$ is native. Because the encoded values lie on the unit circle, noise growth is independent of the alphabet size $t$. In the worst case, it matches the noise growth of standard discrete CKKS on the smallest alphabet $\\mathbb Z_2$, and in more typical workloads it is linear in the number of operations, exponentially better than discrete CKKS at every $t > 2$. Noise cleaning becomes a constant-depth procedure of at most four levels, because the alphabet-dependent part is an LUT and only a fixed-degree-3 smoothstep is nonlinear. Finally, since LUTs are no longer part of the bootstrapping, refreshing reverts to its classical role as a maintenance operation invoked only to regain multiplicative depth. Any CKKS bootstrapping can be used, rather than a constrained and expensive pipeline. We instantiate the framework with several block encodings that make modular addition, modular multiplication, xor or min/max possible with a single CKKS multiplication. We use them to build CRT arithmetic over large composite moduli, and finite-state prefix scans for radix addition and subtraction in depth $4 + \\lceil\\log_2 d\\rceil$ and for equality and comparison in depth $3 + \\lceil\\log_2 d\\rceil$ for $d$ radix digits. For example, a 256-bit CRT modular addition or multiplication consumes a single multiplicative level and has a latency of 4.7 ms on a single thread.",
+        "taxonomy_tags": [
+          "D01_FHE",
+          "E01_NTT_Polynomial_Arithmetic",
+          "fhe",
+          "implementation_security"
+        ],
+        "keywords_matched": [
+          "bootstrapping",
+          "ckks",
+          "CKKS",
+          "modular multiplication",
+          "modular reduction"
+        ],
+        "relevance_label": "A",
+        "relevance_score": 100
+      },
       "source_provenance": [
         "data/2026-06-10.json"
       ]
@@ -2513,8 +3745,19 @@
       "human_gold_secondary_tracks": [],
       "valid_human_gold": false,
       "metadata_insufficient": false,
+      "available_evidence": {
+        "abstract": "We construct preimage sampleable function families on $q$-ary lattices [Gentry–Peikert–Vaikuntanathan, STOC'08] for which preimage sampling reduces to sampling uniform points of unitriangular lattices from simple polytopes: affine linear transforms on the $\\ell_1$ and $\\ell_\\infty$ balls, and a scaled intersection thereof. We build the necessary samplers by adapting an algorithm of [Kannan–Vempala, STOC'97] and improving its analysis. This sampling requires only uniform bits and affine linear transforms on the uniform distribution on $[0,1]$. The collision resistance of these families relies on the short integer solutions problem [Ajtai, STOC'96] in various $\\ell_p$ norms. Considering the Lee metric as the $\\ell_1$ norm in $q$-ary lattices, we answer an open question to construct such families for the Lee metric [Hörmann–van Woerden, CRYPTO'24]. We also answer an open question of [Plançon--Prest, PKC'21] by sampling from polytopes with inradius smaller by a factor almost square root in the lattice rank. We provide a generic framework for constructing preimage sampleable function families from polytopes with sufficient conditions for realising it. While our parameters are worse than prior discrete Gaussian based constructions, such distributions are challenging from a physical security perspective.",
+        "taxonomy_tags": [],
+        "keywords_matched": [
+          "discrete gaussian",
+          "short integer solution"
+        ],
+        "relevance_label": "B",
+        "relevance_score": 65
+      },
       "source_provenance": [
-        "data/2026-06-10.json"
+        "data/2026-06-10.json",
+        "data/2026-06-13.json"
       ]
     },
     {
@@ -2552,8 +3795,34 @@
       "human_gold_secondary_tracks": [],
       "valid_human_gold": false,
       "metadata_insufficient": false,
+      "available_evidence": {
+        "abstract": "Homomorphic Advanced Encryption Standard (AES) evaluation refers to evaluating the AES circuit with a fully homomorphic encryption (FHE)-encrypted secret key. Applications include in particular Transciphering, which converts AES-encrypted data into FHE ciphertexts without exposing the secret key. Existing homomorphic AES evaluations show a clear separation between latency-oriented solutions and throughput-oriented solutions. CKKS-based methods exploit massive SIMD parallelism and focus on throughput by processing many AES blocks in parallel. They are hardly suitable for latency-critical settings. In contrast, TFHE-based methods process a small number of blocks efficiently. They are preferable for low-latency settings, but provide very limited throughput. In this work, we show that AES-CKKS evaluation can achieve both interactive latency and high throughput. Our first variant is optimized for latency and decrypts a single AES block in only 34ms on an NVIDIA RTX-5090. This is more than 4× faster than recent TFHE-based state-of-the-art approaches. Our second variant is based on a new embedding of $\\textrm{GF}(16)$, the finite field with 16 elements, into CKKS message space. It is optimized for throughput and processes up to 2048 AES blocks at once, achieving over 200KB/s throughput (a more than 3.1× improvement over the state-of-the-art CKKS-based approaches), while maintaining latency comparable to TFHE-based methods. To the best of our knowledge, this is the first AES-FHE evaluation algorithm combining good latency and throughput properties, bringing homomorphic outsourcing with AES within reach of real-time applications on constrained devices. Our main ingredients are redundant structures that maximize SIMD utilization, improved algorithms for the SubBytes step (one of them being based on inversion in $\\textrm{GF}(256)$ using CKKS), fusion of linear layers into bootstrapping, and carefully crafted FHE parameters.",
+        "taxonomy_tags": [
+          "D01_FHE",
+          "E03_Software_Optimization",
+          "fhe",
+          "implementation_security"
+        ],
+        "keywords_matched": [
+          "bootstrapping",
+          "ckks",
+          "CKKS",
+          "encryption",
+          "fhe",
+          "FHE",
+          "fully homomorphic encryption",
+          "homomorphic encryption",
+          "simd",
+          "SIMD",
+          "tfhe",
+          "TFHE"
+        ],
+        "relevance_label": "A",
+        "relevance_score": 100
+      },
       "source_provenance": [
-        "data/2026-06-10.json"
+        "data/2026-06-10.json",
+        "data/2026-06-13.json"
       ]
     },
     {
@@ -2585,9 +3854,23 @@
       "human_gold_secondary_tracks": [],
       "valid_human_gold": false,
       "metadata_insufficient": false,
+      "available_evidence": {
+        "abstract": "We introduce WayFinder, a framework for generalizing the Delfs-Galbraith and SuperSolver algorithms for the supersingular isogeny problem. Our framework extends the search for elliptic curves with an orientation by an order containing $\\mathbb{Z}[\\ell \\sqrt{-p}]$ to more general orders, and we derive a cost model for such generalisations. Our cost model not only works in a more general context, but also provides more accurate predictions when applied to SuperSolver. We instantiate WayFinder for orders containing $\\mathbb{Z}[\\ell_1\\sqrt{-\\ell_2p}]$ where $\\ell_i$ are $1$ or primes such that the modular curve $X_0(\\ell_2)$ has genus $0$. We then introduce a low-storage algorithm for computing an isogeny between two oriented supersingular elliptic curves, even when the curves are oriented by distinct orders. Together, these provide an algorithm that improves on the state of the art for solving the isogeny problem, and a cost model with potential applications to parameter selection in isogeny-based cryptography.",
+        "taxonomy_tags": [
+          "G03_Security_Evaluation_Parameters",
+          "standardization_and_deployment"
+        ],
+        "keywords_matched": [
+          "cryptography",
+          "parameter selection"
+        ],
+        "relevance_label": "C",
+        "relevance_score": 40
+      },
       "source_provenance": [
         "data/2026-06-09.json",
-        "data/2026-06-10.json"
+        "data/2026-06-10.json",
+        "data/2026-06-13.json"
       ]
     },
     {
@@ -2622,9 +3905,310 @@
       "human_gold_secondary_tracks": [],
       "valid_human_gold": false,
       "metadata_insufficient": false,
+      "available_evidence": {
+        "abstract": "We study error correction in a computationally bounded world, where errors are introduced by an arbitrary polynomial-time adversarial channel. Recent works construct seeded codes in this model, where the encoding and decoding procedure share a public random seed. They achieve significantly better tradeoffs between rate and error tolerance than what is possible information theoretically for unique decoding, essentially matching the parameters of the best known efficiently list-decodable codes. Over the binary alphabet, however, this is still well short of the optimal Shannon capacity with rate $R \\approx 1 - H_2(p)$ for a $p < 1/4$ fraction of errors. Even heuristic constructions meeting this target were not previously known. We make progress towards this goal. - $\\textbf{Secret-Key Codes.}$ We first study secret-key codes, where the encoder and decoder share a secret key hidden from the adversarial channel. Lipton (STACS '94) constructed one-time secure secret-key codes achieving Shannon capacity in this setting, but it was unknown whether one can get CPA (resp. CCA) security where the adversary may query an encoding oracle (resp. also a decoding oracle). We construct CCA-secure secret-key codes achieving Shannon capacity via pseudorandom codes (PRCs). - $\\textbf{Seeded Codes (Heuristic).}$ We can heuristically upgrade the resulting secret-key codes to seeded codes by publishing an obfuscation of the encoding/decoding procedures with a hard-coded secret key as a seed. Security holds in the ideal obfuscation model. - $\\textbf{Public-key Codes.}$ We also consider public-key codes, where the decoder has a secret key and the encoder has the corresponding public key. We construct such CPA-secure public-key codes achieving Shannon capacity with unique decoding for $p < 1/4$ errors, and list decoding all the way to $p < 1/2$ errors, assuming PRCs and the subexponential security of standard crypto assumptions (e.g., LWE or DDH or QR or DCR). We also show how to get CCA security in the random oracle model. - $\\textbf{List-Decodable Codes.}$ Finally, we consider list-decodable codes that can achieve Shannon capacity for even larger fractions of errors, all the way to $p < 1/2$. We construct such public-key CPA-secure codes in the plain model using PRCs, as well as CCA-secure ones in the random oracle model. Our secret-key and public-key codes meeting Shannon capacity are also simultaneously pseudorandom codes.",
+        "taxonomy_tags": [
+          "B01_LWE_Family",
+          "lwe_sis_ntru_foundations"
+        ],
+        "keywords_matched": [
+          "LWE",
+          "lwe"
+        ],
+        "relevance_label": "C",
+        "relevance_score": 55
+      },
       "source_provenance": [
         "data/2026-06-09.json",
-        "data/2026-06-10.json"
+        "data/2026-06-10.json",
+        "data/2026-06-13.json"
+      ]
+    },
+    {
+      "record_id": "iacr:2026/1225",
+      "sample_id": "v05-0063",
+      "title": "Towards Post-Quantum Secure eSIM Provisioning Protocols",
+      "source": "iacr_eprint",
+      "production_primary_track": "core_pqc_and_implementation",
+      "production_secondary_tracks": [],
+      "production_detail": "PQC Systems: deployment / systems",
+      "shadow_primary_track": "irrelevant",
+      "shadow_secondary_tracks": [],
+      "confidence": 0.35,
+      "explanation": "No experimental rule had both a positive term and a lattice/PQC anchor.",
+      "matched_positive_rules": [],
+      "matched_exclusion_rules": [],
+      "disagreement_category": "production_labeled_shadow_irrelevant",
+      "human_review_status": "not_reviewed",
+      "TODO_VERIFY": [
+        "user review is required before any label counts as human gold",
+        "shadow output must not be consumed by Daily or Weekly production workflows"
+      ],
+      "selected_annotation_pack": false,
+      "codex_reviewed_primary_track": "ai4lattice_cryptanalysis",
+      "codex_reviewed_secondary_tracks": [],
+      "human_gold_primary_track": null,
+      "human_gold_secondary_tracks": [],
+      "valid_human_gold": false,
+      "metadata_insufficient": false,
+      "available_evidence": {
+        "abstract": "The eSIM specification enables remote SIM provisioning without the need to hand out a physical SIM card. Instead of a physical SIM card, the subscriber downloads a SIM profile, which contains a subscriber's identity and authentication key material, to their embedded UICC, a discrete, embedded chip in the user's phone. This provisioning process is specified in the remote SIM provisioning (RSP) protocol and is secured through contemporary public-key cryptography. However, the potential advent of general-purpose quantum computers threatens the security of RSP. This paper provides a quantum threat analysis of the RSP protocol, considering both Harvest Now, Decrypt Later attacks and active quantum attacks. To alleviate this threat, this paper introduces PQC-RSP, a post quantum secure version of the RSP protocol. The main challenge we address is the introduction of key encapsulation mechanisms (KEMs) into the RSP protocol, both in a PQC-only and hybrid version, and the security implications of this modification. We prove the security of PQC-RSP and review the performance overhead introduced through the usage of post quantum cryptography.",
+        "taxonomy_tags": [
+          "E04_Hardware_Optimization",
+          "G01_NIST_PQC",
+          "implementation_security",
+          "standardization_and_deployment"
+        ],
+        "keywords_matched": [
+          "chip",
+          "cryptography",
+          "key encapsulation",
+          "post quantum",
+          "post quantum cryptography",
+          "post-quantum",
+          "post-quantum cryptography",
+          "PQC",
+          "pqc"
+        ],
+        "relevance_label": "C",
+        "relevance_score": 50
+      },
+      "source_provenance": [
+        "data/2026-06-13.json"
+      ]
+    },
+    {
+      "record_id": "iacr:2026/1228",
+      "sample_id": "v05-0064",
+      "title": "Advancing Pseudorandom Codes: Beyond Parity Checks and Standard-Model CCA1 Security",
+      "source": "iacr_eprint",
+      "production_primary_track": "module_sis_sanitizable_signatures",
+      "production_secondary_tracks": [],
+      "production_detail": "Module-SIS Primitive: commitment / chameleon hash",
+      "shadow_primary_track": "core_pqc_and_implementation",
+      "shadow_secondary_tracks": [],
+      "confidence": 0.68,
+      "explanation": "Experimental match for core_pqc_and_implementation; positive terms: ntru; anchors: lwe, ntru, sis. This is not a production or human-gold label.",
+      "matched_positive_rules": [
+        "core_pqc_and_implementation:ntru",
+        "core_pqc_and_implementation:lwe",
+        "core_pqc_and_implementation:ntru",
+        "core_pqc_and_implementation:sis"
+      ],
+      "matched_exclusion_rules": [],
+      "disagreement_category": "primary_track_disagreement",
+      "human_review_status": "not_reviewed",
+      "TODO_VERIFY": [
+        "user review is required before any label counts as human gold",
+        "shadow output must not be consumed by Daily or Weekly production workflows"
+      ],
+      "selected_annotation_pack": false,
+      "codex_reviewed_primary_track": "module_sis_sanitizable_signatures",
+      "codex_reviewed_secondary_tracks": [],
+      "human_gold_primary_track": null,
+      "human_gold_secondary_tracks": [],
+      "valid_human_gold": false,
+      "metadata_insufficient": false,
+      "available_evidence": {
+        "abstract": "Pseudorandom codes (PRCs) are error-correcting codes whose codewords are computationally indistinguishable from uniform random strings, a primitive motivated by the need to robustly watermark generative AI models. While recent breakthroughs have established the feasibility of PRCs, critical challenges remain regarding the diversity of their underlying cryptographic assumptions and their security against active adversaries. This work advances the study of PRCs on two complementary fronts: structural diversity and advanced security. On the structural side, we propose a novel PRC template that departs from the prior one based on sparse parity-check trapdoors. We introduce a new LPN-type assumption, formalized as Dense-Planted LPN, which postulates $(\\mathbf{M}\\mathbf{T}, \\ \\mathbf{M}\\mathbf{T}\\mathbf{s}+\\mathbf{e})\\ \\approx_c\\ (\\mathbf{M}\\mathbf{T}, \\ \\mathbf{u})$, where $\\mathbf{T}$ is a random dense matrix and $\\mathbf{M}$ is sampled from a distribution containing a planted structure. This hidden structure enables a completely new decoding mechanism based on a local-window search rather than global parity checks. Notably, this template provides a viable path toward constructing PRCs from assumptions beyond code-based ones, including Learning with Errors (LWE) assumptions. On the security side, we construct the first public-key PRC secure against pre-challenge chosen-codeword attacks (CCA1) in the standard model. In realistic watermarking deployments where detectors are exposed as public services, CCA security is essential. However, prior CCA-secure PRCs were only achievable in the random oracle model. By formally introducing and instantiating a robust tag-based equivocal bit commitment scheme combined with robust hinting PRGs, we demonstrate that CCA1 security can be achieved in the standard model without sacrificing decoding robustness.",
+        "taxonomy_tags": [
+          "B01_LWE_Family",
+          "lwe_sis_ntru_foundations"
+        ],
+        "keywords_matched": [
+          "commitment",
+          "cryptographic",
+          "Learning With Errors",
+          "Learning with Errors",
+          "learning with errors",
+          "LWE",
+          "lwe",
+          "trapdoor"
+        ],
+        "relevance_label": "A",
+        "relevance_score": 100
+      },
+      "source_provenance": [
+        "data/2026-06-13.json"
+      ]
+    },
+    {
+      "record_id": "iacr:2026/1230",
+      "sample_id": "v05-0065",
+      "title": "Formula Freshness for Staged Hybrid Authenticated Key Exchange",
+      "source": "iacr_eprint",
+      "production_primary_track": "core_pqc_and_implementation",
+      "production_secondary_tracks": [],
+      "production_detail": "ML-KEM / ML-DSA Implementation Security: implementation security",
+      "shadow_primary_track": "core_pqc_and_implementation",
+      "shadow_secondary_tracks": [],
+      "confidence": 0.81,
+      "explanation": "Experimental match for core_pqc_and_implementation; positive terms: kyber, ml-kem; anchors: kyber, lattice, ml-kem, pqc. This is not a production or human-gold label.",
+      "matched_positive_rules": [
+        "core_pqc_and_implementation:kyber",
+        "core_pqc_and_implementation:ml-kem",
+        "core_pqc_and_implementation:kyber",
+        "core_pqc_and_implementation:lattice",
+        "core_pqc_and_implementation:ml-kem",
+        "core_pqc_and_implementation:pqc"
+      ],
+      "matched_exclusion_rules": [],
+      "disagreement_category": "exact_match",
+      "human_review_status": "not_reviewed",
+      "TODO_VERIFY": [
+        "user review is required before any label counts as human gold",
+        "shadow output must not be consumed by Daily or Weekly production workflows"
+      ],
+      "selected_annotation_pack": false,
+      "codex_reviewed_primary_track": "core_pqc_and_implementation",
+      "codex_reviewed_secondary_tracks": [],
+      "human_gold_primary_track": null,
+      "human_gold_secondary_tracks": [],
+      "valid_human_gold": false,
+      "metadata_insufficient": false,
+      "available_evidence": {
+        "abstract": "Hybrid post-quantum migration is entering deployed handshake designs, but hybrid KEM security protects only one shared-secret input. It does not by itself say whether handshake, application, exporter, or resumption material remains pseudorandom after branch reveals, stage-key reveals, selective corruptions, or late corruptions. We characterize these staged claims through branch-formula freshness: each stage receives a monotone formula over branch exposure, authentication freshness, transcript binding, KDF ancestry, and explicit non-reveal atoms. Secrecy follows by replacing a surviving branch contribution and then using a labelled HKDF/PRF-style target-hiding argument along a fresh KDF cut; agreement follows separately from authentication binding and injective transcript representation. We also give selector-local accounting, where a fixed admissible witness selector determines which surviving branches and KDF cuts are charged. For scoped TLS 1.3 ECDHE--ML-KEM 1-RTT, we identify the branch-replacement, HKDF-path, and binding assumptions that imply concrete preservation bounds for handshake, application, exporter, and resumption targets.",
+        "taxonomy_tags": [
+          "C01_MLKEM_Kyber",
+          "F04_Countermeasures",
+          "G02_TLS_IETF_Deployment",
+          "implementation_security",
+          "pqc_lattice_schemes",
+          "standardization_and_deployment"
+        ],
+        "keywords_matched": [
+          "hiding",
+          "kem",
+          "KEM",
+          "ML-KEM",
+          "ml-kem",
+          "post-quantum",
+          "TLS"
+        ],
+        "relevance_label": "A",
+        "relevance_score": 85
+      },
+      "source_provenance": [
+        "data/2026-06-13.json"
+      ]
+    },
+    {
+      "record_id": "iacr:2026/1231",
+      "sample_id": "v05-0066",
+      "title": "The Best of Both Worlds: Hybrid Authenticated Key Exchange for QKD(N) without Signatures",
+      "source": "iacr_eprint",
+      "production_primary_track": "core_pqc_and_implementation",
+      "production_secondary_tracks": [],
+      "production_detail": "ML-KEM / ML-DSA Implementation Security: implementation security",
+      "shadow_primary_track": "core_pqc_and_implementation",
+      "shadow_secondary_tracks": [],
+      "confidence": 0.86,
+      "explanation": "Experimental match for core_pqc_and_implementation; positive terms: kyber, ml-kem; anchors: kyber, lattice, ml-kem, pqc, sis. This is not a production or human-gold label.",
+      "matched_positive_rules": [
+        "core_pqc_and_implementation:kyber",
+        "core_pqc_and_implementation:ml-kem",
+        "core_pqc_and_implementation:kyber",
+        "core_pqc_and_implementation:lattice",
+        "core_pqc_and_implementation:ml-kem",
+        "core_pqc_and_implementation:pqc",
+        "core_pqc_and_implementation:sis"
+      ],
+      "matched_exclusion_rules": [],
+      "disagreement_category": "exact_match",
+      "human_review_status": "not_reviewed",
+      "TODO_VERIFY": [
+        "user review is required before any label counts as human gold",
+        "shadow output must not be consumed by Daily or Weekly production workflows"
+      ],
+      "selected_annotation_pack": false,
+      "codex_reviewed_primary_track": "core_pqc_and_implementation",
+      "codex_reviewed_secondary_tracks": [],
+      "human_gold_primary_track": null,
+      "human_gold_secondary_tracks": [],
+      "valid_human_gold": false,
+      "metadata_insufficient": false,
+      "available_evidence": {
+        "abstract": "Post-Quantum Cryptography (PQC) and Quantum Key Distribution (QKD) are both contenders for securing communication against quantum adversaries, but are at different stages of maturity. For hedging security risks, hybridization is the default approach. Unlike previous research on classical–post-quantum hybrids, we propose a QKD-PQC hybrid for Authenticated Key Exchange (AKE). To minimize the attack surface, we completely remove the requirement for digital signature schemes and propose a Hybrid Authenticated Key Exchange (HAKE) that combines Post-Quantum (PQ) AKE and QKD key agreement, leveraging Key Encapsulation Mechanisms (KEMs) for both key exchange and authentication. Our fully modular security analysis, based on the recent multi-input Key Derivation Function (KDF) framework by Backendal et al. (Eurocrypt 2025), establishes AKE security in the CK01 model and yields a conditional information-theoretic security guarantee when the QKD component is uncompromised; a property not achieved by prior hybrid protocols. We demonstrate the protocol’s practical feasibility with benchmarks using ML-KEM, FrodoKEM, and Classic McEliece.",
+        "taxonomy_tags": [
+          "C01_MLKEM_Kyber",
+          "C04_Other_Lattice_PQC",
+          "G01_NIST_PQC",
+          "pqc_lattice_schemes",
+          "standardization_and_deployment"
+        ],
+        "keywords_matched": [
+          "cryptography",
+          "digital signature",
+          "FrodoKEM",
+          "frodokem",
+          "kem",
+          "KEM",
+          "key encapsulation",
+          "ML-KEM",
+          "ml-kem",
+          "post-quantum",
+          "post-quantum cryptography",
+          "PQC",
+          "pqc",
+          "signature"
+        ],
+        "relevance_label": "A",
+        "relevance_score": 100
+      },
+      "source_provenance": [
+        "data/2026-06-13.json"
+      ]
+    },
+    {
+      "record_id": "iacr:2026/1233",
+      "sample_id": "v05-0067",
+      "title": "Implementation of Learning with Errors in Non-Commuting Multiplicative Groups",
+      "source": "iacr_eprint",
+      "production_primary_track": "ai4lattice_cryptanalysis",
+      "production_secondary_tracks": [],
+      "production_detail": "LWE/RLWE/MLWE Cryptanalysis: attack analysis",
+      "shadow_primary_track": "core_pqc_and_implementation",
+      "shadow_secondary_tracks": [],
+      "confidence": 0.68,
+      "explanation": "Experimental match for core_pqc_and_implementation; positive terms: ntru; anchors: lwe, ntru, sis. This is not a production or human-gold label.",
+      "matched_positive_rules": [
+        "core_pqc_and_implementation:ntru",
+        "core_pqc_and_implementation:lwe",
+        "core_pqc_and_implementation:ntru",
+        "core_pqc_and_implementation:sis"
+      ],
+      "matched_exclusion_rules": [],
+      "disagreement_category": "primary_track_disagreement",
+      "human_review_status": "not_reviewed",
+      "TODO_VERIFY": [
+        "user review is required before any label counts as human gold",
+        "shadow output must not be consumed by Daily or Weekly production workflows"
+      ],
+      "selected_annotation_pack": false,
+      "codex_reviewed_primary_track": "core_pqc_and_implementation",
+      "codex_reviewed_secondary_tracks": [],
+      "human_gold_primary_track": null,
+      "human_gold_secondary_tracks": [],
+      "valid_human_gold": false,
+      "metadata_insufficient": false,
+      "available_evidence": {
+        "abstract": "In this paper, we demonstrate a way to generalize learning with errors (LWE) to the family of so-called modular-maximal cyclic groups which are non-commuting. Since the group $\\mathbb{M}_{2^t}$ has two cycles of maximal multiplicative order, we use this fact to construct an accurate criterion for restoring the message bit with overwhelming probability. Furthermore, we implement the original idea by O. Regev in the considered group to gain benefits from the non-commutativity of $\\mathbb{M}_{2^t}$. Also we prove that using this approach we can achieve a level of security comparable to the original idea.",
+        "taxonomy_tags": [
+          "B01_LWE_Family",
+          "lwe_sis_ntru_foundations"
+        ],
+        "keywords_matched": [
+          "Learning With Errors",
+          "Learning with Errors",
+          "learning with errors",
+          "LWE",
+          "lwe"
+        ],
+        "relevance_label": "A",
+        "relevance_score": 100
+      },
+      "source_provenance": [
+        "data/2026-06-13.json"
       ]
     }
   ]
