@@ -1,0 +1,126 @@
+{
+  "schema_version": 2,
+  "status": "candidate_not_promoted",
+  "experimental_only": true,
+  "production_consumption_allowed": false,
+  "evidence_policy": {
+    "primary_fields": [
+      "title",
+      "abstract"
+    ],
+    "support_only_fields": [
+      "taxonomy_tags",
+      "keywords_matched"
+    ],
+    "support_only_can_create_track": false,
+    "author_names_are_positive_features": false,
+    "prior_labels_are_features": false,
+    "reviewer_explanations_are_features": false
+  },
+  "track_precedence": [
+    "module_sis_sanitizable_signatures",
+    "xingye_lu_bridge",
+    "ai4lattice_cryptanalysis",
+    "core_pqc_and_implementation"
+  ],
+  "tracks": {
+    "module_sis_sanitizable_signatures": {
+      "required_primary_terms": [
+        "module-sis",
+        "module sis",
+        "ring-sis",
+        "ring sis",
+        "chameleon hash",
+        "sanitizable signature",
+        "sanitisable signature",
+        "accountable sanitization",
+        "lattice commitment",
+        "lattice trapdoor",
+        "exposure model"
+      ],
+      "support_terms": ["sis", "module lattice", "trapdoor", "adaptation"],
+      "exclusion_terms": ["generic commitment", "generic signature", "generic zero knowledge"]
+    },
+    "xingye_lu_bridge": {
+      "required_primary_terms": [
+        "lattice ring signature",
+        "linkable ring signature",
+        "programmable hash",
+        "hash-then-one-way",
+        "blind lattice signature",
+        "lattice proxy re-encryption",
+        "lattice attribute-based encryption",
+        "lattice private information retrieval",
+        "privacy-preserving lattice authentication"
+      ],
+      "support_terms": ["lattice", "lwe", "rlwe", "mlwe", "sis", "post-quantum"],
+      "exclusion_terms": ["xingye lu", "author name only", "generic privacy"]
+    },
+    "ai4lattice_cryptanalysis": {
+      "required_primary_terms": [
+        "lattice cryptanalysis",
+        "lattice reduction",
+        "bkz",
+        "primal attack",
+        "dual attack",
+        "hybrid attack",
+        "secret recovery",
+        "security estimator",
+        "trapdoor sampling",
+        "sparse lwe",
+        "sparse rlwe",
+        "sparse mlwe",
+        "coordinate selection",
+        "learning-guided",
+        "neural lattice",
+        "salsa",
+        "cool-and-cruel"
+      ],
+      "support_terms": ["lattice", "lwe", "rlwe", "mlwe", "bkz", "svp", "cvp", "ntru"],
+      "exclusion_terms": ["generic machine learning", "time series", "computer vision"]
+    },
+    "core_pqc_and_implementation": {
+      "required_primary_terms": [
+        "ml-kem",
+        "ml-dsa",
+        "kyber",
+        "dilithium",
+        "falcon",
+        "fn-dsa",
+        "ntru",
+        "threshold pqc",
+        "fully homomorphic encryption",
+        "fhe",
+        "ckks",
+        "bfv",
+        "bgv",
+        "tfhe",
+        "side-channel",
+        "fault attack",
+        "constant-time",
+        "masked implementation",
+        "hardware implementation",
+        "software implementation"
+      ],
+      "support_terms": ["lattice", "lwe", "rlwe", "mlwe", "pqc", "post-quantum"],
+      "deprioritize_when_primary_contains": [
+        "attack",
+        "cryptanalysis",
+        "lattice reduction",
+        "ring signature",
+        "attribute-based encryption",
+        "proxy re-encryption",
+        "commitment",
+        "chameleon hash",
+        "sanitizable signature"
+      ],
+      "exclusion_terms": ["falcon time series", "isogeny-only", "generic implementation"]
+    }
+  },
+  "promotion_gate": {
+    "requires_user_confirmed_gold": true,
+    "requires_held_out_evaluation": true,
+    "requires_ci_green": true,
+    "requires_production_nonintegration_test": true
+  }
+}
