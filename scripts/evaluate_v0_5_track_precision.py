@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+import argparse
 import json
 from collections import Counter, defaultdict
 from dataclasses import dataclass
@@ -8,6 +9,7 @@ from typing import Any, Iterable
 
 
 PROJECT_ROOT = Path(__file__).resolve().parents[1]
+DEFAULT_SAMPLE_PATH = PROJECT_ROOT / "docs/research_tracks/v0.5_manual_precision_sample_v0.2.json"
 TRACKS = (
     "module_sis_sanitizable_signatures",
     "xingye_lu_bridge",
@@ -587,8 +589,9 @@ def _render_queue(payload: dict[str, Any]) -> str:
     )
     for row in ordered:
         reason = "ambiguous" if row["relevance_status"] == "ambiguous" else "multi-track" if row["control_label"] == "multi_track" else "stratum review"
+        escaped_title = str(row["title"]).replace("|", "\\|")
         lines.append(
-            f"| {row['sample_id']} | {str(row['title']).replace('|', '\\|')} | {row['codex_reviewed_primary_track']} | {row['human_review_status']} | {reason} |"
+            f"| {row['sample_id']} | {escaped_title} | {row['codex_reviewed_primary_track']} | {row['human_review_status']} | {reason} |"
         )
     return "\n".join(lines) + "\n"
 
@@ -633,7 +636,8 @@ def _render_error_review(title: str, entries: list[dict[str, Any]], kind: str) -
     else:
         lines += ["| Sample | Track | Title |", "|---|---|---|"]
         for entry in entries:
-            lines.append(f"| {entry['sample_id']} | {entry['track']} | {str(entry['title']).replace('|', '\\|')} |")
+            escaped_title = str(entry["title"]).replace("|", "\\|")
+            lines.append(f"| {entry['sample_id']} | {entry['track']} | {escaped_title} |")
     return "\n".join(lines) + "\n"
 
 
@@ -645,7 +649,8 @@ def _render_ambiguous(result: dict[str, Any]) -> str:
         "|---|---|---|",
     ]
     for entry in result["ambiguous_records"]:
-        lines.append(f"| {entry['sample_id']} | {str(entry['title']).replace('|', '\\|')} | {entry['reason']} |")
+        escaped_title = str(entry["title"]).replace("|", "\\|")
+        lines.append(f"| {entry['sample_id']} | {escaped_title} | {entry['reason']} |")
     return "\n".join(lines) + "\n"
 
 
@@ -735,8 +740,26 @@ def write_outputs(payload: dict[str, Any], result: dict[str, Any], project_root:
     )
 
 
+def load_frozen_sample(path: Path = DEFAULT_SAMPLE_PATH) -> dict[str, Any]:
+    payload = json.loads(path.read_text(encoding="utf-8"))
+    if not isinstance(payload, dict) or not isinstance(payload.get("records"), list):
+        raise ValueError(f"Invalid frozen sample: {path}")
+    return payload
+
+
+def build_parser() -> argparse.ArgumentParser:
+    parser = argparse.ArgumentParser(description="Evaluate the frozen v0.5 track-precision sample offline.")
+    parser.add_argument(
+        "--refresh-sample",
+        action="store_true",
+        help="Explicitly rebuild the frozen sample from repository records before evaluation.",
+    )
+    return parser
+
+
 def main() -> int:
-    payload = build_sample(PROJECT_ROOT)
+    args = build_parser().parse_args()
+    payload = build_sample(PROJECT_ROOT) if args.refresh_sample else load_frozen_sample()
     result = evaluate_sample(payload)
     write_outputs(payload, result, PROJECT_ROOT)
     print(json.dumps({
