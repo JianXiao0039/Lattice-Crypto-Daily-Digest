@@ -13,6 +13,7 @@ from lattice_digest.digest_sections import (
 )
 from lattice_digest.models import PaperRecord
 from lattice_digest.ranking_explainability import concise_ranking_explanation
+from lattice_digest.recommendation_rationale import build_recommendation_rationale
 from lattice_digest.report_quality import (
     anchor_evidence_text,
     false_positive_risk_text,
@@ -866,9 +867,11 @@ def _paper_header(record: PaperRecord, index: int | None = None) -> str:
 
 def _basic_paper_lines(record: PaperRecord) -> list[str]:
     intel = record_intelligence(record)
+    rationale = build_recommendation_rationale(record)
     link = f"[来源链接]({record.source_url})" if record.source_url else "unknown"
     hooks = intel["research_hooks"] if isinstance(intel["research_hooks"], list) else []
     questions = intel["advisor_questions"] if isinstance(intel["advisor_questions"], list) else []
+    todo_verify = "；".join(rationale.todo_verify) if rationale.todo_verify else "TODO_VERIFY：阅读正文核验证明、参数、实验与限制条件。"
     return [
         f"- 作者：{', '.join(record.authors) if record.authors else 'unknown'}",
         f"- 日期/年份：{record.publication_date or record.update_date or 'unknown'}",
@@ -885,6 +888,14 @@ def _basic_paper_lines(record: PaperRecord) -> list[str]:
         f"- reason_for_priority：{intel['reason_for_priority']}",
         f"- research_tags：{', '.join(intel['tags']) if intel['tags'] else 'unknown'}",
         f"- why_it_matters：{intel['why_it_matters']}",
+        "- Recommendation rationale:",
+        f"  - Paper problem: {rationale.problem_summary}",
+        f"  - Method / construction / attack / implementation: {rationale.method_summary}",
+        f"  - Main contribution: {rationale.contribution_summary}",
+        f"  - Radar relevance: {rationale.radar_relevance}",
+        f"  - Why read / skim / track / ignore: {rationale.recommendation_reason}",
+        f"  - Evidence basis: {', '.join(rationale.evidence_basis)}；confidence={rationale.confidence}",
+        f"  - TODO_VERIFY: {todo_verify}",
         f"- suggested_action：{_action_text(record)}",
         f"- Semantic Scholar advisory metadata：{semantic_scholar_advisory_text(record)}",
         f"- research_hooks：{'；'.join(str(item) for item in hooks) if hooks else '暂无'}",

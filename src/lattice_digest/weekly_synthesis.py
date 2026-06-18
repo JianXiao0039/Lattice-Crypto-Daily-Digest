@@ -25,6 +25,7 @@ from lattice_digest.digest_sections import (
     candidate_reason,
 )
 from lattice_digest.models import make_paper_record
+from lattice_digest.recommendation_rationale import build_recommendation_rationale
 from lattice_digest.report_quality import (
     anchor_evidence_text,
     false_positive_risk_text,
@@ -346,11 +347,15 @@ def _record_line(record: dict[str, Any]) -> str:
     url = str(record.get("source_url") or record.get("url") or "unknown")
     sources = ", ".join(record.get("seen_sources", [])) if isinstance(record.get("seen_sources"), list) else str(record.get("source") or "unknown")
     dates = ", ".join(record.get("seen_dates", [])) if isinstance(record.get("seen_dates"), list) else ""
+    rationale = build_recommendation_rationale(record)
+    todo_verify = "；".join(rationale.todo_verify) if rationale.todo_verify else rationale.caveat
     return (
         f"- {title}｜{label} / {score}｜sources: {sources}｜seen: {dates}｜{url}\n"
         f"  - {anchor_evidence_text(record)}\n"
         f"  - False-positive risk: {false_positive_risk_text(record)}\n"
-        f"  - Semantic Scholar advisory: {semantic_scholar_advisory_text(record)}"
+        f"  - Semantic Scholar advisory: {semantic_scholar_advisory_text(record)}\n"
+        f"  - Rationale: {rationale.problem_summary} {rationale.radar_relevance} {rationale.recommendation_reason}\n"
+        f"  - Evidence basis: {', '.join(rationale.evidence_basis)}；confidence={rationale.confidence}；TODO_VERIFY: {todo_verify}"
     )
 
 
