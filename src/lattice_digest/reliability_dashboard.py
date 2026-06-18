@@ -27,6 +27,12 @@ def latest_file(directory: Path, pattern: str) -> Path | None:
     return matches[-1] if matches else None
 
 
+def _portable_relative_path(path: Path | None, project_root: Path) -> str | None:
+    if path is None:
+        return None
+    return path.relative_to(project_root).as_posix()
+
+
 def source_status(entry: dict[str, Any]) -> str:
     return str(entry.get("health_status") or entry.get("status") or "unknown")
 
@@ -307,12 +313,15 @@ def build_reliability_dashboard(
         "notes": notes,
         "TODO_VERIFY": todo_items,
         "artifacts": {
-            "daily_json": str(daily_json.relative_to(project_root)) if daily_json else None,
-            "daily_markdown": str(corresponding_markdown_path(daily_json, project_root).relative_to(project_root))
+            "daily_json": _portable_relative_path(daily_json, project_root),
+            "daily_markdown": _portable_relative_path(
+                corresponding_markdown_path(daily_json, project_root),
+                project_root,
+            )
             if daily_json and daily_markdown_exists
             else None,
-            "weekly_json": str(weekly_json.relative_to(project_root)) if weekly_json else None,
-            "weekly_handoff_json": str(handoff_json.relative_to(project_root)) if handoff_json else None,
+            "weekly_json": _portable_relative_path(weekly_json, project_root),
+            "weekly_handoff_json": _portable_relative_path(handoff_json, project_root),
         },
         "probe_summary": {
             "probe_available": bool(probe_payload),
