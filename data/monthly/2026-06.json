@@ -1,0 +1,1059 @@
+{
+  "schema_version": 1,
+  "month": "2026-06",
+  "generated_at": "2026-06-18T06:55:01.086344+00:00",
+  "input_daily_files": [
+    "data/2026-06-01.json",
+    "data/2026-06-02.json",
+    "data/2026-06-03.json",
+    "data/2026-06-04.json",
+    "data/2026-06-05.json",
+    "data/2026-06-06.json",
+    "data/2026-06-07.json",
+    "data/2026-06-08.json",
+    "data/2026-06-09.json",
+    "data/2026-06-10.json",
+    "data/2026-06-11.json",
+    "data/2026-06-12.json",
+    "data/2026-06-13.json",
+    "data/2026-06-14.json",
+    "data/2026-06-15.json",
+    "data/2026-06-16.json",
+    "data/2026-06-17.json",
+    "data/2026-06-18.json"
+  ],
+  "input_weekly_files": [
+    "data/weekly/2026-W23.json",
+    "data/weekly/2026-W25.json"
+  ],
+  "missing_days": [
+    "2026-06-19",
+    "2026-06-20",
+    "2026-06-21",
+    "2026-06-22",
+    "2026-06-23",
+    "2026-06-24",
+    "2026-06-25",
+    "2026-06-26",
+    "2026-06-27",
+    "2026-06-28",
+    "2026-06-29",
+    "2026-06-30"
+  ],
+  "total_unique_records": 49,
+  "class_counts": {
+    "A": 30,
+    "B": 7,
+    "C": 12
+  },
+  "direction_counts": {
+    "FHE / CKKS / lattice ZK / commitments": 9,
+    "LWE / RLWE / MLWE": 18,
+    "ML-KEM / ML-DSA / PQC implementation": 11,
+    "SIS / Module-SIS": 2,
+    "lattice reduction / BKZ / attacks": 3,
+    "other PQC / adjacent crypto": 6
+  },
+  "source_health_summary": {
+    "sources": [
+      {
+        "source": "arxiv",
+        "green": 1,
+        "yellow": 12,
+        "red": 5,
+        "unknown": 0,
+        "retrieval_count": 11,
+        "failure_types": {
+          "rate_limit": 8,
+          "timeout": 1,
+          "warning": 5
+        },
+        "days_observed": 18,
+        "impact": "degraded monthly evidence; verify missing papers before treating empty days as quiet"
+      },
+      {
+        "source": "crossref",
+        "green": 7,
+        "yellow": 6,
+        "red": 5,
+        "unknown": 0,
+        "retrieval_count": 7,
+        "failure_types": {
+          "warning": 5
+        },
+        "days_observed": 18,
+        "impact": "degraded monthly evidence; verify missing papers before treating empty days as quiet"
+      },
+      {
+        "source": "dblp",
+        "green": 0,
+        "yellow": 13,
+        "red": 5,
+        "unknown": 0,
+        "retrieval_count": 0,
+        "failure_types": {
+          "server_error": 1,
+          "ssl_error": 10,
+          "warning": 6
+        },
+        "days_observed": 18,
+        "impact": "degraded monthly evidence; verify missing papers before treating empty days as quiet"
+      },
+      {
+        "source": "iacr_eprint",
+        "green": 7,
+        "yellow": 5,
+        "red": 6,
+        "unknown": 0,
+        "retrieval_count": 50,
+        "failure_types": {
+          "warning": 6
+        },
+        "days_observed": 18,
+        "impact": "degraded monthly evidence; verify missing papers before treating empty days as quiet"
+      },
+      {
+        "source": "openalex",
+        "green": 0,
+        "yellow": 13,
+        "red": 5,
+        "unknown": 0,
+        "retrieval_count": 0,
+        "failure_types": {
+          "warning": 5
+        },
+        "days_observed": 18,
+        "impact": "degraded monthly evidence; verify missing papers before treating empty days as quiet"
+      },
+      {
+        "source": "semantic_scholar",
+        "green": 0,
+        "yellow": 11,
+        "red": 7,
+        "unknown": 0,
+        "retrieval_count": 0,
+        "failure_types": {
+          "rate_limit": 2,
+          "warning": 5
+        },
+        "days_observed": 18,
+        "impact": "degraded monthly evidence; verify missing papers before treating empty days as quiet"
+      }
+    ],
+    "source_starved_days": [
+      "2026-06-02",
+      "2026-06-04",
+      "2026-06-05",
+      "2026-06-07",
+      "2026-06-12"
+    ],
+    "source_starved": true
+  },
+  "core_papers": [
+    {
+      "title": "From Perfect to Approximate Hints: Efficient LWE Secret Recovery Leveraging Low Hamming Weight",
+      "source": "iacr_eprint",
+      "source_url": "https://eprint.iacr.org/2026/1081",
+      "relevance_label": "A",
+      "relevance_score": 100,
+      "reading_priority_score": 89,
+      "direction": "LWE / RLWE / MLWE",
+      "seen_dates": [
+        "2026-06-03"
+      ],
+      "seen_sources": [
+        "iacr_eprint"
+      ],
+      "rationale": {
+        "problem": "从摘要看，论文关注的问题是：The Learning With Errors (LWE) problem is a cornerstone of lattice-based cryptography and underpins the security of numerous cryptographic schemes.",
+        "method": "While this approach improves performance, it raises security concerns, particularly against side-channel attacks that can leak partial information, or “hints,” about the secret key.",
+        "contribution": "While this approach improves performance, it raises security concerns, particularly against side-channel attacks that can leak partial information, or “hints,” about the secret key.",
+        "radar_relevance": "与格密码/PQC 雷达相关：可见证据包含 fhe、fully homomorphic、homomorphic encryption、lattice、lwe、mlwe、ntru、rlwe。",
+        "reading_action": "精读：From Perfect to Approximate Hints: Efficient LWE Secret Recovery Leveraging Low Hamming Weight 的摘要/结论证据足以支持初步判断；与格密码/PQC 雷达相关：可见证据包含 fhe、fully homomorphic、homomorphic encryption、lattice、lwe、mlwe、ntru、rlwe。",
+        "evidence_basis": [
+          "abstract-derived",
+          "repository-note-derived",
+          "metadata-derived"
+        ],
+        "confidence": "abstract_supported",
+        "todo_verify": [
+          "TODO_VERIFY: conclusion/full text not available; claims need paper-level verification."
+        ],
+        "caveat": "TODO_VERIFY：未见结论或全文；证明细节、实验设置、参数和安全声明仍需核验。"
+      }
+    },
+    {
+      "title": "Advancing Pseudorandom Codes: Beyond Parity Checks and Standard-Model CCA1 Security",
+      "source": "iacr_eprint",
+      "source_url": "https://eprint.iacr.org/2026/1228",
+      "relevance_label": "A",
+      "relevance_score": 100,
+      "reading_priority_score": 85,
+      "direction": "LWE / RLWE / MLWE",
+      "seen_dates": [
+        "2026-06-13"
+      ],
+      "seen_sources": [
+        "iacr_eprint"
+      ],
+      "rationale": {
+        "problem": "从摘要看，论文关注的问题是：Pseudorandom codes (PRCs) are error-correcting codes whose codewords are computationally indistinguishable from uniform random strings, a primitive motivated by the need to robustly watermark generative AI models.",
+        "method": "On the structural side, we propose a novel PRC template that departs from the prior one based on sparse parity-check trapdoors.",
+        "contribution": "On the structural side, we propose a novel PRC template that departs from the prior one based on sparse parity-check trapdoors.",
+        "radar_relevance": "与格密码/PQC 雷达相关：可见证据包含 lwe、mlwe、module sis、module-sis、ntru、rlwe、sis。",
+        "reading_action": "精读：Advancing Pseudorandom Codes: Beyond Parity Checks and Standard-Model CCA1 Security 的摘要/结论证据足以支持初步判断；与格密码/PQC 雷达相关：可见证据包含 lwe、mlwe、module sis、module-sis、ntru、rlwe、sis。",
+        "evidence_basis": [
+          "abstract-derived",
+          "repository-note-derived",
+          "metadata-derived"
+        ],
+        "confidence": "abstract_supported",
+        "todo_verify": [
+          "TODO_VERIFY: conclusion/full text not available; claims need paper-level verification."
+        ],
+        "caveat": "TODO_VERIFY：未见结论或全文；证明细节、实验设置、参数和安全声明仍需核验。"
+      }
+    },
+    {
+      "title": "Towards Post-Quantum Secure Pharmacovigilance with ML-KEM and ML-DSA",
+      "source": "arxiv",
+      "source_url": "http://arxiv.org/abs/2606.09412v1",
+      "relevance_label": "A",
+      "relevance_score": 100,
+      "reading_priority_score": 84,
+      "direction": "ML-KEM / ML-DSA / PQC implementation",
+      "seen_dates": [
+        "2026-06-10",
+        "2026-06-13"
+      ],
+      "seen_sources": [
+        "arxiv"
+      ],
+      "rationale": {
+        "problem": "从摘要看，论文关注的问题是：Pharmacovigilance systems handle sensitive healthcare and drug-safety data, including adverse event reports and clinical observations.",
+        "method": "This paper presents an educational prototype of a post-quantum secure pharmacovigilance data pipeline.",
+        "contribution": "The system uses ML-KEM-768 for post-quantum key establishment, HKDF-SHA-256 for deriving an AES key, AES-256-GCM for efficient file encryption, and ML-DSA-65 for digital signatures and tamper detection.",
+        "radar_relevance": "与格密码/PQC 雷达相关：可见证据包含 dilithium、falcon、kyber、lattice、ml-dsa、ml-kem。",
+        "reading_action": "精读：Towards Post-Quantum Secure Pharmacovigilance with ML-KEM and ML-DSA 的摘要/结论证据足以支持初步判断；与格密码/PQC 雷达相关：可见证据包含 dilithium、falcon、kyber、lattice、ml-dsa、ml-kem。",
+        "evidence_basis": [
+          "abstract-derived",
+          "repository-note-derived",
+          "metadata-derived"
+        ],
+        "confidence": "abstract_supported",
+        "todo_verify": [
+          "TODO_VERIFY: conclusion/full text not available; claims need paper-level verification."
+        ],
+        "caveat": "TODO_VERIFY：未见结论或全文；证明细节、实验设置、参数和安全声明仍需核验。"
+      }
+    },
+    {
+      "title": "BRaccoon: Concurrently Secure Blind Lattice Signatures from Raccoon",
+      "source": "iacr_eprint",
+      "source_url": "https://eprint.iacr.org/2026/1084",
+      "relevance_label": "A",
+      "relevance_score": 100,
+      "reading_priority_score": 82,
+      "direction": "SIS / Module-SIS",
+      "seen_dates": [
+        "2026-06-03"
+      ],
+      "seen_sources": [
+        "iacr_eprint"
+      ],
+      "rationale": {
+        "problem": "从摘要看，论文关注的问题是：Blind signatures are a central primitive for privacy-preserving applications such as e-cash, anonymous credentials, and e-voting.",
+        "method": "In the post-quantum setting, existing constructions typically follow one of two paradigms: either signatures are realized as non-interactive zero-knowledge ($\\mathsf{NIZK}$) proofs of valid underlying signatures, or they are obtained from…",
+        "contribution": "In both approaches, the resulting signatures deviate syntactically from standard signatures, incurring additional verification overhead and limiting compatibility with existing infrastructures.",
+        "radar_relevance": "与格密码/PQC 雷达相关：可见证据包含 dilithium、falcon、fhe、homomorphic encryption、lattice、ml-dsa、module sis、module-sis。",
+        "reading_action": "精读：BRaccoon: Concurrently Secure Blind Lattice Signatures from Raccoon 的摘要/结论证据足以支持初步判断；与格密码/PQC 雷达相关：可见证据包含 dilithium、falcon、fhe、homomorphic encryption、lattice、ml-dsa、module sis、module-sis。",
+        "evidence_basis": [
+          "abstract-derived",
+          "repository-note-derived",
+          "metadata-derived"
+        ],
+        "confidence": "abstract_supported",
+        "todo_verify": [
+          "TODO_VERIFY: conclusion/full text not available; claims need paper-level verification."
+        ],
+        "caveat": "TODO_VERIFY：未见结论或全文；证明细节、实验设置、参数和安全声明仍需核验。"
+      }
+    },
+    {
+      "title": "Rank Ceiling for Twiddle-Perturbation Faults on the Forward NTT",
+      "source": "iacr_eprint",
+      "source_url": "https://eprint.iacr.org/2026/1188",
+      "relevance_label": "A",
+      "relevance_score": 100,
+      "reading_priority_score": 80,
+      "direction": "ML-KEM / ML-DSA / PQC implementation",
+      "seen_dates": [
+        "2026-06-06",
+        "2026-06-10"
+      ],
+      "seen_sources": [
+        "iacr_eprint"
+      ],
+      "rationale": {
+        "problem": "从摘要看，论文关注的问题是：NIST standardised a lattice-based key-encapsulation mechanism (ML-KEM) and a lattice-based digital signature scheme (ML-DSA) in 2024 as post-quantum replacements for classical key establishment and digital signatures.",
+        "method": "Both compute a forward number-theoretic transform (NTT) over secret-bearing polynomials; the NTT's twiddle constants are a documented fault-attack surface.",
+        "contribution": "A single twiddle fault leaks exactly the butterfly length of its layer in secret coefficients, a count attained rather than merely bounded, so one fault per layer pins all but two coefficients for ML-KEM and all but one for ML-DSA.",
+        "radar_relevance": "与格密码/PQC 雷达相关：可见证据包含 dilithium、falcon、kyber、lattice、ml-dsa、ml-kem。",
+        "reading_action": "精读：Rank Ceiling for Twiddle-Perturbation Faults on the Forward NTT 的摘要/结论证据足以支持初步判断；与格密码/PQC 雷达相关：可见证据包含 dilithium、falcon、kyber、lattice、ml-dsa、ml-kem。",
+        "evidence_basis": [
+          "abstract-derived",
+          "repository-note-derived",
+          "metadata-derived"
+        ],
+        "confidence": "abstract_supported",
+        "todo_verify": [
+          "TODO_VERIFY: conclusion/full text not available; claims need paper-level verification."
+        ],
+        "caveat": "TODO_VERIFY：未见结论或全文；证明细节、实验设置、参数和安全声明仍需核验。"
+      }
+    },
+    {
+      "title": "HRA-Secure Lattice-based Proxy Re-Encryption without Noise Flooding",
+      "source": "iacr_eprint",
+      "source_url": "https://eprint.iacr.org/2026/1113",
+      "relevance_label": "A",
+      "relevance_score": 100,
+      "reading_priority_score": 77,
+      "direction": "LWE / RLWE / MLWE",
+      "seen_dates": [
+        "2026-06-03"
+      ],
+      "seen_sources": [
+        "iacr_eprint"
+      ],
+      "rationale": {
+        "problem": "从摘要看，论文关注的问题是：Proxy re-encryption (PRE) enables a semi-trusted proxy to transform a ciphertext under one key into a ciphertext decryptable under another key without learning the underlying plaintext.",
+        "method": "Existing lattice-based PRE schemes that achieve security against honest re-encryption attacks (HRAs) typically rely on noise flooding during re-encryption to statistically hide dependencies on the original ciphertext and the re-encryption…",
+        "contribution": "Existing lattice-based PRE schemes that achieve security against honest re-encryption attacks (HRAs) typically rely on noise flooding during re-encryption to statistically hide dependencies on the original ciphertext and the re-encryption…",
+        "radar_relevance": "与格密码/PQC 雷达相关：可见证据包含 bgv、fhe、lattice、lwe、mlwe、ntru、rlwe、sis。",
+        "reading_action": "精读：HRA-Secure Lattice-based Proxy Re-Encryption without Noise Flooding 的摘要/结论证据足以支持初步判断；与格密码/PQC 雷达相关：可见证据包含 bgv、fhe、lattice、lwe、mlwe、ntru、rlwe、sis。",
+        "evidence_basis": [
+          "abstract-derived",
+          "repository-note-derived",
+          "metadata-derived"
+        ],
+        "confidence": "abstract_supported",
+        "todo_verify": [
+          "TODO_VERIFY: conclusion/full text not available; claims need paper-level verification."
+        ],
+        "caveat": "TODO_VERIFY：未见结论或全文；证明细节、实验设置、参数和安全声明仍需核验。"
+      }
+    },
+    {
+      "title": "Q-FE: A Quantum-Native 6G Far-Edge Architecture Securing Industrial IoT Digital Twins via CSIDH-PQC and Asynchronous Federated Learning",
+      "source": "arxiv",
+      "source_url": "http://arxiv.org/abs/2606.03611v1",
+      "relevance_label": "A",
+      "relevance_score": 100,
+      "reading_priority_score": 76,
+      "direction": "ML-KEM / ML-DSA / PQC implementation",
+      "seen_dates": [
+        "2026-06-08"
+      ],
+      "seen_sources": [
+        "arxiv"
+      ],
+      "rationale": {
+        "problem": "从摘要看，论文关注的问题是：Sixth-generation (6G) wireless networks will underpin ultra-dense Industrial IoT (IIoT) ecosystems in which resource-constrained Far-Edge devices -- autonomous mobile robots, industrial actuators, connected vehicles -- must simultaneously…",
+        "method": "Current architectures delegate Digital Twin (DT) computation to centralised cloud or Mobile Edge Computing (MEC) servers, incurring prohibitive round-trip latency, and rely on classical public-key cryptography vulnerable to quantum attacks…",
+        "contribution": "End-to-end simulations (NS-3 + PySyft) demonstrate that Q-FE reduces MAC-layer overhead by 62% versus ML-KEM/Kyber-1024, maintains P99.9 URLLC latency at 0.78 ms, and accelerates global-model convergence by 31% over synchronous Federated L…",
+        "radar_relevance": "与格密码/PQC 雷达相关：可见证据包含 kyber、lattice、ml-kem、sis。",
+        "reading_action": "精读：Q-FE: A Quantum-Native 6G Far-Edge Architecture Securing Industrial IoT Digital Twins via CSIDH-PQC and Asynchronous Fe… 的摘要/结论证据足以支持初步判断；与格密码/PQC 雷达相关：可见证据包含 kyber、lattice、ml-kem、sis。",
+        "evidence_basis": [
+          "abstract-derived",
+          "repository-note-derived",
+          "metadata-derived"
+        ],
+        "confidence": "abstract_supported",
+        "todo_verify": [
+          "TODO_VERIFY: conclusion/full text not available; claims need paper-level verification."
+        ],
+        "caveat": "TODO_VERIFY：未见结论或全文；证明细节、实验设置、参数和安全声明仍需核验。"
+      }
+    },
+    {
+      "title": "On the Secrecy of the Encapsulation Coin in ML-KEM",
+      "source": "iacr_eprint",
+      "source_url": "https://eprint.iacr.org/2026/1117",
+      "relevance_label": "A",
+      "relevance_score": 100,
+      "reading_priority_score": 76,
+      "direction": "ML-KEM / ML-DSA / PQC implementation",
+      "seen_dates": [
+        "2026-06-03"
+      ],
+      "seen_sources": [
+        "iacr_eprint"
+      ],
+      "rationale": {
+        "problem": "从摘要看，论文关注的问题是：ML-KEM (FIPS 203) draws a fresh 32-byte coin at each encapsulation.",
+        "method": "Outside the validated FIPS-140-3 configuration that most deployments do not yet use, the coin's secrecy rests on convention, not construction.",
+        "contribution": "The predictability this permits is externally invisible and parameter-controlled, of the class shown once before in Dual_EC_DRBG.",
+        "radar_relevance": "与格密码/PQC 雷达相关：可见证据包含 kyber、lattice、ml-kem。",
+        "reading_action": "精读：On the Secrecy of the Encapsulation Coin in ML-KEM 的摘要/结论证据足以支持初步判断；与格密码/PQC 雷达相关：可见证据包含 kyber、lattice、ml-kem。",
+        "evidence_basis": [
+          "abstract-derived",
+          "repository-note-derived",
+          "metadata-derived"
+        ],
+        "confidence": "abstract_supported",
+        "todo_verify": [
+          "TODO_VERIFY: conclusion/full text not available; claims need paper-level verification."
+        ],
+        "caveat": "TODO_VERIFY：未见结论或全文；证明细节、实验设置、参数和安全声明仍需核验。"
+      }
+    },
+    {
+      "title": "Module Lattice Security (Part II): Module Lattice Reduction via Optimal Sign Selection",
+      "source": "arxiv",
+      "source_url": "http://arxiv.org/abs/2604.22900v2",
+      "relevance_label": "A",
+      "relevance_score": 100,
+      "reading_priority_score": 75,
+      "direction": "LWE / RLWE / MLWE",
+      "seen_dates": [
+        "2026-06-08"
+      ],
+      "seen_sources": [
+        "arxiv"
+      ],
+      "rationale": {
+        "problem": "从摘要看，论文关注的问题是：We extend the CDPR's quantum attack from ideal lattices to module lattices over $2^k$-th cyclotomic rings.",
+        "method": "We extend the CDPR's quantum attack from ideal lattices to module lattices over $2^k$-th cyclotomic rings.",
+        "contribution": "All results build on the class number condition $h_k^+=1$ established in Part I of this series.",
+        "radar_relevance": "与格密码/PQC 雷达相关：可见证据包含 bkz、dilithium、falcon、kyber、lattice、lll、lwe、ml-dsa。",
+        "reading_action": "精读：Module Lattice Security (Part II): Module Lattice Reduction via Optimal Sign Selection 的摘要/结论证据足以支持初步判断；与格密码/PQC 雷达相关：可见证据包含 bkz、dilithium、falcon、kyber、lattice、lll、lwe、ml-dsa。",
+        "evidence_basis": [
+          "abstract-derived",
+          "repository-note-derived",
+          "metadata-derived"
+        ],
+        "confidence": "abstract_supported",
+        "todo_verify": [
+          "TODO_VERIFY: conclusion/full text not available; claims need paper-level verification."
+        ],
+        "caveat": "TODO_VERIFY：未见结论或全文；证明细节、实验设置、参数和安全声明仍需核验。"
+      }
+    },
+    {
+      "title": "Post-Quantum Cryptography and Quantum-Safe Security: A Comprehensive Survey",
+      "source": "arxiv",
+      "source_url": "http://arxiv.org/abs/2510.10436v2",
+      "relevance_label": "A",
+      "relevance_score": 100,
+      "reading_priority_score": 75,
+      "direction": "lattice reduction / BKZ / attacks",
+      "seen_dates": [
+        "2026-06-08",
+        "2026-06-10"
+      ],
+      "seen_sources": [
+        "arxiv"
+      ],
+      "rationale": {
+        "problem": "从摘要看，论文关注的问题是：Post-quantum cryptography (PQC) is moving from evaluation to deployment as NIST finalizes standards for ML-KEM, ML-DSA, and SLH-DSA.",
+        "method": "We first develop a taxonomy across lattice-, code-, hash-, multivariate-, isogeny-, and MPC-in-the-Head families, summarizing security assumptions, cryptanalysis, and standardization status.",
+        "contribution": "We first develop a taxonomy across lattice-, code-, hash-, multivariate-, isogeny-, and MPC-in-the-Head families, summarizing security assumptions, cryptanalysis, and standardization status.",
+        "radar_relevance": "与格密码/PQC 雷达相关：可见证据包含 dilithium、falcon、kyber、lattice、ml-dsa、ml-kem、sis。",
+        "reading_action": "精读：Post-Quantum Cryptography and Quantum-Safe Security: A Comprehensive Survey 的摘要/结论证据足以支持初步判断；与格密码/PQC 雷达相关：可见证据包含 dilithium、falcon、kyber、lattice、ml-dsa、ml-kem、sis。",
+        "evidence_basis": [
+          "abstract-derived",
+          "repository-note-derived",
+          "metadata-derived"
+        ],
+        "confidence": "abstract_supported",
+        "todo_verify": [
+          "TODO_VERIFY: conclusion/full text not available; claims need paper-level verification."
+        ],
+        "caveat": "TODO_VERIFY：未见结论或全文；证明细节、实验设置、参数和安全声明仍需核验。"
+      }
+    },
+    {
+      "title": "A gentle introduction to lattice-based cryptography",
+      "source": "iacr_eprint",
+      "source_url": "https://eprint.iacr.org/2026/1098",
+      "relevance_label": "A",
+      "relevance_score": 100,
+      "reading_priority_score": 75,
+      "direction": "ML-KEM / ML-DSA / PQC implementation",
+      "seen_dates": [
+        "2026-06-03"
+      ],
+      "seen_sources": [
+        "iacr_eprint"
+      ],
+      "rationale": {
+        "problem": "从摘要看，论文关注的问题是：We present the quantum-safe Kyber key encapsulation mechanism (ML-KEM) and the Dilithium signature scheme (ML-DSA).",
+        "method": "We present the quantum-safe Kyber key encapsulation mechanism (ML-KEM) and the Dilithium signature scheme (ML-DSA).",
+        "contribution": "可用元数据未明确陈述贡献；需要核对全文中的贡献列表或实验结果。",
+        "radar_relevance": "与格密码/PQC 雷达相关：可见证据包含 dilithium、falcon、kyber、lattice、ml-dsa、ml-kem。",
+        "reading_action": "精读：A gentle introduction to lattice-based cryptography 的摘要/结论证据足以支持初步判断；与格密码/PQC 雷达相关：可见证据包含 dilithium、falcon、kyber、lattice、ml-dsa、ml-kem。",
+        "evidence_basis": [
+          "abstract-derived",
+          "repository-note-derived",
+          "metadata-derived"
+        ],
+        "confidence": "abstract_supported",
+        "todo_verify": [
+          "TODO_VERIFY: conclusion/full text not available; claims need paper-level verification."
+        ],
+        "caveat": "TODO_VERIFY：未见结论或全文；证明细节、实验设置、参数和安全声明仍需核验。"
+      }
+    },
+    {
+      "title": "GPU Acceleration of Learning With Errors KEMs Using OpenACC for Post-Quantum Cryptography",
+      "source": "arxiv",
+      "source_url": "http://arxiv.org/abs/2606.01211v1",
+      "relevance_label": "A",
+      "relevance_score": 100,
+      "reading_priority_score": 75,
+      "direction": "LWE / RLWE / MLWE",
+      "seen_dates": [
+        "2026-06-03"
+      ],
+      "seen_sources": [
+        "arxiv"
+      ],
+      "rationale": {
+        "problem": "从摘要看，论文关注的问题是：Shor's algorithm proved that asymmetric cryptographic protocols based on the integer factorization and discrete logarithm problems are no longer safe in a world with large-scale quantum computers.",
+        "method": "As a result, Post-Quantum Cryptography (PQC) has been developed over the last few years, seeking cryptographic primitives resistant to quantum attacks.",
+        "contribution": "As a result, Post-Quantum Cryptography (PQC) has been developed over the last few years, seeking cryptographic primitives resistant to quantum attacks.",
+        "radar_relevance": "与格密码/PQC 雷达相关：可见证据包含 dilithium、falcon、kyber、lattice、lwe、ml-dsa、ml-kem、mlwe。",
+        "reading_action": "精读：GPU Acceleration of Learning With Errors KEMs Using OpenACC for Post-Quantum Cryptography 的摘要/结论证据足以支持初步判断；与格密码/PQC 雷达相关：可见证据包含 dilithium、falcon、kyber、lattice、lwe、ml-dsa、ml-kem、mlwe。",
+        "evidence_basis": [
+          "abstract-derived",
+          "repository-note-derived",
+          "metadata-derived"
+        ],
+        "confidence": "abstract_supported",
+        "todo_verify": [
+          "TODO_VERIFY: conclusion/full text not available; claims need paper-level verification."
+        ],
+        "caveat": "TODO_VERIFY：未见结论或全文；证明细节、实验设置、参数和安全声明仍需核验。"
+      }
+    }
+  ],
+  "reading_priority": {
+    "Must Read": [
+      {
+        "title": "From Perfect to Approximate Hints: Efficient LWE Secret Recovery Leveraging Low Hamming Weight",
+        "relevance_label": "A",
+        "relevance_score": 100,
+        "reading_priority_score": 89,
+        "direction": "LWE / RLWE / MLWE",
+        "reason": "精读：From Perfect to Approximate Hints: Efficient LWE Secret Recovery Leveraging Low Hamming Weight 的摘要/结论证据足以支持初步判断；与格密码/PQC 雷达相关：可见证据包含 fhe、fully homomorphic、homomorphic encryption、lattice、lwe、mlwe、ntru、rlwe。"
+      },
+      {
+        "title": "Advancing Pseudorandom Codes: Beyond Parity Checks and Standard-Model CCA1 Security",
+        "relevance_label": "A",
+        "relevance_score": 100,
+        "reading_priority_score": 85,
+        "direction": "LWE / RLWE / MLWE",
+        "reason": "精读：Advancing Pseudorandom Codes: Beyond Parity Checks and Standard-Model CCA1 Security 的摘要/结论证据足以支持初步判断；与格密码/PQC 雷达相关：可见证据包含 lwe、mlwe、module sis、module-sis、ntru、rlwe、sis。"
+      }
+    ],
+    "Should Skim": [
+      {
+        "title": "Towards Post-Quantum Secure Pharmacovigilance with ML-KEM and ML-DSA",
+        "relevance_label": "A",
+        "relevance_score": 100,
+        "reading_priority_score": 84,
+        "direction": "ML-KEM / ML-DSA / PQC implementation",
+        "reason": "精读：Towards Post-Quantum Secure Pharmacovigilance with ML-KEM and ML-DSA 的摘要/结论证据足以支持初步判断；与格密码/PQC 雷达相关：可见证据包含 dilithium、falcon、kyber、lattice、ml-dsa、ml-kem。"
+      },
+      {
+        "title": "BRaccoon: Concurrently Secure Blind Lattice Signatures from Raccoon",
+        "relevance_label": "A",
+        "relevance_score": 100,
+        "reading_priority_score": 82,
+        "direction": "SIS / Module-SIS",
+        "reason": "精读：BRaccoon: Concurrently Secure Blind Lattice Signatures from Raccoon 的摘要/结论证据足以支持初步判断；与格密码/PQC 雷达相关：可见证据包含 dilithium、falcon、fhe、homomorphic encryption、lattice、ml-dsa、module sis、module-sis。"
+      },
+      {
+        "title": "Rank Ceiling for Twiddle-Perturbation Faults on the Forward NTT",
+        "relevance_label": "A",
+        "relevance_score": 100,
+        "reading_priority_score": 80,
+        "direction": "ML-KEM / ML-DSA / PQC implementation",
+        "reason": "精读：Rank Ceiling for Twiddle-Perturbation Faults on the Forward NTT 的摘要/结论证据足以支持初步判断；与格密码/PQC 雷达相关：可见证据包含 dilithium、falcon、kyber、lattice、ml-dsa、ml-kem。"
+      },
+      {
+        "title": "HRA-Secure Lattice-based Proxy Re-Encryption without Noise Flooding",
+        "relevance_label": "A",
+        "relevance_score": 100,
+        "reading_priority_score": 77,
+        "direction": "LWE / RLWE / MLWE",
+        "reason": "精读：HRA-Secure Lattice-based Proxy Re-Encryption without Noise Flooding 的摘要/结论证据足以支持初步判断；与格密码/PQC 雷达相关：可见证据包含 bgv、fhe、lattice、lwe、mlwe、ntru、rlwe、sis。"
+      },
+      {
+        "title": "On the Secrecy of the Encapsulation Coin in ML-KEM",
+        "relevance_label": "A",
+        "relevance_score": 100,
+        "reading_priority_score": 76,
+        "direction": "ML-KEM / ML-DSA / PQC implementation",
+        "reason": "精读：On the Secrecy of the Encapsulation Coin in ML-KEM 的摘要/结论证据足以支持初步判断；与格密码/PQC 雷达相关：可见证据包含 kyber、lattice、ml-kem。"
+      },
+      {
+        "title": "Q-FE: A Quantum-Native 6G Far-Edge Architecture Securing Industrial IoT Digital Twins via CSIDH-PQC and Asynchronous Federated Learning",
+        "relevance_label": "A",
+        "relevance_score": 100,
+        "reading_priority_score": 76,
+        "direction": "ML-KEM / ML-DSA / PQC implementation",
+        "reason": "精读：Q-FE: A Quantum-Native 6G Far-Edge Architecture Securing Industrial IoT Digital Twins via CSIDH-PQC and Asynchronous Fe… 的摘要/结论证据足以支持初步判断；与格密码/PQC 雷达相关：可见证据包含 kyber、lattice、ml-kem、sis。"
+      },
+      {
+        "title": "A gentle introduction to lattice-based cryptography",
+        "relevance_label": "A",
+        "relevance_score": 100,
+        "reading_priority_score": 75,
+        "direction": "ML-KEM / ML-DSA / PQC implementation",
+        "reason": "精读：A gentle introduction to lattice-based cryptography 的摘要/结论证据足以支持初步判断；与格密码/PQC 雷达相关：可见证据包含 dilithium、falcon、kyber、lattice、ml-dsa、ml-kem。"
+      },
+      {
+        "title": "GPU Acceleration of Learning With Errors KEMs Using OpenACC for Post-Quantum Cryptography",
+        "relevance_label": "A",
+        "relevance_score": 100,
+        "reading_priority_score": 75,
+        "direction": "LWE / RLWE / MLWE",
+        "reason": "精读：GPU Acceleration of Learning With Errors KEMs Using OpenACC for Post-Quantum Cryptography 的摘要/结论证据足以支持初步判断；与格密码/PQC 雷达相关：可见证据包含 dilithium、falcon、kyber、lattice、lwe、ml-dsa、ml-kem、mlwe。"
+      },
+      {
+        "title": "Module Lattice Security (Part II): Module Lattice Reduction via Optimal Sign Selection",
+        "relevance_label": "A",
+        "relevance_score": 100,
+        "reading_priority_score": 75,
+        "direction": "LWE / RLWE / MLWE",
+        "reason": "精读：Module Lattice Security (Part II): Module Lattice Reduction via Optimal Sign Selection 的摘要/结论证据足以支持初步判断；与格密码/PQC 雷达相关：可见证据包含 bkz、dilithium、falcon、kyber、lattice、lll、lwe、ml-dsa。"
+      },
+      {
+        "title": "Post-Quantum Cryptography and Quantum-Safe Security: A Comprehensive Survey",
+        "relevance_label": "A",
+        "relevance_score": 100,
+        "reading_priority_score": 75,
+        "direction": "lattice reduction / BKZ / attacks",
+        "reason": "精读：Post-Quantum Cryptography and Quantum-Safe Security: A Comprehensive Survey 的摘要/结论证据足以支持初步判断；与格密码/PQC 雷达相关：可见证据包含 dilithium、falcon、kyber、lattice、ml-dsa、ml-kem、sis。"
+      },
+      {
+        "title": "Accelerating NTRU+ Key Generation via Hierarchical Batch Inversion",
+        "relevance_label": "A",
+        "relevance_score": 100,
+        "reading_priority_score": 72,
+        "direction": "LWE / RLWE / MLWE",
+        "reason": "精读：Accelerating NTRU+ Key Generation via Hierarchical Batch Inversion 的摘要/结论证据足以支持初步判断；与格密码/PQC 雷达相关：可见证据包含 kyber、lattice、lwe、ml-kem、ntru、sis。"
+      },
+      {
+        "title": "The Best of Both Worlds: Hybrid Authenticated Key Exchange for QKD(N) without Signatures",
+        "relevance_label": "A",
+        "relevance_score": 100,
+        "reading_priority_score": 72,
+        "direction": "ML-KEM / ML-DSA / PQC implementation",
+        "reason": "精读：The Best of Both Worlds: Hybrid Authenticated Key Exchange for QKD(N) without Signatures 的摘要/结论证据足以支持初步判断；与格密码/PQC 雷达相关：可见证据包含 kyber、lattice、ml-kem、sis。"
+      },
+      {
+        "title": "Post-Quantum HAWK Signature Acceleration with RISC-V-Based Hardware-Software Co-Design",
+        "relevance_label": "A",
+        "relevance_score": 100,
+        "reading_priority_score": 70,
+        "direction": "ML-KEM / ML-DSA / PQC implementation",
+        "reason": "精读：Post-Quantum HAWK Signature Acceleration with RISC-V-Based Hardware-Software Co-Design 的摘要/结论证据足以支持初步判断；与格密码/PQC 雷达相关：可见证据包含 dilithium、falcon、lattice、ml-dsa。"
+      },
+      {
+        "title": "Towards Worst-case Hardness for Low-Noise LPN",
+        "relevance_label": "A",
+        "relevance_score": 85,
+        "reading_priority_score": 70,
+        "direction": "LWE / RLWE / MLWE",
+        "reason": "精读：Towards Worst-case Hardness for Low-Noise LPN 的摘要/结论证据足以支持初步判断；与格密码/PQC 雷达相关：可见证据包含 lwe、mlwe、ntru、rlwe、sis。"
+      }
+    ],
+    "Track Later": [
+      {
+        "title": "Bootstrapping is All You Need: Secure Transformer Inference via Improved CKKS Functional Bootstrapping",
+        "relevance_label": "A",
+        "relevance_score": 100,
+        "reading_priority_score": 61,
+        "direction": "FHE / CKKS / lattice ZK / commitments",
+        "reason": "扫读：Bootstrapping is All You Need: Secure Transformer Inference via Improved CKKS Functional Bootstrapping 的摘要/结论证据足以支持初步判断；与格密码/PQC 雷达相关：可见证据包含 ckks、fhe、fully homomorphic、homomorphic encryption、lattice。"
+      },
+      {
+        "title": "Butterfly Effect: Multi-Key FHE from Ring-LWR",
+        "relevance_label": "A",
+        "relevance_score": 100,
+        "reading_priority_score": 61,
+        "direction": "LWE / RLWE / MLWE",
+        "reason": "精读：Butterfly Effect: Multi-Key FHE from Ring-LWR 的摘要/结论证据足以支持初步判断；与格密码/PQC 雷达相关：可见证据包含 dilithium、falcon、fhe、fully homomorphic、homomorphic encryption、kyber、lattice、lwe。"
+      },
+      {
+        "title": "Character Block Encodings for Discrete CKKS: Single-Level LUTs and Low-Depth Arithmetic",
+        "relevance_label": "A",
+        "relevance_score": 100,
+        "reading_priority_score": 61,
+        "direction": "FHE / CKKS / lattice ZK / commitments",
+        "reason": "精读：Character Block Encodings for Discrete CKKS: Single-Level LUTs and Low-Depth Arithmetic 的摘要/结论证据足以支持初步判断；与格密码/PQC 雷达相关：可见证据包含 ckks、fhe、lattice、sis。"
+      },
+      {
+        "title": "Faster Polynomial Evaluations for SIMD FHEs and Application to BGV in HElib",
+        "relevance_label": "A",
+        "relevance_score": 100,
+        "reading_priority_score": 61,
+        "direction": "FHE / CKKS / lattice ZK / commitments",
+        "reason": "扫读：Faster Polynomial Evaluations for SIMD FHEs and Application to BGV in HElib 的摘要/结论证据足以支持初步判断；与格密码/PQC 雷达相关：可见证据包含 bgv、fhe、lattice。"
+      },
+      {
+        "title": "Finite-Field Arithmetic in CKKS",
+        "relevance_label": "A",
+        "relevance_score": 100,
+        "reading_priority_score": 61,
+        "direction": "FHE / CKKS / lattice ZK / commitments",
+        "reason": "精读：Finite-Field Arithmetic in CKKS 的摘要/结论证据足以支持初步判断；与格密码/PQC 雷达相关：可见证据包含 bgv、ckks、dilithium、falcon、fhe、homomorphic encryption、kyber、lattice。"
+      },
+      {
+        "title": "HEGIDE: A MIMD Oblivious Processor for Private Function Evaluation over CKKS",
+        "relevance_label": "A",
+        "relevance_score": 100,
+        "reading_priority_score": 61,
+        "direction": "FHE / CKKS / lattice ZK / commitments",
+        "reason": "精读：HEGIDE: A MIMD Oblivious Processor for Private Function Evaluation over CKKS 的摘要/结论证据足以支持初步判断；与格密码/PQC 雷达相关：可见证据包含 ckks、dilithium、falcon、fhe、kyber、lattice、ml-dsa、ml-kem。"
+      },
+      {
+        "title": "Latency-Aware, High-Throughput Homomorphic AES Evaluation with CKKS",
+        "relevance_label": "A",
+        "relevance_score": 100,
+        "reading_priority_score": 61,
+        "direction": "FHE / CKKS / lattice ZK / commitments",
+        "reason": "扫读：Latency-Aware, High-Throughput Homomorphic AES Evaluation with CKKS 的摘要/结论证据足以支持初步判断；与格密码/PQC 雷达相关：可见证据包含 ckks、fhe、fully homomorphic、homomorphic encryption、lattice、tfhe。"
+      },
+      {
+        "title": "Practical Homomorphic LSTM via Programmable Bootstrapping",
+        "relevance_label": "A",
+        "relevance_score": 100,
+        "reading_priority_score": 61,
+        "direction": "FHE / CKKS / lattice ZK / commitments",
+        "reason": "精读：Practical Homomorphic LSTM via Programmable Bootstrapping 的摘要/结论证据足以支持初步判断；与格密码/PQC 雷达相关：可见证据包含 fhe、fully homomorphic、homomorphic encryption、lattice、lwe、mlwe、tfhe。"
+      },
+      {
+        "title": "Practical Anonymous Two-Party Gradient Boosting Decision Tree",
+        "relevance_label": "A",
+        "relevance_score": 100,
+        "reading_priority_score": 57,
+        "direction": "LWE / RLWE / MLWE",
+        "reason": "暂存：Practical Anonymous Two-Party Gradient Boosting Decision Tree 的摘要/结论证据足以支持初步判断；与雷达的 FHE/隐私计算背景线相关，但更像应用或系统论文；建议作为 peripheral/temporary track，而不是核心格攻击或参数估计论文。"
+      },
+      {
+        "title": "FlipFields-New Building Blocks for Cryptograpic Primitives?",
+        "relevance_label": "A",
+        "relevance_score": 100,
+        "reading_priority_score": 51,
+        "direction": "LWE / RLWE / MLWE",
+        "reason": "精读：FlipFields-New Building Blocks for Cryptograpic Primitives? 的摘要/结论证据足以支持初步判断；与格密码/PQC 雷达相关：可见证据包含 lattice、lwe、ntru、sis。"
+      },
+      {
+        "title": "Implementation of Learning with Errors in Non-Commuting Multiplicative Groups",
+        "relevance_label": "A",
+        "relevance_score": 100,
+        "reading_priority_score": 49,
+        "direction": "LWE / RLWE / MLWE",
+        "reason": "精读：Implementation of Learning with Errors in Non-Commuting Multiplicative Groups 的摘要/结论证据足以支持初步判断；与格密码/PQC 雷达相关：可见证据包含 bkz、lwe、mlwe、module sis、module-sis、ntru、sis。"
+      },
+      {
+        "title": "Formula Freshness for Staged Hybrid Authenticated Key Exchange",
+        "relevance_label": "A",
+        "relevance_score": 85,
+        "reading_priority_score": 69,
+        "direction": "ML-KEM / ML-DSA / PQC implementation",
+        "reason": "精读：Formula Freshness for Staged Hybrid Authenticated Key Exchange 的摘要/结论证据足以支持初步判断；与格密码/PQC 雷达相关：可见证据包含 kyber、lattice、ml-kem。"
+      },
+      {
+        "title": "Atlantis: Lattice-based Anonymous Tokens with Private Metadata Bit",
+        "relevance_label": "A",
+        "relevance_score": 80,
+        "reading_priority_score": 69,
+        "direction": "ML-KEM / ML-DSA / PQC implementation",
+        "reason": "精读：Atlantis: Lattice-based Anonymous Tokens with Private Metadata Bit 的摘要/结论证据足以支持初步判断；与格密码/PQC 雷达相关：可见证据包含 dilithium、falcon、fhe、homomorphic encryption、lattice、ml-dsa。"
+      },
+      {
+        "title": "What Can Verifiable Decapsulation Tests Certify? Pass Bounds and Fault-Recognition Limits for FO-Based KEMs",
+        "relevance_label": "A",
+        "relevance_score": 80,
+        "reading_priority_score": 68,
+        "direction": "ML-KEM / ML-DSA / PQC implementation",
+        "reason": "精读：What Can Verifiable Decapsulation Tests Certify? Pass Bounds and Fault-Recognition Limits for FO-Based KEMs 的摘要/结论证据足以支持初步判断；与格密码/PQC 雷达相关：可见证据包含 kyber、lattice、ml-kem。"
+      },
+      {
+        "title": "Grand Danois: Succinct Multilinear Polynomial Commitments over Lattices",
+        "relevance_label": "B",
+        "relevance_score": 75,
+        "reading_priority_score": 64,
+        "direction": "LWE / RLWE / MLWE",
+        "reason": "精读：Grand Danois: Succinct Multilinear Polynomial Commitments over Lattices 的摘要/结论证据足以支持初步判断；与格密码/PQC 雷达相关：可见证据包含 lwe、module sis、module-sis、ntru、sis。"
+      },
+      {
+        "title": "Witness Pseudorandom Functions for Vector Commitments and Applications",
+        "relevance_label": "B",
+        "relevance_score": 70,
+        "reading_priority_score": 63,
+        "direction": "LWE / RLWE / MLWE",
+        "reason": "精读：Witness Pseudorandom Functions for Vector Commitments and Applications 的摘要/结论证据足以支持初步判断；与格密码/PQC 雷达相关：可见证据包含 lwe、module sis、module-sis、ntru、sis。"
+      },
+      {
+        "title": "Privacy-preserving collective reinforcement learning using fully homomorphic encryption in usage-based insurance",
+        "relevance_label": "B",
+        "relevance_score": 70,
+        "reading_priority_score": 44,
+        "direction": "FHE / CKKS / lattice ZK / commitments",
+        "reason": "暂存：Privacy-preserving collective reinforcement learning using fully homomorphic encryption in usage-based insurance 的证据仍偏元数据层面；与格密码/PQC 雷达相关：可见证据包含 fhe、fully homomorphic、homomorphic encryption、lattice。"
+      },
+      {
+        "title": "Asymmetric Message Franking in the Plain Model: Generic and Efficient Constructions",
+        "relevance_label": "B",
+        "relevance_score": 70,
+        "reading_priority_score": 35,
+        "direction": "LWE / RLWE / MLWE",
+        "reason": "精读：Asymmetric Message Franking in the Plain Model: Generic and Efficient Constructions 的摘要/结论证据足以支持初步判断；与格密码/PQC 雷达相关：可见证据包含 bkz、lwe、mlwe、module sis、module-sis、ntru、sis。"
+      },
+      {
+        "title": "Decentralizing Traitor Tracing: A Multi-Authority Approach",
+        "relevance_label": "B",
+        "relevance_score": 70,
+        "reading_priority_score": 35,
+        "direction": "LWE / RLWE / MLWE",
+        "reason": "精读：Decentralizing Traitor Tracing: A Multi-Authority Approach 的摘要/结论证据足以支持初步判断；与格密码/PQC 雷达相关：可见证据包含 bkz、lwe、mlwe、module sis、module-sis、ntru、sis。"
+      },
+      {
+        "title": "Permissionless Consensus from a Common Random String",
+        "relevance_label": "B",
+        "relevance_score": 70,
+        "reading_priority_score": 35,
+        "direction": "LWE / RLWE / MLWE",
+        "reason": "精读：Permissionless Consensus from a Common Random String 的摘要/结论证据足以支持初步判断；与格密码/PQC 雷达相关：可见证据包含 bkz、lwe、mlwe、module sis、module-sis、ntru、sis。"
+      },
+      {
+        "title": "Preimage sampleable function families without discrete Gaussians",
+        "relevance_label": "B",
+        "relevance_score": 65,
+        "reading_priority_score": 58,
+        "direction": "other PQC / adjacent crypto",
+        "reason": "精读：Preimage sampleable function families without discrete Gaussians 的摘要/结论证据足以支持初步判断；与格密码/PQC 雷达相关：可见证据包含 lattice、module sis、module-sis、sis。"
+      },
+      {
+        "title": "Authenticated and Incremental Single-Server Private Information Retrieval",
+        "relevance_label": "C",
+        "relevance_score": 55,
+        "reading_priority_score": 50,
+        "direction": "LWE / RLWE / MLWE",
+        "reason": "精读：Authenticated and Incremental Single-Server Private Information Retrieval 的摘要/结论证据足以支持初步判断；与格密码/PQC 雷达相关：可见证据包含 lwe、mlwe、ntru、rlwe、sis。"
+      },
+      {
+        "title": "A Post-Quantum Commitment Scheme from Richelot Isogeny Walks on Superspecial Genus-2 Jacobians",
+        "relevance_label": "C",
+        "relevance_score": 40,
+        "reading_priority_score": 49,
+        "direction": "SIS / Module-SIS",
+        "reason": "精读：A Post-Quantum Commitment Scheme from Richelot Isogeny Walks on Superspecial Genus-2 Jacobians 的摘要/结论证据足以支持初步判断；与格密码/PQC 雷达相关：可见证据包含 module sis、module-sis、sis。"
+      }
+    ],
+    "Ignore / Peripheral": [
+      {
+        "title": "Achieving Shannon Capacity for Computationally Bounded Errors",
+        "relevance_label": "C",
+        "relevance_score": 55,
+        "reading_priority_score": 24,
+        "direction": "LWE / RLWE / MLWE",
+        "reason": "精读：Achieving Shannon Capacity for Computationally Bounded Errors 的摘要/结论证据足以支持初步判断；与格密码/PQC 雷达相关：可见证据包含 bkz、lwe、mlwe、module sis、module-sis、ntru、sis。"
+      },
+      {
+        "title": "KAT-Seeded Fuzzing of Stateful Hash-Based Signature Verification in liboqs",
+        "relevance_label": "C",
+        "relevance_score": 50,
+        "reading_priority_score": 27,
+        "direction": "other PQC / adjacent crypto",
+        "reason": "精读：KAT-Seeded Fuzzing of Stateful Hash-Based Signature Verification in liboqs 的摘要/结论证据足以支持初步判断；与格密码/PQC 雷达相关：可见证据包含 dilithium、falcon、kyber、ml-dsa、ml-kem。"
+      },
+      {
+        "title": "Towards Post-Quantum Secure eSIM Provisioning Protocols",
+        "relevance_label": "C",
+        "relevance_score": 50,
+        "reading_priority_score": 27,
+        "direction": "ML-KEM / ML-DSA / PQC implementation",
+        "reason": "精读：Towards Post-Quantum Secure eSIM Provisioning Protocols 的摘要/结论证据足以支持初步判断；与格密码/PQC 雷达相关：可见证据包含 sis。"
+      },
+      {
+        "title": "Pseudo-Oil Subspaces and the Geometry of Underdetermined MQ Problems",
+        "relevance_label": "C",
+        "relevance_score": 45,
+        "reading_priority_score": 23,
+        "direction": "lattice reduction / BKZ / attacks",
+        "reason": "精读：Pseudo-Oil Subspaces and the Geometry of Underdetermined MQ Problems 的摘要/结论证据足以支持初步判断；与格密码/PQC 雷达相关：可见证据包含 lattice、sis。"
+      },
+      {
+        "title": "AICE: An Arithmetic-Oriented Stream Cipher for Heterogeneous Computing",
+        "relevance_label": "C",
+        "relevance_score": 45,
+        "reading_priority_score": 19,
+        "direction": "lattice reduction / BKZ / attacks",
+        "reason": "精读：AICE: An Arithmetic-Oriented Stream Cipher for Heterogeneous Computing 的摘要/结论证据足以支持初步判断；与格密码/PQC 雷达相关：可见证据包含 bkz、lattice、lwe、mlwe、module sis、module-sis、sis。"
+      },
+      {
+        "title": "New Constructions of Functional Adaptor Signatures: Broader Functions and Improved Efficiency",
+        "relevance_label": "C",
+        "relevance_score": 40,
+        "reading_priority_score": 28,
+        "direction": "FHE / CKKS / lattice ZK / commitments",
+        "reason": "暂存：New Constructions of Functional Adaptor Signatures: Broader Functions and Improved Efficiency 的摘要/结论证据足以支持初步判断；与雷达的 FHE/隐私计算背景线相关，但更像应用或系统论文；建议作为 peripheral/temporary track，而不是核心格攻击或参数估计论文。"
+      },
+      {
+        "title": "Identity-Based Revocable and Linkable Ring Signature",
+        "relevance_label": "C",
+        "relevance_score": 40,
+        "reading_priority_score": 25,
+        "direction": "other PQC / adjacent crypto",
+        "reason": "忽略：Identity-Based Revocable and Linkable Ring Signature 的摘要/结论证据足以支持初步判断；当前证据未显示明确格密码/PQC 锚点；不应仅因关键词进入核心阅读队列。"
+      },
+      {
+        "title": "Algorithms for solving the isogeny problem with oriented elliptic curves",
+        "relevance_label": "C",
+        "relevance_score": 40,
+        "reading_priority_score": 22,
+        "direction": "other PQC / adjacent crypto",
+        "reason": "忽略：Algorithms for solving the isogeny problem with oriented elliptic curves 的摘要/结论证据足以支持初步判断；当前证据未显示明确格密码/PQC 锚点；不应仅因关键词进入核心阅读队列。"
+      },
+      {
+        "title": "Fast Bounded-Independence Functions and Their Duals",
+        "relevance_label": "C",
+        "relevance_score": 40,
+        "reading_priority_score": 22,
+        "direction": "other PQC / adjacent crypto",
+        "reason": "忽略：Fast Bounded-Independence Functions and Their Duals 的摘要/结论证据足以支持初步判断；当前证据未显示明确格密码/PQC 锚点；不应仅因关键词进入核心阅读队列。"
+      },
+      {
+        "title": "LendLocked: Privacy & Transparency for Digital Library Lending",
+        "relevance_label": "C",
+        "relevance_score": 40,
+        "reading_priority_score": 18,
+        "direction": "other PQC / adjacent crypto",
+        "reason": "精读：LendLocked: Privacy & Transparency for Digital Library Lending 的摘要/结论证据足以支持初步判断；与格密码/PQC 雷达相关：可见证据包含 bkz、lwe、mlwe、module sis、module-sis、sis。"
+      }
+    ]
+  },
+  "trend_summary": [
+    {
+      "direction": "LWE / RLWE / MLWE",
+      "count": 18,
+      "status": "core",
+      "what_appeared": [
+        "From Perfect to Approximate Hints: Efficient LWE Secret Recovery Leveraging Low Hamming Weight",
+        "Advancing Pseudorandom Codes: Beyond Parity Checks and Standard-Model CCA1 Security",
+        "HRA-Secure Lattice-based Proxy Re-Encryption without Noise Flooding",
+        "Module Lattice Security (Part II): Module Lattice Reduction via Optimal Sign Selection",
+        "GPU Acceleration of Learning With Errors KEMs Using OpenACC for Post-Quantum Cryptography"
+      ],
+      "why_it_matters": "These papers affect lattice assumptions, parameter reasoning, and PQC security estimates."
+    },
+    {
+      "direction": "SIS / Module-SIS",
+      "count": 2,
+      "status": "core",
+      "what_appeared": [
+        "BRaccoon: Concurrently Secure Blind Lattice Signatures from Raccoon",
+        "A Post-Quantum Commitment Scheme from Richelot Isogeny Walks on Superspecial Genus-2 Jacobians"
+      ],
+      "why_it_matters": "These papers are relevant to lattice commitments, signatures, trapdoors, and Module-SIS primitives."
+    },
+    {
+      "direction": "lattice reduction / BKZ / attacks",
+      "count": 3,
+      "status": "core",
+      "what_appeared": [
+        "Post-Quantum Cryptography and Quantum-Safe Security: A Comprehensive Survey",
+        "Pseudo-Oil Subspaces and the Geometry of Underdetermined MQ Problems",
+        "AICE: An Arithmetic-Oriented Stream Cipher for Heterogeneous Computing"
+      ],
+      "why_it_matters": "These papers shape attack-cost models and reproducible lattice-cryptanalysis baselines."
+    },
+    {
+      "direction": "ML-KEM / ML-DSA / PQC implementation",
+      "count": 11,
+      "status": "core",
+      "what_appeared": [
+        "Towards Post-Quantum Secure Pharmacovigilance with ML-KEM and ML-DSA",
+        "Rank Ceiling for Twiddle-Perturbation Faults on the Forward NTT",
+        "Q-FE: A Quantum-Native 6G Far-Edge Architecture Securing Industrial IoT Digital Twins via CSIDH-PQC and Asynchronous Federated Learning",
+        "On the Secrecy of the Encapsulation Coin in ML-KEM",
+        "A gentle introduction to lattice-based cryptography"
+      ],
+      "why_it_matters": "These papers support PQC deployment, implementation security, and standard-scheme reading queues."
+    },
+    {
+      "direction": "FHE / CKKS / lattice ZK / commitments",
+      "count": 9,
+      "status": "peripheral",
+      "what_appeared": [
+        "Bootstrapping is All You Need: Secure Transformer Inference via Improved CKKS Functional Bootstrapping",
+        "Character Block Encodings for Discrete CKKS: Single-Level LUTs and Low-Depth Arithmetic",
+        "Latency-Aware, High-Throughput Homomorphic AES Evaluation with CKKS",
+        "HEGIDE: A MIMD Oblivious Processor for Private Function Evaluation over CKKS",
+        "Faster Polynomial Evaluations for SIMD FHEs and Application to BGV in HElib"
+      ],
+      "why_it_matters": "These papers may support FHE, lattice-ZK, and commitment background, but application papers need careful scoping."
+    },
+    {
+      "direction": "AI-assisted lattice cryptanalysis",
+      "count": 0,
+      "status": "core",
+      "what_appeared": [],
+      "why_it_matters": "These papers can inform AI4Lattice experiments only when tied to LWE/RLWE/MLWE, BKZ, or cryptanalysis."
+    },
+    {
+      "direction": "other PQC / adjacent crypto",
+      "count": 6,
+      "status": "background",
+      "what_appeared": [
+        "Preimage sampleable function families without discrete Gaussians",
+        "KAT-Seeded Fuzzing of Stateful Hash-Based Signature Verification in liboqs",
+        "Identity-Based Revocable and Linkable Ring Signature",
+        "Fast Bounded-Independence Functions and Their Duals",
+        "Algorithms for solving the isogeny problem with oriented elliptic curves"
+      ],
+      "why_it_matters": "These papers are useful context when they connect back to lattice/PQC radar decisions."
+    }
+  ],
+  "rationale_policy": {
+    "source": "lattice_digest.recommendation_rationale",
+    "json_schema": "monthly-only rationale payload; Daily/Weekly JSON remains unchanged",
+    "no_external_llm": true,
+    "keyword_only_is_insufficient": true
+  },
+  "TODO_VERIFY": {
+    "papers_lacking_abstract": [
+      "Privacy-preserving collective reinforcement learning using fully homomorphic encryption in usage-based insurance"
+    ],
+    "title_only_or_metadata_supported_rationales": [],
+    "source_starved_days": [
+      "2026-06-02",
+      "2026-06-04",
+      "2026-06-05",
+      "2026-06-07",
+      "2026-06-12"
+    ],
+    "missing_daily_files": [
+      "2026-06-19",
+      "2026-06-20",
+      "2026-06-21",
+      "2026-06-22",
+      "2026-06-23",
+      "2026-06-24",
+      "2026-06-25",
+      "2026-06-26",
+      "2026-06-27",
+      "2026-06-28",
+      "2026-06-29",
+      "2026-06-30"
+    ],
+    "missing_source_health_records": []
+  }
+}

@@ -299,8 +299,14 @@ def _cue_summary(sentences: list[str], cues: tuple[str, ...], fallback: str) -> 
 
 def _matched_terms(text: str, terms: tuple[str, ...]) -> list[str]:
     lowered = text.lower()
-    matches = [term for term in terms if term in lowered]
+    matches = [term for term in terms if _contains_term(lowered, term)]
     return sorted(set(matches), key=str.lower)
+
+
+def _contains_term(text: str, term: str) -> bool:
+    escaped = re.escape(term.lower())
+    escaped = escaped.replace(r"\ ", r"[\s-]+")
+    return re.search(rf"(?<![a-z0-9]){escaped}(?![a-z0-9])", text) is not None
 
 
 def _radar_relevance(title: str, abstract: str, notes: str, keywords: list[str], relevant_terms: list[str]) -> str:
