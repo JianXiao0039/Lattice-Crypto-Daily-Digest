@@ -9,6 +9,7 @@ from datetime import date, datetime, timedelta, timezone
 from pathlib import Path
 from typing import Any
 
+from lattice_digest.recommendation_rationale import build_recommendation_rationale
 from lattice_digest.digest_sections import (
     AI_LATTICE,
     HIGH_PRIORITY,
@@ -43,6 +44,7 @@ REVIEW_STATUSES = (
     "NOT_RELEVANT",
 )
 QUEUE_PRIORITIES = ("HIGH", "MEDIUM", "LOW")
+READING_ACTIONS = ("精读", "扫读", "暂存", "忽略")
 
 MAIN_RESEARCH_SECTIONS = (
     AI_LATTICE,
@@ -192,6 +194,25 @@ def default_reading_status(priority: str) -> str:
     return "TODO_SKIM"
 
 
+def reading_action_for_record(record: dict[str, Any]) -> str:
+    label = str(record.get("relevance_label") or "D")
+    score = int(record.get("relevance_score") or record.get("reading_priority_score") or 0)
+    confidence = build_recommendation_rationale(record).confidence
+    sections = set(_stable_sections(record.get("research_sections")))
+    core_section = bool(sections & set(MAIN_RESEARCH_SECTIONS))
+    if label == "A" and score >= 80 and core_section and confidence in {
+        "abstract_supported",
+        "conclusion_supported",
+        "repository_note_supported",
+    }:
+        return "精读"
+    if label in {"A", "B"} and score >= 60 and core_section:
+        return "扫读"
+    if label in {"B", "C"} and score >= 40:
+        return "暂存"
+    return "忽略"
+
+
 def should_import_record(record: dict[str, Any]) -> bool:
     sections = set(_stable_sections(record.get("research_sections")))
     buckets = set(_stable_report_buckets(record.get("report_buckets")))
@@ -203,6 +224,7 @@ def should_import_record(record: dict[str, Any]) -> bool:
 
 def _records_from_weekly_payload(payload: dict[str, Any]) -> list[dict[str, Any]]:
     records_by_key: dict[str, dict[str, Any]] = {}
+    week_id = str(payload.get("week_id") or "")
     sections = payload.get("sections")
     if not isinstance(sections, dict):
         return []
@@ -213,6 +235,8 @@ def _records_from_weekly_payload(payload: dict[str, Any]) -> list[dict[str, Any]
             if not isinstance(record, dict):
                 continue
             item = dict(record)
+            if week_id:
+                item["seen_in_weekly"] = _stable_list([*_stable_list(item.get("seen_in_weekly")), week_id])
             existing_sections = _stable_sections(item.get("research_sections"))
             existing_buckets = _stable_report_buckets(item.get("report_buckets"))
             if section_name in TOPICAL_SECTION_ORDER:
@@ -238,6 +262,8 @@ def _records_from_weekly_payload(payload: dict[str, Any]) -> list[dict[str, Any]
                 if not isinstance(record, dict):
                     continue
                 item = dict(record)
+                if week_id:
+                    item["seen_in_weekly"] = _stable_list([*_stable_list(item.get("seen_in_weekly")), week_id])
                 item["research_sections"] = _stable_sections(item.get("research_sections"))
                 item["report_buckets"] = _stable_report_buckets([*_stable_report_buckets(item.get("report_buckets")), str(bucket_name)])
                 key = _record_key(item)
@@ -272,6 +298,7 @@ def _daily_payload_records(path: Path) -> list[dict[str, Any]]:
             continue
         item = dict(record)
         item.setdefault("seen_dates", [day])
+        item["seen_in_daily"] = _stable_list([*_stable_list(item.get("seen_in_daily")), day])
         item.setdefault("seen_sources", [str(item.get("source") or "unknown")])
         item.setdefault("dedup_key", _record_key(item))
         records.append(item)
@@ -394,23 +421,51 @@ def _history(action: str, timestamp: str, *, field: str | None = None, old: obje
 
 def _queue_record(record: dict[str, Any], timestamp: str) -> dict[str, Any]:
     sections = _stable_sections(record.get("research_sections"))
+    rationale = build_recommendation_rationale(record).to_dict()
+    seen_dates = _stable_list(record.get("seen_dates")) or ([record.get("publication_date")] if record.get("publication_date") else [])
+    source_health_context = _source_health_context(record)
     item = {
         "schema_version": SCHEMA_VERSION,
+        "paper_id": _clean(record.get("paper_id") or _record_key(record)),
         "dedup_key": _record_key(record),
         "title": _clean(record.get("title") or ""),
+        "authors": _stable_list(record.get("authors")),
+        "source": _clean(record.get("source") or ""),
         "source_url": _clean(record.get("source_url") or record.get("url") or ""),
         "doi": _clean(record.get("doi") or ""),
         "arxiv_id": _clean(record.get("arxiv_id") or ""),
+        "eprint_id": _clean(record.get("eprint_id") or record.get("iacr_id") or ""),
         "publication_date": _clean(_publication_date(record)),
+        "date": _clean(_publication_date(record)),
         "relevance_label": _clean(record.get("relevance_label") or "D"),
         "relevance_score": int(record.get("relevance_score") or record.get("reading_priority_score") or 0),
+        "class_label": _clean(record.get("relevance_label") or "D"),
+        "score": int(record.get("relevance_score") or record.get("reading_priority_score") or 0),
+        "reading_priority_score": int(record.get("reading_priority_score") or record.get("reading_priority") or record.get("relevance_score") or 0),
         "research_sections": sections,
+        "direction_tags": _stable_list([*sections, *_stable_list(record.get("taxonomy_tags"))]),
+        "radar_track": track_for_record(record),
         "report_buckets": _stable_report_buckets(record.get("report_buckets")),
         "ranking_explanation": record.get("ranking_explanation") if isinstance(record.get("ranking_explanation"), dict) else {},
-        "seen_dates": _stable_list(record.get("seen_dates")) or ([record.get("publication_date")] if record.get("publication_date") else []),
+        "rationale_problem": rationale["problem_summary"],
+        "rationale_method": rationale["method_summary"],
+        "rationale_contribution": rationale["contribution_summary"],
+        "rationale_relevance": rationale["radar_relevance"],
+        "rationale_caveat": rationale["caveat"],
+        "evidence_basis": rationale["evidence_basis"],
+        "rationale_confidence": rationale["confidence"],
+        "TODO_VERIFY": rationale["todo_verify"],
+        "source_health_context": source_health_context,
+        "seen_dates": seen_dates,
         "seen_sources": _stable_list(record.get("seen_sources")) or ([str(record.get("source"))] if record.get("source") else []),
+        "first_seen": min(seen_dates) if seen_dates else "",
+        "last_seen": max(seen_dates) if seen_dates else "",
+        "seen_in_daily": _stable_list(record.get("seen_in_daily")) or seen_dates,
+        "seen_in_weekly": _stable_list(record.get("seen_in_weekly")),
+        "seen_in_monthly": _stable_list(record.get("seen_in_monthly")),
         "queue_priority": queue_priority_for_record(record),
         "track": track_for_record(record),
+        "reading_action": reading_action_for_record(record),
         "reading_status": "",
         "review_status": "TODO_VERIFY",
         "zotero_key": "",
@@ -422,6 +477,18 @@ def _queue_record(record: dict[str, Any], timestamp: str) -> dict[str, Any]:
     }
     item["reading_status"] = default_reading_status(item["queue_priority"])
     return item
+
+
+def _source_health_context(record: dict[str, Any]) -> dict[str, Any]:
+    context = {
+        "source_health_ref": _clean(record.get("source_health_ref") or record.get("source") or ""),
+        "source_health_status": _clean(record.get("source_health_status") or ""),
+        "source_starved_context": bool(record.get("source_starved") or record.get("source_starved_status") is True),
+    }
+    health = record.get("source_health")
+    if isinstance(health, list):
+        context["source_health_entries"] = len([item for item in health if isinstance(item, dict)])
+    return context
 
 
 def _merge_queue_record(existing: dict[str, Any], incoming: dict[str, Any], timestamp: str) -> dict[str, Any]:
@@ -455,6 +522,17 @@ def _merge_queue_record(existing: dict[str, Any], incoming: dict[str, Any], time
             continue
         if key == "seen_sources":
             merged[key] = sorted({*_stable_list(merged.get(key)), *_stable_list(value)})
+            continue
+        if key in {"seen_in_daily", "seen_in_weekly", "seen_in_monthly"}:
+            merged[key] = sorted({*_stable_list(merged.get(key)), *_stable_list(value)})
+            continue
+        if key == "first_seen":
+            values = [item for item in [merged.get(key), value] if item]
+            merged[key] = min(str(item) for item in values) if values else ""
+            continue
+        if key == "last_seen":
+            values = [item for item in [merged.get(key), value] if item]
+            merged[key] = max(str(item) for item in values) if values else ""
             continue
         if key == "research_sections":
             merged[key] = _stable_sections([*_stable_list(merged.get(key)), *_stable_list(value)])
@@ -575,8 +653,10 @@ def _record_line(record: dict[str, Any]) -> str:
     score = int(record.get("relevance_score") or 0)
     status = _clean(record.get("reading_status") or "")
     review = _clean(record.get("review_status") or "")
+    action = _clean(record.get("reading_action") or "")
     url = _clean(record.get("source_url") or "")
-    return f"- {title}｜{label} / {score}｜{record.get('queue_priority')}｜{status}｜{review}｜key: {key}｜{url}"
+    reason = _clean(record.get("rationale_relevance") or record.get("rationale_caveat") or "")
+    return f"- {title}｜{label} / {score}｜{record.get('queue_priority')}｜{action}｜{status}｜{review}｜key: {key}｜{reason}｜{url}"
 
 
 def render_dashboard(state: dict[str, Any]) -> str:
