@@ -9,7 +9,7 @@ from datetime import date, datetime, timedelta, timezone
 from pathlib import Path
 from typing import Any
 
-from lattice_digest.recommendation_rationale import build_recommendation_rationale
+from lattice_digest.recommendation_rationale import build_bilingual_rationale, build_recommendation_rationale
 from lattice_digest.digest_sections import (
     AI_LATTICE,
     HIGH_PRIORITY,
@@ -45,6 +45,17 @@ REVIEW_STATUSES = (
 )
 QUEUE_PRIORITIES = ("HIGH", "MEDIUM", "LOW")
 READING_ACTIONS = ("精读", "扫读", "暂存", "忽略")
+RESEARCH_DIRECTIONS = (
+    "LWE / RLWE / MLWE",
+    "SIS / Module-SIS",
+    "lattice reduction / BKZ / cryptanalysis",
+    "ML-KEM / ML-DSA / PQC implementation",
+    "FHE / CKKS",
+    "ZK / commitments",
+    "chameleon hash / signatures / anonymous authentication",
+    "AI-assisted lattice cryptanalysis / AI4LC",
+    "adjacent crypto / background",
+)
 
 MAIN_RESEARCH_SECTIONS = (
     AI_LATTICE,
@@ -175,6 +186,53 @@ def track_for_record(record: dict[str, Any]) -> str:
         if section in sections:
             return section
     return "Other"
+
+
+def research_direction_for_record(record: dict[str, Any]) -> str:
+    sections = set(_stable_sections(record.get("research_sections")))
+    text = " ".join(
+        [
+            str(record.get("title") or ""),
+            str(record.get("abstract") or ""),
+            " ".join(_stable_list(record.get("taxonomy_tags"))),
+            " ".join(_stable_list(record.get("keywords_matched"))),
+            " ".join(sections),
+        ]
+    ).lower()
+    if AI_LATTICE in sections or any(term in text for term in ("ai4lc", "ai-assisted", "neural", "transformer", "swin", "coordinate selection")):
+        return "AI-assisted lattice cryptanalysis / AI4LC"
+    if LATTICE_REDUCTION_ATTACKS in sections or any(term in text for term in ("bkz", "g6k", "fplll", "lattice reduction", "cryptanalysis", "primal attack", "dual attack", "hybrid attack")):
+        return "lattice reduction / BKZ / cryptanalysis"
+    if SIS_NTRU_COMMITMENTS in sections or any(term in text for term in ("module-sis", "module sis", "short integer solution", "chameleon hash", "ring signature", "blind signature")):
+        return "chameleon hash / signatures / anonymous authentication" if any(term in text for term in ("chameleon hash", "signature", "anonymous", "blind")) else "SIS / Module-SIS"
+    if PQC_STANDARDS in sections or any(term in text for term in ("ml-kem", "kyber", "ml-dsa", "dilithium", "falcon", "pqc implementation", "side-channel", "fault")):
+        return "ML-KEM / ML-DSA / PQC implementation"
+    if any(term in text for term in ("fhe", "fully homomorphic", "ckks", "bfv", "bgv", "tfhe", "homomorphic encryption")):
+        return "FHE / CKKS"
+    if any(term in text for term in ("zero-knowledge", "zk", "commitment", "commitments")):
+        return "ZK / commitments"
+    if LWE_FAMILY in sections or any(term in text for term in ("lwe", "rlwe", "mlwe", "module-lwe", "ring-lwe")):
+        return "LWE / RLWE / MLWE"
+    return "adjacent crypto / background"
+
+
+def todo_verify_categories_for_record(record: dict[str, Any], todo_items: list[str]) -> list[str]:
+    text = " ".join([str(record.get("title") or ""), str(record.get("abstract") or ""), " ".join(todo_items)]).lower()
+    categories: list[str] = []
+    checks = [
+        ("proof / security model", ("proof", "security", "reduction", "model", "证明", "安全")),
+        ("parameter claim", ("parameter", "margin", "参数")),
+        ("benchmark / implementation", ("benchmark", "implementation", "experiment", "performance", "实现", "实验")),
+        ("construction details", ("construction", "construct", "protocol", "scheme", "primitive", "构造")),
+        ("attack model", ("attack", "cryptanalysis", "side-channel", "fault", "攻击")),
+        ("dataset / evaluation", ("dataset", "evaluation", "evaluate", "数据集", "评估")),
+        ("relation to standard LWE/RLWE/MLWE/SIS", ("lwe", "rlwe", "mlwe", "sis", "module-sis")),
+        ("source-health / metadata incompleteness", ("metadata", "source", "abstract is missing", "conclusion/full text", "来源", "元数据")),
+    ]
+    for category, terms in checks:
+        if any(term in text for term in terms):
+            categories.append(category)
+    return categories or ["source-health / metadata incompleteness"]
 
 
 def queue_priority_for_record(record: dict[str, Any]) -> str:
@@ -422,8 +480,11 @@ def _history(action: str, timestamp: str, *, field: str | None = None, old: obje
 def _queue_record(record: dict[str, Any], timestamp: str) -> dict[str, Any]:
     sections = _stable_sections(record.get("research_sections"))
     rationale = build_recommendation_rationale(record).to_dict()
+    bilingual = build_bilingual_rationale(record, top_paper=True).to_dict()
     seen_dates = _stable_list(record.get("seen_dates")) or ([record.get("publication_date")] if record.get("publication_date") else [])
     source_health_context = _source_health_context(record)
+    research_direction = research_direction_for_record(record)
+    todo_categories = todo_verify_categories_for_record(record, rationale["todo_verify"])
     item = {
         "schema_version": SCHEMA_VERSION,
         "paper_id": _clean(record.get("paper_id") or _record_key(record)),
@@ -443,6 +504,7 @@ def _queue_record(record: dict[str, Any], timestamp: str) -> dict[str, Any]:
         "score": int(record.get("relevance_score") or record.get("reading_priority_score") or 0),
         "reading_priority_score": int(record.get("reading_priority_score") or record.get("reading_priority") or record.get("relevance_score") or 0),
         "research_sections": sections,
+        "research_direction": research_direction,
         "direction_tags": _stable_list([*sections, *_stable_list(record.get("taxonomy_tags"))]),
         "radar_track": track_for_record(record),
         "report_buckets": _stable_report_buckets(record.get("report_buckets")),
@@ -452,10 +514,18 @@ def _queue_record(record: dict[str, Any], timestamp: str) -> dict[str, Any]:
         "rationale_contribution": rationale["contribution_summary"],
         "rationale_relevance": rationale["radar_relevance"],
         "rationale_caveat": rationale["caveat"],
+        "rationale_zh": bilingual["zh_paper_work_summary"],
+        "rationale_en": bilingual["en_paper_work_summary"],
+        "core_novelty_zh": bilingual["zh_core_novelty"],
+        "core_novelty_en": bilingual["en_core_novelty"],
+        "radar_relevance_zh": bilingual["zh_radar_relevance"],
+        "radar_relevance_en": bilingual["en_radar_relevance"],
         "evidence_basis": rationale["evidence_basis"],
         "rationale_confidence": rationale["confidence"],
         "TODO_VERIFY": rationale["todo_verify"],
+        "todo_verify_categories": todo_categories,
         "source_health_context": source_health_context,
+        "source_health_caveat": _source_health_caveat(source_health_context),
         "seen_dates": seen_dates,
         "seen_sources": _stable_list(record.get("seen_sources")) or ([str(record.get("source"))] if record.get("source") else []),
         "first_seen": min(seen_dates) if seen_dates else "",
@@ -489,6 +559,15 @@ def _source_health_context(record: dict[str, Any]) -> dict[str, Any]:
     if isinstance(health, list):
         context["source_health_entries"] = len([item for item in health if isinstance(item, dict)])
     return context
+
+
+def _source_health_caveat(context: dict[str, Any]) -> str:
+    if context.get("source_starved_context"):
+        return "TODO_VERIFY: source-starved context; rerun or verify source coverage before relying on absence of papers."
+    status = str(context.get("source_health_status") or "").strip()
+    if status and status.lower() not in {"green", "ok"}:
+        return f"TODO_VERIFY: source health status is {status}; verify retrieval reliability."
+    return "No explicit source-health caveat recorded."
 
 
 def _merge_queue_record(existing: dict[str, Any], incoming: dict[str, Any], timestamp: str) -> dict[str, Any]:
@@ -680,6 +759,49 @@ def render_dashboard(state: dict[str, Any]) -> str:
     return "\n".join(lines)
 
 
+def render_by_reading_action(state: dict[str, Any]) -> str:
+    records = sorted([record for record in state.get("records", []) if isinstance(record, dict)], key=queue_sort_key)
+    lines = [_frontmatter("Reading Queue by Action"), "# Reading Queue by Action", ""]
+    for action in READING_ACTIONS:
+        lines.extend([f"## {action}", ""])
+        items = [record for record in records if record.get("reading_action") == action]
+        lines.extend(_record_line(record) for record in items) if items else lines.append("- No records.")
+        lines.append("")
+    return "\n".join(lines)
+
+
+def render_by_research_direction(state: dict[str, Any]) -> str:
+    records = sorted([record for record in state.get("records", []) if isinstance(record, dict)], key=queue_sort_key)
+    lines = [_frontmatter("Reading Queue by Research Direction"), "# Reading Queue by Research Direction", ""]
+    for direction in RESEARCH_DIRECTIONS:
+        lines.extend([f"## {direction}", ""])
+        items = [record for record in records if record.get("research_direction") == direction]
+        lines.extend(_record_line(record) for record in items) if items else lines.append("- No records.")
+        lines.append("")
+    return "\n".join(lines)
+
+
+def render_todo_verify_categories(state: dict[str, Any]) -> str:
+    records = sorted([record for record in state.get("records", []) if isinstance(record, dict)], key=queue_sort_key)
+    categories = [
+        "proof / security model",
+        "parameter claim",
+        "benchmark / implementation",
+        "construction details",
+        "attack model",
+        "dataset / evaluation",
+        "relation to standard LWE/RLWE/MLWE/SIS",
+        "source-health / metadata incompleteness",
+    ]
+    lines = [_frontmatter("TODO_VERIFY Categories"), "# TODO_VERIFY Categories", ""]
+    for category in categories:
+        lines.extend([f"## {category}", ""])
+        items = [record for record in records if category in _stable_list(record.get("todo_verify_categories"))]
+        lines.extend(_record_line(record) for record in items) if items else lines.append("- No records.")
+        lines.append("")
+    return "\n".join(lines)
+
+
 def render_todo_read(state: dict[str, Any]) -> str:
     records = [
         record
@@ -707,6 +829,9 @@ def render_needs_replication(state: dict[str, Any]) -> str:
 def export_obsidian(state: dict[str, Any], output_dir: Path, *, dry_run: bool = False) -> list[Path]:
     targets = [
         (output_dir / "reading-dashboard.md", render_dashboard(state)),
+        (output_dir / "by-reading-action.md", render_by_reading_action(state)),
+        (output_dir / "by-research-direction.md", render_by_research_direction(state)),
+        (output_dir / "todo-verify-categories.md", render_todo_verify_categories(state)),
         (output_dir / "todo-read.md", render_todo_read(state)),
         (output_dir / "needs-replication.md", render_needs_replication(state)),
     ]
