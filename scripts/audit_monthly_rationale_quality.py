@@ -35,6 +35,14 @@ class AuditPaths:
     monthly_markdown: Path
 
 
+def find_latest_month(root: Path) -> str | None:
+    monthly_dir = root / "data" / "monthly"
+    if not monthly_dir.exists():
+        return None
+    months = sorted(path.stem for path in monthly_dir.glob("*.json") if path.stem)
+    return months[-1] if months else None
+
+
 def read_json(path: Path) -> Any:
     return json.loads(path.read_text(encoding="utf-8"))
 
@@ -103,6 +111,30 @@ def _contains_keyword_only_text(*parts: str) -> bool:
         return True
     substantive_markers = ("problem", "method", "contribution", "从摘要看", "propose", "present", "attack", "implementation")
     return ("lwe" in combined or "lattice" in combined) and not any(marker in combined for marker in substantive_markers)
+
+
+def _contains_hallucinated_conclusion_claim(rationale: dict[str, Any], record: dict[str, Any]) -> bool:
+    if record.get("conclusion"):
+        return False
+    combined = " ".join(
+        [
+            _text(rationale.get("problem")),
+            _text(rationale.get("method")),
+            _text(rationale.get("contribution")),
+            _text(rationale.get("radar_relevance")),
+            _text(rationale.get("reading_action")),
+        ]
+    ).lower()
+    forbidden = (
+        "the conclusion says",
+        "the conclusion shows",
+        "the conclusion proves",
+        "conclusion demonstrates",
+        "结论表明",
+        "结论显示",
+        "结论证明",
+    )
+    return any(phrase in combined for phrase in forbidden)
 
 
 def _field_quality(value: str) -> bool:
@@ -232,6 +264,13 @@ def audit_case(item: dict[str, Any], record: dict[str, Any], rationale: dict[str
     score = _quality_score(rationale, reading_quality, keyword_only)
     evidence_status = _text(rationale.get("confidence")) or "insufficient_evidence"
     overclaim = _overclaim_risk(rationale, record)
+    title_or_metadata_only = evidence_status in {"title_only", "metadata_supported", "insufficient_evidence"}
+    title_only_overclaim = title_or_metadata_only and (
+        _field_quality(_text(rationale.get("method"))) or _field_quality(_text(rationale.get("contribution")))
+    )
+    weak_relevance_overpromotion = title_or_metadata_only and (
+        _text(item.get("bucket")) in {"Top / A-class", "Must Read"} or action == "精读"
+    )
     return {
         "title": _text(item.get("title")),
         "bucket": _text(item.get("bucket")),
@@ -253,6 +292,9 @@ def audit_case(item: dict[str, Any], record: dict[str, Any], rationale: dict[str
         "radar_relevance_present": bool(_text(rationale.get("radar_relevance"))),
         "abstract_present": bool(record.get("abstract")),
         "conclusion_present": bool(record.get("conclusion")),
+        "title_only_overclaim": title_only_overclaim,
+        "weak_relevance_overpromotion": weak_relevance_overpromotion,
+        "hallucinated_conclusion_claim": _contains_hallucinated_conclusion_claim(rationale, record),
         "recommended_fix": _recommended_fix(score, reading_quality, evidence_status, overclaim),
     }
 
@@ -280,11 +322,28 @@ def build_audit(root: Path, month: str) -> dict[str, Any]:
     if not paths.monthly_json.exists() or not paths.monthly_markdown.exists():
         return {
             "schema_version": 1,
+            "generated_at": "deterministic-local-audit",
             "month": month,
             "decision": "monthly_rationale_quality_blocked_by_missing_monthly_artifact",
+            "pass_fail": "fail",
+            "quality_score": 0,
             "monthly_json_exists": paths.monthly_json.exists(),
             "monthly_markdown_exists": paths.monthly_markdown.exists(),
+            "monthly_json_path": str(paths.monthly_json.relative_to(root).as_posix()),
+            "monthly_markdown_path": str(paths.monthly_markdown.relative_to(root).as_posix()),
             "sample": [],
+            "sampled_papers_count": 0,
+            "top_papers_checked": 0,
+            "keyword_only_findings": [],
+            "missing_evidence_basis_findings": [],
+            "missing_todo_verify_findings": [],
+            "title_only_overclaim_findings": [],
+            "weak_relevance_overpromotion_findings": [],
+            "bilingual_policy_findings": [],
+            "source_health_caveat_findings": ["monthly JSON or Markdown artifact missing"],
+            "reading_action_findings": [],
+            "blockers": ["missing monthly JSON or Markdown"],
+            "warnings": [],
             "TODO_VERIFY": ["monthly JSON or Markdown artifact missing"],
         }
     monthly_payload = read_json(paths.monthly_json)
@@ -300,9 +359,66 @@ def build_audit(root: Path, month: str) -> dict[str, Any]:
     keyword_risks = [case for case in cases if case["keyword_only_risk"] != "none"]
     action_mismatches = [case for case in cases if case["reading_action_quality"] != "correct"]
     missing_todo = [case for case in cases if not case["todo_verify_present"]]
+    missing_evidence = [case for case in cases if not case.get("evidence_basis")]
+    title_only_overclaims = [case for case in cases if case.get("title_only_overclaim")]
+    weak_overpromotions = [case for case in cases if case.get("weak_relevance_overpromotion")]
+    conclusion_claims = [case for case in cases if case.get("hallucinated_conclusion_claim")]
     average_score = round(sum(case["rationale_quality_score"] for case in cases) / len(cases), 2) if cases else 0
     bilingual_present = "English:" in monthly_markdown and "中文" in monthly_markdown
     bilingual_status = "bilingual_top_paper_rationale_present" if bilingual_present else "bilingual_policy_documented_but_not_rendered"
+    source_health = monthly_payload.get("source_health_summary") if isinstance(monthly_payload, dict) else {}
+    required_sections = {
+        "core_papers": "## Core Papers of the Month" in monthly_markdown,
+        "direction_trends": "## Direction Trends" in monthly_markdown,
+        "reading_priority": "## Reading Priority" in monthly_markdown,
+        "source_health_summary": "## Source Health Summary" in monthly_markdown,
+        "todo_verify": "## TODO_VERIFY" in monthly_markdown,
+    }
+    source_starved = bool(isinstance(source_health, dict) and source_health.get("source_starved"))
+    source_caveat_findings: list[str] = []
+    if not isinstance(source_health, dict) or not source_health:
+        source_caveat_findings.append("source health summary missing from monthly JSON")
+    if source_starved and "source-starved" not in monthly_markdown.lower():
+        source_caveat_findings.append("source-starved status not explicit in monthly Markdown")
+    section_missing = [name for name, present in required_sections.items() if not present]
+    user_annotation_dependency = _has_user_annotation_dependency(monthly_payload)
+    blockers: list[str] = []
+    if not cases:
+        blockers.append("no sampled monthly rationale cases")
+    if keyword_risks:
+        blockers.append("keyword-only top-paper rationale")
+    if missing_evidence:
+        blockers.append("missing evidence_basis for sampled papers")
+    if conclusion_claims:
+        blockers.append("hallucinated conclusion claims")
+    if user_annotation_dependency:
+        blockers.append("user annotation dependency")
+    warnings: list[str] = []
+    if action_mismatches:
+        warnings.append("reading action does not align with monthly bucket")
+    if missing_todo:
+        warnings.append("TODO_VERIFY missing for sampled paper")
+    if title_only_overclaims:
+        warnings.append("title-only or metadata-only rationale over-explains method/contribution")
+    if weak_overpromotions:
+        warnings.append("weak evidence paper over-promoted")
+    if bilingual_status != "bilingual_top_paper_rationale_present":
+        warnings.append("bilingual top-paper rationale not rendered; policy documentation applies")
+    warnings.extend(source_caveat_findings)
+    quality_score = _quality_score_100(
+        monthly_payload=monthly_payload,
+        required_sections=required_sections,
+        cases=cases,
+        blockers=blockers,
+        action_mismatches=action_mismatches,
+        missing_evidence=missing_evidence,
+        missing_todo=missing_todo,
+        title_only_overclaims=title_only_overclaims,
+        weak_overpromotions=weak_overpromotions,
+        bilingual_present=bilingual_present,
+        source_caveat_findings=source_caveat_findings,
+    )
+    pass_fail = "fail" if blockers or quality_score < 65 else ("pass_with_limits" if warnings or quality_score < 80 else "pass")
     decision = "monthly_rationale_quality_passed"
     if not cases:
         decision = "insufficient_evidence"
@@ -312,27 +428,99 @@ def build_audit(root: Path, month: str) -> dict[str, Any]:
         decision = "monthly_rationale_quality_passed_with_limits"
     elif action_mismatches or bilingual_status != "bilingual_top_paper_rationale_present":
         decision = "monthly_rationale_quality_passed_with_limits"
-    source_health = monthly_payload.get("source_health_summary") if isinstance(monthly_payload, dict) else {}
+    if blockers and keyword_risks:
+        decision = "monthly_rationale_quality_blocked_by_keyword_only_output"
+    elif blockers:
+        decision = "monthly_quality_gate_blocked_by_tests"
     return {
         "schema_version": 1,
+        "generated_at": "deterministic-local-audit",
         "month": month,
         "monthly_json": str(paths.monthly_json.relative_to(root).as_posix()),
         "monthly_markdown": str(paths.monthly_markdown.relative_to(root).as_posix()),
+        "monthly_json_path": str(paths.monthly_json.relative_to(root).as_posix()),
+        "monthly_markdown_path": str(paths.monthly_markdown.relative_to(root).as_posix()),
         "decision": decision,
+        "pass_fail": pass_fail,
+        "quality_score": quality_score,
+        "required_sections": required_sections,
         "real_case_audit": "real_case_audit_completed_with_limited_sample" if len(cases) < 8 else "real_case_audit_completed",
         "sample_size": len(cases),
+        "sampled_papers_count": len(cases),
+        "top_papers_checked": sum(1 for case in cases if case["bucket"] in {"Top / A-class", "Must Read"}),
         "average_rationale_quality_score": average_score,
         "keyword_only_regression": "failed" if keyword_risks else "passed",
+        "keyword_only_findings": [case["title"] for case in keyword_risks],
+        "missing_evidence_basis_findings": [case["title"] for case in missing_evidence],
+        "missing_todo_verify_findings": [case["title"] for case in missing_todo],
+        "title_only_overclaim_findings": [case["title"] for case in title_only_overclaims],
+        "weak_relevance_overpromotion_findings": [case["title"] for case in weak_overpromotions],
+        "bilingual_policy_findings": [] if bilingual_present else ["top-paper bilingual rationale not rendered"],
+        "source_health_caveat_findings": source_caveat_findings,
+        "reading_action_findings": [case["title"] for case in action_mismatches],
         "bilingual_rationale": bilingual_status,
         "reading_decision_usefulness": "reading_decision_useful_with_limits" if action_mismatches else "reading_decision_useful",
-        "source_starved": bool(isinstance(source_health, dict) and source_health.get("source_starved")),
+        "source_starved": source_starved,
         "source_starved_days": source_health.get("source_starved_days", []) if isinstance(source_health, dict) else [],
         "action_mismatch_count": len(action_mismatches),
         "missing_todo_count": len(missing_todo),
         "sample": cases,
+        "blockers": blockers,
+        "warnings": warnings,
         "fix_list": sorted({case["recommended_fix"] for case in cases if case["recommended_fix"] != "none"}),
         "TODO_VERIFY": ["CI/release gates are outside monthly rationale quality audit"],
     }
+
+
+def _has_user_annotation_dependency(payload: Any) -> bool:
+    forbidden = {
+        "user_label",
+        "human_gold_label",
+        "human_gold_primary_track",
+        "human_gold_secondary_tracks",
+        "user_confirmed",
+        "user_corrected",
+        "manual_annotation_status",
+    }
+    if isinstance(payload, dict):
+        return any(key in forbidden for key in payload) or any(_has_user_annotation_dependency(value) for value in payload.values())
+    if isinstance(payload, list):
+        return any(_has_user_annotation_dependency(value) for value in payload)
+    return False
+
+
+def _quality_score_100(
+    *,
+    monthly_payload: dict[str, Any],
+    required_sections: dict[str, bool],
+    cases: list[dict[str, Any]],
+    blockers: list[str],
+    action_mismatches: list[dict[str, Any]],
+    missing_evidence: list[dict[str, Any]],
+    missing_todo: list[dict[str, Any]],
+    title_only_overclaims: list[dict[str, Any]],
+    weak_overpromotions: list[dict[str, Any]],
+    bilingual_present: bool,
+    source_caveat_findings: list[str],
+) -> int:
+    if blockers:
+        blocker_penalty = min(40, len(blockers) * 15)
+    else:
+        blocker_penalty = 0
+    score = 0
+    if required_sections:
+        score += round(20 * (sum(required_sections.values()) / len(required_sections)))
+    if cases:
+        avg = sum(case["rationale_quality_score"] for case in cases) / len(cases)
+        score += round(20 * (avg / 5))
+    score += max(0, 15 - len(missing_evidence) * 5)
+    score += max(0, 15 - len(action_mismatches) * 3)
+    score += 10 if not title_only_overclaims and not weak_overpromotions else 4
+    score += 10 if bilingual_present else 6
+    score += max(0, 10 - len(source_caveat_findings) * 5 - len(missing_todo) * 3)
+    if not monthly_payload.get("source_health_summary"):
+        score -= 5
+    return max(0, min(100, score - blocker_penalty))
 
 
 def render_markdown(audit: dict[str, Any]) -> str:
@@ -340,6 +528,8 @@ def render_markdown(audit: dict[str, Any]) -> str:
         f"# Monthly Rationale Quality Audit — {audit['month']}",
         "",
         f"- Decision: `{audit['decision']}`",
+        f"- Pass/fail: `{audit.get('pass_fail', 'unknown')}`",
+        f"- Quality score: {audit.get('quality_score', 'n/a')}",
         f"- Sample size: {audit['sample_size']}",
         f"- Average score: {audit['average_rationale_quality_score']}",
         f"- Keyword-only regression: {audit['keyword_only_regression']}",
@@ -367,6 +557,20 @@ def render_markdown(audit: dict[str, Any]) -> str:
             lines.append(f"- {fix}")
     else:
         lines.append("- none")
+    lines.extend(["", "## Blockers", ""])
+    blockers = audit.get("blockers") or []
+    if blockers:
+        for blocker in blockers:
+            lines.append(f"- {blocker}")
+    else:
+        lines.append("- none")
+    lines.extend(["", "## Warnings", ""])
+    warnings = audit.get("warnings") or []
+    if warnings:
+        for warning in warnings:
+            lines.append(f"- {warning}")
+    else:
+        lines.append("- none")
     lines.extend(["", "## TODO_VERIFY", ""])
     for item in audit.get("TODO_VERIFY", []):
         lines.append(f"- {item}")
@@ -384,11 +588,18 @@ def write_outputs(audit: dict[str, Any], root: Path, output_dir: Path, track_out
         json.dumps(audit, ensure_ascii=False, indent=2),
         encoding="utf-8",
     )
+    audit_dir = root / "audits" / "monthly-quality"
+    audit_dir.mkdir(parents=True, exist_ok=True)
+    month = audit["month"]
+    (audit_dir / f"{month}.md").write_text(markdown, encoding="utf-8")
+    (audit_dir / f"{month}.json").write_text(json.dumps(audit, ensure_ascii=False, indent=2), encoding="utf-8")
 
 
 def main(argv: list[str] | None = None) -> int:
     parser = argparse.ArgumentParser(description="Audit real monthly recommendation rationale quality.")
-    parser.add_argument("--month", required=True, help="Target month in YYYY-MM format.")
+    group = parser.add_mutually_exclusive_group(required=True)
+    group.add_argument("--month", help="Target month in YYYY-MM format.")
+    group.add_argument("--latest", action="store_true", help="Use the latest available monthly JSON artifact.")
     parser.add_argument("--root", type=Path, default=PROJECT_ROOT)
     parser.add_argument("--output-dir", type=Path, default=Path("docs") / "reports")
     parser.add_argument("--track-output-dir", type=Path, default=Path("docs") / "research_tracks")
@@ -396,7 +607,25 @@ def main(argv: list[str] | None = None) -> int:
     args = parser.parse_args(argv)
 
     root = args.root.resolve()
-    audit = build_audit(root, args.month)
+    month = find_latest_month(root) if args.latest else args.month
+    if not month:
+        audit = {
+            "schema_version": 1,
+            "generated_at": "deterministic-local-audit",
+            "month": None,
+            "decision": "monthly_rationale_quality_blocked_by_missing_monthly_artifact",
+            "pass_fail": "fail",
+            "quality_score": 0,
+            "sample": [],
+            "sample_size": 0,
+            "sampled_papers_count": 0,
+            "top_papers_checked": 0,
+            "blockers": ["no monthly artifacts found"],
+            "warnings": [],
+            "TODO_VERIFY": ["monthly JSON artifact missing"],
+        }
+    else:
+        audit = build_audit(root, month)
     print(json.dumps(audit, ensure_ascii=False, indent=2))
     if not args.no_write:
         output_dir = args.output_dir if args.output_dir.is_absolute() else root / args.output_dir
