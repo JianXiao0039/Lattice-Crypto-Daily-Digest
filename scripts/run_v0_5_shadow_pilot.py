@@ -3,6 +3,7 @@ from __future__ import annotations
 import argparse
 import importlib.util
 import json
+import sys
 from collections import Counter, defaultdict
 from pathlib import Path
 from typing import Any
@@ -18,7 +19,12 @@ def _load_module(name: str, path: Path) -> Any:
     spec = importlib.util.spec_from_file_location(name, path)
     module = importlib.util.module_from_spec(spec)
     assert spec.loader is not None
-    spec.loader.exec_module(module)
+    sys.modules[name] = module
+    try:
+        spec.loader.exec_module(module)
+    except Exception:
+        sys.modules.pop(name, None)
+        raise
     return module
 
 
@@ -114,6 +120,7 @@ def run_pilot(
             "human_review_status": human.get("human_review_status", "not_reviewed"),
             "valid_human_gold": bool(human.get("valid_human_gold")),
             "metadata_insufficient": _metadata_insufficient(sample),
+            "available_evidence": sample.get("available_evidence") or {},
             "source_provenance": sample.get("source_provenance") or [],
         }
         rows.append(row)

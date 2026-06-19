@@ -2,6 +2,7 @@ from __future__ import annotations
 
 import importlib.util
 import json
+import sys
 from pathlib import Path
 
 
@@ -9,7 +10,12 @@ SCRIPT = Path(__file__).resolve().parents[1] / "scripts" / "evaluate_v0_5_track_
 SPEC = importlib.util.spec_from_file_location("v0_5_track_precision", SCRIPT)
 MODULE = importlib.util.module_from_spec(SPEC)
 assert SPEC.loader is not None
-SPEC.loader.exec_module(MODULE)
+sys.modules[SPEC.name] = MODULE
+try:
+    SPEC.loader.exec_module(MODULE)
+except Exception:
+    sys.modules.pop(SPEC.name, None)
+    raise
 
 
 def _record(paper_id: str, title: str, abstract: str) -> dict[str, object]:
@@ -68,6 +74,13 @@ def test_human_gold_metrics_are_unavailable_without_user_review(tmp_path: Path) 
     assert result["human_gold_metrics"]["valid_gold_count"] == 0
     assert result["human_gold_metrics"]["macro_f1"] is None
     assert result["annotation_coverage"] == 0.0
+
+
+def test_default_evaluation_uses_frozen_sample_without_refreshing_repository_records() -> None:
+    frozen = MODULE.load_frozen_sample()
+
+    assert frozen["sample_size"] == len(frozen["records"])
+    assert frozen["sample_size"] >= frozen["minimum_acceptable_size"]
 
 
 def test_only_confirmed_or_corrected_rows_count_as_gold(tmp_path: Path) -> None:
