@@ -105,6 +105,52 @@ APPLICATION_CUES = (
     "psi",
 )
 
+TERMINOLOGY_TABLE = {
+    "lattice cryptography": "格密码",
+    "lattice": "lattice / 格",
+    "post-quantum cryptography": "后量子密码 / PQC",
+    "PQC": "后量子密码 / PQC",
+    "Learning With Errors": "Learning With Errors（LWE）",
+    "LWE": "Learning With Errors（LWE）",
+    "Ring-LWE": "Ring-LWE（RLWE）",
+    "ring lwe": "Ring-LWE（RLWE）",
+    "RLWE": "Ring-LWE（RLWE）",
+    "Module-LWE": "Module-LWE（MLWE）",
+    "module lwe": "Module-LWE（MLWE）",
+    "MLWE": "Module-LWE（MLWE）",
+    "Short Integer Solution": "Short Integer Solution（SIS）",
+    "SIS": "Short Integer Solution（SIS）",
+    "Module-SIS": "Module-SIS",
+    "module sis": "Module-SIS",
+    "lattice reduction": "格基约简",
+    "BKZ": "BKZ",
+    "primal attack": "primal attack / 原始攻击",
+    "dual attack": "dual attack / 对偶攻击",
+    "hybrid attack": "hybrid attack / 混合攻击",
+    "NTRU": "NTRU",
+    "Kyber": "Kyber",
+    "Dilithium": "Dilithium",
+    "Falcon": "Falcon",
+    "ML-KEM": "ML-KEM",
+    "ML-DSA": "ML-DSA",
+    "Fully Homomorphic Encryption": "全同态加密（FHE）",
+    "fully homomorphic": "全同态加密（FHE）",
+    "homomorphic encryption": "homomorphic encryption / 同态加密",
+    "FHE": "全同态加密（FHE）",
+    "CKKS": "CKKS",
+    "zero-knowledge proof": "零知识证明（ZKP）",
+    "ZKP": "零知识证明（ZKP）",
+    "commitment": "承诺",
+    "chameleon hash": "chameleon hash / 变色龙哈希",
+    "ring signature": "环签名",
+    "linkable ring signature": "可链接环签名",
+    "sanitizable signature": "可净化签名",
+    "parameterization": "参数化",
+    "security reduction": "安全归约",
+    "benchmark": "benchmark / 基准测试",
+    "implementation": "实现",
+}
+
 
 @dataclass(frozen=True)
 class RecommendationRationale:
@@ -118,6 +164,27 @@ class RecommendationRationale:
     confidence: str
     source_fields_used: list[str] = field(default_factory=list)
     todo_verify: list[str] = field(default_factory=list)
+
+    def to_dict(self) -> dict[str, Any]:
+        return asdict(self)
+
+
+@dataclass(frozen=True)
+class BilingualRationale:
+    zh_paper_work_summary: str
+    zh_core_novelty: str
+    zh_radar_relevance: str
+    zh_recommendation: str
+    zh_todo_verify: str
+    en_paper_work_summary: str
+    en_core_novelty: str
+    en_radar_relevance: str
+    en_recommendation: str
+    en_todo_verify: str
+    evidence_basis: list[str]
+    confidence: str
+    bilingual_policy_applied: str
+    terminology_warnings: list[str] = field(default_factory=list)
 
     def to_dict(self) -> dict[str, Any]:
         return asdict(self)
@@ -205,6 +272,77 @@ def build_recommendation_rationale(record: Mapping[str, Any] | Any) -> Recommend
 
 def rationale_to_dict(record: Mapping[str, Any] | Any) -> dict[str, Any]:
     return build_recommendation_rationale(record).to_dict()
+
+
+def build_bilingual_rationale(record: Mapping[str, Any] | Any, *, top_paper: bool = True) -> BilingualRationale:
+    """Build compact bilingual rationale for top-paper rendering.
+
+    The bilingual layer is presentation-only. It reuses deterministic rationale
+    fields and preserves ranking, labels, source selection, and inclusion logic.
+    """
+
+    base = build_recommendation_rationale(record)
+    title = _field(record, "title", "paper_title")
+    abstract = _field(record, "abstract", "summary", "abstract_text")
+    conclusion = _field(record, "conclusion", "conclusion_text")
+    notes = _field(record, "repository_notes", "notes", "reason_for_priority", "why_it_matters")
+    keywords = _list_field(record, "keywords_matched", "keywords", "taxonomy_tags", "research_tags", "tags")
+    relevant_terms = _matched_terms(" ".join([title, abstract, conclusion, notes, " ".join(keywords)]), LATTICE_TERMS)
+    en_terms = _english_terms(relevant_terms)
+
+    zh_work = _zh_work_summary(base, title)
+    zh_novelty = _zh_core_novelty(base, abstract=abstract, conclusion=conclusion)
+    zh_relevance = base.radar_relevance
+    zh_recommendation = base.recommendation_reason
+    zh_todo = _todo_text(base.todo_verify, base.caveat)
+
+    en_work = _en_work_summary(base, title=title, terms=en_terms)
+    en_novelty = _en_core_novelty(base, abstract=abstract, conclusion=conclusion)
+    en_relevance = _en_radar_relevance(base, terms=en_terms)
+    en_recommendation = _en_recommendation(base)
+    en_todo = _en_todo_verify(base)
+
+    return BilingualRationale(
+        zh_paper_work_summary=zh_work,
+        zh_core_novelty=zh_novelty,
+        zh_radar_relevance=zh_relevance,
+        zh_recommendation=zh_recommendation,
+        zh_todo_verify=zh_todo,
+        en_paper_work_summary=en_work,
+        en_core_novelty=en_novelty,
+        en_radar_relevance=en_relevance,
+        en_recommendation=en_recommendation,
+        en_todo_verify=en_todo,
+        evidence_basis=base.evidence_basis,
+        confidence=base.confidence,
+        bilingual_policy_applied="top_paper_full_bilingual" if top_paper else "compact_chinese_allowed_for_non_top_paper",
+        terminology_warnings=_terminology_warnings([zh_work, zh_novelty, zh_relevance, zh_recommendation]),
+    )
+
+
+def bilingual_rationale_to_dict(record: Mapping[str, Any] | Any, *, top_paper: bool = True) -> dict[str, Any]:
+    return build_bilingual_rationale(record, top_paper=top_paper).to_dict()
+
+
+def format_bilingual_rationale_markdown(rationale: BilingualRationale | Mapping[str, Any]) -> list[str]:
+    item = rationale.to_dict() if isinstance(rationale, BilingualRationale) else dict(rationale)
+    return [
+        "中文：",
+        "",
+        f"* 论文大致工作：{item['zh_paper_work_summary']}",
+        f"* 核心创新点：{item['zh_core_novelty']}",
+        f"* 与本雷达关系：{item['zh_radar_relevance']}",
+        f"* 建议：{item['zh_recommendation']}",
+        f"* TODO_VERIFY：{item['zh_todo_verify']}",
+        "",
+        "English:",
+        "",
+        f"* Paper work summary: {item['en_paper_work_summary']}",
+        f"* Core novelty: {item['en_core_novelty']}",
+        f"* Radar relevance: {item['en_radar_relevance']}",
+        f"* Recommendation: {item['en_recommendation']}",
+        f"* TODO_VERIFY: {item['en_todo_verify']}",
+    ]
 
 
 def _field(record: Mapping[str, Any] | Any, *names: str) -> str:
@@ -328,8 +466,10 @@ def _radar_relevance(title: str, abstract: str, notes: str, keywords: list[str],
 def _recommendation_reason(*, title: str, confidence: str, radar_relevance: str, relevant_terms: list[str]) -> str:
     action = _reading_action(confidence, relevant_terms, radar_relevance)
     subject = _clip(title, limit=120) if title else "该记录"
-    if confidence in {"abstract_supported", "conclusion_supported"}:
-        return f"{action}：{subject} 的摘要/结论证据足以支持初步判断；{radar_relevance}"
+    if confidence == "conclusion_supported":
+        return f"{action}：{subject} 的摘要与结论证据足以支持初步判断；{radar_relevance}"
+    if confidence == "abstract_supported":
+        return f"{action}：{subject} 的摘要证据足以支持初步判断；{radar_relevance}"
     if confidence in {"metadata_supported", "repository_note_supported", "title_only"}:
         return f"{action}：{subject} 的证据仍偏元数据层面；{radar_relevance}"
     return f"暂存：{subject} 证据不足，需补齐摘要或来源元数据后再判断。"
@@ -385,3 +525,108 @@ def _clip(value: str, limit: int = 220) -> str:
     if len(text) <= limit:
         return text
     return text[: limit - 1].rstrip() + "…"
+
+
+def _stable_terms(relevant_terms: list[str]) -> list[str]:
+    rendered: list[str] = []
+    for term in relevant_terms:
+        for canonical, display in TERMINOLOGY_TABLE.items():
+            if canonical.lower() == term.lower():
+                rendered.append(display)
+                break
+        else:
+            rendered.append(term)
+    return sorted(set(rendered), key=str.lower)
+
+
+def _english_terms(relevant_terms: list[str]) -> list[str]:
+    aliases = {
+        "module lwe": "Module-LWE",
+        "module-lwe": "Module-LWE",
+        "ring lwe": "Ring-LWE",
+        "ring-lwe": "Ring-LWE",
+        "module sis": "Module-SIS",
+        "module-sis": "Module-SIS",
+        "fully homomorphic": "Fully Homomorphic Encryption",
+        "homomorphic encryption": "homomorphic encryption",
+        "lattice": "lattice cryptography",
+        "ml-kem": "ML-KEM",
+        "ml-dsa": "ML-DSA",
+        "lwe": "Learning With Errors (LWE)",
+        "rlwe": "Ring-LWE (RLWE)",
+        "mlwe": "Module-LWE (MLWE)",
+        "sis": "Short Integer Solution (SIS)",
+    }
+    rendered = [aliases.get(term.lower(), term.upper() if term.lower() in {"bkz", "lll", "svp", "cvp", "ntru", "fhe", "ckks", "bfv", "bgv", "tfhe"} else term) for term in relevant_terms]
+    return sorted(set(rendered), key=str.lower)
+
+
+def _zh_work_summary(base: RecommendationRationale, title: str) -> str:
+    if base.confidence in {"title_only", "metadata_supported", "insufficient_evidence"}:
+        subject = _clip(title, limit=120) if title else "该记录"
+        return f"{subject} 目前缺少摘要/结论证据；只能按标题或元数据暂判主题。"
+    return _clip(base.problem_summary, limit=260)
+
+
+def _zh_core_novelty(base: RecommendationRationale, *, abstract: str, conclusion: str) -> str:
+    if not abstract and not conclusion:
+        return "证据不足，暂不能确认；需要阅读正文验证。"
+    if "不能可靠判断" in base.contribution_summary or "未明确陈述贡献" in base.contribution_summary:
+        return "证据不足，暂不能确认；需要阅读正文验证。"
+    return _clip(base.contribution_summary, limit=260)
+
+
+def _todo_text(items: list[str], caveat: str) -> str:
+    return "；".join(items) if items else caveat
+
+
+def _en_work_summary(base: RecommendationRationale, *, title: str, terms: list[str]) -> str:
+    subject = _clip(title, limit=120) if title else "This record"
+    if base.confidence in {"title_only", "metadata_supported", "insufficient_evidence"}:
+        return f"{subject} has only title or metadata-level evidence; method and contribution are not established."
+    anchor = ", ".join(terms[:5]) if terms else "lattice/PQC relevance"
+    return f"{subject} addresses a topic connected to {anchor}; the available abstract supports the problem-level summary."
+
+
+def _en_core_novelty(base: RecommendationRationale, *, abstract: str, conclusion: str) -> str:
+    if not abstract and not conclusion:
+        return "Insufficient evidence from available metadata; verify in the full paper."
+    if "不能可靠判断" in base.contribution_summary or "未明确陈述贡献" in base.contribution_summary:
+        return "Insufficient evidence from the available abstract/metadata; verify the contribution claim in the full paper."
+    if conclusion:
+        return "The available conclusion/abstract text supports a contribution claim, but proof and parameter details still require verification."
+    return "The abstract supports a contribution claim; proof, parameter, benchmark, and limitation details remain TODO_VERIFY."
+
+
+def _en_radar_relevance(base: RecommendationRationale, *, terms: list[str]) -> str:
+    if "peripheral/temporary track" in base.radar_relevance:
+        return "Relevant as peripheral FHE/privacy-computing background; do not promote it as a core lattice attack or parameter paper."
+    if terms:
+        return f"Relevant to the lattice/PQC radar through: {', '.join(terms[:8])}."
+    return "The available record does not yet provide a strong lattice/PQC anchor."
+
+
+def _en_recommendation(base: RecommendationRationale) -> str:
+    action = base.recommendation_reason.split("：", 1)[0]
+    action_map = {
+        "精读": "Deep read",
+        "扫读": "Skim",
+        "暂存": "Track later",
+        "忽略": "Ignore",
+    }
+    english_action = action_map.get(action, "Track later")
+    if base.confidence in {"title_only", "metadata_supported", "insufficient_evidence"}:
+        return f"{english_action}: keep the action conservative because evidence is limited to metadata/title-level signals."
+    return f"{english_action}: the available evidence is sufficient for triage, but not for accepting proof, security, parameter, or benchmark claims."
+
+
+def _en_todo_verify(base: RecommendationRationale) -> str:
+    if base.todo_verify:
+        return "; ".join(base.todo_verify)
+    return "TODO_VERIFY: read the full paper before accepting proof, security, parameter, benchmark, or implementation claims."
+
+
+def _terminology_warnings(texts: list[str]) -> list[str]:
+    joined = "\n".join(texts)
+    banned = ("格子密码", "学习带错误", "戒指签名")
+    return [f"avoid awkward term: {term}" for term in banned if term in joined]

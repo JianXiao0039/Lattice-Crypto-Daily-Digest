@@ -25,7 +25,7 @@ from lattice_digest.digest_sections import (
     candidate_reason,
 )
 from lattice_digest.models import make_paper_record
-from lattice_digest.recommendation_rationale import build_recommendation_rationale
+from lattice_digest.recommendation_rationale import build_bilingual_rationale, build_recommendation_rationale, format_bilingual_rationale_markdown
 from lattice_digest.report_quality import (
     anchor_evidence_text,
     false_positive_risk_text,
@@ -340,7 +340,7 @@ def build_weekly_synthesis(
     }
 
 
-def _record_line(record: dict[str, Any]) -> str:
+def _record_line(record: dict[str, Any], *, bilingual: bool = False) -> str:
     title = str(record.get("title") or "untitled")
     label = str(record.get("relevance_label") or "D")
     score = int(record.get("relevance_score") or 0)
@@ -349,14 +349,19 @@ def _record_line(record: dict[str, Any]) -> str:
     dates = ", ".join(record.get("seen_dates", [])) if isinstance(record.get("seen_dates"), list) else ""
     rationale = build_recommendation_rationale(record)
     todo_verify = "；".join(rationale.todo_verify) if rationale.todo_verify else rationale.caveat
-    return (
+    lines = [
         f"- {title}｜{label} / {score}｜sources: {sources}｜seen: {dates}｜{url}\n"
         f"  - {anchor_evidence_text(record)}\n"
         f"  - False-positive risk: {false_positive_risk_text(record)}\n"
         f"  - Semantic Scholar advisory: {semantic_scholar_advisory_text(record)}\n"
         f"  - Rationale: {rationale.problem_summary} {rationale.radar_relevance} {rationale.recommendation_reason}\n"
         f"  - Evidence basis: {', '.join(rationale.evidence_basis)}；confidence={rationale.confidence}；TODO_VERIFY: {todo_verify}"
-    )
+    ]
+    if bilingual:
+        bilingual_rationale = build_bilingual_rationale(record, top_paper=True)
+        rendered = "\n".join(f"  {line}" if line else "" for line in format_bilingual_rationale_markdown(bilingual_rationale))
+        lines.append(rendered)
+    return "\n".join(lines)
 
 
 def render_markdown(payload: dict[str, Any]) -> str:
@@ -390,7 +395,7 @@ def render_markdown(payload: dict[str, Any]) -> str:
     if top_a:
         lines.append("- These are surfaced for manual inspection; citation metadata is advisory only.")
         for record in top_a:
-            lines.append(_record_line(record))
+            lines.append(_record_line(record, bilingual=True))
         lines.append("")
     else:
         lines.extend(["- No A-level papers in the selected window.", ""])

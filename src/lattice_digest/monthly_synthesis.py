@@ -9,7 +9,11 @@ from datetime import date, datetime, timedelta, timezone
 from pathlib import Path
 from typing import Any
 
-from lattice_digest.recommendation_rationale import build_recommendation_rationale
+from lattice_digest.recommendation_rationale import (
+    build_bilingual_rationale,
+    build_recommendation_rationale,
+    format_bilingual_rationale_markdown,
+)
 from lattice_digest.weekly_synthesis import LABEL_ORDER, dedup_key
 
 
@@ -251,6 +255,7 @@ def _reading_bucket(record: dict[str, Any]) -> str:
 
 def _rationale_payload(record: dict[str, Any]) -> dict[str, Any]:
     rationale = build_recommendation_rationale(record).to_dict()
+    bilingual = build_bilingual_rationale(record, top_paper=True).to_dict()
     return {
         "problem": rationale["problem_summary"],
         "method": rationale["method_summary"],
@@ -261,6 +266,7 @@ def _rationale_payload(record: dict[str, Any]) -> dict[str, Any]:
         "confidence": rationale["confidence"],
         "todo_verify": rationale["todo_verify"],
         "caveat": rationale["caveat"],
+        "bilingual": bilingual,
     }
 
 
@@ -403,10 +409,10 @@ def build_monthly_synthesis(
     }
 
 
-def _core_paper_markdown(paper: dict[str, Any]) -> list[str]:
+def _core_paper_markdown(paper: dict[str, Any], *, bilingual: bool = False) -> list[str]:
     rationale = paper["rationale"]
     todo = "；".join(rationale.get("todo_verify") or []) or rationale.get("caveat") or "TODO_VERIFY"
-    return [
+    lines = [
         f"### {paper['title']}",
         "",
         f"- Source: {paper['source']}",
@@ -421,6 +427,10 @@ def _core_paper_markdown(paper: dict[str, Any]) -> list[str]:
         f"- TODO_VERIFY: {todo}",
         "",
     ]
+    if bilingual and isinstance(rationale.get("bilingual"), dict):
+        lines.extend(format_bilingual_rationale_markdown(rationale["bilingual"]))
+        lines.append("")
+    return lines
 
 
 def render_markdown(payload: dict[str, Any]) -> str:
@@ -445,8 +455,9 @@ def render_markdown(payload: dict[str, Any]) -> str:
     ]
     if not payload["core_papers"]:
         lines.extend(["- No A/B core papers found for this month.", ""])
-    for paper in payload["core_papers"]:
-        lines.extend(_core_paper_markdown(paper))
+    for index, paper in enumerate(payload["core_papers"]):
+        render_bilingual = index < 5 or str(paper.get("relevance_label") or "") == "A"
+        lines.extend(_core_paper_markdown(paper, bilingual=render_bilingual))
 
     lines.extend(["## Direction Trends", ""])
     for trend in trends:
