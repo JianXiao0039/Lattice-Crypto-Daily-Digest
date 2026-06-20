@@ -1,4 +1,4 @@
-# Codex Dry Run Prompt v0.1
+# Codex Dry Run / Comparator Prompt v0.1
 
 Project root: `D:\Code\CodexProjects\lattice-crypto-daily-digest`
 
@@ -6,41 +6,89 @@ Current active route: only the public paper-radar route is active.
 
 Operator: Codex.
 
-Operator role: primary engineering and release-maintenance operator. Codex may inspect code and docs, but this drill must not patch code unless explicitly authorized.
+Operator role: primary engineering reviewer, release-maintenance operator, and cross-operator comparator. Codex may run its own dry run, inspect code and docs, compare pasted fallback outputs, classify drift, and propose prompt fixes. Codex must not patch code during the dry-run drill unless explicitly authorized.
 
-Forbidden:
+Codex must not claim cross-operator parity unless Codex, DeepSeek-Claude, and Kimi Code have all actually run the common task set and produced paste-back evidence.
 
-- read or write `D:\Code\CodexProjects\PhD_Application`;
-- read or write `D:\ResearchArtifacts`;
-- write `D:\ResearchOS`;
-- run `git add`, `git commit`, `git push`, or `git tag`;
-- create release tags;
-- create Windows Task Scheduler tasks, cron jobs, startup tasks, watchers, background services, or automatic future runs;
-- modify source fetchers, ranking scores, ranking thresholds, taxonomy semantics, query expansion, or negative keyword behavior;
-- create manual annotation workflows, human-gold workflows, or shadow classifier productionization;
-- add external LLM runtime calls;
-- print secrets or `.env` contents.
+## Forbidden
 
-Required task set:
+- Read or write `D:\Code\CodexProjects\PhD_Application`.
+- Read or write `D:\ResearchArtifacts`.
+- Write `D:\ResearchOS`.
+- Run `git add`, `git commit`, `git push`, or `git tag`.
+- Create, delete, move, or recreate release tags.
+- Create Windows Task Scheduler tasks, cron jobs, startup tasks, watchers, background services, or automatic future runs.
+- Modify source fetchers, ranking scores, ranking thresholds, taxonomy semantics, query expansion, or negative keyword behavior.
+- Create manual annotation workflows, human-gold workflows, or shadow classifier productionization.
+- Add external LLM runtime calls.
+- Print secrets or `.env` contents.
 
-1. Boundary confirmation.
-2. `git status -sb`.
-3. `python --version`.
-4. `python -m lattice_digest.workflow doctor`.
-5. `python -m lattice_digest.workflow status`.
-6. `python -m lattice_digest.run --since 36h --output markdown,json --send none`.
-7. `python -m lattice_digest.workflow weekly --low-load --skip-hygiene`.
-8. `python -m lattice_digest.monthly_synthesis --month 2026-06`.
-9. `python scripts/probe_source_health.py --low-load`.
-10. `python scripts/verify_durable_artifacts.py --date 2026-06-15 --week 2026-W25 --month 2026-06`.
-11. `python scripts/export_reading_queue.py --latest`.
-12. `python scripts/export_obsidian_notes.py --latest`.
-13. `python scripts/audit_monthly_rationale_quality.py --latest`.
-14. `git diff --check`.
-15. `git diff --cached --check`.
-16. `git status -sb`.
+Compatibility wording: do not run `git add`, `git commit`, `git push`, or `git tag`.
 
-Final report must include:
+## Codex Comparator Duties
+
+1. Run Codex's own dry run if needed.
+2. Read DeepSeek-Claude and Kimi Code paste-back blocks if provided.
+3. Normalize command lists before comparison.
+4. Classify drift using `docs/operations/cross_operator_drift_taxonomy_v0.1.md`.
+5. Decide whether each fallback operator is acceptable.
+6. Reject fallback acceptance when an operator is `not_run`.
+7. Propose prompt fixes for command drift, source-health interpretation drift, report format drift, or boundary risk.
+8. Keep Codex review required for code changes, release decisions, and source-health classification changes.
+
+## Exact CMD Dry-Run Command Sequence
+
+Run from CMD when Codex needs fresh local evidence:
+
+```cmd
+cd /d D:\Code\CodexProjects\lattice-crypto-daily-digest
+git status -sb
+python --version
+python -m lattice_digest.workflow doctor
+python -m lattice_digest.workflow status
+python -m lattice_digest.run --since 36h --output markdown,json --send none
+python -m lattice_digest.workflow weekly --low-load --skip-hygiene
+python -m lattice_digest.monthly_synthesis --month 2026-06
+python scripts\probe_source_health.py --low-load
+python scripts\verify_durable_artifacts.py --date 2026-06-15 --week 2026-W25 --month 2026-06
+python scripts\export_reading_queue.py --latest
+python scripts\export_obsidian_notes.py --latest
+python scripts\audit_monthly_rationale_quality.py --latest
+git diff --check
+git diff --cached --check
+git status -sb
+```
+
+If a command is unavailable, record `command_unavailable` and the observed reason.
+
+## Drift Decisions
+
+- `not_run_drift`: block fallback acceptance.
+- `command_drift`: update prompt and rerun.
+- `artifact_drift`: update report template and rerun.
+- `source_health_interpretation_drift`: update source-health interpretation table and rerun.
+- `boundary_drift`: mark operator unsafe until stricter prompt is accepted and Codex reviews.
+- `report_format_drift`: update final report template and rerun.
+- `environment_drift`: acceptable only if documented and artifacts remain comparable.
+- `quality_audit_drift`: require same audit command and same decision fields.
+
+## Normalized Command List for Cross-Operator Comparison
+
+Use these normalized strings when comparing outputs across operators:
+
+- `python -m lattice_digest.run --since 36h --output markdown,json --send none`
+- `python -m lattice_digest.workflow weekly --low-load --skip-hygiene`
+- `python -m lattice_digest.monthly_synthesis --month 2026-06`
+- `python scripts/probe_source_health.py --low-load`
+- `python scripts/verify_durable_artifacts.py --date 2026-06-15 --week 2026-W25 --month 2026-06`
+- `python scripts/export_reading_queue.py --latest`
+- `python scripts/export_obsidian_notes.py --latest`
+- `python scripts/audit_monthly_rationale_quality.py --latest`
+- `git diff --check`
+- `git diff --cached --check`
+- `git status -sb`
+
+## Required Final Report Sections
 
 - Operator
 - Boundaries
@@ -52,4 +100,3 @@ Final report must include:
 - Failures / Warnings
 - Next Recommended Operator
 - Final Status
-
