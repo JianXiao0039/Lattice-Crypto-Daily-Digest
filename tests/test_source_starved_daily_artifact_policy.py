@@ -3,6 +3,7 @@ from __future__ import annotations
 import json
 from pathlib import Path
 
+from lattice_digest.artifact_paths import daily_data_path, daily_digest_path
 from lattice_digest.sources.base import SourceAdapter
 
 
@@ -41,8 +42,8 @@ def test_all_red_date_targeted_run_still_writes_source_health_artifact(tmp_path:
         ]
     )
 
-    json_path = tmp_path / "data" / "2026-06-06.json"
-    markdown_path = tmp_path / "digests" / "2026-06-06.md"
+    json_path = daily_data_path("2026-06-06", tmp_path / "data")
+    markdown_path = daily_digest_path("2026-06-06", tmp_path / "digests")
     assert result == 0
     assert json_path.exists()
     assert markdown_path.exists()

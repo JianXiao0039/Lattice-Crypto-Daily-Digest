@@ -5,6 +5,7 @@ import py_compile
 from pathlib import Path
 from tempfile import TemporaryDirectory
 
+from lattice_digest.artifact_paths import daily_data_path
 from lattice_digest.monthly_synthesis import build_monthly_synthesis
 
 
@@ -12,7 +13,9 @@ ROOT = Path(__file__).resolve().parents[1]
 
 
 def _write_payload(data_dir: Path, day: str, payload: dict[str, object]) -> None:
-    (data_dir / f"{day}.json").write_text(json.dumps(payload, ensure_ascii=False, indent=2), encoding="utf-8")
+    path = daily_data_path(day, root=data_dir)
+    path.parent.mkdir(parents=True, exist_ok=True)
+    path.write_text(json.dumps(payload, ensure_ascii=False, indent=2), encoding="utf-8")
 
 
 def test_monthly_source_health_summary_handles_missing_audit_records() -> None:

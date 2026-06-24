@@ -8,8 +8,8 @@ A source-starved run is an operationally valid diagnostic artifact, but it is no
 
 ## Required Artifact Behavior
 
-- Write `data/YYYY-MM-DD.json` when JSON output is requested.
-- Write `digests/YYYY-MM-DD.md` when Markdown output is requested.
+- Write `data/YYYY/daily/YYYY-MM-DD.json` when JSON output is requested.
+- Write `digests/YYYY/daily/YYYY-MM-DD.md` when Markdown output is requested.
 - Preserve per-source status, error type, retryability, IACR latest status, and Semantic Scholar availability.
 - State that no relevant-paper conclusion can be drawn from source-starved input.
 - Recommend only manual recovery.

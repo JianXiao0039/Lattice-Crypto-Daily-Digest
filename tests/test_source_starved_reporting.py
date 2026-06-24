@@ -3,6 +3,7 @@ from __future__ import annotations
 import json
 from pathlib import Path
 
+from lattice_digest.artifact_paths import daily_data_path, daily_digest_path, monthly_data_path, monthly_digest_path
 from scripts.verify_durable_artifacts import verify_daily, verify_monthly
 
 
@@ -20,8 +21,8 @@ def test_daily_source_starved_run_must_be_explicit(tmp_path: Path) -> None:
             {"source": "iacr_eprint", "status": "red"},
         ],
     }
-    _write(tmp_path / "data/2026-06-15.json", json.dumps(payload))
-    _write(tmp_path / "digests/2026-06-15.md", "# 2026-06-15\n\nSource health: all red\n")
+    _write(daily_data_path("2026-06-15", root=tmp_path / "data"), json.dumps(payload))
+    _write(daily_digest_path("2026-06-15", root=tmp_path / "digests"), "# 2026-06-15\n\nSource health: all red\n")
 
     result = verify_daily(tmp_path, "2026-06-15")
 
@@ -39,8 +40,8 @@ def test_daily_source_starved_marker_satisfies_policy(tmp_path: Path) -> None:
             {"source": "iacr_eprint", "status": "red"},
         ],
     }
-    _write(tmp_path / "data/2026-06-15.json", json.dumps(payload))
-    _write(tmp_path / "digests/2026-06-15.md", "# 2026-06-15\n\nsource-starved: true\n")
+    _write(daily_data_path("2026-06-15", root=tmp_path / "data"), json.dumps(payload))
+    _write(daily_digest_path("2026-06-15", root=tmp_path / "digests"), "# 2026-06-15\n\nsource-starved: true\n")
 
     result = verify_daily(tmp_path, "2026-06-15")
 
@@ -55,8 +56,8 @@ def test_monthly_source_starved_status_is_required(tmp_path: Path) -> None:
         "missing_days": ["2026-06-01"],
         "source_health_summary": {"sources": []},
     }
-    _write(tmp_path / "data/monthly/2026-06.json", json.dumps(payload))
-    _write(tmp_path / "digests/monthly/2026-06.md", "# Monthly Lattice Paper Radar — 2026-06\n")
+    _write(monthly_data_path("2026-06", root=tmp_path / "data"), json.dumps(payload))
+    _write(monthly_digest_path("2026-06", root=tmp_path / "digests"), "# Monthly Lattice Paper Radar — 2026-06\n")
 
     result = verify_monthly(tmp_path, "2026-06")
 

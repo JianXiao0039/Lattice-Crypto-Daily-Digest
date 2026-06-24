@@ -6,6 +6,7 @@ from pathlib import Path
 
 import lattice_digest.run as run_module
 import lattice_digest.sources.iacr as iacr_module
+from lattice_digest.artifact_paths import daily_data_path
 from lattice_digest.config import load_config_bundle
 from lattice_digest.ranker import rank_records
 from lattice_digest.sources.base import FetchContext
@@ -276,7 +277,7 @@ sources:
     )
 
     assert result == 0
-    payload = json.loads((tmp_path / "data" / "2026-06-01.json").read_text(encoding="utf-8"))
+    payload = json.loads(daily_data_path("2026-06-01", tmp_path / "data").read_text(encoding="utf-8"))
     by_id = {record.get("eprint_id"): record for record in payload["records"]}
 
     assert by_id["2026/1117"]["title"] == "On the Secrecy of the Encapsulation Coin in ML-KEM"

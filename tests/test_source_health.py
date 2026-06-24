@@ -7,6 +7,7 @@ from tempfile import TemporaryDirectory
 from urllib.error import HTTPError
 
 from lattice_digest.http import request_text
+from lattice_digest.artifact_paths import daily_data_path, daily_digest_path
 from lattice_digest.sources.base import SourceAdapter
 
 
@@ -99,8 +100,8 @@ sources:
             run_module.build_source = original_build_source
 
         assert result == 0
-        json_files = list((root / "data").glob("*.json"))
-        markdown_files = list((root / "digests").glob("*.md"))
+        json_files = list((root / "data").rglob("*.json"))
+        markdown_files = list((root / "digests").rglob("*.md"))
         assert json_files
         assert markdown_files
         assert (root / "papers.db").exists()
