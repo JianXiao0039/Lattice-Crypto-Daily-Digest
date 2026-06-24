@@ -19,6 +19,19 @@ The system must collect, classify, deduplicate, summarize, and publish papers th
 
 The final daily digest must be written in Chinese.
 
+## Artifact Path Compatibility Default
+
+Artifact readers now default to canonical year-partitioned paths when
+`LATTICE_DIGEST_ALLOW_LEGACY_FALLBACK` is unset. Legacy fallback is temporary,
+read-only, and requires explicit process-scoped opt-in such as:
+
+```powershell
+$env:LATTICE_DIGEST_ALLOW_LEGACY_FALLBACK = "1"
+```
+
+Writers must remain canonical-only and must not use compatibility fallback to
+choose output paths.
+
 ---
 
 ## Hard Scope: Always Treat as In-Scope
@@ -476,8 +489,8 @@ HTML scraping is only a fallback. Prefer API, RSS, Atom, OAI-PMH, JSON, XML.
 
 The daily digest must generate:
 
-- `digests/YYYY-MM-DD.md`
-- `data/YYYY-MM-DD.json`
+- `digests/YYYY/daily/YYYY-MM-DD.md`
+- `data/YYYY/daily/YYYY-MM-DD.json`
 - `papers.db`
 
 The Markdown digest must be Chinese.
@@ -544,7 +557,7 @@ For A-class papers, explicitly state relation to:
 
 If not related, write “弱相关” or “无直接关系”; do not force a relationship.
 
-If a daily run fails, do not silently fail. Generate `digests/YYYY-MM-DD-error.md` containing the failed source, failed command, error summary, suspected cause, suggested fix, and whether outputs were partially generated.
+If a daily run fails, do not silently fail. Generate `digests/YYYY/daily/YYYY-MM-DD-error.md` containing the failed source, failed command, error summary, suspected cause, suggested fix, and whether outputs were partially generated.
 
 Scoring thresholds must follow the skill:
 

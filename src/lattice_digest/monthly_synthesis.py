@@ -14,6 +14,15 @@ from lattice_digest.recommendation_rationale import (
     build_recommendation_rationale,
     format_bilingual_rationale_markdown,
 )
+from lattice_digest.artifact_paths import (
+    daily_data_path,
+    legacy_daily_data_candidates,
+    legacy_weekly_data_candidates,
+    monthly_data_path,
+    monthly_digest_path,
+    resolve_existing,
+    weekly_data_path,
+)
 from lattice_digest.weekly_synthesis import LABEL_ORDER, dedup_key
 
 
@@ -324,24 +333,29 @@ def build_trend_summary(records: list[dict[str, Any]]) -> list[dict[str, Any]]:
 
 
 def _weekly_files_for_month(data_dir: Path, start: date, end: date) -> list[str]:
-    weekly_dir = data_dir / "weekly"
-    if not weekly_dir.exists():
-        return []
+    candidate_roots = [data_dir / str(start.year) / "weekly", data_dir / str(end.year) / "weekly", data_dir / "weekly"]
     paths: list[str] = []
-    for path in sorted(weekly_dir.glob("*.json")):
-        try:
-            payload = read_json(path)
-        except (OSError, json.JSONDecodeError):
+    seen: set[Path] = set()
+    for weekly_dir in candidate_roots:
+        if not weekly_dir.exists():
             continue
-        from_date = str(payload.get("from_date") or "")
-        to_date = str(payload.get("to_date") or "")
-        try:
-            week_start = date.fromisoformat(from_date[:10])
-            week_end = date.fromisoformat(to_date[:10])
-        except ValueError:
-            continue
-        if week_start <= end and week_end >= start:
-            paths.append(path.as_posix())
+        for path in sorted(weekly_dir.glob("*.json")):
+            if path in seen:
+                continue
+            seen.add(path)
+            try:
+                payload = read_json(path)
+            except (OSError, json.JSONDecodeError):
+                continue
+            from_date = str(payload.get("from_date") or "")
+            to_date = str(payload.get("to_date") or "")
+            try:
+                week_start = date.fromisoformat(from_date[:10])
+                week_end = date.fromisoformat(to_date[:10])
+            except ValueError:
+                continue
+            if week_start <= end and week_end >= start:
+                paths.append(path.as_posix())
     return paths
 
 
@@ -356,10 +370,15 @@ def build_monthly_synthesis(
     input_daily_files: list[str] = []
     missing_days: list[str] = []
     for day in month_days(start, end):
-        path = data_dir / f"{day.isoformat()}.json"
+        path, used_legacy = resolve_existing(
+            daily_data_path(day, data_dir),
+            legacy_daily_data_candidates(day, data_dir),
+        )
         if not path.exists():
             missing_days.append(day.isoformat())
             continue
+        if used_legacy:
+            print(f"Warning: using legacy daily JSON fallback: {path}")
         loaded.append((day, read_json(path)))
         input_daily_files.append(path.as_posix())
     records = aggregate_records(loaded)
@@ -507,10 +526,10 @@ def render_markdown(payload: dict[str, Any]) -> str:
 
 
 def write_monthly_outputs(payload: dict[str, Any], json_output_dir: Path, digest_output_dir: Path) -> tuple[Path, Path]:
-    json_output_dir.mkdir(parents=True, exist_ok=True)
-    digest_output_dir.mkdir(parents=True, exist_ok=True)
-    json_path = json_output_dir / f"{payload['month']}.json"
-    markdown_path = digest_output_dir / f"{payload['month']}.md"
+    json_path = monthly_data_path(str(payload["month"]), root=json_output_dir)
+    markdown_path = monthly_digest_path(str(payload["month"]), root=digest_output_dir)
+    json_path.parent.mkdir(parents=True, exist_ok=True)
+    markdown_path.parent.mkdir(parents=True, exist_ok=True)
     json_path.write_text(json.dumps(payload, ensure_ascii=False, indent=2), encoding="utf-8")
     markdown_path.write_text(render_markdown(payload), encoding="utf-8")
     return json_path, markdown_path
@@ -520,8 +539,8 @@ def main(argv: list[str] | None = None) -> int:
     parser = argparse.ArgumentParser(description="Generate a manual monthly lattice paper radar synthesis.")
     parser.add_argument("--month", required=True, help="Target month in YYYY-MM format.")
     parser.add_argument("--data-dir", type=Path, default=Path("data"))
-    parser.add_argument("--json-output-dir", type=Path, default=Path("data") / "monthly")
-    parser.add_argument("--digest-output-dir", type=Path, default=Path("digests") / "monthly")
+    parser.add_argument("--json-output-dir", type=Path, default=Path("data"))
+    parser.add_argument("--digest-output-dir", type=Path, default=Path("digests"))
     parser.add_argument("--dry-run", action="store_true", help="Build payload and print summary without writing files.")
     args = parser.parse_args(argv)
 
@@ -534,6 +553,9 @@ def main(argv: list[str] | None = None) -> int:
                 missing=len(payload["missing_days"]),
             )
         )
+        print("DRY RUN: no monthly output files were written.")
+        print(f"JSON target: {monthly_data_path(str(payload['month']), root=args.json_output_dir)}")
+        print(f"Markdown target: {monthly_digest_path(str(payload['month']), root=args.digest_output_dir)}")
         return 0
     json_path, markdown_path = write_monthly_outputs(payload, args.json_output_dir, args.digest_output_dir)
     print(f"Wrote {json_path}")

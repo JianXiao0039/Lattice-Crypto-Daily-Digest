@@ -14,6 +14,18 @@ English summary: this project is operated manually. No scheduled automation is c
 - `python -m lattice_digest.workflow weekly --execute --low-load --skip-hygiene`：确认后才写入周流程产物。
 - `scripts\run_weekly_handoff.bat`：手动生成 weekly handoff packets，用于公开 research radar triage。
 
+Artifact path compatibility default:
+
+- canonical year-partitioned artifact reads are the default;
+- legacy fallback is disabled when `LATTICE_DIGEST_ALLOW_LEGACY_FALLBACK` is absent;
+- temporary read-only compatibility fallback requires explicit process-scoped opt-in:
+
+```powershell
+$env:LATTICE_DIGEST_ALLOW_LEGACY_FALLBACK = "1"
+```
+
+Writers still write only canonical year-partitioned paths.
+
 不要配置：
 
 - Windows Task Scheduler
@@ -126,8 +138,8 @@ python -m lattice_digest.workflow daily --offline --skip-hygiene
 
 | Command | Main outputs |
 | --- | --- |
-| `python -m lattice_digest.run --since 36h --output markdown,json --send none` | `data/YYYY-MM-DD.json`, `digests/YYYY-MM-DD.md`, `papers.db` |
-| `python -m lattice_digest.weekly_synthesis --days 7` | `data/weekly/YYYY-Www.json`, `digests/weekly/YYYY-Www.md` |
+| `python -m lattice_digest.run --since 36h --output markdown,json --send none` | `data/YYYY/daily/YYYY-MM-DD.json`, `digests/YYYY/daily/YYYY-MM-DD.md`, `papers.db` |
+| `python -m lattice_digest.weekly_synthesis --days 7` | `data/ISO_YEAR/weekly/YYYY-Www.json`, `digests/ISO_YEAR/weekly/YYYY-Www.md` |
 | `python -m lattice_digest.workflow weekly --execute --low-load --skip-hygiene` | weekly JSON/Markdown, reading queue, research progress, workflow manifest |
 | `scripts\run_weekly_handoff.bat` | `handoffs/weekly/YYYY-Www-handoff-packets.json`, `handoffs/weekly/YYYY-Www-handoff-packets.md` |
 | `powershell.exe -ExecutionPolicy Bypass -File scripts\run_weekly_handoff.ps1` | `handoffs/weekly/YYYY-Www-handoff-packets.json`, `handoffs/weekly/YYYY-Www-handoff-packets.md` |
@@ -145,9 +157,9 @@ Generated artifacts must not be committed by default. 默认不要提交：
 - `__pycache__/`
 - `state/reading-queue.json`
 - `data/*.json`
-- `data/weekly/`
+- `data/ISO_YEAR/weekly/`
 - `digests/*.md`
-- `digests/weekly/`
+- `digests/ISO_YEAR/weekly/`
 - `papers.db`
 - `.env`
 - real API keys, SMTP passwords, Zotero tokens

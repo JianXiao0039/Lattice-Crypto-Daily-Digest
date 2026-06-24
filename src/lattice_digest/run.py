@@ -11,6 +11,13 @@ from zoneinfo import ZoneInfo
 from lattice_digest.config import load_config_bundle, project_root
 from lattice_digest.dedup import deduplicate
 from lattice_digest.digest import generate_markdown
+from lattice_digest.artifact_paths import (
+    daily_data_path,
+    daily_digest_path,
+    legacy_daily_data_candidates,
+    legacy_daily_digest_candidates,
+    resolve_existing,
+)
 from lattice_digest.models import PaperRecord
 from lattice_digest.ranker import rank_records
 from lattice_digest.source_health_ledger import write_source_health_ledger
@@ -165,9 +172,14 @@ def _filter_records_to_coverage(
 
 
 def _load_existing_metadata(root: Path, target_date: date) -> dict[str, object] | None:
-    path = root / "data" / f"{target_date.isoformat()}.json"
+    path, used_legacy = resolve_existing(
+        daily_data_path(target_date, root / "data"),
+        legacy_daily_data_candidates(target_date, root / "data"),
+    )
     if not path.exists():
         return None
+    if used_legacy:
+        print(f"Warning: using legacy daily JSON fallback: {path}", file=os.sys.stderr)
     try:
         payload = json.loads(path.read_text(encoding="utf-8"))
     except (OSError, json.JSONDecodeError):
@@ -219,11 +231,17 @@ def _archive_existing_provisional(root: Path, target_date: date, existing_metada
     archive_dir.mkdir(parents=True, exist_ok=True)
     archived: list[Path] = []
     for source_path, target_path in [
-        (root / "data" / f"{target_date.isoformat()}.json", archive_dir / f"{target_date.isoformat()}.json"),
-        (root / "digests" / f"{target_date.isoformat()}.md", archive_dir / f"{target_date.isoformat()}.md"),
+        (daily_data_path(target_date, root / "data"), archive_dir / f"{target_date.isoformat()}.json"),
+        (daily_digest_path(target_date, root / "digests"), archive_dir / f"{target_date.isoformat()}.md"),
     ]:
-        if source_path.exists():
-            shutil.copy2(source_path, target_path)
+        fallback_candidates = (
+            legacy_daily_data_candidates(target_date, root / "data")
+            if source_path.suffix == ".json"
+            else legacy_daily_digest_candidates(target_date, root / "digests")
+        )
+        resolved, _ = resolve_existing(source_path, fallback_candidates)
+        if resolved.exists():
+            shutil.copy2(resolved, target_path)
             archived.append(target_path)
     return archived
 

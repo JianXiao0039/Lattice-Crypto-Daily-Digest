@@ -8,6 +8,7 @@ from pathlib import Path
 from lattice_digest.digest import generate_markdown, record_intelligence, research_tags
 from lattice_digest.digest_sections import assign_report_buckets, assign_research_sections
 from lattice_digest.dedup import dedup_keys
+from lattice_digest.artifact_paths import daily_data_path, daily_digest_path
 from lattice_digest.models import PaperRecord, record_to_dict
 from lattice_digest.ranking_explainability import build_ranking_explanation
 
@@ -21,8 +22,8 @@ def write_json(
     since_window: str = "36h",
     metadata: dict[str, object] | None = None,
 ) -> Path:
-    output_dir.mkdir(parents=True, exist_ok=True)
-    path = output_dir / f"{digest_date.isoformat()}.json"
+    path = daily_data_path(digest_date, output_dir)
+    path.parent.mkdir(parents=True, exist_ok=True)
     enriched_records = []
     for record in records:
         item = record_to_dict(record)
@@ -86,8 +87,8 @@ def write_markdown(
     since_window: str = "36h",
     metadata: dict[str, object] | None = None,
 ) -> Path:
-    output_dir.mkdir(parents=True, exist_ok=True)
-    path = output_dir / f"{digest_date.isoformat()}.md"
+    path = daily_digest_path(digest_date, output_dir)
+    path.parent.mkdir(parents=True, exist_ok=True)
     path.write_text(
         generate_markdown(records, digest_date, filtered_count, source_health, warnings, since_window, metadata),
         encoding="utf-8",

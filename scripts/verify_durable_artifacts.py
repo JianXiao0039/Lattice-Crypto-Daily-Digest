@@ -8,6 +8,26 @@ from typing import Any
 
 
 PROJECT_ROOT = Path(__file__).resolve().parents[1]
+import sys
+
+if str(PROJECT_ROOT / "src") not in sys.path:
+    sys.path.insert(0, str(PROJECT_ROOT / "src"))
+
+from lattice_digest.artifact_paths import (
+    daily_data_path,
+    daily_digest_path,
+    legacy_daily_data_candidates,
+    legacy_daily_digest_candidates,
+    legacy_monthly_data_candidates,
+    legacy_monthly_digest_candidates,
+    legacy_weekly_data_candidates,
+    legacy_weekly_digest_candidates,
+    monthly_data_path,
+    monthly_digest_path,
+    resolve_existing,
+    weekly_data_path,
+    weekly_digest_path,
+)
 
 
 def _portable(path: Path, root: Path) -> str:
@@ -93,8 +113,14 @@ def _status_from_checks(checks: list[bool]) -> str:
 
 
 def verify_daily(root: Path, target_date: str) -> dict[str, Any]:
-    json_path = root / "data" / f"{target_date}.json"
-    markdown_path = root / "digests" / f"{target_date}.md"
+    json_path, json_legacy = resolve_existing(
+        daily_data_path(target_date, root / "data"),
+        legacy_daily_data_candidates(target_date, root / "data"),
+    )
+    markdown_path, markdown_legacy = resolve_existing(
+        daily_digest_path(target_date, root / "digests"),
+        legacy_daily_digest_candidates(target_date, root / "digests"),
+    )
     audit_json_path = root / "audits" / "source-health" / f"{target_date}.json"
     payload, json_error = _read_json(json_path)
     markdown = _markdown_info(markdown_path, target_date)
@@ -113,6 +139,7 @@ def verify_daily(root: Path, target_date: str) -> dict[str, Any]:
         "json_exists": json_path.exists(),
         "json_parseable": json_error is None,
         "json_error": json_error,
+        "legacy_fallback_used": json_legacy or markdown_legacy,
         "markdown_required_heading_present": markdown["required_heading_present"],
         "markdown_non_empty": markdown["non_empty"],
         "record_count": len(_records(payload)),
@@ -158,8 +185,14 @@ def _target_date_present(payload: dict[str, Any] | None, target_date: str) -> bo
 
 
 def verify_weekly(root: Path, week: str) -> dict[str, Any]:
-    json_path = root / "data" / "weekly" / f"{week}.json"
-    markdown_path = root / "digests" / "weekly" / f"{week}.md"
+    json_path, json_legacy = resolve_existing(
+        weekly_data_path(week, root=root / "data"),
+        legacy_weekly_data_candidates(week, root=root / "data"),
+    )
+    markdown_path, markdown_legacy = resolve_existing(
+        weekly_digest_path(week, root=root / "digests"),
+        legacy_weekly_digest_candidates(week, root=root / "digests"),
+    )
     payload, json_error = _read_json(json_path)
     markdown = _markdown_info(markdown_path, week)
     result = {
@@ -171,6 +204,7 @@ def verify_weekly(root: Path, week: str) -> dict[str, Any]:
         "json_exists": json_path.exists(),
         "json_parseable": json_error is None,
         "json_error": json_error,
+        "legacy_fallback_used": json_legacy or markdown_legacy,
         "markdown_required_heading_present": markdown["required_heading_present"],
         "markdown_non_empty": markdown["non_empty"],
         "source_health_summary_present": bool(payload and payload.get("source_health_summary")),
@@ -197,8 +231,14 @@ def verify_weekly(root: Path, week: str) -> dict[str, Any]:
 
 
 def verify_monthly(root: Path, month: str) -> dict[str, Any]:
-    json_path = root / "data" / "monthly" / f"{month}.json"
-    markdown_path = root / "digests" / "monthly" / f"{month}.md"
+    json_path, json_legacy = resolve_existing(
+        monthly_data_path(month, root=root / "data"),
+        legacy_monthly_data_candidates(month, root=root / "data"),
+    )
+    markdown_path, markdown_legacy = resolve_existing(
+        monthly_digest_path(month, root=root / "digests"),
+        legacy_monthly_digest_candidates(month, root=root / "digests"),
+    )
     payload, json_error = _read_json(json_path)
     markdown = _markdown_info(markdown_path, month)
     result = {
@@ -210,6 +250,7 @@ def verify_monthly(root: Path, month: str) -> dict[str, Any]:
         "json_exists": json_path.exists(),
         "json_parseable": json_error is None,
         "json_error": json_error,
+        "legacy_fallback_used": json_legacy or markdown_legacy,
         "markdown_required_heading_present": markdown["required_heading_present"],
         "markdown_non_empty": markdown["non_empty"],
         "source_health_summary_present": bool(payload and payload.get("source_health_summary")),

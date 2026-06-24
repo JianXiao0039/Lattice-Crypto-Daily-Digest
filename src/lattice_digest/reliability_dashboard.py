@@ -10,6 +10,7 @@ from pathlib import Path
 from typing import Any
 
 from lattice_digest import __version__
+from lattice_digest.artifact_paths import daily_digest_path
 
 
 SCHEMA_VERSION = 1
@@ -25,6 +26,20 @@ def load_json(path: Path) -> Any:
 def latest_file(directory: Path, pattern: str) -> Path | None:
     matches = sorted(directory.glob(pattern))
     return matches[-1] if matches else None
+
+
+def latest_canonical_or_legacy_daily_json(data_dir: Path) -> Path | None:
+    canonical = sorted(data_dir.glob("[0-9][0-9][0-9][0-9]/daily/[0-9][0-9][0-9][0-9]-[0-9][0-9]-[0-9][0-9].json"))
+    if canonical:
+        return canonical[-1]
+    return latest_file(data_dir, "[0-9][0-9][0-9][0-9]-[0-9][0-9]-[0-9][0-9].json")
+
+
+def latest_canonical_or_legacy_weekly_json(data_dir: Path) -> Path | None:
+    canonical = sorted(data_dir.glob("[0-9][0-9][0-9][0-9]/weekly/[0-9][0-9][0-9][0-9]-W[0-9][0-9].json"))
+    if canonical:
+        return canonical[-1]
+    return latest_file(data_dir / "weekly", "[0-9][0-9][0-9][0-9]-W[0-9][0-9].json")
 
 
 def _portable_relative_path(path: Path | None, project_root: Path) -> str | None:
@@ -64,6 +79,8 @@ def count_high_priority(records: list[dict[str, Any]]) -> int:
 
 
 def corresponding_markdown_path(json_path: Path, project_root: Path) -> Path:
+    if json_path.parent.name == "daily" and json_path.parent.parent.parent == project_root / "data":
+        return daily_digest_path(json_path.stem, project_root / "digests")
     return project_root / "digests" / f"{json_path.stem}.md"
 
 
@@ -197,11 +214,10 @@ def build_reliability_dashboard(
     env: dict[str, str] | None = None,
 ) -> dict[str, Any]:
     data_dir = project_root / "data"
-    weekly_dir = data_dir / "weekly"
     handoff_dir = project_root / "handoffs" / "weekly"
 
-    daily_json = latest_file(data_dir, "*.json")
-    weekly_json = latest_file(weekly_dir, "*.json")
+    daily_json = latest_canonical_or_legacy_daily_json(data_dir)
+    weekly_json = latest_canonical_or_legacy_weekly_json(data_dir)
     handoff_json = latest_file(handoff_dir, "*-handoff-packets.json")
 
     daily_payload = load_json(daily_json) if daily_json else {"records": [], "source_health": [], "metadata": {}}

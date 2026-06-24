@@ -4,6 +4,10 @@
 
 Generate Weekly synthesis from existing Daily evidence while preserving Daily ranking/order semantics.
 
+Artifact reads are canonical-only by default. Temporary legacy read fallback
+requires explicit process-scoped opt-in with
+`LATTICE_DIGEST_ALLOW_LEGACY_FALLBACK=1`. Weekly writers remain canonical-only.
+
 ## Pre-Run Checks
 
 ```powershell
@@ -36,8 +40,8 @@ python -m lattice_digest.workflow weekly --from-date YYYY-MM-DD --to-date YYYY-M
 
 Expected outputs:
 
-- `data/weekly/YYYY-Www.json`
-- `digests/weekly/YYYY-Www.md`
+- `data/<ISO-week-year>/weekly/YYYY-Www.json`
+- `digests/<ISO-week-year>/weekly/YYYY-Www.md`
 - handoff files when weekly handoff generation is enabled by existing workflow behavior
 
 ## Review Checklist

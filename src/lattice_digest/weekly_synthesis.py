@@ -32,6 +32,13 @@ from lattice_digest.report_quality import (
     semantic_scholar_advisory_text,
     source_health_caveat_text,
 )
+from lattice_digest.artifact_paths import (
+    legacy_daily_data_candidates,
+    weekly_data_path,
+    weekly_digest_path,
+    daily_data_path,
+    resolve_existing,
+)
 
 
 SCHEMA_VERSION = 1
@@ -215,10 +222,15 @@ def load_daily_json(data_dir: Path, selected_days: list[date]) -> tuple[list[tup
     loaded: list[tuple[date, dict[str, Any]]] = []
     missing: list[str] = []
     for day in selected_days:
-        path = data_dir / f"{day.isoformat()}.json"
+        path, used_legacy = resolve_existing(
+            daily_data_path(day, data_dir),
+            legacy_daily_data_candidates(day, data_dir),
+        )
         if not path.exists():
             missing.append(day.isoformat())
             continue
+        if used_legacy:
+            print(f"Warning: using legacy daily JSON fallback: {path}")
         loaded.append((day, _read_json(path)))
     return loaded, missing
 
@@ -451,10 +463,10 @@ def render_markdown(payload: dict[str, Any]) -> str:
 
 
 def write_weekly_outputs(payload: dict[str, Any], json_output_dir: Path, digest_output_dir: Path) -> tuple[Path, Path]:
-    json_output_dir.mkdir(parents=True, exist_ok=True)
-    digest_output_dir.mkdir(parents=True, exist_ok=True)
-    json_path = json_output_dir / f"{payload['week_id']}.json"
-    markdown_path = digest_output_dir / f"{payload['week_id']}.md"
+    json_path = weekly_data_path(str(payload["week_id"]), root=json_output_dir)
+    markdown_path = weekly_digest_path(str(payload["week_id"]), root=digest_output_dir)
+    json_path.parent.mkdir(parents=True, exist_ok=True)
+    markdown_path.parent.mkdir(parents=True, exist_ok=True)
     json_path.write_text(json.dumps(payload, ensure_ascii=False, indent=2), encoding="utf-8")
     markdown_path.write_text(render_markdown(payload), encoding="utf-8")
     return json_path, markdown_path
@@ -474,8 +486,8 @@ def parse_args(argv: list[str] | None = None) -> argparse.Namespace:
     parser.add_argument("--from-date", default=None)
     parser.add_argument("--to-date", default=None)
     parser.add_argument("--data-dir", type=Path, default=Path("data"))
-    parser.add_argument("--json-output-dir", type=Path, default=Path("data") / "weekly")
-    parser.add_argument("--digest-output-dir", type=Path, default=Path("digests") / "weekly")
+    parser.add_argument("--json-output-dir", type=Path, default=Path("data"))
+    parser.add_argument("--digest-output-dir", type=Path, default=Path("digests"))
     parser.add_argument("--dry-run", action="store_true")
     return parser.parse_args(argv)
 
@@ -493,8 +505,8 @@ def main(argv: list[str] | None = None) -> int:
     )
     if args.dry_run:
         print("DRY RUN: no weekly output files were written.")
-        print(f"JSON target: {args.json_output_dir / (payload['week_id'] + '.json')}")
-        print(f"Markdown target: {args.digest_output_dir / (payload['week_id'] + '.md')}")
+        print(f"JSON target: {weekly_data_path(str(payload['week_id']), root=args.json_output_dir)}")
+        print(f"Markdown target: {weekly_digest_path(str(payload['week_id']), root=args.digest_output_dir)}")
         return 0
     json_path, markdown_path = write_weekly_outputs(payload, args.json_output_dir, args.digest_output_dir)
     print(json_path)

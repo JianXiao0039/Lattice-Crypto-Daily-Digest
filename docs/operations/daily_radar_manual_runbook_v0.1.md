@@ -24,11 +24,20 @@ python -m lattice_digest.run --since 36h --output markdown,json --send none
 
 Expected outputs:
 
-- `digests/YYYY-MM-DD.md`
-- `data/YYYY-MM-DD.json`
+- `digests/YYYY/daily/YYYY-MM-DD.md`
+- `data/YYYY/daily/YYYY-MM-DD.json`
 - `papers.db`
 
 Do not stage or commit these outputs from this runbook.
+
+By default, artifact reads are canonical-only. Legacy read fallback is temporary
+and requires explicit process-scoped opt-in:
+
+```powershell
+$env:LATTICE_DIGEST_ALLOW_LEGACY_FALLBACK = "1"
+```
+
+This opt-in never changes Daily writer output paths.
 
 ## Exact Date Run
 

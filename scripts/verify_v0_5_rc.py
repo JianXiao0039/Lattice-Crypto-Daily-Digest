@@ -13,6 +13,24 @@ PROJECT_ROOT = Path(__file__).resolve().parents[1]
 if str(PROJECT_ROOT) not in sys.path:
     sys.path.insert(0, str(PROJECT_ROOT))
 
+if str(PROJECT_ROOT / "src") not in sys.path:
+    sys.path.insert(0, str(PROJECT_ROOT / "src"))
+
+from lattice_digest.artifact_paths import (
+    daily_data_path,
+    daily_digest_path,
+    legacy_daily_data_candidates,
+    legacy_daily_digest_candidates,
+    legacy_monthly_data_candidates,
+    legacy_monthly_digest_candidates,
+    legacy_weekly_data_candidates,
+    legacy_weekly_digest_candidates,
+    monthly_data_path,
+    monthly_digest_path,
+    resolve_existing,
+    weekly_data_path,
+    weekly_digest_path,
+)
 from scripts.verify_durable_artifacts import verify_artifacts
 FORBIDDEN_ANNOTATION_FIELDS = {
     "user_label",
@@ -107,12 +125,30 @@ def dependency_checks(root: Path) -> dict[str, Any]:
 
 
 def artifact_checks(root: Path, *, target_date: str, week: str, month: str) -> dict[str, Any]:
-    daily_json = root / "data" / f"{target_date}.json"
-    daily_md = root / "digests" / f"{target_date}.md"
-    weekly_json = root / "data" / "weekly" / f"{week}.json"
-    weekly_md = root / "digests" / "weekly" / f"{week}.md"
-    monthly_json = root / "data" / "monthly" / f"{month}.json"
-    monthly_md = root / "digests" / "monthly" / f"{month}.md"
+    daily_json = resolve_existing(
+        daily_data_path(target_date, root=root / "data"),
+        legacy_daily_data_candidates(target_date, root=root / "data"),
+    )[0]
+    daily_md = resolve_existing(
+        daily_digest_path(target_date, root=root / "digests"),
+        legacy_daily_digest_candidates(target_date, root=root / "digests"),
+    )[0]
+    weekly_json = resolve_existing(
+        weekly_data_path(week, root=root / "data"),
+        legacy_weekly_data_candidates(week, root=root / "data"),
+    )[0]
+    weekly_md = resolve_existing(
+        weekly_digest_path(week, root=root / "digests"),
+        legacy_weekly_digest_candidates(week, root=root / "digests"),
+    )[0]
+    monthly_json = resolve_existing(
+        monthly_data_path(month, root=root / "data"),
+        legacy_monthly_data_candidates(month, root=root / "data"),
+    )[0]
+    monthly_md = resolve_existing(
+        monthly_digest_path(month, root=root / "digests"),
+        legacy_monthly_digest_candidates(month, root=root / "digests"),
+    )[0]
     health_json = root / "audits" / "source-health" / f"{target_date}.json"
     return {
         "daily": {
@@ -132,7 +168,11 @@ def artifact_checks(root: Path, *, target_date: str, week: str, month: str) -> d
 
 
 def source_health_checks(root: Path, target_date: str) -> dict[str, Any]:
-    payload = read_json(root / "data" / f"{target_date}.json")
+    path = resolve_existing(
+        daily_data_path(target_date, root=root / "data"),
+        legacy_daily_data_candidates(target_date, root=root / "data"),
+    )[0]
+    payload = read_json(path)
     health = payload.get("source_health") or payload.get("metadata", {}).get("source_health") or []
     rows = [row for row in health if isinstance(row, dict)] if isinstance(health, list) else []
     by_source = {str(row.get("source")): row for row in rows}
@@ -213,7 +253,11 @@ def obsidian_checks(root: Path) -> dict[str, Any]:
 
 def rationale_quality_checks(root: Path) -> dict[str, Any]:
     queue = reading_queue_checks(root)
-    monthly = file_check(root / "digests" / "monthly" / "2026-06.md", contains=("Problem", "Method", "Contribution"))
+    monthly_path = resolve_existing(
+        monthly_digest_path("2026-06", root=root / "digests"),
+        legacy_monthly_digest_candidates("2026-06", root=root / "digests"),
+    )[0]
+    monthly = file_check(monthly_path, contains=("Problem", "Method", "Contribution"))
     status = "rationale_quality_gate_passed_with_limits"
     if queue["rationale_records"] == 0:
         status = "rationale_quality_blocked_by_keyword_only_output"

@@ -9,6 +9,13 @@ from datetime import date, datetime, timedelta, timezone
 from pathlib import Path
 from typing import Any
 
+from lattice_digest.artifact_paths import (
+    daily_data_path,
+    legacy_daily_data_candidates,
+    legacy_weekly_data_candidates,
+    resolve_existing,
+    weekly_data_path,
+)
 from lattice_digest.recommendation_rationale import build_bilingual_rationale, build_recommendation_rationale
 from lattice_digest.digest_sections import (
     AI_LATTICE,
@@ -364,7 +371,12 @@ def _daily_payload_records(path: Path) -> list[dict[str, Any]]:
 
 
 def _default_weekly_json(data_dir: Path, end: date) -> Path:
-    return data_dir / "weekly" / f"{_week_id(end)}.json"
+    week = _week_id(end)
+    path, _ = resolve_existing(
+        weekly_data_path(week, root=data_dir),
+        legacy_weekly_data_candidates(week, root=data_dir),
+    )
+    return path
 
 
 def _default_artifact_manifest(end: date) -> Path:
@@ -433,11 +445,14 @@ def load_import_candidates(
 
     weekly_payload = build_weekly_synthesis(data_dir, start, end)
     records = _records_from_weekly_payload(weekly_payload)
-    source_files = [
-        data_dir / f"{day.isoformat()}.json"
-        for day in _date_range(start, end)
-        if (data_dir / f"{day.isoformat()}.json").exists()
-    ]
+    source_files: list[Path] = []
+    for day in _date_range(start, end):
+        path, _ = resolve_existing(
+            daily_data_path(day, root=data_dir),
+            legacy_daily_data_candidates(day, root=data_dir),
+        )
+        if path.exists():
+            source_files.append(path)
     return _dedup_candidates([record for record in records if should_import_record(record)]), {
         "input_mode": "daily_json_fallback",
         "source_files": [str(path) for path in source_files],
