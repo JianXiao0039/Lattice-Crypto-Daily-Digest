@@ -45,7 +45,14 @@ state/reading-queue.lock
 data/*.json
 digests/*.md
 data/weekly/
+data/monthly/
 digests/weekly/
+data/*/daily/*.json
+data/*/weekly/*.json
+data/*/monthly/*.json
+digests/*/daily/*.md
+digests/*/weekly/*.md
+digests/*/monthly/*.md
 !data/.gitkeep
 !digests/.gitkeep
 papers.db
