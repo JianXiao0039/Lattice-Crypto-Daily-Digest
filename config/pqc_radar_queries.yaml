@@ -1,0 +1,123 @@
+schema_version: 1
+phase: phase-15b-04a
+production_retrieval_enabled: false
+scope_note: >
+  Structured lattice-centric PQC ontology and query contract. This file is not
+  wired into production retrieval in Phase 15B-04A.
+
+ontology_groups:
+  - lattice_assumptions
+  - scheme_families
+  - standardized_schemes
+  - active_candidates
+  - historical_candidates
+  - standardization_processes
+  - migration_lifecycle_events
+  - protocols_and_pki
+  - libraries_and_vendors
+  - hardware_and_embedded_systems
+  - implementation_security
+  - cryptanalysis
+  - regulation_and_jurisdictions
+  - industry_sectors
+  - multilingual_aliases
+  - disambiguation_requirements
+  - negative_contexts
+
+evidence_tiers:
+  S0:
+    label: primary authoritative
+    status_changes: required
+  S1:
+    label: primary technical
+    technical_security_claims: required
+  S2:
+    label: authoritative implementation
+    deployment_claims: required
+  S3:
+    label: reliable secondary
+    TODO_VERIFY: true
+  S4:
+    label: discovery only
+    TODO_VERIFY: true
+
+scheme_registry:
+  - canonical_name: ML-KEM
+    aliases: [Kyber, CRYSTALS-Kyber, FIPS 203]
+    scheme_family: lattice-based key encapsulation
+    underlying_assumption: MLWE
+    lifecycle_status: standardized
+    standard_identifier: FIPS 203
+    evidence_tier: S0
+  - canonical_name: ML-DSA
+    aliases: [Dilithium, CRYSTALS-Dilithium, FIPS 204]
+    scheme_family: lattice-based digital signature
+    underlying_assumption: MLWE / Module-SIS
+    lifecycle_status: standardized
+    standard_identifier: FIPS 204
+    evidence_tier: S0
+  - canonical_name: FN-DSA
+    aliases: [Falcon, FALCON, FIPS 206]
+    scheme_family: NTRU-lattice digital signature
+    underlying_assumption: NTRU lattices
+    lifecycle_status: anticipated_standard
+    standard_identifier: FIPS 206
+    TODO_VERIFY: true
+  - canonical_name: HAWK
+    aliases: [Hawk]
+    scheme_family: lattice-based digital signature
+    underlying_assumption: NTRU / MLIP
+    lifecycle_status: active_candidate
+    process_name: NIST Additional Digital Signature Schemes
+    round_or_stage: Round 3 candidate
+    evidence_tier: S0
+  - canonical_name: module lattice isomorphism problem
+    aliases: [MLIP, module lattice isomorphism]
+    scheme_family: assumption
+    underlying_assumption: module lattice isomorphism
+    lifecycle_status: active_assumption
+
+hawk_disambiguation:
+  requires_crypto_coanchor: true
+  crypto_coanchors:
+    - signature
+    - digital signature
+    - cryptography
+    - post-quantum
+    - PQC
+    - NIST
+    - lattice
+    - NTRU
+    - MLIP
+    - signing
+    - verification
+    - key generation
+    - cryptanalysis
+    - specification
+    - security proof
+  negative_contexts:
+    - birds and wildlife
+    - sports teams
+    - aircraft
+    - missiles
+    - radar or defense systems
+    - malware-detection models
+    - graph neural networks
+    - computer vision
+    - load monitoring
+    - corporate or stock references
+    - games and fictional characters
+
+query_families:
+  - id: scheme_standardization
+    architecture: SCHEME_OR_LATTICE_ANCHOR AND PROCESS_OR_EVENT_ANCHOR AND CONTEXT_ANCHOR AND NOT NOISE_CONTEXT
+  - id: hawk_high_precision
+    architecture: SCHEME_OR_LATTICE_ANCHOR AND PROCESS_OR_EVENT_ANCHOR AND CONTEXT_ANCHOR AND NOT NOISE_CONTEXT
+  - id: scheme_migration
+    architecture: SCHEME_OR_LATTICE_ANCHOR AND PROCESS_OR_EVENT_ANCHOR AND CONTEXT_ANCHOR AND NOT NOISE_CONTEXT
+  - id: scheme_protocol_pki
+    architecture: SCHEME_OR_LATTICE_ANCHOR AND PROCESS_OR_EVENT_ANCHOR AND CONTEXT_ANCHOR AND NOT NOISE_CONTEXT
+  - id: scheme_implementation_security
+    architecture: SCHEME_OR_LATTICE_ANCHOR AND PROCESS_OR_EVENT_ANCHOR AND CONTEXT_ANCHOR AND NOT NOISE_CONTEXT
+  - id: scheme_cryptanalysis
+    architecture: SCHEME_OR_LATTICE_ANCHOR AND PROCESS_OR_EVENT_ANCHOR AND CONTEXT_ANCHOR AND NOT NOISE_CONTEXT

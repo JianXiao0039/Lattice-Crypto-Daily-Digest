@@ -24,6 +24,7 @@ from typing import Iterable, Mapping, Sequence
 from lattice_digest.filters import negative_matches as config_negative_matches
 from lattice_digest.filters import should_exclude_as_negative
 from lattice_digest.models import PaperRecord, copy_record
+from lattice_digest.pqc_radar import classify_hawk_context
 from lattice_digest.text import combined_text, find_terms
 
 
@@ -628,6 +629,27 @@ def rank_paper(
     strong_core_matches = [
         kw for kw in core_matches if kw.lower() not in {item.lower() for item in AMBIGUOUS_CONTEXT_KEYWORDS}
     ]
+    if "hawk" in {kw.lower() for kw in strong_core_matches}:
+        hawk_decision = classify_hawk_context(title, abstract)
+        non_hawk_lattice_matches = [
+            kw for kw in strong_core_matches if kw.lower() != "hawk"
+        ]
+        if not hawk_decision.accepted and not non_hawk_lattice_matches:
+            return RankingResult(
+                score=0,
+                label="D",
+                reading_priority="过滤",
+                matched_keywords=matched_keywords,
+                negative_keywords=sorted(
+                    set(negative_keywords + list(hawk_decision.matched_negative_contexts)),
+                    key=str.lower,
+                ),
+                taxonomy_tags=[],
+                reason=(
+                    "HAWK 命中未通过密码学上下文消歧；"
+                    "HAWK 单独出现或处于非密码学语境时不作为格密码证据。"
+                ),
+            )
     has_crypto_context = bool(context_matches or strong_core_matches)
     has_core_lattice = bool(title_core or abstract_core)
     has_lattice_anchor = bool(strong_core_matches or lattice_anchor_matches)
