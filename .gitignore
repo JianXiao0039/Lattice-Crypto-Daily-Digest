@@ -11,6 +11,10 @@ __pycache__/
 *.py[cod]
 .pytest_cache/
 .pytest_tmp/
+# Local pytest run artifacts
+.pytest_tmp*/
+.pytest_host_*/
+.phase*_test_tmp/
 .mypy_cache/
 .ruff_cache/
 
