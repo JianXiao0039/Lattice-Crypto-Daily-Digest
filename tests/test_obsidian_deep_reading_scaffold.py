@@ -35,28 +35,29 @@ def _record() -> dict[str, object]:
 def test_obsidian_scaffold_contains_deep_reading_template_sections() -> None:
     note = render_note(_record())
     for section in [
-        "## 0. Radar Decision",
-        "## 1. 中文推荐理由",
-        "### 论文大致工作",
-        "### 核心创新点",
-        "### 与本雷达关系",
-        "## 2. English Rationale",
-        "### Paper work summary",
-        "### Core novelty",
-        "## 3. Direction Mapping",
-        "## 4. Deep Reading Checklist",
-        "## 5. Claim Verification",
-        "## 6. Research Use",
-        "## 7. Links",
+        "## Metadata",
+        "## Why Queued",
+        "## Reading Goal",
+        "## TL;DR",
+        "## Core Problem",
+        "## Method / Construction / Attack Idea",
+        "## Mathematical Checkpoints",
+        "## Experiment / Artifact Checkpoints",
+        "## Relation to My Research",
+        "## Possible Use",
+        "## Questions for Advisor",
+        "## Reading Log",
+        "## Verification Status",
     ]:
         assert section in note
-    assert "status: unread" in note
-    assert 'research_direction: "LWE / RLWE / MLWE"' in note
+    assert "status: scaffold" in note
+    assert 'reading_status: "TODO_READ"' in note
 
 
 def test_obsidian_scaffold_has_claim_verification_and_no_hallucinated_read_status() -> None:
     note = render_note(_record())
-    assert "| Claim | Evidence in available metadata | Need full-paper verification? | Notes |" in note
+    assert "## Verification Status" in note
     assert "TODO_VERIFY" in note
+    assert "TODO_AFTER_READING" in note
     assert "has read" not in note.lower()
     assert "already read" not in note.lower()

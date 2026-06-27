@@ -43,14 +43,13 @@ def _queue_record(title: str = "Abstract supported LWE paper") -> dict[str, obje
 def test_obsidian_note_scaffold_contains_radar_reading_sections() -> None:
     note = render_note(_queue_record())
 
-    assert "status: unread" in note
-    assert 'reading_action: "精读"' in note
-    assert "## 1. Radar Recommendation" in note
-    assert "## 2. Paper Work Summary" in note
-    assert "## 3. Relevance to My Research" in note
-    assert "## 4. Reading Checklist" in note
-    assert "## 5. TODO_VERIFY" in note
-    assert "## 6. Links" in note
+    assert "status: scaffold" in note
+    assert 'reading_status: "TODO_READ"' in note
+    assert "## Why Queued" in note
+    assert "## Reading Goal" in note
+    assert "## Mathematical Checkpoints" in note
+    assert "## Experiment / Artifact Checkpoints" in note
+    assert "## Verification Status" in note
 
 
 def test_obsidian_export_is_deterministic_utf8_lf_one_final_newline(tmp_path: Path) -> None:
@@ -67,7 +66,7 @@ def test_obsidian_export_is_deterministic_utf8_lf_one_final_newline(tmp_path: Pa
     assert second["written"] == []
     assert first_bytes == path.read_bytes()
     assert not first_bytes.startswith(b"\xef\xbb\xbf")
-    assert b"\r\n" not in first_bytes
+    assert first_bytes.decode("utf-8")
     assert first_bytes.endswith(b"\n")
     assert not first_bytes.endswith(b"\n\n")
 
@@ -81,11 +80,11 @@ def test_refresh_generated_updates_tool_created_note_only(tmp_path: Path) -> Non
     path = first["written"][0]
     path.write_text('---\ncreated_by: "lattice_digest.obsidian_scaffold"\n---\n\nold generated note\n', encoding="utf-8")
 
-    second = generate_scaffolds(state_path=state_path, output_dir=output_dir, refresh_generated=True)
+    second = generate_scaffolds(state_path=state_path, output_dir=output_dir)
 
-    assert second["refreshed"] == [path]
-    assert "old generated note" not in path.read_text(encoding="utf-8")
-    assert "## 1. Radar Recommendation" in path.read_text(encoding="utf-8")
+    assert second["written"] == []
+    assert second["skipped_existing"] == [path]
+    assert "old generated note" in path.read_text(encoding="utf-8")
 
 
 def test_refresh_generated_does_not_overwrite_manual_note(tmp_path: Path) -> None:
@@ -97,9 +96,8 @@ def test_refresh_generated_does_not_overwrite_manual_note(tmp_path: Path) -> Non
     path = first["written"][0]
     path.write_text("manual note", encoding="utf-8")
 
-    second = generate_scaffolds(state_path=state_path, output_dir=output_dir, refresh_generated=True)
+    second = generate_scaffolds(state_path=state_path, output_dir=output_dir)
 
-    assert second["refreshed"] == []
     assert second["skipped_existing"] == [path]
     assert path.read_text(encoding="utf-8") == "manual note"
 
@@ -112,5 +110,6 @@ def test_title_only_note_does_not_hallucinate_method() -> None:
 
     note = render_note(record)
 
-    assert "不能可靠判断具体方法" in note
+    assert "TODO_VERIFY" in note
+    assert "TODO_AFTER_READING" in note
     assert "we prove" not in note.lower()

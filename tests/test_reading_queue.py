@@ -220,10 +220,18 @@ def test_reading_queue_export_obsidian_creates_dashboard_files() -> None:
         todo = (root / "exports" / "reading-queue" / "todo-read.md").read_text(encoding="utf-8")
         replication = (root / "exports" / "reading-queue" / "needs-replication.md").read_text(encoding="utf-8")
 
-    assert len(written) == 3
+    assert len(written) == 6
     assert "type: reading_queue_dashboard" in dashboard
     assert "TODO Read" in todo
     assert "Needs Replication" in replication
+    assert {path.name for path in written} == {
+        "reading-dashboard.md",
+        "by-reading-action.md",
+        "by-research-direction.md",
+        "todo-verify-categories.md",
+        "todo-read.md",
+        "needs-replication.md",
+    }
     assert "<" not in dashboard
     assert "contentReference" not in dashboard
 
@@ -234,7 +242,15 @@ def test_reading_queue_dry_run_writes_no_files() -> None:
         state, _ = import_queue({"records": []}, [_record("A", [HIGH_PRIORITY, LWE_FAMILY])], timestamp=STAMP)
         targets = export_obsidian(state, root / "exports" / "reading-queue", dry_run=True)
 
-    assert len(targets) == 3
+    assert len(targets) == 6
+    assert {path.name for path in targets} == {
+        "reading-dashboard.md",
+        "by-reading-action.md",
+        "by-research-direction.md",
+        "todo-verify-categories.md",
+        "todo-read.md",
+        "needs-replication.md",
+    }
     assert not (root / "exports").exists()
 
 
