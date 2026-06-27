@@ -5,6 +5,7 @@ from datetime import date
 from pathlib import Path
 from tempfile import TemporaryDirectory
 
+from lattice_digest.artifact_paths import daily_data_path, weekly_data_path
 from lattice_digest.research_artifact_export import (
     AI_LATTICE,
     LATTICE_REDUCTION_ATTACKS,
@@ -103,7 +104,7 @@ def _weekly_payload() -> dict[str, object]:
 
 
 def _write_weekly(root: Path) -> Path:
-    path = root / "data" / "weekly" / "2026-W22.json"
+    path = weekly_data_path("2026-W22", root=root / "data")
     path.parent.mkdir(parents=True, exist_ok=True)
     path.write_text(json.dumps(_weekly_payload(), ensure_ascii=False, indent=2), encoding="utf-8")
     return path
@@ -129,7 +130,9 @@ def _write_daily(root: Path) -> None:
             "Paper Plan Candidates",
         ],
     }
-    (data_dir / "2026-05-31.json").write_text(
+    path = daily_data_path("2026-05-31", data_dir)
+    path.parent.mkdir(parents=True, exist_ok=True)
+    path.write_text(
         json.dumps({"records": [record], "source_health": []}, ensure_ascii=False, indent=2),
         encoding="utf-8",
     )

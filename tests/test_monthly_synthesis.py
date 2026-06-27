@@ -5,6 +5,7 @@ from datetime import datetime, timezone
 from pathlib import Path
 from tempfile import TemporaryDirectory
 
+from lattice_digest.artifact_paths import daily_data_path
 from lattice_digest.monthly_synthesis import build_monthly_synthesis, render_markdown, write_monthly_outputs
 
 
@@ -44,7 +45,9 @@ def _write_day(data_dir: Path, day: str, records: list[dict[str, object]], *, so
         if source_health is not None
         else [{"source": "arxiv", "health_status": "green", "final_count": len(records)}],
     }
-    (data_dir / f"{day}.json").write_text(json.dumps(payload, ensure_ascii=False, indent=2), encoding="utf-8")
+    path = daily_data_path(day, data_dir)
+    path.parent.mkdir(parents=True, exist_ok=True)
+    path.write_text(json.dumps(payload, ensure_ascii=False, indent=2), encoding="utf-8")
 
 
 def test_monthly_synthesis_creates_markdown_and_json_for_fixture_month() -> None:
@@ -68,7 +71,7 @@ def test_monthly_synthesis_creates_markdown_and_json_for_fixture_month() -> None
             "2026-06",
             generated_at=datetime(2026, 6, 30, tzinfo=timezone.utc),
         )
-        json_path, markdown_path = write_monthly_outputs(payload, root / "data" / "monthly", root / "digests" / "monthly")
+        json_path, markdown_path = write_monthly_outputs(payload, root / "data", root / "digests")
         loaded = json.loads(json_path.read_text(encoding="utf-8"))
         markdown = markdown_path.read_text(encoding="utf-8")
 

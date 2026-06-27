@@ -6,6 +6,7 @@ from pathlib import Path
 
 import pytest
 
+from lattice_digest.artifact_paths import daily_data_path, daily_digest_path
 from lattice_digest.models import make_paper_record
 from lattice_digest.sources.base import SourceAdapter
 
@@ -104,13 +105,17 @@ def test_date_targeted_run_filters_records_and_writes_exact_date(tmp_path: Path,
     )
 
     assert result == 0
-    payload = json.loads((tmp_path / "data" / "2026-06-06.json").read_text(encoding="utf-8"))
+    json_path = daily_data_path("2026-06-06", tmp_path / "data")
+    markdown_path = daily_digest_path("2026-06-06", tmp_path / "digests")
+    payload = json.loads(json_path.read_text(encoding="utf-8"))
     assert [record["title"] for record in payload["records"]] == ["Inside target date"]
     assert payload["metadata"]["target_date"] == "2026-06-06"
     assert payload["metadata"]["since_window"] == "24h"
     assert payload["metadata"]["coverage_start"] == "2026-06-05T16:00:00+00:00"
     assert payload["metadata"]["coverage_end"] == "2026-06-06T16:00:00+00:00"
-    assert (tmp_path / "digests" / "2026-06-06.md").exists()
+    assert markdown_path.exists()
+    assert not (tmp_path / "data" / "2026-06-06.json").exists()
+    assert not (tmp_path / "digests" / "2026-06-06.md").exists()
 
 
 def test_since_behavior_remains_available() -> None:

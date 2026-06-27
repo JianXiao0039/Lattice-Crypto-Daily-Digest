@@ -4,6 +4,7 @@ import json
 from pathlib import Path
 from tempfile import TemporaryDirectory
 
+from lattice_digest.artifact_paths import daily_data_path, daily_digest_path
 from lattice_digest.models import make_paper_record
 from lattice_digest.sources.base import SourceAdapter
 from lattice_digest.storage import write_sqlite
@@ -79,8 +80,8 @@ def test_target_date_writes_metadata_and_named_outputs() -> None:
         )
 
         assert result == 0
-        json_path = root / "data" / "2026-05-27.json"
-        markdown_path = root / "digests" / "2026-05-27.md"
+        json_path = daily_data_path("2026-05-27", root / "data")
+        markdown_path = daily_digest_path("2026-05-27", root / "digests")
         assert json_path.exists()
         assert markdown_path.exists()
 
@@ -139,7 +140,7 @@ def test_backfill_keeps_record_even_if_paper_already_exists_in_papers_db() -> No
         )
 
         assert result == 0
-        payload = json.loads((root / "data" / "2026-05-27.json").read_text(encoding="utf-8"))
+        payload = json.loads(daily_data_path("2026-05-27", root / "data").read_text(encoding="utf-8"))
         assert [item["title"] for item in payload["records"]] == ["BKZ cost models for LWE attacks"]
 
 
@@ -149,9 +150,11 @@ def test_provisional_report_can_be_replaced_by_authoritative_backfill() -> None:
         config_dir = _write_config(root)
         data_dir = root / "data"
         digest_dir = root / "digests"
-        data_dir.mkdir()
-        digest_dir.mkdir()
-        (data_dir / "2026-05-27.json").write_text(
+        json_path = daily_data_path("2026-05-27", data_dir)
+        markdown_path = daily_digest_path("2026-05-27", digest_dir)
+        json_path.parent.mkdir(parents=True, exist_ok=True)
+        markdown_path.parent.mkdir(parents=True, exist_ok=True)
+        json_path.write_text(
             json.dumps(
                 {
                     "metadata": {
@@ -166,7 +169,7 @@ def test_provisional_report_can_be_replaced_by_authoritative_backfill() -> None:
             ),
             encoding="utf-8",
         )
-        (digest_dir / "2026-05-27.md").write_text("old provisional", encoding="utf-8")
+        markdown_path.write_text("old provisional", encoding="utf-8")
 
         result = _run_in_temp_root(
             root,
@@ -191,7 +194,7 @@ def test_provisional_report_can_be_replaced_by_authoritative_backfill() -> None:
         )
 
         assert result == 0
-        payload = json.loads((data_dir / "2026-05-27.json").read_text(encoding="utf-8"))
+        payload = json.loads(json_path.read_text(encoding="utf-8"))
         metadata = payload["metadata"]
         assert metadata["quality_status"] == "authoritative_backfill"
         assert metadata["supersedes"] == {
@@ -214,8 +217,10 @@ def test_authoritative_backfill_is_not_overwritten_by_github_provisional() -> No
         config_dir = _write_config(root)
         data_dir = root / "data"
         digest_dir = root / "digests"
-        data_dir.mkdir()
-        digest_dir.mkdir()
+        json_path = daily_data_path("2026-05-27", data_dir)
+        markdown_path = daily_digest_path("2026-05-27", digest_dir)
+        json_path.parent.mkdir(parents=True, exist_ok=True)
+        markdown_path.parent.mkdir(parents=True, exist_ok=True)
         existing_payload = {
             "metadata": {
                 "target_date": "2026-05-27",
@@ -225,8 +230,8 @@ def test_authoritative_backfill_is_not_overwritten_by_github_provisional() -> No
             },
             "records": [{"title": "authoritative"}],
         }
-        (data_dir / "2026-05-27.json").write_text(json.dumps(existing_payload, ensure_ascii=False), encoding="utf-8")
-        (digest_dir / "2026-05-27.md").write_text("authoritative", encoding="utf-8")
+        json_path.write_text(json.dumps(existing_payload, ensure_ascii=False), encoding="utf-8")
+        markdown_path.write_text("authoritative", encoding="utf-8")
 
         result = _run_in_temp_root(
             root,
@@ -251,9 +256,9 @@ def test_authoritative_backfill_is_not_overwritten_by_github_provisional() -> No
         )
 
         assert result == 0
-        payload = json.loads((data_dir / "2026-05-27.json").read_text(encoding="utf-8"))
+        payload = json.loads(json_path.read_text(encoding="utf-8"))
         assert payload == existing_payload
-        assert (digest_dir / "2026-05-27.md").read_text(encoding="utf-8") == "authoritative"
+        assert markdown_path.read_text(encoding="utf-8") == "authoritative"
 
 
 def test_original_run_without_target_date_still_writes_today_output() -> None:
@@ -276,5 +281,7 @@ def test_original_run_without_target_date_still_writes_today_output() -> None:
         )
 
         assert result == 0
-        assert list((root / "data").glob("*.json"))
-        assert list((root / "digests").glob("*.md"))
+        assert list((root / "data").glob("*/*/*.json"))
+        assert list((root / "digests").glob("*/*/*.md"))
+        assert not list((root / "data").glob("*.json"))
+        assert not list((root / "digests").glob("*.md"))

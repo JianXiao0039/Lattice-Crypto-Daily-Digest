@@ -2,6 +2,7 @@ from __future__ import annotations
 
 import json
 from pathlib import Path
+from lattice_digest.artifact_paths import daily_data_path, daily_digest_path
 
 
 def test_date_targeted_empty_run_creates_missing_digest_artifacts(tmp_path: Path, monkeypatch) -> None:
@@ -28,8 +29,8 @@ def test_date_targeted_empty_run_creates_missing_digest_artifacts(tmp_path: Path
         ]
     )
 
-    json_path = tmp_path / "data" / "2026-06-09.json"
-    markdown_path = tmp_path / "digests" / "2026-06-09.md"
+    json_path = daily_data_path("2026-06-09", tmp_path / "data")
+    markdown_path = daily_digest_path("2026-06-09", tmp_path / "digests")
     assert result == 0
     assert json_path.exists()
     assert markdown_path.exists()

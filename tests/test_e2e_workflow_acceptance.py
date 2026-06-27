@@ -7,6 +7,7 @@ from datetime import date, datetime, timezone
 from pathlib import Path
 from tempfile import TemporaryDirectory
 
+from lattice_digest.artifact_paths import daily_data_path, weekly_data_path, weekly_digest_path
 from lattice_digest.digest_sections import (
     AI_LATTICE,
     GENERAL_CRYPTO_PRIVACY,
@@ -35,7 +36,9 @@ def _copy_daily_fixtures(root: Path) -> Path:
     data_dir.mkdir(parents=True, exist_ok=True)
     for fixture in sorted(FIXTURE_DIR.glob("daily-*.json")):
         day = fixture.stem.removeprefix("daily-")
-        shutil.copyfile(fixture, data_dir / f"{day}.json")
+        target = daily_data_path(day, data_dir)
+        target.parent.mkdir(parents=True, exist_ok=True)
+        shutil.copyfile(fixture, target)
     return data_dir
 
 
@@ -60,7 +63,7 @@ def _build_weekly_from_fixtures(root: Path) -> dict[str, object]:
 
 def _write_weekly_from_fixtures(root: Path) -> Path:
     payload = _build_weekly_from_fixtures(root)
-    json_path, _ = write_weekly_outputs(payload, root / "data" / "weekly", root / "digests" / "weekly")
+    json_path, _ = write_weekly_outputs(payload, root / "data", root / "digests")
     return json_path
 
 
@@ -234,8 +237,8 @@ def test_workflow_weekly_execute_in_temp_dirs_writes_expected_outputs_only() -> 
         files = sorted(path.relative_to(root).as_posix() for path in root.rglob("*") if path.is_file())
 
     assert result["summary"]["ok"] == 5
-    assert "data/weekly/2026-W22.json" in files
-    assert "digests/weekly/2026-W22.md" in files
+    assert weekly_data_path("2026-W22", root=Path("data")).as_posix() in files
+    assert weekly_digest_path("2026-W22", root=Path("digests")).as_posix() in files
     assert "state/reading-queue.json" in files
     assert any(path.endswith("-weekly/manifest.json") and path.startswith("exports/workflow-runs/") for path in files)
     assert any(path.startswith("exports/research-artifacts/2026-05-27/") for path in files)

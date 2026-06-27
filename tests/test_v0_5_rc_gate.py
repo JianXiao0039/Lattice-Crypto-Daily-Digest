@@ -4,6 +4,7 @@ import json
 from pathlib import Path
 
 from scripts.verify_v0_5_rc import build_report
+from lattice_digest.artifact_paths import daily_data_path, daily_digest_path, weekly_data_path, weekly_digest_path, monthly_data_path, monthly_digest_path
 
 
 def _write(path: Path, text: str) -> None:
@@ -41,24 +42,24 @@ def _fixture_root(root: Path) -> None:
             {"source": "iacr_eprint", "status": "green", "latest_feed_status": "normal_latest_feed_success"},
         ],
     }
-    _write(root / "data/2026-06-15.json", json.dumps(daily))
-    _write(root / "digests/2026-06-15.md", "# Daily\n\n数据源健康\nlattice/PQC anchor evidence\n")
+    _write(daily_data_path("2026-06-15", root / "data"), json.dumps(daily))
+    _write(daily_digest_path("2026-06-15", root / "digests"), "# Daily\n\n数据源健康\nlattice/PQC anchor evidence\n")
     _write(root / "audits/source-health/2026-06-15.json", json.dumps({"sources": []}))
     weekly = {
         "generated_at": "2026-06-15T00:00:00+00:00",
         "coverage": {"input_dates": ["2026-06-15"]},
         "source_health_summary": {"available": True},
     }
-    _write(root / "data/weekly/2026-W25.json", json.dumps(weekly))
-    _write(root / "digests/weekly/2026-W25.md", "# Weekly\n\nlattice/PQC anchor evidence\n")
+    _write(weekly_data_path("2026-W25", root=root / "data"), json.dumps(weekly))
+    _write(weekly_digest_path("2026-W25", root=root / "digests"), "# Weekly\n\nlattice/PQC anchor evidence\n")
     monthly = {
         "month": "2026-06",
-        "input_daily_files": ["data/2026-06-15.json"],
+        "input_daily_files": ["data/2026/daily/2026-06-15.json"],
         "missing_days": [],
         "source_health_summary": {"source_starved": False},
     }
-    _write(root / "data/monthly/2026-06.json", json.dumps(monthly))
-    _write(root / "digests/monthly/2026-06.md", "# Monthly\n\nProblem\nMethod\nContribution\nEvidence basis\nTODO_VERIFY\n")
+    _write(monthly_data_path("2026-06", root=root / "data"), json.dumps(monthly))
+    _write(monthly_digest_path("2026-06", root=root / "digests"), "# Monthly\n\nProblem\nMethod\nContribution\nEvidence basis\nTODO_VERIFY\n")
     queue = {
         "records": [
             {

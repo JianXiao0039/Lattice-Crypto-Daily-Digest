@@ -4,12 +4,15 @@ import json
 from pathlib import Path
 from tempfile import TemporaryDirectory
 
+from lattice_digest.artifact_paths import daily_data_path
 from lattice_digest.monthly_synthesis import build_monthly_synthesis, render_markdown
 
 
 def _write_day(data_dir: Path, day: str, records: list[dict[str, object]]) -> None:
     payload = {"metadata": {"target_date": day}, "records": records, "source_health": []}
-    (data_dir / f"{day}.json").write_text(json.dumps(payload, ensure_ascii=False, indent=2), encoding="utf-8")
+    path = daily_data_path(day, data_dir)
+    path.parent.mkdir(parents=True, exist_ok=True)
+    path.write_text(json.dumps(payload, ensure_ascii=False, indent=2), encoding="utf-8")
 
 
 def test_monthly_core_papers_include_recommendation_rationale() -> None:

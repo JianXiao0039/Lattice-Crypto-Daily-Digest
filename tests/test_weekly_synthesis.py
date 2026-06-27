@@ -5,6 +5,7 @@ from datetime import date, datetime, timezone
 from pathlib import Path
 from tempfile import TemporaryDirectory
 
+from lattice_digest.artifact_paths import daily_data_path, weekly_data_path, weekly_digest_path
 from lattice_digest.weekly_synthesis import (
     AI_LATTICE,
     IDEA_BANK_CANDIDATES,
@@ -68,7 +69,9 @@ def _write_day(data_dir: Path, day: str, records: list[dict[str, object]]) -> No
             }
         ],
     }
-    (data_dir / f"{day}.json").write_text(json.dumps(payload, ensure_ascii=False, indent=2), encoding="utf-8")
+    path = daily_data_path(day, data_dir)
+    path.parent.mkdir(parents=True, exist_ok=True)
+    path.write_text(json.dumps(payload, ensure_ascii=False, indent=2), encoding="utf-8")
 
 
 def _sample_data(data_dir: Path) -> None:
@@ -188,7 +191,7 @@ def test_weekly_json_output_shape_is_stable() -> None:
         data_dir = root / "data"
         _sample_data(data_dir)
         payload = build_weekly_synthesis(data_dir, date(2026, 5, 29), date(2026, 5, 31))
-        json_path, markdown_path = write_weekly_outputs(payload, root / "data" / "weekly", root / "digests" / "weekly")
+        json_path, markdown_path = write_weekly_outputs(payload, root / "data", root / "digests")
         loaded = json.loads(json_path.read_text(encoding="utf-8"))
 
     assert markdown_path.name.endswith(".md")
@@ -268,13 +271,13 @@ def test_weekly_synthesis_dry_run_writes_no_files() -> None:
                 "--data-dir",
                 str(data_dir),
                 "--json-output-dir",
-                str(root / "data" / "weekly"),
+                str(root / "data"),
                 "--digest-output-dir",
-                str(root / "digests" / "weekly"),
+                str(root / "digests"),
                 "--dry-run",
             ]
         )
 
         assert result == 0
-        assert not (root / "data" / "weekly").exists()
-        assert not (root / "digests" / "weekly").exists()
+        assert not weekly_data_path("2026-W22", root=root / "data").exists()
+        assert not weekly_digest_path("2026-W22", root=root / "digests").exists()
