@@ -18,10 +18,10 @@ def test_version_sources_are_v033() -> None:
     src_init = _read("src/lattice_digest/__init__.py")
     bridge_path = ROOT / "lattice_digest" / "__init__.py"
 
-    assert pyproject["project"]["version"] == "0.3.3"
-    assert '__version__ = "0.3.3"' in src_init
+    assert pyproject["project"]["version"] == "0.4.1"
+    assert '__version__ = "0.4.1"' in src_init
     if bridge_path.exists():
-        assert '__version__ = "0.3.3"' in bridge_path.read_text(encoding="utf-8")
+        assert '__version__ = "0.4.1"' in bridge_path.read_text(encoding="utf-8")
 
 
 def test_v033_release_doc_and_changelog_exist() -> None:

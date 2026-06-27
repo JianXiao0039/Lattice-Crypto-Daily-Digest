@@ -15,8 +15,8 @@ def test_readme_documents_daily_digest_outputs() -> None:
 
     assert "## 项目功能" in readme
     assert "A/B/C/D" in readme
-    assert "digests/YYYY-MM-DD.md" in readme
-    assert "data/YYYY-MM-DD.json" in readme
+    assert "digests/YYYY/daily/YYYY-MM-DD.md" in readme
+    assert "data/YYYY/daily/YYYY-MM-DD.json" in readme
     assert "papers.db" in readme
 
 
@@ -51,7 +51,7 @@ def test_readme_documents_local_run_and_manual_bat_push() -> None:
     assert "scripts\\push_all_digest_outputs.bat" in readme
     assert "不抓取论文" in readme
     assert "不运行分类" in readme
-    assert "只提交 `digests/`、`data/` 和 `papers.db`" in readme
+    assert "只提交 year-partitioned `digests/`、`data/` 和 `papers.db`" in readme
     assert "多个历史日期" in readme
 
 
