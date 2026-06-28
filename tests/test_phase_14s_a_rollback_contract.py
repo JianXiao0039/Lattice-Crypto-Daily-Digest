@@ -2,6 +2,7 @@ from pathlib import Path
 
 
 ROOT = Path(__file__).resolve().parents[1]
+FIXTURES = ROOT / "tests" / "fixtures" / "phase14s"
 
 
 def test_rollback_plan_is_complete_and_non_destructive():
@@ -19,7 +20,7 @@ def test_rollback_plan_is_complete_and_non_destructive():
 
 
 def test_phase_14s_a_reports_do_not_claim_archive_or_release():
-    report = (ROOT / "docs" / "reports" / "phase-14s-a-final-decision.md").read_text(
+    report = (FIXTURES / "phase-14s-a-final-decision.md").read_text(
         encoding="utf-8"
     )
     assert "production_ready" not in report
