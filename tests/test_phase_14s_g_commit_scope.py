@@ -5,7 +5,7 @@ from pathlib import Path
 
 
 ROOT = Path(__file__).resolve().parents[1]
-MANIFEST = ROOT / "audits" / "canonical_default" / "phase-14s-g-proposed-commit-manifest.json"
+MANIFEST = ROOT / "tests" / "fixtures" / "phase14s" / "phase-14s-g-proposed-commit-manifest.json"
 
 
 def _included_paths() -> set[str]:

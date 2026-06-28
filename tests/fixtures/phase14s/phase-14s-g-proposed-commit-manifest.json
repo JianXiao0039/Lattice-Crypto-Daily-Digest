@@ -1,0 +1,77 @@
+{
+  "schema_version": "1.0-test-fixture",
+  "phase": "14S-G",
+  "dependency_closure_decision": "dependency_closure_verified_with_limits",
+  "files": [
+    {
+      "path": "src/lattice_digest/artifact_paths.py",
+      "included": true,
+      "dependency_role": "production"
+    },
+    {
+      "path": "tests/test_phase_14s_a_default_switch.py",
+      "included": true,
+      "dependency_role": "test"
+    },
+    {
+      "path": "tests/test_phase_14s_a_explicit_compatibility.py",
+      "included": true,
+      "dependency_role": "test"
+    },
+    {
+      "path": "tests/test_phase_14s_a_invalid_environment_value.py",
+      "included": true,
+      "dependency_role": "test"
+    },
+    {
+      "path": "tests/test_phase_14s_a_writers_remain_canonical.py",
+      "included": true,
+      "dependency_role": "test"
+    },
+    {
+      "path": "README.md",
+      "included": true,
+      "dependency_role": "active_documentation"
+    },
+    {
+      "path": "docs/manual-operations-runbook.md",
+      "included": true,
+      "dependency_role": "active_documentation"
+    },
+    {
+      "path": "src/lattice_digest/obsidian_scaffold.py",
+      "included": false,
+      "dependency_role": "excluded"
+    },
+    {
+      "path": "scripts/audit_legacy_fallback_usage.py",
+      "included": false,
+      "dependency_role": "excluded"
+    },
+    {
+      "path": "scripts/run_local_digest_backfill.ps1",
+      "included": false,
+      "dependency_role": "excluded"
+    },
+    {
+      "path": "docs/reports/phase-14s-g-proposed-commit-scope.md",
+      "included": false,
+      "dependency_role": "excluded"
+    },
+    {
+      "path": "audits/canonical_default/phase-14s-g-proposed-commit-manifest.json",
+      "included": false,
+      "dependency_role": "excluded"
+    },
+    {
+      "path": "data/2026/daily/2026-06-24.json",
+      "included": false,
+      "dependency_role": "excluded"
+    },
+    {
+      "path": "digests/2026/daily/2026-06-24.md",
+      "included": false,
+      "dependency_role": "excluded"
+    }
+  ]
+}
