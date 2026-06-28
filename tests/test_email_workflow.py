@@ -110,7 +110,11 @@ def test_daily_workflow_verifies_generated_outputs() -> None:
 def test_daily_workflow_commit_scope_is_limited_to_digest_outputs() -> None:
     workflow = WORKFLOW_PATH.read_text(encoding="utf-8")
 
-    assert "git add -- digests/*.md data/*.json papers.db" in workflow
+    assert 'git add -f -- "$markdown_path" "$json_path"' in workflow
+    assert "git add -- papers.db" in workflow
+    assert "git add -- digests/*.md data/*.json papers.db" not in workflow
+    assert "git add -- digests/" not in workflow
+    assert "git add -- data/" not in workflow
     assert "git add ." not in workflow
     assert "git add -A" not in workflow
     assert "git add --all" not in workflow
