@@ -6,6 +6,7 @@ from pathlib import Path
 ROOT = Path(__file__).resolve().parents[1]
 TRACKS = ROOT / "docs" / "research_tracks"
 OPS = ROOT / "docs" / "operations"
+FIXTURES = ROOT / "tests" / "fixtures" / "route_prompt"
 
 
 def test_route_prompt_safety_docs_exist_and_forbid_private_paths() -> None:
@@ -20,7 +21,7 @@ def test_route_prompt_safety_docs_exist_and_forbid_private_paths() -> None:
 
 
 def test_standardized_route_prompt_header_requires_operator_and_codex_review() -> None:
-    text = (OPS / "standardized_route_prompt_header_v0.1.md").read_text(encoding="utf-8")
+    text = (FIXTURES / "standardized_route_prompt_header_v0.1.md").read_text(encoding="utf-8")
     assert "Operator:" in text
     assert "Codex: primary engineering/release-maintenance operator" in text
     assert "DeepSeek-Claude: fallback runner/reviewer, no release ownership" in text
