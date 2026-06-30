@@ -115,7 +115,7 @@ def test_output_writer_stays_inside_experimental_docs_namespace(tmp_path: Path) 
 
 
 def test_repository_sample_meets_minimum_and_required_schema() -> None:
-    payload = MODULE.build_sample(MODULE.PROJECT_ROOT)
+    payload = MODULE.load_frozen_sample()
     required = {
         "sample_id",
         "repository_record_id",
