@@ -19,7 +19,7 @@ TRACKS = {
     "ai4lattice_cryptanalysis",
     "core_pqc_and_implementation",
 }
-PRIMARY_LABELS = TRACKS | {"irrelevant", "ambiguous"}
+PRIMARY_LABELS = TRACKS | {"irrelevant", "ambiguous", "multi_track"}
 REVIEW_STATES = {
     "not_reviewed",
     "queued_for_user",
@@ -116,6 +116,14 @@ def _validate_decision(
         )
     if primary in secondary:
         errors.append({"sample_id": sample_id, "field": "human_gold_secondary_tracks", "error": "duplicates primary"})
+    if primary == "multi_track" and len(set(secondary)) < 2:
+        errors.append(
+            {
+                "sample_id": sample_id,
+                "field": "human_gold_secondary_tracks",
+                "error": "multi_track requires at least two concrete labels",
+            }
+        )
 
     row_errors = [error for error in errors if error["sample_id"] == sample_id]
     if status in GOLD_STATES and primary is None:
