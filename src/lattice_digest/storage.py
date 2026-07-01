@@ -10,6 +10,7 @@ from lattice_digest.digest_sections import assign_report_buckets, assign_researc
 from lattice_digest.dedup import dedup_keys
 from lattice_digest.artifact_paths import daily_data_path, daily_digest_path
 from lattice_digest.models import PaperRecord, record_to_dict
+from lattice_digest.radar_freshness import enrich_record_for_daily_radar
 from lattice_digest.ranking_explainability import build_ranking_explanation
 
 
@@ -26,6 +27,7 @@ def write_json(
     path.parent.mkdir(parents=True, exist_ok=True)
     enriched_records = []
     for record in records:
+        record = enrich_record_for_daily_radar(record, digest_date)
         item = record_to_dict(record)
         intelligence = record_intelligence(record)
         item.update(

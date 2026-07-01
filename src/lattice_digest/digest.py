@@ -12,6 +12,7 @@ from lattice_digest.digest_sections import (
     sectioned_records,
 )
 from lattice_digest.models import PaperRecord
+from lattice_digest.radar_freshness import apply_daily_freshness_policy
 from lattice_digest.ranking_explainability import concise_ranking_explanation
 from lattice_digest.recommendation_rationale import build_recommendation_rationale
 from lattice_digest.report_quality import (
@@ -875,10 +876,39 @@ def _basic_paper_lines(record: PaperRecord) -> list[str]:
     return [
         f"- 作者：{', '.join(record.authors) if record.authors else 'unknown'}",
         f"- 日期/年份：{record.publication_date or record.update_date or 'unknown'}",
+        f"- publication_date：{record.publication_date or 'unknown'}",
+        f"- announcement_date：{record.announcement_date or 'unknown'}",
+        f"- update_date：{record.update_date or 'unknown'}",
+        f"- first_seen_date：{record.first_seen_date or 'unknown'}",
+        f"- selected_date_basis：{record.selected_date_basis}",
+        f"- freshness_bucket：{record.freshness_bucket}",
+        f"- freshness_reason：{record.freshness_reason or 'unknown'}",
+        f"- primary_today_new_eligible：{record.primary_today_new_eligible}",
         f"- 来源：{record.source}",
+        f"- venue：{record.venue or 'unknown'}",
+        f"- venue_type：{record.venue_type}",
+        f"- publisher_or_source：{record.publisher_or_source}",
+        f"- CCF_rank：{record.CCF_rank}",
+        f"- venue_status：{record.venue_status}",
+        f"- venue_scope：expanded_security_crypto_systems={record.venue_expanded_security_crypto_systems_scope}；relevance={record.venue_relevance}；confidence={record.venue_confidence}",
         f"- 链接：{link}",
         f"- 论文事实：以上为 source metadata；如作者、日期或 venue 缺失，进入精读前需手动核验。",
         f"- 分类/分数：{record.relevance_label} / {record.relevance_score}",
+        f"- recommendation_level：{record.recommendation_level}",
+        f"- recommendation_score：{record.recommendation_score}",
+        f"- recommendation_reason：{record.recommendation_reason or 'TODO_VERIFY'}",
+        f"- title_en：{record.title_en or record.title}",
+        f"- title_zh：{record.title_zh or record.chinese_title or 'TODO_VERIFY'}",
+        f"- abstract_en：{record.abstract_en or 'TODO_VERIFY'}",
+        f"- abstract_zh：{record.abstract_zh or 'TODO_VERIFY'}",
+        f"- conclusion_en：{record.conclusion_en or 'TODO_VERIFY'}",
+        f"- conclusion_zh：{record.conclusion_zh or 'TODO_VERIFY'}",
+        f"- lattice_crypto_relevance：{record.lattice_crypto_relevance or 'TODO_VERIFY'}",
+        f"- TODO_VERIFY_flags：{', '.join(record.TODO_VERIFY_flags) if record.TODO_VERIFY_flags else 'none'}",
+        f"- source_urls：{', '.join(record.source_urls) if record.source_urls else (record.source_url or 'unknown')}",
+        f"- source_refs：{', '.join(record.source_refs) if record.source_refs else (record.source_url or 'unknown')}",
+        f"- evidence_tier：{record.evidence_tier or 'unknown'}",
+        f"- source_health：{record.source_health or 'unknown'}",
         f"- {concise_ranking_explanation(record)}",
         f"- {anchor_evidence_text(record)}",
         f"- false-positive risk note：{false_positive_risk_text(record)}",
@@ -912,6 +942,24 @@ def _append_records(lines: list[str], records: list[PaperRecord], empty_text: st
         lines.append(_paper_header(record, index))
         lines.extend(_basic_paper_lines(record))
         lines.append("")
+
+
+def _append_freshness_routed_section(lines: list[str], records: list[PaperRecord]) -> None:
+    lines.extend(["## 2b. 回填 / 较早 / 待核验项目", ""])
+    if not records:
+        lines.extend(["今日没有被 freshness gate 移出 primary today/new 的项目。", ""])
+        return
+    lines.append("以下项目未进入 primary today/new；它们只能作为 backfill、older item、official update 或 TODO_VERIFY 跟踪。")
+    lines.append("")
+    grouped: dict[str, list[PaperRecord]] = {}
+    for record in records:
+        grouped.setdefault(record.freshness_bucket, []).append(record)
+    for bucket in sorted(grouped):
+        lines.extend([f"### {bucket}", ""])
+        for index, record in enumerate(_sort_by_reading_priority(grouped[bucket]), start=1):
+            lines.append(_paper_header(record, index))
+            lines.extend(_basic_paper_lines(record))
+            lines.append("")
 
 
 def _record_identifier(record: PaperRecord) -> str:
@@ -1182,22 +1230,25 @@ def generate_markdown(
     since_window: str = "36h",
     metadata: dict[str, object] | None = None,
 ) -> str:
-    records = [record for record in records if record.relevance_label in {"A", "B", "C"}]
+    all_records = [record for record in records if record.relevance_label in {"A", "B", "C"}]
+    records, freshness_routed_records = apply_daily_freshness_policy(all_records, digest_date)
     sorted_records = _sort_by_reading_priority(records)
     high_priority = [record for record in sorted_records if reading_priority_score(record) >= 70]
-    topic_counts = Counter(tag for record in records for tag in research_tags(record))
+    topic_counts = Counter(tag for record in all_records for tag in research_tags(record))
     main_topics = [topic for topic, _ in topic_counts.most_common(3)]
-    source_names = sorted({record.source for record in records})
+    source_names = sorted({record.source for record in all_records})
     has_mainline = any(
         set(research_tags(record)) & {"LWE", "MLWE", "Module-SIS", "Lattice Reduction", "PQC Implementation"}
-        for record in records
+        for record in all_records
     )
     lines: list[str] = [
         f"# 格密码科研情报日报 - {digest_date.isoformat()}",
         "",
         "## 1. 今日核心结论",
         "",
-        f"- 最终入选论文数：{len(records)}",
+        f"- 最终入选论文数：{len(all_records)}",
+        f"- primary today/new 论文数：{len(records)}",
+        f"- backfill/older/TODO_VERIFY 论文数：{len(freshness_routed_records)}",
         f"- 高优先级论文数：{len(high_priority)}",
         f"- target_date：{_metadata_text(metadata, 'target_date', digest_date.isoformat())}",
         f"- run_date：{_metadata_text(metadata, 'run_date', digest_date.isoformat())}",
@@ -1211,13 +1262,13 @@ def generate_markdown(
         f"- supersedes：{_supersedes_text(metadata)}",
         f"- 主要来源：{'、'.join(source_names[:5]) if source_names else '无'}",
         f"- 今日主题：{'、'.join(main_topics) if main_topics else '无'}",
-        f"- 是否出现 AI4Lattice：{'是' if any('AI4Lattice' in research_tags(record) for record in records) else '否'}",
+        f"- 是否出现 AI4Lattice：{'是' if any('AI4Lattice' in research_tags(record) for record in all_records) else '否'}",
         f"- 是否覆盖 LWE/MLWE/Module-SIS/格基约简/PQC 实现：{'是' if has_mainline else '否'}",
         f"- 数据源健康：{_source_health_brief(source_health)}",
     ]
     if metadata and (metadata.get("collector") == "github_actions" or metadata.get("quality_status") == "provisional"):
         lines.append("- 质量提示：该报告由 GitHub Actions 生成，可能受限于 runner 网络环境；建议后续由本地 Codex backfill 增强。")
-    if len(records) == 0:
+    if len(all_records) == 0:
         lines.append("今日未发现值得记录的格密码相关新论文。")
     if warnings:
         lines.append(f"- Warning：{len(warnings)} 条，详见第 8 节。")
@@ -1225,6 +1276,7 @@ def generate_markdown(
 
     lines.extend(["## 2. 高优先级论文", ""])
     _append_records(lines, high_priority, "今日无高优先级论文。", limit=8)
+    _append_freshness_routed_section(lines, freshness_routed_records)
 
     _append_ai_section(lines, records)
     _append_reduction_section(lines, records)
@@ -1232,5 +1284,5 @@ def generate_markdown(
     _append_research_sections(lines, records)
     _append_reading_queue(lines, records)
     _append_idea_and_questions(lines, records)
-    _append_source_health_and_empty(lines, records, filtered_count, source_health, warnings, metadata)
+    _append_source_health_and_empty(lines, all_records, filtered_count, source_health, warnings, metadata)
     return "\n".join(lines)

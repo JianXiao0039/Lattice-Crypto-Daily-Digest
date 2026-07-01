@@ -64,6 +64,7 @@ def test_ai4lattice_record_enters_ai4lattice_section() -> None:
         source_url="https://arxiv.org/abs/2601.00001",
         relevance_label="A",
         relevance_score=91,
+        publication_date="2026-05-23",
         reading_priority=1,
         keywords_matched=["LWE", "BKZ", "AI-assisted lattice cryptanalysis"],
     )
@@ -280,6 +281,7 @@ def test_markdown_high_priority_section_sorts_by_reading_priority_score() -> Non
         source_url="https://arxiv.org/abs/2601.20001",
         relevance_label="A",
         relevance_score=82,
+        publication_date="2026-05-23",
     )
     module_sis = make_paper_record(
         title="Module-SIS chameleon hash commitments",
@@ -288,6 +290,7 @@ def test_markdown_high_priority_section_sorts_by_reading_priority_score() -> Non
         source_url="https://eprint.iacr.org/2600/202",
         relevance_label="A",
         relevance_score=76,
+        publication_date="2026-05-23",
     )
     kyber = make_paper_record(
         title="Kyber implementation side-channel analysis",
@@ -296,10 +299,11 @@ def test_markdown_high_priority_section_sorts_by_reading_priority_score() -> Non
         source_url="https://arxiv.org/abs/2601.20003",
         relevance_label="A",
         relevance_score=80,
+        publication_date="2026-05-23",
     )
 
     markdown = generate_markdown([kyber, module_sis, transformer], date(2026, 5, 23))
-    section_2 = markdown.split("## 3. AI4Lattice 与机器学习辅助密码分析", 1)[0].split(
+    section_2 = markdown.split("## 2b. 回填 / 较早 / 待核验项目", 1)[0].split(
         "## 2. 高优先级论文",
         1,
     )[1]
@@ -316,6 +320,7 @@ def test_tie_breaker_prefers_ai4lattice_before_generic_pqc() -> None:
         source_url="https://arxiv.org/abs/2601.40001",
         relevance_label="B",
         relevance_score=70,
+        publication_date="2026-05-23",
     )
     pqc_record = make_paper_record(
         title="Post-quantum cryptography deployment notes",
@@ -324,10 +329,11 @@ def test_tie_breaker_prefers_ai4lattice_before_generic_pqc() -> None:
         source_url="https://doi.org/10.0000/pqc-notes",
         relevance_label="A",
         relevance_score=95,
+        publication_date="2026-05-23",
     )
 
     markdown = generate_markdown([pqc_record, ai_record], date(2026, 5, 23))
-    section_2 = markdown.split("## 3. AI4Lattice 与机器学习辅助密码分析", 1)[0].split(
+    section_2 = markdown.split("## 2b. 回填 / 较早 / 待核验项目", 1)[0].split(
         "## 2. 高优先级论文",
         1,
     )[1]
