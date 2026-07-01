@@ -83,6 +83,64 @@ class QueryFamily:
     production_retrieval_enabled: bool = False
 
 
+@dataclass(frozen=True)
+class DryRunAdapterConstraint:
+    adapter_id: str
+    status: str
+    accepted_input: str
+    rejected_input: str
+    output_schema: str
+    evidence_tier_mapping: str
+    source_health_behavior: str
+    source_starved_behavior: str
+    todo_verify_behavior: str
+    implementation_risk: str
+
+
+@dataclass(frozen=True)
+class SourceAwareQueryPlan:
+    family: str
+    adapter_id: str
+    status: str
+    architecture: str
+    production_retrieval_enabled: bool
+    accepted_input: str
+    rejected_input: str
+    output_schema: str
+    query_groups: tuple[tuple[str, ...], ...] = ()
+    queries: tuple[str, ...] = ()
+    post_filter_terms: tuple[str, ...] = ()
+    disabled_reason: str = ""
+    evidence_tier_mapping: str = ""
+    source_health_guard: str = ""
+    source_starved_guard: str = ""
+    todo_verify_guard: str = ""
+    guardrails: tuple[str, ...] = ()
+    max_query_count: int = 0
+
+    def to_dict(self) -> dict[str, object]:
+        return {
+            "family": self.family,
+            "adapter_id": self.adapter_id,
+            "status": self.status,
+            "architecture": self.architecture,
+            "production_retrieval_enabled": self.production_retrieval_enabled,
+            "accepted_input": self.accepted_input,
+            "rejected_input": self.rejected_input,
+            "output_schema": self.output_schema,
+            "query_groups": [list(group) for group in self.query_groups],
+            "queries": list(self.queries),
+            "post_filter_terms": list(self.post_filter_terms),
+            "disabled_reason": self.disabled_reason,
+            "evidence_tier_mapping": self.evidence_tier_mapping,
+            "source_health_guard": self.source_health_guard,
+            "source_starved_guard": self.source_starved_guard,
+            "todo_verify_guard": self.todo_verify_guard,
+            "guardrails": list(self.guardrails),
+            "max_query_count": self.max_query_count,
+        }
+
+
 ONTOLOGY_GROUPS: tuple[str, ...] = (
     "lattice_assumptions",
     "scheme_families",
@@ -244,6 +302,125 @@ OFFICIAL_STATUS_SOURCES: tuple[str, ...] = (
     "iso",
     "government_guidance",
 )
+
+
+SOURCE_AWARE_QUERY_ARCHITECTURE = (
+    "SCHEME_OR_LATTICE_ANCHOR AND PROCESS_OR_EVENT_ANCHOR AND CONTEXT_ANCHOR AND NOT NOISE_CONTEXT"
+)
+
+
+SOURCE_AWARE_GUARDRAILS: tuple[str, ...] = (
+    "no_global_broad_enablement",
+    "lattice_anchor_mandatory",
+    "standardization_status_requires_S0",
+    "technical_security_claim_requires_S1",
+    "vendor_deployment_claim_requires_S2_or_official_release",
+    "S4_discovery_only_keeps_TODO_VERIFY",
+    "source_starved_state_must_be_explicit",
+    "source_health_failure_must_remain_visible",
+    "non_lattice_content_requires_material_lattice_impact",
+    "no_ranking_taxonomy_relevance_drift",
+)
+
+
+DRY_RUN_ADAPTER_CONSTRAINTS: dict[str, DryRunAdapterConstraint] = {
+    "arxiv": DryRunAdapterConstraint(
+        "arxiv",
+        "guarded_dry_run_mapping",
+        "bounded query_groups generated from lattice scheme, process, context, and noise terms",
+        "global flat broad PQC term lists or live retrieval enablement",
+        "query_groups",
+        "S1 technical source for papers; not valid for S0 status finalization",
+        "query group totals, successes, and failures must remain visible",
+        "all group failures can contribute to explicit source-starved state",
+        "status and deployment claims remain TODO_VERIFY without stronger evidence",
+        "medium",
+    ),
+    "dblp": DryRunAdapterConstraint(
+        "dblp",
+        "guarded_dry_run_mapping",
+        "bounded query strings generated from lattice-centric query families",
+        "unbounded per-anchor Cartesian expansion",
+        "queries",
+        "bibliographic discovery; claims require primary source follow-up",
+        "adapter failures must remain visible",
+        "no DBLP hits cannot prove no relevant lattice papers",
+        "DBLP-only leads retain TODO_VERIFY for claims",
+        "medium",
+    ),
+    "iacr_eprint": DryRunAdapterConstraint(
+        "iacr_eprint",
+        "guarded_post_filter_planning",
+        "feed retrieval plus lattice-aware post-filter terms",
+        "pretending the IACR feed supports expanded live query retrieval",
+        "post_filter_terms",
+        "S1 technical evidence when original ePrint content is available",
+        "feed failures remain red/yellow and visible",
+        "feed failure can source-starve technical coverage",
+        "technical claims still require paper-level support",
+        "medium-low",
+    ),
+    "openalex": DryRunAdapterConstraint(
+        "openalex",
+        "disabled_live_behavior",
+        "dry-run split-query plan only",
+        "live split-query behavior without rate and source-health guardrails",
+        "disabled_plan",
+        "S3/S4 discovery unless primary source is separately verified",
+        "rate-limit and degradation warnings must remain visible",
+        "failures cannot prove absence of lattice activity",
+        "OpenAlex-only claims remain TODO_VERIFY",
+        "high",
+    ),
+    "crossref": DryRunAdapterConstraint(
+        "crossref",
+        "disabled_live_behavior",
+        "dry-run split-query plan only",
+        "live split-query behavior without rate and source-health guardrails",
+        "disabled_plan",
+        "S3/S4 metadata context unless primary source is verified",
+        "degraded Crossref status remains visible",
+        "failure contributes only to caveats",
+        "Crossref-only claims remain TODO_VERIFY",
+        "high",
+    ),
+    "semantic_scholar": DryRunAdapterConstraint(
+        "semantic_scholar",
+        "disabled_live_behavior",
+        "dry-run split-query plan only",
+        "live high-volume broad query expansion",
+        "disabled_plan",
+        "S3/S4 discovery unless original paper evidence is obtained",
+        "429 and rate-limit behavior must remain visible",
+        "rate-limit source starvation must be explicit",
+        "Semantic Scholar-only claims remain TODO_VERIFY",
+        "high",
+    ),
+    "official_status_sources": DryRunAdapterConstraint(
+        "official_status_sources",
+        "out_of_scope",
+        "manual review design only",
+        "crawler, scheduler, polling, or live retrieval implementation",
+        "manual_review_plan",
+        "S0 only in a later authorized phase",
+        "not applicable in this batch",
+        "absence of an official-source adapter cannot finalize status",
+        "status remains TODO_VERIFY without S0 evidence",
+        "high",
+    ),
+    "vendor_library_sources": DryRunAdapterConstraint(
+        "vendor_library_sources",
+        "out_of_scope",
+        "manual review design only",
+        "vendor/library crawler or deployment-claim finalization",
+        "manual_review_plan",
+        "S2 or S0 only in a later authorized phase",
+        "not applicable in this batch",
+        "missing vendor source cannot imply no deployment",
+        "deployment claims remain TODO_VERIFY without official release evidence",
+        "high",
+    ),
+}
 
 
 def normalize_term(value: str) -> str:
@@ -552,6 +729,110 @@ def generate_query_templates(family_ids: Sequence[str] | None = None) -> list[di
             }
         )
     return templates
+
+
+def _bounded_terms(values: Sequence[str], limit: int) -> tuple[str, ...]:
+    seen: list[str] = []
+    for value in values:
+        text = str(value)
+        if text not in seen:
+            seen.append(text)
+        if len(seen) >= limit:
+            break
+    return tuple(seen)
+
+
+def _dry_run_query_groups(family: QueryFamily) -> tuple[tuple[str, ...], ...]:
+    return (
+        _bounded_terms(family.scheme_or_lattice_anchors, 6),
+        _bounded_terms(family.process_or_event_anchors, 4),
+        _bounded_terms(family.context_anchors, 4),
+        _bounded_terms(family.noise_terms, 3),
+    )
+
+
+def _dry_run_dblp_queries(family: QueryFamily) -> tuple[str, ...]:
+    schemes = _bounded_terms(family.scheme_or_lattice_anchors, 3)
+    events = _bounded_terms(family.process_or_event_anchors, 2)
+    contexts = _bounded_terms(family.context_anchors, 2)
+    query = " ".join((*schemes, *events, *contexts))
+    return (query.strip(),) if query.strip() else ()
+
+
+def _dry_run_post_filter_terms(family: QueryFamily) -> tuple[str, ...]:
+    return tuple(
+        term
+        for term in (
+            *_bounded_terms(family.scheme_or_lattice_anchors, 8),
+            *_bounded_terms(family.process_or_event_anchors, 4),
+            *_bounded_terms(family.context_anchors, 4),
+        )
+        if term
+    )
+
+
+def source_aware_adapter_constraints() -> dict[str, DryRunAdapterConstraint]:
+    return dict(DRY_RUN_ADAPTER_CONSTRAINTS)
+
+
+def generate_source_aware_dry_run_plan(
+    family_ids: Sequence[str] | None = None,
+    adapter_ids: Sequence[str] | None = None,
+) -> list[dict[str, object]]:
+    families = query_families()
+    selected_families = tuple(family_ids or families.keys())
+    constraints = source_aware_adapter_constraints()
+    selected_adapters = tuple(adapter_ids or constraints.keys())
+    plans: list[SourceAwareQueryPlan] = []
+
+    for family_id in selected_families:
+        family = families[family_id]
+        for adapter_id in selected_adapters:
+            constraint = constraints[adapter_id]
+            query_groups: tuple[tuple[str, ...], ...] = ()
+            queries: tuple[str, ...] = ()
+            post_filter_terms: tuple[str, ...] = ()
+            disabled_reason = ""
+            max_query_count = 0
+
+            if adapter_id == "arxiv":
+                query_groups = _dry_run_query_groups(family)
+                max_query_count = len(query_groups)
+            elif adapter_id == "dblp":
+                queries = _dry_run_dblp_queries(family)
+                max_query_count = len(queries)
+            elif adapter_id == "iacr_eprint":
+                post_filter_terms = _dry_run_post_filter_terms(family)
+                max_query_count = 0
+            else:
+                disabled_reason = (
+                    "live retrieval is disabled for this adapter in Phase 15B-04B Batch 1; "
+                    "the plan is metadata only"
+                )
+
+            plans.append(
+                SourceAwareQueryPlan(
+                    family=family.identifier,
+                    adapter_id=adapter_id,
+                    status=constraint.status,
+                    architecture=SOURCE_AWARE_QUERY_ARCHITECTURE,
+                    production_retrieval_enabled=False,
+                    accepted_input=constraint.accepted_input,
+                    rejected_input=constraint.rejected_input,
+                    output_schema=constraint.output_schema,
+                    query_groups=query_groups,
+                    queries=queries,
+                    post_filter_terms=post_filter_terms,
+                    disabled_reason=disabled_reason,
+                    evidence_tier_mapping=constraint.evidence_tier_mapping,
+                    source_health_guard=constraint.source_health_behavior,
+                    source_starved_guard=constraint.source_starved_behavior,
+                    todo_verify_guard=constraint.todo_verify_behavior,
+                    guardrails=SOURCE_AWARE_GUARDRAILS,
+                    max_query_count=max_query_count,
+                )
+            )
+    return [plan.to_dict() for plan in plans]
 
 
 def _taxonomy_group_for_category(category: str) -> str:

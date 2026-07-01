@@ -1,6 +1,12 @@
 from __future__ import annotations
 
-from lattice_digest.pqc_radar import ACADEMIC_SOURCES, OFFICIAL_STATUS_SOURCES, generate_query_templates, query_families
+from lattice_digest.pqc_radar import (
+    ACADEMIC_SOURCES,
+    OFFICIAL_STATUS_SOURCES,
+    generate_query_templates,
+    generate_source_aware_dry_run_plan,
+    query_families,
+)
 
 
 def test_minimal_source_aware_query_families_are_defined() -> None:
@@ -55,3 +61,11 @@ def test_hawk_query_family_contains_crypto_context_and_noise_terms() -> None:
     assert "nist" in {item.lower() for item in hawk.context_anchors}
     assert "radar" in hawk.noise_terms
     assert "sports" in hawk.noise_terms
+
+
+def test_04b_dry_run_planning_preserves_04a_disabled_retrieval_contract() -> None:
+    plans = generate_source_aware_dry_run_plan(["hawk_high_precision"], ["arxiv", "dblp", "iacr_eprint"])
+
+    assert plans
+    assert all(plan["production_retrieval_enabled"] is False for plan in plans)
+    assert query_families()["hawk_high_precision"].production_retrieval_enabled is False
