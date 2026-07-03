@@ -6,10 +6,10 @@ from datetime import date, datetime, timedelta
 from typing import Any, Mapping
 
 from lattice_digest.models import PaperRecord
+from lattice_digest.venue_registry import TODO_VERIFY, VenueRegistryEntry, find_registry_entry
 
 
 FRESHNESS_WINDOW_DAYS = 1
-TODO_VERIFY = "TODO_VERIFY"
 
 
 @dataclass(frozen=True)
@@ -30,30 +30,10 @@ class VenueMetadata:
     expanded_security_crypto_systems_scope: bool
     venue_relevance: str
     venue_confidence: str
-
-
-VENUE_REGISTRY: dict[str, VenueMetadata] = {
-    "crypto": VenueMetadata("CRYPTO", "conference", "IACR", "A", "known", True, "direct", "high"),
-    "eurocrypt": VenueMetadata("EUROCRYPT", "conference", "IACR", "A", "known", True, "direct", "high"),
-    "asiacrypt": VenueMetadata("ASIACRYPT", "conference", "IACR", "A", "known", True, "direct", "high"),
-    "ches": VenueMetadata("CHES/TCHES", "journal", "IACR", "A", "known", True, "direct", "high"),
-    "tches": VenueMetadata("TCHES", "journal", "IACR", "A", "known", True, "direct", "high"),
-    "journal of cryptology": VenueMetadata("Journal of Cryptology", "journal", "Springer/IACR", "unknown", "known", True, "direct", "medium"),
-    "ieee symposium on security and privacy": VenueMetadata("IEEE S&P", "conference", "IEEE", "A", "known", True, "direct", "high"),
-    "ieee s&p": VenueMetadata("IEEE S&P", "conference", "IEEE", "A", "known", True, "direct", "high"),
-    "acm ccs": VenueMetadata("ACM CCS", "conference", "ACM", "A", "known", True, "direct", "high"),
-    "usenix security": VenueMetadata("USENIX Security", "conference", "USENIX", "A", "known", True, "direct", "high"),
-    "ndss": VenueMetadata("NDSS", "conference", "Internet Society", "A", "known", True, "direct", "high"),
-    "pkc": VenueMetadata("PKC", "conference", "IACR", "B", "known", True, "direct", "medium"),
-    "tcc": VenueMetadata("TCC", "conference", "IACR", "B", "known", True, "direct", "medium"),
-    "esorics": VenueMetadata("ESORICS", "conference", "Springer", "B", "known", True, "peripheral", "medium"),
-    "asiaccs": VenueMetadata("AsiaCCS", "conference", "ACM", "B", "known", True, "peripheral", "medium"),
-    "iacr eprint": VenueMetadata("IACR ePrint", "preprint", "IACR", "N/A", "known", True, "direct", "high"),
-    "arxiv": VenueMetadata("arXiv", "preprint", "arXiv", "N/A", "known", True, "direct", "high"),
-    "nist": VenueMetadata("NIST", "standardization body", "NIST", "N/A", "known", True, "direct", "high"),
-    "ietf": VenueMetadata("IETF", "standardization body", "IETF", "N/A", "known", True, "direct", "high"),
-    "cybersecurity": VenueMetadata("Cybersecurity", "journal", "TODO_VERIFY", "TODO_VERIFY", "TODO_VERIFY", True, "peripheral", "low"),
-}
+    ccf_status: str = "unknown"
+    ccf_evidence_status: str = "missing_trusted_source"
+    applicability: str = "unknown"
+    todo_verify_required: bool = False
 
 SOURCE_FAMILY_HINTS: tuple[tuple[tuple[str, ...], str, str], ...] = (
     (("vendor", "library", "release"), "vendor/security advisory", "vendor/library source"),
@@ -96,9 +76,22 @@ def _field(record: PaperRecord | Mapping[str, Any], name: str) -> Any:
     return getattr(record, name, None)
 
 
-def _metadata_key_matches(text: str, key: str) -> bool:
-    pattern = r"(?<![a-z0-9])" + re.escape(key) + r"(?![a-z0-9])"
-    return re.search(pattern, text) is not None
+def _from_registry_entry(entry: VenueRegistryEntry, raw_venue: str, raw_source: str) -> VenueMetadata:
+    venue = raw_venue or entry.canonical_venue_name
+    return VenueMetadata(
+        venue,
+        entry.venue_type,
+        entry.publisher_or_source or raw_source or "unknown",
+        entry.ccf_rank,
+        "TODO_VERIFY" if entry.todo_verify_required else "known",
+        entry.expanded_security_crypto_systems_scope,
+        entry.venue_relevance,
+        entry.confidence,
+        entry.ccf_status,
+        entry.ccf_evidence_status,
+        entry.applicability,
+        entry.todo_verify_required,
+    )
 
 
 def decide_freshness(
@@ -164,20 +157,10 @@ def decide_freshness(
 def detect_venue_metadata(record: PaperRecord | Mapping[str, Any]) -> VenueMetadata:
     raw_venue = str(_field(record, "venue") or "").strip()
     raw_source = str(_field(record, "source") or "").strip()
+    registry_entry = find_registry_entry(raw_venue, raw_source)
+    if registry_entry is not None:
+        return _from_registry_entry(registry_entry, raw_venue, raw_source)
     text = f"{raw_venue} {raw_source}".lower()
-    for key, metadata in VENUE_REGISTRY.items():
-        if _metadata_key_matches(text, key):
-            venue = raw_venue or metadata.venue
-            return VenueMetadata(
-                venue,
-                metadata.venue_type,
-                metadata.publisher_or_source,
-                metadata.ccf_rank,
-                metadata.venue_status,
-                metadata.expanded_security_crypto_systems_scope,
-                metadata.venue_relevance,
-                metadata.venue_confidence,
-            )
     for hints, venue_type, publisher in SOURCE_FAMILY_HINTS:
         if any(hint in text for hint in hints):
             return VenueMetadata(
@@ -256,6 +239,8 @@ def enrich_record_for_daily_radar(
         todo_flags.append("selected_date_basis")
     if venue.venue_status == TODO_VERIFY:
         todo_flags.append("venue")
+    if venue.ccf_rank == TODO_VERIFY or venue.ccf_status == "todo_verify":
+        todo_flags.append("CCF_rank")
     ccf_rank = venue.ccf_rank if venue.ccf_rank in {"A", "B", "C", "N/A", "unknown", TODO_VERIFY} else TODO_VERIFY
     score = int(record.relevance_score)
     return record.model_copy(
