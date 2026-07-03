@@ -30,6 +30,29 @@ Expected outputs:
 
 Do not stage or commit these outputs from this runbook.
 
+## Scratch QA Run
+
+Use `--output-root` when you need a fresh Daily artifact for manual QA without
+touching repository-authoritative `data/`, `digests/`, `papers.db`, or
+source-health outputs:
+
+```powershell
+python -m lattice_digest.run --since 36h --output markdown,json --send none --output-root D:\Code\CodexProjects\_lattice_digest_scratch_daily_qa\post_fix_sample
+```
+
+Expected scratch outputs:
+
+- `<output-root>\data\YYYY\daily\YYYY-MM-DD.json`
+- `<output-root>\digests\YYYY\daily\YYYY-MM-DD.md`
+- `<output-root>\papers.db`
+- `<output-root>\audits\source-health\YYYY-MM-DD.json`
+- `<output-root>\audits\source-health\YYYY-MM-DD.md`
+
+Scratch output uses the same collection, ranking, freshness, venue/CCF,
+bilingual metadata, recommendation metadata, and source-health logic as the
+normal Daily run. It does not require `--force` because existing authoritative
+repository outputs are not consulted or overwritten.
+
 By default, artifact reads are canonical-only. Legacy read fallback is temporary
 and requires explicit process-scoped opt-in:
 

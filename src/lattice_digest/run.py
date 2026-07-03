@@ -41,6 +41,15 @@ def parse_args(argv: list[str] | None = None) -> argparse.Namespace:
     parser.add_argument("--send", default="none", help="Delivery backend. Currently only 'none' is implemented.")
     parser.add_argument("--dry-run", action="store_true", help="Run without network writes or output artifact writes.")
     parser.add_argument("--config-dir", type=Path, default=None, help="Override config directory.")
+    parser.add_argument(
+        "--output-root",
+        type=Path,
+        default=None,
+        help=(
+            "Write generated artifacts under this root instead of the project root. "
+            "Useful for scratch QA; preserves the normal data/YYYY/daily and digests/YYYY/daily layout."
+        ),
+    )
     parser.add_argument("--target-date", default=None, help="Output report date in YYYY-MM-DD format.")
     parser.add_argument("--collector", choices=("local_codex", "github_actions"), default=None)
     parser.add_argument(
@@ -353,6 +362,7 @@ def _load_dotenv(root: Path) -> None:
 def main(argv: list[str] | None = None) -> int:
     args = parse_args(argv)
     root = project_root()
+    output_root = args.output_root.expanduser().resolve() if args.output_root is not None else root
     _load_dotenv(root)
     configs = load_config_bundle(args.config_dir)
     run_datetime = datetime.now(ZoneInfo("Asia/Singapore"))
@@ -368,7 +378,7 @@ def main(argv: list[str] | None = None) -> int:
     collector = args.collector or "local_codex"
     quality_status = args.quality_status or ("provisional" if collector == "github_actions" else "authoritative")
     run_mode = "dry_run" if args.dry_run else args.run_mode
-    existing_metadata = _load_existing_metadata(root, digest_date)
+    existing_metadata = _load_existing_metadata(output_root, digest_date)
     supersedes = _supersedes_metadata(existing_metadata, quality_status)
     metadata = _build_run_metadata(
         target_date=digest_date,
@@ -383,7 +393,7 @@ def main(argv: list[str] | None = None) -> int:
     )
     request_config = configs["sources"].get("request", {})
     context = FetchContext(
-        root=root,
+        root=output_root,
         since=since,
         dry_run=args.dry_run,
         timeout_seconds=int(request_config.get("timeout_seconds", 20)),
@@ -429,7 +439,7 @@ def main(argv: list[str] | None = None) -> int:
         print(generate_markdown(ordered, digest_date, dropped_count, source_health, context.warnings, since_window, metadata))
         return 0
 
-    write_source_health_ledger(source_health, root, digest_date, run_datetime)
+    write_source_health_ledger(source_health, output_root, digest_date, run_datetime)
 
     if _should_skip_write(existing_metadata, quality_status, args.force):
         old_quality = existing_metadata.get("quality_status") if existing_metadata else "unknown"
@@ -446,14 +456,14 @@ def main(argv: list[str] | None = None) -> int:
 
     written: list[Path] = []
     if quality_status == "authoritative_backfill" and supersedes:
-        written.extend(_archive_existing_provisional(root, digest_date, existing_metadata))
+        written.extend(_archive_existing_provisional(output_root, digest_date, existing_metadata))
     if "json" in outputs:
-        written.append(write_json(ordered, root / "data", digest_date, source_health, context.warnings, since_window, metadata))
+        written.append(write_json(ordered, output_root / "data", digest_date, source_health, context.warnings, since_window, metadata))
     if "markdown" in outputs or "md" in outputs:
         written.append(
             write_markdown(
                 ordered,
-                root / "digests",
+                output_root / "digests",
                 digest_date,
                 dropped_count,
                 source_health,
@@ -462,7 +472,7 @@ def main(argv: list[str] | None = None) -> int:
                 metadata,
             )
         )
-    written.append(write_sqlite(ordered, root / "papers.db"))
+    written.append(write_sqlite(ordered, output_root / "papers.db"))
 
     print(f"Generated {len(ordered)} digest records.")
     for path in written:
