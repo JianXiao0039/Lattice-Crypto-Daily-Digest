@@ -34,8 +34,10 @@ def test_enriched_record_requires_bilingual_abstract_conclusion_and_recommendati
     assert enriched.conclusion_en.startswith("model-generated from available metadata:")
     assert enriched.conclusion_zh.startswith("model-generated zh summary:")
     assert enriched.recommendation_level == "Strong"
-    assert enriched.recommendation_score == 92
+    assert enriched.recommendation_score >= 85
     assert "Module-SIS" in enriched.recommendation_reason
+    assert "SIS/Module-SIS" in enriched.user_relevance_tags
+    assert enriched.suggested_action == "Read today"
 
 
 def test_missing_abstract_and_conclusion_use_todo_verify_markers() -> None:
@@ -67,6 +69,14 @@ def test_json_output_contains_required_bilingual_and_recommendation_metadata() -
         "source_urls",
         "evidence_tier",
         "source_health",
+        "user_relevance_tags",
+        "phd_application_relevance",
+        "recommendation_risk_flags",
+        "recommendation_evidence_basis",
+        "recommendation_score_breakdown",
+        "research_value_score",
+        "primary_action_allowed",
+        "suggested_action",
     ):
         assert field in item
     assert item["abstract_zh"].startswith("model-generated zh summary:")

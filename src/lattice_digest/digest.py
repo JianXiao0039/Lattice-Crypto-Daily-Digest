@@ -14,6 +14,7 @@ from lattice_digest.digest_sections import (
 from lattice_digest.models import PaperRecord
 from lattice_digest.radar_freshness import apply_daily_freshness_policy
 from lattice_digest.ranking_explainability import concise_ranking_explanation
+from lattice_digest.recommendation_calibration import TODO_VERIFY, has_calibrated_recommendation
 from lattice_digest.recommendation_rationale import build_recommendation_rationale
 from lattice_digest.report_quality import (
     anchor_evidence_text,
@@ -409,6 +410,8 @@ def research_tags(record: PaperRecord) -> list[str]:
 
 
 def suggested_action(record: PaperRecord) -> str:
+    if has_calibrated_recommendation(record) and record.suggested_action:
+        return record.suggested_action
     return ACTION_BY_PRIORITY_LABEL[priority_label(record)]
 
 
@@ -506,6 +509,8 @@ def _priority_hits(record: PaperRecord) -> list[tuple[str, int, str]]:
 
 
 def reading_priority_score(record: PaperRecord) -> int:
+    if has_calibrated_recommendation(record):
+        return max(0, min(100, int(record.recommendation_score or 0)))
     label_base = {"A": 22, "B": 16, "C": 8}.get(record.relevance_label, 0)
     score = label_base + max(0, min(record.relevance_score, 100)) // 5
     hits = _priority_hits(record)
@@ -663,12 +668,25 @@ def priority_label_for_score(score: int) -> str:
 
 
 def priority_label(record: PaperRecord) -> str:
+    if has_calibrated_recommendation(record):
+        return {
+            "Strong": "必须精读",
+            "Medium": "建议精读",
+            "Low": "可略读",
+            "Backfill": "暂存",
+            TODO_VERIFY: "低相关",
+        }.get(record.recommendation_level, priority_label_for_score(reading_priority_score(record)))
     return priority_label_for_score(reading_priority_score(record))
 
 
 def reason_for_priority(record: PaperRecord) -> str:
     score = reading_priority_score(record)
     label = priority_label_for_score(score)
+    if has_calibrated_recommendation(record):
+        action = _action_text(record)
+        tags = "、".join(record.user_relevance_tags[:4]) if record.user_relevance_tags else "TODO_VERIFY"
+        risks = "；风险：" + "、".join(record.recommendation_risk_flags[:4]) if record.recommendation_risk_flags else ""
+        return f"{priority_label(record)}：命中用户研究轴：{tags}。分数 {score}/100；下一步动作：{action}{risks}。"
     hits = _priority_hits(record)
     action = ACTION_LABELS[ACTION_BY_PRIORITY_LABEL[label]]
     if not hits:
@@ -781,7 +799,7 @@ def advisor_questions_for_record(record: PaperRecord) -> list[str]:
 
 
 def record_intelligence(record: PaperRecord) -> dict[str, object]:
-    tags = research_tags(record)
+    tags = record.user_relevance_tags if has_calibrated_recommendation(record) and record.user_relevance_tags else research_tags(record)
     score = reading_priority_score(record)
     return {
         "tags": tags,
@@ -897,6 +915,13 @@ def _basic_paper_lines(record: PaperRecord) -> list[str]:
         f"- recommendation_level：{record.recommendation_level}",
         f"- recommendation_score：{record.recommendation_score}",
         f"- recommendation_reason：{record.recommendation_reason or 'TODO_VERIFY'}",
+        f"- user_relevance_tags：{', '.join(record.user_relevance_tags) if record.user_relevance_tags else 'TODO_VERIFY'}",
+        f"- phd_application_relevance：{record.phd_application_relevance or 'TODO_VERIFY'}",
+        f"- recommendation_risk_flags：{', '.join(record.recommendation_risk_flags) if record.recommendation_risk_flags else 'none'}",
+        f"- recommendation_evidence_basis：{', '.join(record.recommendation_evidence_basis) if record.recommendation_evidence_basis else 'TODO_VERIFY'}",
+        f"- research_value_score：{record.research_value_score}",
+        f"- primary_action_allowed：{record.primary_action_allowed}",
+        f"- recommendation_score_breakdown：{record.recommendation_score_breakdown if record.recommendation_score_breakdown else 'TODO_VERIFY'}",
         f"- title_en：{record.title_en or record.title}",
         f"- title_zh：{record.title_zh or record.chinese_title or 'TODO_VERIFY'}",
         f"- abstract_en：{record.abstract_en or 'TODO_VERIFY'}",

@@ -6,6 +6,7 @@ from datetime import date, datetime, timedelta
 from typing import Any, Mapping
 
 from lattice_digest.models import PaperRecord
+from lattice_digest.recommendation_calibration import calibrate_recommendation, calibration_to_update
 from lattice_digest.venue_registry import TODO_VERIFY, VenueRegistryEntry, find_registry_entry
 
 
@@ -242,7 +243,18 @@ def enrich_record_for_daily_radar(
     if venue.ccf_rank == TODO_VERIFY or venue.ccf_status == "todo_verify":
         todo_flags.append("CCF_rank")
     ccf_rank = venue.ccf_rank if venue.ccf_rank in {"A", "B", "C", "N/A", "unknown", TODO_VERIFY} else TODO_VERIFY
-    score = int(record.relevance_score)
+    calibration = calibrate_recommendation(
+        record,
+        freshness_bucket=freshness.freshness_bucket,
+        primary_today_new_eligible=freshness.primary_today_new_eligible,
+        selected_date_basis=freshness.selected_date_basis,
+        todo_verify_flags=todo_flags,
+        venue_confidence=venue.venue_confidence,
+        venue_status=venue.venue_status,
+        ccf_rank=ccf_rank,
+    )
+    todo_flags = sorted(set(todo_flags) | set(calibration.recommendation_risk_flags))
+    calibrated_update = calibration_to_update(calibration)
     return record.model_copy(
         update={
             "title_en": record.title,
@@ -259,15 +271,12 @@ def enrich_record_for_daily_radar(
             "freshness_bucket": freshness.freshness_bucket,
             "freshness_reason": freshness.freshness_reason,
             "primary_today_new_eligible": freshness.primary_today_new_eligible,
-            "lattice_crypto_relevance": record.reason or recommendation_reason(record),
             "abstract_en": abstract_en,
             "abstract_zh": _generated_zh_summary(record.abstract, "source abstract missing"),
             "conclusion_en": conclusion_en,
             "conclusion_zh": _generated_zh_summary(conclusion or record.abstract, "source conclusion missing"),
-            "recommendation_level": recommendation_level(score, freshness.freshness_bucket),
-            "recommendation_score": score,
-            "recommendation_reason": recommendation_reason(record),
-            "TODO_VERIFY_flags": sorted(set(todo_flags)),
+            **calibrated_update,
+            "TODO_VERIFY_flags": todo_flags,
             "source_urls": [record.source_url] if record.source_url else [],
             "source_refs": [record.source_url] if record.source_url else [],
         }

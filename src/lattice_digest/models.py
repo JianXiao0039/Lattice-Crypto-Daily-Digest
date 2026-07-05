@@ -60,6 +60,14 @@ class PaperRecord(BaseModel):
     recommendation_level: str = "TODO_VERIFY"
     recommendation_score: int = 0
     recommendation_reason: str = ""
+    user_relevance_tags: list[str] = Field(default_factory=list)
+    phd_application_relevance: str = ""
+    recommendation_risk_flags: list[str] = Field(default_factory=list)
+    recommendation_evidence_basis: list[str] = Field(default_factory=list)
+    recommendation_score_breakdown: dict[str, int] = Field(default_factory=dict)
+    research_value_score: int = 0
+    primary_action_allowed: bool = False
+    suggested_action: str = ""
     TODO_VERIFY_flags: list[str] = Field(default_factory=list)
     source_urls: list[str] = Field(default_factory=list)
     source_refs: list[str] = Field(default_factory=list)
