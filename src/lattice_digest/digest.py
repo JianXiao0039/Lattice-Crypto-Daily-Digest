@@ -121,6 +121,7 @@ ACTION_LABELS = {
     "Skim for related work": "略读作为 related work",
     "Save for background": "暂存",
     "Ignore unless needed": "暂不阅读",
+    "TODO_VERIFY before reading": "先核验来源",
 }
 
 ACTION_BY_PRIORITY_LABEL = {
@@ -856,6 +857,81 @@ def _source_health_brief(source_health: list[dict[str, object]] | None) -> str:
     return "；".join(parts) if parts else "暂无 source health 数据"
 
 
+def _source_health_counts(source_health: list[dict[str, object]] | None) -> dict[str, int]:
+    counts = {"green": 0, "yellow": 0, "red": 0}
+    for item in source_health or []:
+        status = _source_status(item)
+        if status in counts:
+            counts[status] += 1
+    return counts
+
+
+def _degraded_source_names(source_health: list[dict[str, object]] | None) -> list[str]:
+    names: list[str] = []
+    for item in source_health or []:
+        if _source_status(item) in {"yellow", "red"}:
+            names.append(str(item.get("source", "unknown")))
+    return names
+
+
+def _daily_reading_verdict(
+    primary_records: list[PaperRecord],
+    routed_records: list[PaperRecord],
+    source_health: list[dict[str, object]] | None,
+) -> str:
+    strong = [record for record in primary_records if record.recommendation_level == "Strong"]
+    medium = [record for record in primary_records if record.recommendation_level == "Medium"]
+    verify_first = [record for record in [*primary_records, *routed_records] if record.recommendation_level == TODO_VERIFY]
+    high_value_backfill = [
+        record
+        for record in routed_records
+        if record.research_value_score >= 70 or record.recommendation_level == "Backfill"
+    ]
+    degraded = _degraded_source_names(source_health)
+
+    if strong:
+        action = f"今日优先读 {len(strong)} 篇 Strong primary-new。"
+    elif medium:
+        action = f"今日可读 {len(medium)} 篇 Medium primary-new，先略读再决定是否精读。"
+    elif high_value_backfill:
+        action = f"今日无 primary-new 必读；有 {len(high_value_backfill)} 篇 backfill/older 项目可作为背景或本周阅读。"
+    elif verify_first:
+        action = f"今日无可直接阅读的新论文；有 {len(verify_first)} 条 TODO_VERIFY 线索，先核验来源/日期/摘要。"
+    else:
+        action = "今日无值得投入阅读时间的 primary-new 论文；可跳过或扩大窗口做周视角检查。"
+
+    if degraded:
+        action += f" Source health 有降级源：{'、'.join(degraded[:5])}，结论需保守。"
+    return action
+
+
+def _reading_action_counts(records: list[PaperRecord], routed_records: list[PaperRecord]) -> dict[str, int]:
+    all_items = [*records, *routed_records]
+    counts = {"read_now": 0, "skim": 0, "save_or_backfill": 0, "verify_first": 0}
+    for record in all_items:
+        action = suggested_action(record)
+        if record.recommendation_level == TODO_VERIFY or "TODO_VERIFY" in action:
+            counts["verify_first"] += 1
+        elif record.primary_today_new_eligible and action == "Read today":
+            counts["read_now"] += 1
+        elif action in {"Read this week", "Skim for related work"}:
+            counts["skim"] += 1
+        else:
+            counts["save_or_backfill"] += 1
+    return counts
+
+
+def _source_health_risk_line(source_health: list[dict[str, object]] | None) -> str:
+    counts = _source_health_counts(source_health)
+    degraded = _degraded_source_names(source_health)
+    if not source_health:
+        return "Source health：暂无 ledger；如日报为空或低信号，需避免过度解读。"
+    base = f"Source health：green={counts['green']}，yellow={counts['yellow']}，red={counts['red']}"
+    if degraded:
+        return base + f"；降级源：{'、'.join(degraded[:6])}；建议阅读前核验关键来源。"
+    return base + "；未见降级源。"
+
+
 def _metadata_text(metadata: dict[str, object] | None, key: str, default: str = "unknown") -> str:
     if not metadata:
         return default
@@ -884,7 +960,123 @@ def _paper_header(record: PaperRecord, index: int | None = None) -> str:
     return f"### {prefix}{record.title}"
 
 
-def _basic_paper_lines(record: PaperRecord) -> list[str]:
+def _display_value(value: object, default: str = "unknown") -> str:
+    if value is None or value == "" or value == []:
+        return default
+    if isinstance(value, bool):
+        return "true" if value else "false"
+    if isinstance(value, list):
+        return "、".join(str(item) for item in value) if value else default
+    return str(value)
+
+
+def _short_list(values: list[str], limit: int = 4, default: str = "none") -> str:
+    selected = [str(value) for value in values if str(value).strip()]
+    if not selected:
+        return default
+    rendered = "、".join(selected[:limit])
+    if len(selected) > limit:
+        rendered += f"、等 {len(selected)} 项"
+    return rendered
+
+
+def _truncate_text(text: str, limit: int = 280) -> str:
+    compact = " ".join(str(text or "").split())
+    if not compact:
+        return "TODO_VERIFY"
+    if len(compact) <= limit:
+        return compact
+    return compact[: limit - 1].rstrip() + "..."
+
+
+def _placement_label(record: PaperRecord) -> str:
+    if record.primary_today_new_eligible and record.freshness_bucket == "primary_today_new":
+        return "primary today/new"
+    if record.freshness_bucket == "date_uncertain_todo_verify" or record.recommendation_level == TODO_VERIFY:
+        return "TODO_VERIFY / non-primary"
+    if record.freshness_bucket in {"backfill", "important_older_item"}:
+        return "backfill / older non-primary"
+    return f"{record.freshness_bucket} / non-primary"
+
+
+def _risk_flags(record: PaperRecord) -> list[str]:
+    flags = list(record.recommendation_risk_flags or [])
+    flags.extend(flag for flag in (record.TODO_VERIFY_flags or []) if flag not in flags)
+    if record.source_health and record.source_health.lower() in {"yellow", "red"}:
+        flags.append(f"source_health_{record.source_health.lower()}")
+    if not record.source_health:
+        flags.append("source_health_missing")
+    if record.venue_status == TODO_VERIFY and "venue_todo_verify" not in flags:
+        flags.append("venue_todo_verify")
+    if record.CCF_rank in {"unknown", TODO_VERIFY} and "ccf_uncertain" not in flags:
+        flags.append("ccf_uncertain")
+    return sorted(dict.fromkeys(str(flag) for flag in flags if str(flag).strip()))
+
+
+def _generated_marker_summary(record: PaperRecord) -> str:
+    markers: list[str] = []
+    for field_name in ("abstract_zh", "conclusion_zh"):
+        value = str(getattr(record, field_name) or "")
+        if value.startswith("model-generated"):
+            markers.append(f"{field_name}=model-generated/translated")
+        elif value.startswith(TODO_VERIFY):
+            markers.append(f"{field_name}=TODO_VERIFY")
+    return "；".join(markers) if markers else "none"
+
+
+def _recommendation_display_lines(record: PaperRecord) -> list[str]:
+    reason = record.recommendation_reason or reason_for_priority(record)
+    score_bits = [f"recommendation_score {record.recommendation_score}"]
+    if record.research_value_score:
+        score_bits.append(f"research_value_score {record.research_value_score}")
+    score_bits.append(f"relevance {record.relevance_label}/{record.relevance_score}")
+    return [
+        "#### Recommendation / Action",
+        f"- Recommendation：{record.recommendation_level}（{'; '.join(score_bits)}）",
+        f"- Suggested action：{_action_text(record)}",
+        f"- Why it matters：{_truncate_text(reason, 220)}",
+        "- Score note：recommendation_score 是 freshness/risk-gated 行动分；research_value_score 是内在研究价值，不能覆盖 freshness gate。",
+    ]
+
+
+def _workflow_display_lines(record: PaperRecord) -> list[str]:
+    intel = record_intelligence(record)
+    tags = record.user_relevance_tags if record.user_relevance_tags else list(intel["tags"])
+    hooks = intel["research_hooks"] if isinstance(intel["research_hooks"], list) else []
+    questions = intel["advisor_questions"] if isinstance(intel["advisor_questions"], list) else []
+    return [
+        "#### User Workflow",
+        f"- User relevance：{_short_list([str(tag) for tag in tags], default='TODO_VERIFY')}",
+        f"- PhD / application：{record.phd_application_relevance or 'TODO_VERIFY'}",
+        f"- Blog / Obsidian / project hook：{_truncate_text('；'.join(str(item) for item in hooks[:2]) if hooks else '暂无', 220)}",
+        f"- PI / advisor question：{_truncate_text('；'.join(str(item) for item in questions[:2]) if questions else '暂无', 220)}",
+    ]
+
+
+def _risk_display_lines(record: PaperRecord) -> list[str]:
+    risks = _risk_flags(record)
+    risk_summary = _short_list(risks, limit=6, default="none")
+    return [
+        "#### Risk / TODO_VERIFY",
+        f"- Risk strip：{risk_summary}",
+        f"- TODO_VERIFY visible：{'yes' if risks or record.recommendation_level == TODO_VERIFY else 'no'}",
+        f"- Venue / CCF：{record.venue or 'unknown'}；venue_type={record.venue_type}；CCF={record.CCF_rank}；venue_status={record.venue_status}",
+        f"- Source health：{record.source_health or 'unknown'}",
+        f"- Generated/translated markers：{_generated_marker_summary(record)}",
+    ]
+
+
+def _summary_display_lines(record: PaperRecord) -> list[str]:
+    return [
+        "#### Abstract / Conclusion",
+        f"- abstract_en：{_truncate_text(record.abstract_en or record.abstract or TODO_VERIFY, 260)}",
+        f"- abstract_zh：{_truncate_text(record.abstract_zh or TODO_VERIFY, 260)}",
+        f"- conclusion_en：{_truncate_text(record.conclusion_en or TODO_VERIFY, 260)}",
+        f"- conclusion_zh：{_truncate_text(record.conclusion_zh or TODO_VERIFY, 260)}",
+    ]
+
+
+def _audit_detail_lines(record: PaperRecord) -> list[str]:
     intel = record_intelligence(record)
     rationale = build_recommendation_rationale(record)
     link = f"[来源链接]({record.source_url})" if record.source_url else "unknown"
@@ -892,6 +1084,7 @@ def _basic_paper_lines(record: PaperRecord) -> list[str]:
     questions = intel["advisor_questions"] if isinstance(intel["advisor_questions"], list) else []
     todo_verify = "；".join(rationale.todo_verify) if rationale.todo_verify else "TODO_VERIFY：阅读正文核验证明、参数、实验与限制条件。"
     return [
+        "#### Audit Details",
         f"- 作者：{', '.join(record.authors) if record.authors else 'unknown'}",
         f"- 日期/年份：{record.publication_date or record.update_date or 'unknown'}",
         f"- publication_date：{record.publication_date or 'unknown'}",
@@ -956,6 +1149,20 @@ def _basic_paper_lines(record: PaperRecord) -> list[str]:
         f"- research_hooks：{'；'.join(str(item) for item in hooks) if hooks else '暂无'}",
         f"- advisor_questions：{'；'.join(str(item) for item in questions) if questions else '暂无'}",
     ]
+
+
+def _basic_paper_lines(record: PaperRecord) -> list[str]:
+    lines = [
+        f"- Placement：{_placement_label(record)}",
+        f"- Source / date basis：{record.source}；selected_date_basis={record.selected_date_basis}；freshness_bucket={record.freshness_bucket}",
+        f"- Venue / CCF：{record.venue or 'unknown'}；{record.venue_type}；CCF={record.CCF_rank}",
+    ]
+    lines.extend(_recommendation_display_lines(record))
+    lines.extend(_workflow_display_lines(record))
+    lines.extend(_risk_display_lines(record))
+    lines.extend(_summary_display_lines(record))
+    lines.extend(_audit_detail_lines(record))
+    return lines
 
 
 def _append_records(lines: list[str], records: list[PaperRecord], empty_text: str, limit: int | None = None) -> None:
@@ -1262,6 +1469,7 @@ def generate_markdown(
     topic_counts = Counter(tag for record in all_records for tag in research_tags(record))
     main_topics = [topic for topic, _ in topic_counts.most_common(3)]
     source_names = sorted({record.source for record in all_records})
+    action_counts = _reading_action_counts(records, freshness_routed_records)
     has_mainline = any(
         set(research_tags(record)) & {"LWE", "MLWE", "Module-SIS", "Lattice Reduction", "PQC Implementation"}
         for record in all_records
@@ -1270,6 +1478,16 @@ def generate_markdown(
         f"# 格密码科研情报日报 - {digest_date.isoformat()}",
         "",
         "## 1. 今日核心结论",
+        "",
+        "### 今日读什么 / What to read today",
+        "",
+        f"- Daily verdict：{_daily_reading_verdict(records, freshness_routed_records, source_health)}",
+        f"- Action counts：read_now={action_counts['read_now']}；skim={action_counts['skim']}；save/backfill={action_counts['save_or_backfill']}；verify_first={action_counts['verify_first']}",
+        f"- Primary/backfill split：primary today/new={len(records)}；backfill/older/TODO_VERIFY={len(freshness_routed_records)}",
+        f"- Top-level risk：{_source_health_risk_line(source_health)}",
+        "- Reading rule：primary today/new 才能承载今日精读；backfill/TODO_VERIFY 只能作为背景、核验或本周队列。",
+        "",
+        "### Run metadata / audit snapshot",
         "",
         f"- 最终入选论文数：{len(all_records)}",
         f"- primary today/new 论文数：{len(records)}",
@@ -1301,6 +1519,15 @@ def generate_markdown(
 
     lines.extend(["## 2. 高优先级论文", ""])
     _append_records(lines, high_priority, "今日无高优先级论文。", limit=8)
+    if not high_priority and freshness_routed_records:
+        lines.extend(
+            [
+                "今日没有 primary-new 高优先级论文；下方回填/TODO_VERIFY 项目不是今日新论文，建议按核验或背景阅读处理。",
+                "",
+            ]
+        )
+    elif not high_priority:
+        lines.extend(["今日没有 primary-new 高优先级论文；可跳过日报或扩大窗口做周视角检查。", ""])
     _append_freshness_routed_section(lines, freshness_routed_records)
 
     _append_ai_section(lines, records)
