@@ -47,33 +47,52 @@ class OpenAlexSource(SourceAdapter):
         seen: set[str] = set()
         raw_count = 0
         for request in requests:
+            attempt_id = context.begin_query_attempt(self.name, request)
             params = urllib.parse.urlencode({"search": request.query_text, "per-page": min(int(self.config.get("max_results", 25)), 25)})
             if contact_email:
                 params = f"{params}&{urllib.parse.urlencode({'mailto': contact_email})}"
             data = fetch_json(context, f"{self.config['url']}?{params}", headers=headers, source_name=self.name)
             if data is None:
-                context.record_query_attempt(self.name, request.family_id, request.query_text, status="failed")
+                context.finish_query_attempt(attempt_id, status="failed", raw_candidates=None, error_category=health.error_type())
                 health.query_groups_failed += 1
                 continue
             health.query_groups_success += 1
             results = data.get("results", [])
-            context.record_query_attempt(self.name, request.family_id, request.query_text, status="success", raw_candidates=len(results))
+            context.finish_query_attempt(attempt_id, status="success", raw_candidates=len(results))
             raw_count += len(results)
             for item in results:
                 title = item.get("title")
                 source_url = item.get("doi") or item.get("id")
-                if not title or not source_url or source_url in seen:
+                abstract = _abstract_from_inverted_index(item.get("abstract_inverted_index"))
+                occurrence_id = context.record_raw_occurrence(
+                    self.name,
+                    attempt_id,
+                    raw_title=str(title or ""),
+                    source_identifier=item.get("id") or item.get("doi"),
+                    source_url=source_url,
+                    publication_date=item.get("publication_date"),
+                    update_date=item.get("updated_date"),
+                    abstract_present=bool(abstract),
+                    parser_result="PARSED" if title and source_url else "RAW_PARSE_FAILED",
+                    parser_failure_reason=None if title and source_url else "missing title or source URL",
+                    normalization_eligible=bool(title and source_url),
+                )
+                if not title or not source_url:
+                    continue
+                if source_url in seen:
+                    context.record_route_event("raw_occurrence", occurrence_id, "DEDUP", "DUPLICATE_WITHIN_SOURCE", "same OpenAlex work returned by another query", terminal=True)
                     continue
                 authors = [authorship.get("author", {}).get("display_name", "") for authorship in item.get("authorships", [])]
                 record = make_paper_record(
                     title=title, authors=[author for author in authors if author],
-                    abstract=_abstract_from_inverted_index(item.get("abstract_inverted_index")), source="openalex",
+                    abstract=abstract, source="openalex",
                     source_url=source_url, paper_id=item.get("id"), doi=item.get("doi"),
-                    venue=(item.get("primary_location") or {}).get("source", {}).get("display_name"),
+                    venue=((item.get("primary_location") or {}).get("source") or {}).get("display_name"),
                     publication_date=normalize_date(item.get("publication_date")), update_date=normalize_date(item.get("updated_date")),
                     categories=["openalex"], source_query_family=request.family_id, source_query_text=request.query_text,
                     retrieval_timestamp=datetime.now(timezone.utc).isoformat(),
                 )
+                context.record_normalized_candidate(occurrence_id, record)
                 seen.add(source_url)
                 normalized.append(record)
         filtered = [

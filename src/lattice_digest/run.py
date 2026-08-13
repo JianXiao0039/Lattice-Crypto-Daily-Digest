@@ -112,6 +112,7 @@ def _collect_records(source_configs: list[dict], context: FetchContext) -> list[
     records: list[PaperRecord] = []
     for source_config in source_configs:
         name = source_config.get("name", source_config.get("type", "unknown"))
+        context.register_source(source_config)
         context.health(name)
         try:
             adapter = build_source(source_config)
@@ -120,6 +121,14 @@ def _collect_records(source_configs: list[dict], context: FetchContext) -> list[
             context.warnings.append(f"{name}: fetched {len(fetched)} candidate records")
         except Exception as exc:  # noqa: BLE001 - source failures should not fabricate or stop the digest.
             context.add_error(f"{name}: failed ({exc})", name)
+            context.record_route_event(
+                "source",
+                str(name),
+                "SOURCE",
+                "SOURCE_FAILED",
+                type(exc).__name__,
+                terminal=True,
+            )
     return records
 
 
@@ -134,6 +143,54 @@ def _filter_reliable(records: list[PaperRecord]) -> tuple[list[PaperRecord], int
             dropped += 1
             continue
         kept.append(record)
+    return kept, dropped
+
+
+def _filter_by_source_role(
+    records: list[PaperRecord],
+    source_configs: list[dict],
+    context: FetchContext,
+) -> tuple[list[PaperRecord], list[PaperRecord]]:
+    """Keep enrichment-only records from masquerading as abstract-rich discovery.
+
+    A merged record backed by any discovery source is retained. A standalone
+    metadata/identifier record without an abstract must satisfy the explicit
+    source threshold. This does not change relevance scoring or source health.
+    """
+    configs_by_name = {
+        str(item.get("name") or item.get("type")): item
+        for item in source_configs
+    }
+    kept: list[PaperRecord] = []
+    dropped: list[PaperRecord] = []
+    discovery_roles = {"DISCOVERY_PRIMARY", "DISCOVERY_SECONDARY"}
+    for record in records:
+        source_names = _record_source_names(record)
+        source_roles = {
+            role
+            for name in source_names
+            for role in context.source_roles(name)
+        }
+        if record.abstract or source_roles.intersection(discovery_roles):
+            kept.append(record)
+            continue
+        thresholds = [
+            int(configs_by_name.get(name, {}).get("standalone_no_abstract_min_relevance_score", 101))
+            for name in source_names
+        ]
+        threshold = min(thresholds, default=101)
+        if record.relevance_score >= threshold:
+            kept.append(record)
+            continue
+        dropped.append(record)
+        context.record_route_event(
+            "canonical_candidate",
+            record.paper_id or record.source_url,
+            "SOURCE_ROLE_POLICY",
+            "LOW_EVIDENCE_ENRICHMENT_ONLY_REJECTED",
+            f"standalone no-abstract score {record.relevance_score} below {threshold}",
+            terminal=True,
+        )
     return kept, dropped
 
 
@@ -442,7 +499,12 @@ def main(argv: list[str] | None = None) -> int:
     coverage_kept = list(ranked)
     reliable, dropped_count = _filter_reliable(ranked)
     deduped = deduplicate(reliable)
-    ordered = _sort_records(deduped)
+    role_eligible, role_dropped = _filter_by_source_role(deduped, source_configs, context)
+    if role_dropped:
+        context.warnings.append(
+            f"source-role policy dropped {len(role_dropped)} standalone low-evidence metadata records"
+        )
+    ordered = _sort_records(role_eligible)
     _update_source_health_after_pipeline(context, ranked, reliable, deduped, ordered)
     source_health = context.source_health_summary()
     if args.candidate_ledger and not args.dry_run:
@@ -456,6 +518,11 @@ def main(argv: list[str] | None = None) -> int:
             source_health,
             digest_date,
             context.query_attempts,
+            run_id=context.run_id,
+            run_started_at=context.run_started_at,
+            raw_occurrences=context.raw_occurrences,
+            normalized_candidates=context.normalized_candidates,
+            route_events=context.route_events,
         )
         write_candidate_ledger(ledger, output_root, digest_date)
     outputs = {item.strip().lower() for item in args.output.split(",") if item.strip()}

@@ -45,6 +45,10 @@ sources:
     priority_label: highest
     role: highest_priority_primary
     trust_level: high
+    source_roles: [DISCOVERY_PRIMARY, VENUE_AUTHORITY, IDENTIFIER_RESOLUTION]
+    query_portfolio_version: v2a-1
+    default_query_intent: DISCOVERY
+    query_cost_rate_limit_risk: LOW
     url: "https://eprint.iacr.org/rss/rss.xml"
     max_per_day: 1
     max_requests_per_day: 1
@@ -67,6 +71,11 @@ sources:
     priority: 90
     priority_label: high
     url: "https://export.arxiv.org/api/query"
+    source_roles: [DISCOVERY_PRIMARY, IDENTIFIER_RESOLUTION]
+    query_portfolio_version: v2a-1
+    default_query_intent: DISCOVERY
+    query_native_syntax: arxiv
+    query_cost_rate_limit_risk: HIGH
     categories:
       - cs.CR
       - cs.IT
@@ -219,6 +228,12 @@ sources:
     priority: 80
     priority_label: medium-high
     url: "https://dblp.org/search/publ/api"
+    source_roles: [IDENTIFIER_RESOLUTION, VENUE_AUTHORITY, METADATA_ENRICHMENT]
+    query_portfolio_version: v2a-1
+    default_query_intent: METADATA_ENRICHMENT
+    query_native_syntax: free_text
+    query_cost_rate_limit_risk: MEDIUM
+    standalone_no_abstract_min_relevance_score: 80
     max_results: 100
     per_query_results: 25
     venues:
@@ -267,6 +282,11 @@ sources:
     priority: 60
     priority_label: medium-low
     url: "https://api.openalex.org/works"
+    source_roles: [DISCOVERY_SECONDARY, METADATA_ENRICHMENT, IDENTIFIER_RESOLUTION]
+    query_portfolio_version: v2a-1
+    default_query_intent: DISCOVERY_SECONDARY
+    query_native_syntax: plain
+    query_cost_rate_limit_risk: MEDIUM
     max_results: 50
     on_http_429: warning_only
     query_terms:
@@ -301,6 +321,12 @@ sources:
     priority_label: medium
     role: supplemental_only
     url: "https://api.crossref.org/works"
+    source_roles: [METADATA_ENRICHMENT, IDENTIFIER_RESOLUTION]
+    query_portfolio_version: v2a-1
+    default_query_intent: METADATA_ENRICHMENT
+    query_native_syntax: free_text
+    query_cost_rate_limit_risk: MEDIUM
+    standalone_no_abstract_min_relevance_score: 80
     max_results: 50
     must_pass_strong_relevance_filter: true
     require_strong_crypto_context: true
@@ -335,6 +361,11 @@ sources:
     priority: 50
     priority_label: medium
     url: "https://api.semanticscholar.org/graph/v1/paper/search"
+    source_roles: [DISCOVERY_SECONDARY, METADATA_ENRICHMENT]
+    query_portfolio_version: v2a-1
+    default_query_intent: DISCOVERY_SECONDARY
+    query_native_syntax: plain
+    query_cost_rate_limit_risk: HIGH
     max_results: 50
     require_publication_or_update_date: true
     exclude_year_only_from_since_window: true

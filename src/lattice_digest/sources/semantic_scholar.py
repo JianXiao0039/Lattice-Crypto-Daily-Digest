@@ -13,10 +13,7 @@ class SemanticScholarSource(SourceAdapter):
         if context.dry_run:
             context.add_warning("dry-run: skipped Semantic Scholar network request", self.name)
             return []
-        fields = (
-            "paperId,title,abstract,authors,venue,year,publicationDate,updatedAt,"
-            "releaseDate,externalIds,url,openAccessPdf"
-        )
+        fields = "paperId,title,abstract,authors,venue,year,publicationDate,externalIds,url,openAccessPdf"
         api_key = (context.api_keys.get("SEMANTIC_SCHOLAR_API_KEY") or "").strip()
         context.health(self.name).api_key_used = bool(api_key)
         configured_limit = int(self.config.get("max_results", 50))
@@ -36,24 +33,40 @@ class SemanticScholarSource(SourceAdapter):
         raw_count = 0
         seen: set[str] = set()
         for request in requests:
+            attempt_id = context.begin_query_attempt(self.name, request)
             params = urllib.parse.urlencode({"query": request.query_text, "limit": limit, "fields": fields})
             data = fetch_json(context, f"{self.config['url']}?{params}", headers=headers, source_name=self.name)
             if data is None:
-                context.record_query_attempt(self.name, request.family_id, request.query_text, status="failed")
+                context.finish_query_attempt(attempt_id, status="failed", raw_candidates=None, error_category=health.error_type())
                 health.query_groups_failed += 1
                 continue
             health.query_groups_success += 1
             items = data.get("data", [])
-            context.record_query_attempt(self.name, request.family_id, request.query_text, status="success", raw_candidates=len(items))
+            context.finish_query_attempt(attempt_id, status="success", raw_candidates=len(items))
             raw_count += len(items)
             for item in items:
                 title = item.get("title")
                 source_url = item.get("url")
-                if not title or not source_url or source_url in seen:
+                occurrence_id = context.record_raw_occurrence(
+                    self.name,
+                    attempt_id,
+                    raw_title=str(title or ""),
+                    source_identifier=item.get("paperId"),
+                    source_url=source_url,
+                    publication_date=item.get("publicationDate"),
+                    abstract_present=bool(item.get("abstract")),
+                    parser_result="PARSED" if title and source_url else "RAW_PARSE_FAILED",
+                    parser_failure_reason=None if title and source_url else "missing title or source URL",
+                    normalization_eligible=bool(title and source_url),
+                )
+                if not title or not source_url:
+                    continue
+                if source_url in seen:
+                    context.record_route_event("raw_occurrence", occurrence_id, "DEDUP", "DUPLICATE_WITHIN_SOURCE", "same Semantic Scholar paper returned by another query", terminal=True)
                     continue
                 external = item.get("externalIds") or {}
-                publication_date = normalize_date(item.get("publicationDate") or item.get("releaseDate"))
-                update_date = normalize_date(item.get("updatedAt") or item.get("updated_at"))
+                publication_date = normalize_date(item.get("publicationDate"))
+                update_date = None
                 record = make_paper_record(
                     title=title, authors=[author.get("name", "") for author in item.get("authors", []) if author.get("name")],
                     abstract=item.get("abstract") or "", source="semantic_scholar", source_url=source_url,
@@ -63,6 +76,7 @@ class SemanticScholarSource(SourceAdapter):
                     source_query_family=request.family_id, source_query_text=request.query_text,
                     retrieval_timestamp=datetime.now(timezone.utc).isoformat(),
                 )
+                context.record_normalized_candidate(occurrence_id, record)
                 seen.add(source_url)
                 normalized.append(record)
                 if self.config.get("exclude_year_only_from_since_window", True) and item.get("year") and not publication_date and not update_date:

@@ -25,6 +25,7 @@ class DblpSource(SourceAdapter):
         per_query = int(self.config.get("per_query_results", self.config.get("max_results", 50)))
         per_query = min(per_query, int(self.config.get("max_results", 50)))
         for request in requests:
+            attempt_id = context.begin_query_attempt(self.name, request)
             params = urllib.parse.urlencode(
                 {
                     "q": request.query_text,
@@ -34,18 +35,33 @@ class DblpSource(SourceAdapter):
             )
             data = fetch_json(context, f"{self.config['url']}?{params}", source_name=self.name)
             if data is None:
-                context.record_query_attempt(self.name, request.family_id, request.query_text, status="failed")
+                context.finish_query_attempt(attempt_id, status="failed", raw_candidates=None, error_category=health.error_type())
                 health.query_groups_failed += 1
                 continue
             health.query_groups_success += 1
             hits = data.get("result", {}).get("hits", {}).get("hit", [])
-            context.record_query_attempt(self.name, request.family_id, request.query_text, status="success", raw_candidates=len(hits))
+            context.finish_query_attempt(attempt_id, status="success", raw_candidates=len(hits))
             raw_count += len(hits)
             for hit in hits:
                 info = hit.get("info", {})
                 title = info.get("title")
                 url = info.get("url") or info.get("ee")
-                if not title or not url or url in seen_urls:
+                occurrence_id = context.record_raw_occurrence(
+                    self.name,
+                    attempt_id,
+                    raw_title=str(title or ""),
+                    source_identifier=info.get("key") or hit.get("@id"),
+                    source_url=url,
+                    publication_date=str(info.get("year") or "") or None,
+                    abstract_present=False,
+                    parser_result="PARSED" if title and url else "RAW_PARSE_FAILED",
+                    parser_failure_reason=None if title and url else "missing title or source URL",
+                    normalization_eligible=bool(title and url),
+                )
+                if not title or not url:
+                    continue
+                if url in seen_urls:
+                    context.record_route_event("raw_occurrence", occurrence_id, "DEDUP", "DUPLICATE_WITHIN_SOURCE", "same DBLP URL returned by another query", terminal=True)
                     continue
                 authors_raw = info.get("authors", {}).get("author", [])
                 if isinstance(authors_raw, dict):
@@ -67,6 +83,7 @@ class DblpSource(SourceAdapter):
                     source_query_text=request.query_text,
                     retrieval_timestamp=datetime.now(timezone.utc).isoformat(),
                 )
+                context.record_normalized_candidate(occurrence_id, record)
                 seen_urls.add(url)
                 normalized.append(record)
         filtered = [

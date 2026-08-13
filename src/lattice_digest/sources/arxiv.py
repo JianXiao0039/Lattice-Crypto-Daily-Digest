@@ -8,7 +8,7 @@ from datetime import datetime, timezone
 from lattice_digest.models import PaperRecord, make_paper_record
 from lattice_digest.sources.base import FetchContext, SourceAdapter, fetch_text, normalize_date, within_since
 from lattice_digest.text import normalize_whitespace
-from lattice_digest.source_queries import QueryRequest, critical_query_requests
+from lattice_digest.source_queries import QueryRequest, critical_query_requests, stable_query_id
 
 ARXIV_ID_RE = re.compile(r"arxiv\.org/abs/([^?#]+)", re.IGNORECASE)
 VERSION_RE = re.compile(r"v\d+$")
@@ -135,6 +135,9 @@ class ArxivSource(SourceAdapter):
             QueryRequest(
                 f"legacy_arxiv_{index + 1:02d}",
                 " OR ".join(term for term in (_format_query_term(term) for term in group) if term),
+                source_family=self.name,
+                query_id=stable_query_id(self.name, f"legacy_arxiv_{index + 1:02d}", version=str(self.config.get("query_portfolio_version") or "v1")),
+                native_syntax="arxiv",
             )
             for index, group in enumerate(groups)
         ]
@@ -144,8 +147,10 @@ class ArxivSource(SourceAdapter):
         raw_count = 0
         normalized_by_key: dict[str, PaperRecord] = {}
         for request in requests:
+            attempt_id = context.begin_query_attempt(self.name, request)
             term_query = request.query_text
             if not term_query:
+                context.finish_query_attempt(attempt_id, status="failed", error_category="empty_query")
                 continue
             search_query = f"({category_query}) AND ({term_query})" if category_query else term_query
             params = urllib.parse.urlencode(
@@ -158,7 +163,7 @@ class ArxivSource(SourceAdapter):
             )
             xml_text = fetch_text(context, f"{self.config['url']}?{params}", source_name=self.name)
             if xml_text is None:
-                context.record_query_attempt(self.name, request.family_id, request.query_text, status="failed")
+                context.finish_query_attempt(attempt_id, status="failed", raw_candidates=None, error_category=health.error_type())
                 health.query_groups_failed += 1
                 continue
             try:
@@ -168,11 +173,23 @@ class ArxivSource(SourceAdapter):
             except ET.ParseError as exc:
                 health.query_groups_failed += 1
                 context.add_warning(f"{self.name}: failed to parse arXiv query group {request.family_id}: {exc}", self.name)
+                context.finish_query_attempt(attempt_id, status="failed", raw_candidates=None, error_category="parse_error")
                 continue
             raw_count += group_raw_count
-            context.record_query_attempt(self.name, request.family_id, request.query_text, status="success", raw_candidates=group_raw_count)
+            context.finish_query_attempt(attempt_id, status="success", raw_candidates=group_raw_count)
             health.query_groups_success += 1
             for record in group_records:
+                occurrence_id = context.record_raw_occurrence(
+                    self.name,
+                    attempt_id,
+                    raw_title=record.title,
+                    source_identifier=record.arxiv_id or record.paper_id,
+                    source_url=record.source_url,
+                    publication_date=record.publication_date,
+                    update_date=record.update_date,
+                    abstract_present=bool(record.abstract),
+                    parser_result="PARSED",
+                )
                 record = record.model_copy(
                     update={
                         "source_query_family": request.family_id,
@@ -180,6 +197,7 @@ class ArxivSource(SourceAdapter):
                         "retrieval_timestamp": datetime.now(timezone.utc).isoformat(),
                     }
                 )
+                context.record_normalized_candidate(occurrence_id, record)
                 key = record.arxiv_id or record.source_url or record.title.lower()
                 normalized_by_key.setdefault(key, record)
         normalized = list(normalized_by_key.values())

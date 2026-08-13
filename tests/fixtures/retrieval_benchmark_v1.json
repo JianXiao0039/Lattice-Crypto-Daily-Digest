@@ -1,0 +1,3284 @@
+{
+  "benchmark_id": "retrieval-benchmark-v1",
+  "schema_version": "1.0",
+  "frozen": true,
+  "metric_scope": "offline_frozen_benchmark_not_open_web_recall",
+  "run_date": "2026-08-12",
+  "record_count": 100,
+  "categories": {
+    "lwe_rlwe_mlwe_positive": 8,
+    "sis_module_sis_positive": 6,
+    "lattice_reduction_positive": 6,
+    "cryptanalysis_positive": 4,
+    "sparse_lwe_positive": 5,
+    "pqc_standard_positive": 7,
+    "lattice_signature_ch_positive": 7,
+    "ai4lc_positive": 6,
+    "zk_lattice_positive": 5,
+    "fhe_lattice_he_positive": 5,
+    "indirect_quantum_lattice_positive": 6,
+    "critical_security_positive": 6,
+    "generic_quantum_negative": 5,
+    "generic_ai_negative": 4,
+    "generic_cybersecurity_negative": 4,
+    "strong_venue_irrelevant_negative": 4,
+    "ambiguous_boundary": 5,
+    "title_evidence_contrast": 7
+  },
+  "records": [
+    {
+      "fixture_id": "RBV1-001",
+      "fixture_version": "1.0",
+      "primary_benchmark_category": "lwe_rlwe_mlwe_positive",
+      "record_kind": "synthetic_control",
+      "provenance": "explicitly_synthetic_offline_benchmark_control",
+      "title": "LWE Study 1",
+      "authors": [
+        "Synthetic Control Author"
+      ],
+      "abstract": "We analyze LWE in lattice cryptography and give conservative security bounds.",
+      "conclusion": "",
+      "source": "offline_benchmark",
+      "source_url": "https://example.invalid/retrieval-benchmark/RBV1-001",
+      "publication_date": "2026-08-11",
+      "venue": null,
+      "expected": {
+        "relevant": true,
+        "relevance_classes": [
+          "A",
+          "B",
+          "C"
+        ],
+        "topic_family": "lwe_rlwe_mlwe_positive",
+        "critical": false,
+        "security_impact": "UNKNOWN",
+        "evidence_confidence": "TODO_VERIFY_OR_DEFAULT",
+        "research_value_bucket": "NONZERO",
+        "route_class": "primary_or_verify",
+        "action_class": "NONCRITICAL_RESEARCH_ACTION",
+        "ccf_rank": null
+      }
+    },
+    {
+      "fixture_id": "RBV1-002",
+      "fixture_version": "1.0",
+      "primary_benchmark_category": "lwe_rlwe_mlwe_positive",
+      "record_kind": "synthetic_control",
+      "provenance": "explicitly_synthetic_offline_benchmark_control",
+      "title": "Ring-LWE Study 2",
+      "authors": [
+        "Synthetic Control Author"
+      ],
+      "abstract": "We analyze Ring-LWE in lattice cryptography and give conservative security bounds.",
+      "conclusion": "",
+      "source": "offline_benchmark",
+      "source_url": "https://example.invalid/retrieval-benchmark/RBV1-002",
+      "publication_date": "2026-08-11",
+      "venue": null,
+      "expected": {
+        "relevant": true,
+        "relevance_classes": [
+          "A",
+          "B",
+          "C"
+        ],
+        "topic_family": "lwe_rlwe_mlwe_positive",
+        "critical": false,
+        "security_impact": "UNKNOWN",
+        "evidence_confidence": "TODO_VERIFY_OR_DEFAULT",
+        "research_value_bucket": "NONZERO",
+        "route_class": "primary_or_verify",
+        "action_class": "NONCRITICAL_RESEARCH_ACTION",
+        "ccf_rank": null
+      }
+    },
+    {
+      "fixture_id": "RBV1-003",
+      "fixture_version": "1.0",
+      "primary_benchmark_category": "lwe_rlwe_mlwe_positive",
+      "record_kind": "synthetic_control",
+      "provenance": "explicitly_synthetic_offline_benchmark_control",
+      "title": "Module-LWE Study 3",
+      "authors": [
+        "Synthetic Control Author"
+      ],
+      "abstract": "We analyze Module-LWE in lattice cryptography and give conservative security bounds.",
+      "conclusion": "",
+      "source": "offline_benchmark",
+      "source_url": "https://example.invalid/retrieval-benchmark/RBV1-003",
+      "publication_date": "2026-08-11",
+      "venue": null,
+      "expected": {
+        "relevant": true,
+        "relevance_classes": [
+          "A",
+          "B",
+          "C"
+        ],
+        "topic_family": "lwe_rlwe_mlwe_positive",
+        "critical": false,
+        "security_impact": "UNKNOWN",
+        "evidence_confidence": "TODO_VERIFY_OR_DEFAULT",
+        "research_value_bucket": "NONZERO",
+        "route_class": "primary_or_verify",
+        "action_class": "NONCRITICAL_RESEARCH_ACTION",
+        "ccf_rank": null
+      }
+    },
+    {
+      "fixture_id": "RBV1-004",
+      "fixture_version": "1.0",
+      "primary_benchmark_category": "lwe_rlwe_mlwe_positive",
+      "record_kind": "synthetic_control",
+      "provenance": "explicitly_synthetic_offline_benchmark_control",
+      "title": "LWE Study 4",
+      "authors": [
+        "Synthetic Control Author"
+      ],
+      "abstract": "We analyze LWE in lattice cryptography and give conservative security bounds.",
+      "conclusion": "",
+      "source": "offline_benchmark",
+      "source_url": "https://example.invalid/retrieval-benchmark/RBV1-004",
+      "publication_date": "2026-08-11",
+      "venue": null,
+      "expected": {
+        "relevant": true,
+        "relevance_classes": [
+          "A",
+          "B",
+          "C"
+        ],
+        "topic_family": "lwe_rlwe_mlwe_positive",
+        "critical": false,
+        "security_impact": "UNKNOWN",
+        "evidence_confidence": "TODO_VERIFY_OR_DEFAULT",
+        "research_value_bucket": "NONZERO",
+        "route_class": "primary_or_verify",
+        "action_class": "NONCRITICAL_RESEARCH_ACTION",
+        "ccf_rank": null
+      }
+    },
+    {
+      "fixture_id": "RBV1-005",
+      "fixture_version": "1.0",
+      "primary_benchmark_category": "lwe_rlwe_mlwe_positive",
+      "record_kind": "synthetic_control",
+      "provenance": "explicitly_synthetic_offline_benchmark_control",
+      "title": "Ring-LWE Study 5",
+      "authors": [
+        "Synthetic Control Author"
+      ],
+      "abstract": "We analyze Ring-LWE in lattice cryptography and give conservative security bounds.",
+      "conclusion": "",
+      "source": "offline_benchmark",
+      "source_url": "https://example.invalid/retrieval-benchmark/RBV1-005",
+      "publication_date": "2026-08-11",
+      "venue": null,
+      "expected": {
+        "relevant": true,
+        "relevance_classes": [
+          "A",
+          "B",
+          "C"
+        ],
+        "topic_family": "lwe_rlwe_mlwe_positive",
+        "critical": false,
+        "security_impact": "UNKNOWN",
+        "evidence_confidence": "TODO_VERIFY_OR_DEFAULT",
+        "research_value_bucket": "NONZERO",
+        "route_class": "primary_or_verify",
+        "action_class": "NONCRITICAL_RESEARCH_ACTION",
+        "ccf_rank": null
+      }
+    },
+    {
+      "fixture_id": "RBV1-006",
+      "fixture_version": "1.0",
+      "primary_benchmark_category": "lwe_rlwe_mlwe_positive",
+      "record_kind": "synthetic_control",
+      "provenance": "explicitly_synthetic_offline_benchmark_control",
+      "title": "Module-LWE Study 6",
+      "authors": [
+        "Synthetic Control Author"
+      ],
+      "abstract": "We analyze Module-LWE in lattice cryptography and give conservative security bounds.",
+      "conclusion": "",
+      "source": "offline_benchmark",
+      "source_url": "https://example.invalid/retrieval-benchmark/RBV1-006",
+      "publication_date": "2026-08-11",
+      "venue": null,
+      "expected": {
+        "relevant": true,
+        "relevance_classes": [
+          "A",
+          "B",
+          "C"
+        ],
+        "topic_family": "lwe_rlwe_mlwe_positive",
+        "critical": false,
+        "security_impact": "UNKNOWN",
+        "evidence_confidence": "TODO_VERIFY_OR_DEFAULT",
+        "research_value_bucket": "NONZERO",
+        "route_class": "primary_or_verify",
+        "action_class": "NONCRITICAL_RESEARCH_ACTION",
+        "ccf_rank": null
+      }
+    },
+    {
+      "fixture_id": "RBV1-007",
+      "fixture_version": "1.0",
+      "primary_benchmark_category": "lwe_rlwe_mlwe_positive",
+      "record_kind": "synthetic_control",
+      "provenance": "explicitly_synthetic_offline_benchmark_control",
+      "title": "LWE Study 7",
+      "authors": [
+        "Synthetic Control Author"
+      ],
+      "abstract": "We analyze LWE in lattice cryptography and give conservative security bounds.",
+      "conclusion": "",
+      "source": "offline_benchmark",
+      "source_url": "https://example.invalid/retrieval-benchmark/RBV1-007",
+      "publication_date": "2026-08-11",
+      "venue": null,
+      "expected": {
+        "relevant": true,
+        "relevance_classes": [
+          "A",
+          "B",
+          "C"
+        ],
+        "topic_family": "lwe_rlwe_mlwe_positive",
+        "critical": false,
+        "security_impact": "UNKNOWN",
+        "evidence_confidence": "TODO_VERIFY_OR_DEFAULT",
+        "research_value_bucket": "NONZERO",
+        "route_class": "primary_or_verify",
+        "action_class": "NONCRITICAL_RESEARCH_ACTION",
+        "ccf_rank": null
+      }
+    },
+    {
+      "fixture_id": "RBV1-008",
+      "fixture_version": "1.0",
+      "primary_benchmark_category": "lwe_rlwe_mlwe_positive",
+      "record_kind": "synthetic_control",
+      "provenance": "explicitly_synthetic_offline_benchmark_control",
+      "title": "Ring-LWE Study 8",
+      "authors": [
+        "Synthetic Control Author"
+      ],
+      "abstract": "We analyze Ring-LWE in lattice cryptography and give conservative security bounds.",
+      "conclusion": "",
+      "source": "offline_benchmark",
+      "source_url": "https://example.invalid/retrieval-benchmark/RBV1-008",
+      "publication_date": "2026-08-11",
+      "venue": null,
+      "expected": {
+        "relevant": true,
+        "relevance_classes": [
+          "A",
+          "B",
+          "C"
+        ],
+        "topic_family": "lwe_rlwe_mlwe_positive",
+        "critical": false,
+        "security_impact": "UNKNOWN",
+        "evidence_confidence": "TODO_VERIFY_OR_DEFAULT",
+        "research_value_bucket": "NONZERO",
+        "route_class": "primary_or_verify",
+        "action_class": "NONCRITICAL_RESEARCH_ACTION",
+        "ccf_rank": null
+      }
+    },
+    {
+      "fixture_id": "RBV1-009",
+      "fixture_version": "1.0",
+      "primary_benchmark_category": "sis_module_sis_positive",
+      "record_kind": "synthetic_control",
+      "provenance": "explicitly_synthetic_offline_benchmark_control",
+      "title": "Short Integer Solution Study 1",
+      "authors": [
+        "Synthetic Control Author"
+      ],
+      "abstract": "A lattice-based cryptographic construction relies on SIS and studies the Module-SIS assumption.",
+      "conclusion": "",
+      "source": "offline_benchmark",
+      "source_url": "https://example.invalid/retrieval-benchmark/RBV1-009",
+      "publication_date": "2026-08-11",
+      "venue": null,
+      "expected": {
+        "relevant": true,
+        "relevance_classes": [
+          "A",
+          "B",
+          "C"
+        ],
+        "topic_family": "sis_module_sis_positive",
+        "critical": false,
+        "security_impact": "UNKNOWN",
+        "evidence_confidence": "TODO_VERIFY_OR_DEFAULT",
+        "research_value_bucket": "NONZERO",
+        "route_class": "primary_or_verify",
+        "action_class": "NONCRITICAL_RESEARCH_ACTION",
+        "ccf_rank": null
+      }
+    },
+    {
+      "fixture_id": "RBV1-010",
+      "fixture_version": "1.0",
+      "primary_benchmark_category": "sis_module_sis_positive",
+      "record_kind": "synthetic_control",
+      "provenance": "explicitly_synthetic_offline_benchmark_control",
+      "title": "Module-SIS Study 2",
+      "authors": [
+        "Synthetic Control Author"
+      ],
+      "abstract": "A lattice-based cryptographic construction relies on SIS and studies the Module-SIS assumption.",
+      "conclusion": "",
+      "source": "offline_benchmark",
+      "source_url": "https://example.invalid/retrieval-benchmark/RBV1-010",
+      "publication_date": "2026-08-11",
+      "venue": null,
+      "expected": {
+        "relevant": true,
+        "relevance_classes": [
+          "A",
+          "B",
+          "C"
+        ],
+        "topic_family": "sis_module_sis_positive",
+        "critical": false,
+        "security_impact": "UNKNOWN",
+        "evidence_confidence": "TODO_VERIFY_OR_DEFAULT",
+        "research_value_bucket": "NONZERO",
+        "route_class": "primary_or_verify",
+        "action_class": "NONCRITICAL_RESEARCH_ACTION",
+        "ccf_rank": null
+      }
+    },
+    {
+      "fixture_id": "RBV1-011",
+      "fixture_version": "1.0",
+      "primary_benchmark_category": "sis_module_sis_positive",
+      "record_kind": "synthetic_control",
+      "provenance": "explicitly_synthetic_offline_benchmark_control",
+      "title": "Short Integer Solution Study 3",
+      "authors": [
+        "Synthetic Control Author"
+      ],
+      "abstract": "A lattice-based cryptographic construction relies on SIS and studies the Module-SIS assumption.",
+      "conclusion": "",
+      "source": "offline_benchmark",
+      "source_url": "https://example.invalid/retrieval-benchmark/RBV1-011",
+      "publication_date": "2026-08-11",
+      "venue": null,
+      "expected": {
+        "relevant": true,
+        "relevance_classes": [
+          "A",
+          "B",
+          "C"
+        ],
+        "topic_family": "sis_module_sis_positive",
+        "critical": false,
+        "security_impact": "UNKNOWN",
+        "evidence_confidence": "TODO_VERIFY_OR_DEFAULT",
+        "research_value_bucket": "NONZERO",
+        "route_class": "primary_or_verify",
+        "action_class": "NONCRITICAL_RESEARCH_ACTION",
+        "ccf_rank": null
+      }
+    },
+    {
+      "fixture_id": "RBV1-012",
+      "fixture_version": "1.0",
+      "primary_benchmark_category": "sis_module_sis_positive",
+      "record_kind": "synthetic_control",
+      "provenance": "explicitly_synthetic_offline_benchmark_control",
+      "title": "Module-SIS Study 4",
+      "authors": [
+        "Synthetic Control Author"
+      ],
+      "abstract": "A lattice-based cryptographic construction relies on SIS and studies the Module-SIS assumption.",
+      "conclusion": "",
+      "source": "offline_benchmark",
+      "source_url": "https://example.invalid/retrieval-benchmark/RBV1-012",
+      "publication_date": "2026-08-11",
+      "venue": null,
+      "expected": {
+        "relevant": true,
+        "relevance_classes": [
+          "A",
+          "B",
+          "C"
+        ],
+        "topic_family": "sis_module_sis_positive",
+        "critical": false,
+        "security_impact": "UNKNOWN",
+        "evidence_confidence": "TODO_VERIFY_OR_DEFAULT",
+        "research_value_bucket": "NONZERO",
+        "route_class": "primary_or_verify",
+        "action_class": "NONCRITICAL_RESEARCH_ACTION",
+        "ccf_rank": null
+      }
+    },
+    {
+      "fixture_id": "RBV1-013",
+      "fixture_version": "1.0",
+      "primary_benchmark_category": "sis_module_sis_positive",
+      "record_kind": "synthetic_control",
+      "provenance": "explicitly_synthetic_offline_benchmark_control",
+      "title": "Short Integer Solution Study 5",
+      "authors": [
+        "Synthetic Control Author"
+      ],
+      "abstract": "A lattice-based cryptographic construction relies on SIS and studies the Module-SIS assumption.",
+      "conclusion": "",
+      "source": "offline_benchmark",
+      "source_url": "https://example.invalid/retrieval-benchmark/RBV1-013",
+      "publication_date": "2026-08-11",
+      "venue": null,
+      "expected": {
+        "relevant": true,
+        "relevance_classes": [
+          "A",
+          "B",
+          "C"
+        ],
+        "topic_family": "sis_module_sis_positive",
+        "critical": false,
+        "security_impact": "UNKNOWN",
+        "evidence_confidence": "TODO_VERIFY_OR_DEFAULT",
+        "research_value_bucket": "NONZERO",
+        "route_class": "primary_or_verify",
+        "action_class": "NONCRITICAL_RESEARCH_ACTION",
+        "ccf_rank": null
+      }
+    },
+    {
+      "fixture_id": "RBV1-014",
+      "fixture_version": "1.0",
+      "primary_benchmark_category": "sis_module_sis_positive",
+      "record_kind": "synthetic_control",
+      "provenance": "explicitly_synthetic_offline_benchmark_control",
+      "title": "Module-SIS Study 6",
+      "authors": [
+        "Synthetic Control Author"
+      ],
+      "abstract": "A lattice-based cryptographic construction relies on SIS and studies the Module-SIS assumption.",
+      "conclusion": "",
+      "source": "offline_benchmark",
+      "source_url": "https://example.invalid/retrieval-benchmark/RBV1-014",
+      "publication_date": "2026-08-11",
+      "venue": null,
+      "expected": {
+        "relevant": true,
+        "relevance_classes": [
+          "A",
+          "B",
+          "C"
+        ],
+        "topic_family": "sis_module_sis_positive",
+        "critical": false,
+        "security_impact": "UNKNOWN",
+        "evidence_confidence": "TODO_VERIFY_OR_DEFAULT",
+        "research_value_bucket": "NONZERO",
+        "route_class": "primary_or_verify",
+        "action_class": "NONCRITICAL_RESEARCH_ACTION",
+        "ccf_rank": null
+      }
+    },
+    {
+      "fixture_id": "RBV1-015",
+      "fixture_version": "1.0",
+      "primary_benchmark_category": "lattice_reduction_positive",
+      "record_kind": "synthetic_control",
+      "provenance": "explicitly_synthetic_offline_benchmark_control",
+      "title": "BKZ Study 1",
+      "authors": [
+        "Synthetic Control Author"
+      ],
+      "abstract": "We study lattice reduction for cryptanalysis of LWE and report attack-cost estimates.",
+      "conclusion": "",
+      "source": "offline_benchmark",
+      "source_url": "https://example.invalid/retrieval-benchmark/RBV1-015",
+      "publication_date": "2026-08-11",
+      "venue": null,
+      "expected": {
+        "relevant": true,
+        "relevance_classes": [
+          "A",
+          "B",
+          "C"
+        ],
+        "topic_family": "lattice_reduction_positive",
+        "critical": false,
+        "security_impact": "UNKNOWN",
+        "evidence_confidence": "TODO_VERIFY_OR_DEFAULT",
+        "research_value_bucket": "NONZERO",
+        "route_class": "primary_or_verify",
+        "action_class": "NONCRITICAL_RESEARCH_ACTION",
+        "ccf_rank": null
+      }
+    },
+    {
+      "fixture_id": "RBV1-016",
+      "fixture_version": "1.0",
+      "primary_benchmark_category": "lattice_reduction_positive",
+      "record_kind": "synthetic_control",
+      "provenance": "explicitly_synthetic_offline_benchmark_control",
+      "title": "LLL Study 2",
+      "authors": [
+        "Synthetic Control Author"
+      ],
+      "abstract": "We study lattice reduction for cryptanalysis of LWE and report attack-cost estimates.",
+      "conclusion": "",
+      "source": "offline_benchmark",
+      "source_url": "https://example.invalid/retrieval-benchmark/RBV1-016",
+      "publication_date": "2026-08-11",
+      "venue": null,
+      "expected": {
+        "relevant": true,
+        "relevance_classes": [
+          "A",
+          "B",
+          "C"
+        ],
+        "topic_family": "lattice_reduction_positive",
+        "critical": false,
+        "security_impact": "UNKNOWN",
+        "evidence_confidence": "TODO_VERIFY_OR_DEFAULT",
+        "research_value_bucket": "NONZERO",
+        "route_class": "primary_or_verify",
+        "action_class": "NONCRITICAL_RESEARCH_ACTION",
+        "ccf_rank": null
+      }
+    },
+    {
+      "fixture_id": "RBV1-017",
+      "fixture_version": "1.0",
+      "primary_benchmark_category": "lattice_reduction_positive",
+      "record_kind": "synthetic_control",
+      "provenance": "explicitly_synthetic_offline_benchmark_control",
+      "title": "G6K Study 3",
+      "authors": [
+        "Synthetic Control Author"
+      ],
+      "abstract": "We study lattice reduction for cryptanalysis of LWE and report attack-cost estimates.",
+      "conclusion": "",
+      "source": "offline_benchmark",
+      "source_url": "https://example.invalid/retrieval-benchmark/RBV1-017",
+      "publication_date": "2026-08-11",
+      "venue": null,
+      "expected": {
+        "relevant": true,
+        "relevance_classes": [
+          "A",
+          "B",
+          "C"
+        ],
+        "topic_family": "lattice_reduction_positive",
+        "critical": false,
+        "security_impact": "UNKNOWN",
+        "evidence_confidence": "TODO_VERIFY_OR_DEFAULT",
+        "research_value_bucket": "NONZERO",
+        "route_class": "primary_or_verify",
+        "action_class": "NONCRITICAL_RESEARCH_ACTION",
+        "ccf_rank": null
+      }
+    },
+    {
+      "fixture_id": "RBV1-018",
+      "fixture_version": "1.0",
+      "primary_benchmark_category": "lattice_reduction_positive",
+      "record_kind": "synthetic_control",
+      "provenance": "explicitly_synthetic_offline_benchmark_control",
+      "title": "Lattice Sieving Study 4",
+      "authors": [
+        "Synthetic Control Author"
+      ],
+      "abstract": "We study lattice reduction for cryptanalysis of LWE and report attack-cost estimates.",
+      "conclusion": "",
+      "source": "offline_benchmark",
+      "source_url": "https://example.invalid/retrieval-benchmark/RBV1-018",
+      "publication_date": "2026-08-11",
+      "venue": null,
+      "expected": {
+        "relevant": true,
+        "relevance_classes": [
+          "A",
+          "B",
+          "C"
+        ],
+        "topic_family": "lattice_reduction_positive",
+        "critical": false,
+        "security_impact": "UNKNOWN",
+        "evidence_confidence": "TODO_VERIFY_OR_DEFAULT",
+        "research_value_bucket": "NONZERO",
+        "route_class": "primary_or_verify",
+        "action_class": "NONCRITICAL_RESEARCH_ACTION",
+        "ccf_rank": null
+      }
+    },
+    {
+      "fixture_id": "RBV1-019",
+      "fixture_version": "1.0",
+      "primary_benchmark_category": "lattice_reduction_positive",
+      "record_kind": "synthetic_control",
+      "provenance": "explicitly_synthetic_offline_benchmark_control",
+      "title": "Enumeration Study 5",
+      "authors": [
+        "Synthetic Control Author"
+      ],
+      "abstract": "We study lattice reduction for cryptanalysis of LWE and report attack-cost estimates.",
+      "conclusion": "",
+      "source": "offline_benchmark",
+      "source_url": "https://example.invalid/retrieval-benchmark/RBV1-019",
+      "publication_date": "2026-08-11",
+      "venue": null,
+      "expected": {
+        "relevant": true,
+        "relevance_classes": [
+          "A",
+          "B",
+          "C"
+        ],
+        "topic_family": "lattice_reduction_positive",
+        "critical": false,
+        "security_impact": "UNKNOWN",
+        "evidence_confidence": "TODO_VERIFY_OR_DEFAULT",
+        "research_value_bucket": "NONZERO",
+        "route_class": "primary_or_verify",
+        "action_class": "NONCRITICAL_RESEARCH_ACTION",
+        "ccf_rank": null
+      }
+    },
+    {
+      "fixture_id": "RBV1-020",
+      "fixture_version": "1.0",
+      "primary_benchmark_category": "lattice_reduction_positive",
+      "record_kind": "synthetic_control",
+      "provenance": "explicitly_synthetic_offline_benchmark_control",
+      "title": "Extreme Pruning Study 6",
+      "authors": [
+        "Synthetic Control Author"
+      ],
+      "abstract": "We study lattice reduction for cryptanalysis of LWE and report attack-cost estimates.",
+      "conclusion": "",
+      "source": "offline_benchmark",
+      "source_url": "https://example.invalid/retrieval-benchmark/RBV1-020",
+      "publication_date": "2026-08-11",
+      "venue": null,
+      "expected": {
+        "relevant": true,
+        "relevance_classes": [
+          "A",
+          "B",
+          "C"
+        ],
+        "topic_family": "lattice_reduction_positive",
+        "critical": false,
+        "security_impact": "UNKNOWN",
+        "evidence_confidence": "TODO_VERIFY_OR_DEFAULT",
+        "research_value_bucket": "NONZERO",
+        "route_class": "primary_or_verify",
+        "action_class": "NONCRITICAL_RESEARCH_ACTION",
+        "ccf_rank": null
+      }
+    },
+    {
+      "fixture_id": "RBV1-021",
+      "fixture_version": "1.0",
+      "primary_benchmark_category": "cryptanalysis_positive",
+      "record_kind": "synthetic_control",
+      "provenance": "explicitly_synthetic_offline_benchmark_control",
+      "title": "Primal Attack Study 1",
+      "authors": [
+        "Synthetic Control Author"
+      ],
+      "abstract": "This cryptanalytic study evaluates an attack on Learning With Errors with explicit lattice parameters.",
+      "conclusion": "",
+      "source": "offline_benchmark",
+      "source_url": "https://example.invalid/retrieval-benchmark/RBV1-021",
+      "publication_date": "2026-08-11",
+      "venue": null,
+      "expected": {
+        "relevant": true,
+        "relevance_classes": [
+          "A",
+          "B",
+          "C"
+        ],
+        "topic_family": "cryptanalysis_positive",
+        "critical": false,
+        "security_impact": "UNKNOWN",
+        "evidence_confidence": "TODO_VERIFY_OR_DEFAULT",
+        "research_value_bucket": "NONZERO",
+        "route_class": "primary_or_verify",
+        "action_class": "NONCRITICAL_RESEARCH_ACTION",
+        "ccf_rank": null
+      }
+    },
+    {
+      "fixture_id": "RBV1-022",
+      "fixture_version": "1.0",
+      "primary_benchmark_category": "cryptanalysis_positive",
+      "record_kind": "synthetic_control",
+      "provenance": "explicitly_synthetic_offline_benchmark_control",
+      "title": "Dual Attack Study 2",
+      "authors": [
+        "Synthetic Control Author"
+      ],
+      "abstract": "This cryptanalytic study evaluates an attack on Learning With Errors with explicit lattice parameters.",
+      "conclusion": "",
+      "source": "offline_benchmark",
+      "source_url": "https://example.invalid/retrieval-benchmark/RBV1-022",
+      "publication_date": "2026-08-11",
+      "venue": null,
+      "expected": {
+        "relevant": true,
+        "relevance_classes": [
+          "A",
+          "B",
+          "C"
+        ],
+        "topic_family": "cryptanalysis_positive",
+        "critical": false,
+        "security_impact": "UNKNOWN",
+        "evidence_confidence": "TODO_VERIFY_OR_DEFAULT",
+        "research_value_bucket": "NONZERO",
+        "route_class": "primary_or_verify",
+        "action_class": "NONCRITICAL_RESEARCH_ACTION",
+        "ccf_rank": null
+      }
+    },
+    {
+      "fixture_id": "RBV1-023",
+      "fixture_version": "1.0",
+      "primary_benchmark_category": "cryptanalysis_positive",
+      "record_kind": "synthetic_control",
+      "provenance": "explicitly_synthetic_offline_benchmark_control",
+      "title": "Hybrid Attack Study 3",
+      "authors": [
+        "Synthetic Control Author"
+      ],
+      "abstract": "This cryptanalytic study evaluates an attack on Learning With Errors with explicit lattice parameters.",
+      "conclusion": "",
+      "source": "offline_benchmark",
+      "source_url": "https://example.invalid/retrieval-benchmark/RBV1-023",
+      "publication_date": "2026-08-11",
+      "venue": null,
+      "expected": {
+        "relevant": true,
+        "relevance_classes": [
+          "A",
+          "B",
+          "C"
+        ],
+        "topic_family": "cryptanalysis_positive",
+        "critical": false,
+        "security_impact": "UNKNOWN",
+        "evidence_confidence": "TODO_VERIFY_OR_DEFAULT",
+        "research_value_bucket": "NONZERO",
+        "route_class": "primary_or_verify",
+        "action_class": "NONCRITICAL_RESEARCH_ACTION",
+        "ccf_rank": null
+      }
+    },
+    {
+      "fixture_id": "RBV1-024",
+      "fixture_version": "1.0",
+      "primary_benchmark_category": "cryptanalysis_positive",
+      "record_kind": "synthetic_control",
+      "provenance": "explicitly_synthetic_offline_benchmark_control",
+      "title": "Lattice Reduction Attack Study 4",
+      "authors": [
+        "Synthetic Control Author"
+      ],
+      "abstract": "This cryptanalytic study evaluates an attack on Learning With Errors with explicit lattice parameters.",
+      "conclusion": "",
+      "source": "offline_benchmark",
+      "source_url": "https://example.invalid/retrieval-benchmark/RBV1-024",
+      "publication_date": "2026-08-11",
+      "venue": null,
+      "expected": {
+        "relevant": true,
+        "relevance_classes": [
+          "A",
+          "B",
+          "C"
+        ],
+        "topic_family": "cryptanalysis_positive",
+        "critical": false,
+        "security_impact": "UNKNOWN",
+        "evidence_confidence": "TODO_VERIFY_OR_DEFAULT",
+        "research_value_bucket": "NONZERO",
+        "route_class": "primary_or_verify",
+        "action_class": "NONCRITICAL_RESEARCH_ACTION",
+        "ccf_rank": null
+      }
+    },
+    {
+      "fixture_id": "RBV1-025",
+      "fixture_version": "1.0",
+      "primary_benchmark_category": "sparse_lwe_positive",
+      "record_kind": "synthetic_control",
+      "provenance": "explicitly_synthetic_offline_benchmark_control",
+      "title": "Sparse LWE Hybrid Search 1",
+      "authors": [
+        "Synthetic Control Author"
+      ],
+      "abstract": "We study sparse-secret LWE, coordinate guessing, and a hybrid lattice attack.",
+      "conclusion": "",
+      "source": "offline_benchmark",
+      "source_url": "https://example.invalid/retrieval-benchmark/RBV1-025",
+      "publication_date": "2026-08-11",
+      "venue": null,
+      "expected": {
+        "relevant": true,
+        "relevance_classes": [
+          "A",
+          "B",
+          "C"
+        ],
+        "topic_family": "sparse_lwe_positive",
+        "critical": false,
+        "security_impact": "UNKNOWN",
+        "evidence_confidence": "TODO_VERIFY_OR_DEFAULT",
+        "research_value_bucket": "NONZERO",
+        "route_class": "primary_or_verify",
+        "action_class": "NONCRITICAL_RESEARCH_ACTION",
+        "ccf_rank": null
+      }
+    },
+    {
+      "fixture_id": "RBV1-026",
+      "fixture_version": "1.0",
+      "primary_benchmark_category": "sparse_lwe_positive",
+      "record_kind": "synthetic_control",
+      "provenance": "explicitly_synthetic_offline_benchmark_control",
+      "title": "Sparse LWE Hybrid Search 2",
+      "authors": [
+        "Synthetic Control Author"
+      ],
+      "abstract": "We study sparse-secret LWE, coordinate guessing, and a hybrid lattice attack.",
+      "conclusion": "",
+      "source": "offline_benchmark",
+      "source_url": "https://example.invalid/retrieval-benchmark/RBV1-026",
+      "publication_date": "2026-08-11",
+      "venue": null,
+      "expected": {
+        "relevant": true,
+        "relevance_classes": [
+          "A",
+          "B",
+          "C"
+        ],
+        "topic_family": "sparse_lwe_positive",
+        "critical": false,
+        "security_impact": "UNKNOWN",
+        "evidence_confidence": "TODO_VERIFY_OR_DEFAULT",
+        "research_value_bucket": "NONZERO",
+        "route_class": "primary_or_verify",
+        "action_class": "NONCRITICAL_RESEARCH_ACTION",
+        "ccf_rank": null
+      }
+    },
+    {
+      "fixture_id": "RBV1-027",
+      "fixture_version": "1.0",
+      "primary_benchmark_category": "sparse_lwe_positive",
+      "record_kind": "synthetic_control",
+      "provenance": "explicitly_synthetic_offline_benchmark_control",
+      "title": "Sparse LWE Hybrid Search 3",
+      "authors": [
+        "Synthetic Control Author"
+      ],
+      "abstract": "We study sparse-secret LWE, coordinate guessing, and a hybrid lattice attack.",
+      "conclusion": "",
+      "source": "offline_benchmark",
+      "source_url": "https://example.invalid/retrieval-benchmark/RBV1-027",
+      "publication_date": "2026-08-11",
+      "venue": null,
+      "expected": {
+        "relevant": true,
+        "relevance_classes": [
+          "A",
+          "B",
+          "C"
+        ],
+        "topic_family": "sparse_lwe_positive",
+        "critical": false,
+        "security_impact": "UNKNOWN",
+        "evidence_confidence": "TODO_VERIFY_OR_DEFAULT",
+        "research_value_bucket": "NONZERO",
+        "route_class": "primary_or_verify",
+        "action_class": "NONCRITICAL_RESEARCH_ACTION",
+        "ccf_rank": null
+      }
+    },
+    {
+      "fixture_id": "RBV1-028",
+      "fixture_version": "1.0",
+      "primary_benchmark_category": "sparse_lwe_positive",
+      "record_kind": "synthetic_control",
+      "provenance": "explicitly_synthetic_offline_benchmark_control",
+      "title": "Sparse LWE Hybrid Search 4",
+      "authors": [
+        "Synthetic Control Author"
+      ],
+      "abstract": "We study sparse-secret LWE, coordinate guessing, and a hybrid lattice attack.",
+      "conclusion": "",
+      "source": "offline_benchmark",
+      "source_url": "https://example.invalid/retrieval-benchmark/RBV1-028",
+      "publication_date": "2026-08-11",
+      "venue": null,
+      "expected": {
+        "relevant": true,
+        "relevance_classes": [
+          "A",
+          "B",
+          "C"
+        ],
+        "topic_family": "sparse_lwe_positive",
+        "critical": false,
+        "security_impact": "UNKNOWN",
+        "evidence_confidence": "TODO_VERIFY_OR_DEFAULT",
+        "research_value_bucket": "NONZERO",
+        "route_class": "primary_or_verify",
+        "action_class": "NONCRITICAL_RESEARCH_ACTION",
+        "ccf_rank": null
+      }
+    },
+    {
+      "fixture_id": "RBV1-029",
+      "fixture_version": "1.0",
+      "primary_benchmark_category": "sparse_lwe_positive",
+      "record_kind": "synthetic_control",
+      "provenance": "explicitly_synthetic_offline_benchmark_control",
+      "title": "Sparse LWE Hybrid Search 5",
+      "authors": [
+        "Synthetic Control Author"
+      ],
+      "abstract": "We study sparse-secret LWE, coordinate guessing, and a hybrid lattice attack.",
+      "conclusion": "",
+      "source": "offline_benchmark",
+      "source_url": "https://example.invalid/retrieval-benchmark/RBV1-029",
+      "publication_date": "2026-08-11",
+      "venue": null,
+      "expected": {
+        "relevant": true,
+        "relevance_classes": [
+          "A",
+          "B",
+          "C"
+        ],
+        "topic_family": "sparse_lwe_positive",
+        "critical": false,
+        "security_impact": "UNKNOWN",
+        "evidence_confidence": "TODO_VERIFY_OR_DEFAULT",
+        "research_value_bucket": "NONZERO",
+        "route_class": "primary_or_verify",
+        "action_class": "NONCRITICAL_RESEARCH_ACTION",
+        "ccf_rank": null
+      }
+    },
+    {
+      "fixture_id": "RBV1-030",
+      "fixture_version": "1.0",
+      "primary_benchmark_category": "pqc_standard_positive",
+      "record_kind": "synthetic_control",
+      "provenance": "explicitly_synthetic_offline_benchmark_control",
+      "title": "ML-KEM Study 1",
+      "authors": [
+        "Synthetic Control Author"
+      ],
+      "abstract": "We evaluate a lattice-based post-quantum scheme, its security assumptions, and deployment constraints.",
+      "conclusion": "",
+      "source": "offline_benchmark",
+      "source_url": "https://example.invalid/retrieval-benchmark/RBV1-030",
+      "publication_date": "2026-08-11",
+      "venue": null,
+      "expected": {
+        "relevant": true,
+        "relevance_classes": [
+          "A",
+          "B",
+          "C"
+        ],
+        "topic_family": "pqc_standard_positive",
+        "critical": false,
+        "security_impact": "UNKNOWN",
+        "evidence_confidence": "TODO_VERIFY_OR_DEFAULT",
+        "research_value_bucket": "NONZERO",
+        "route_class": "primary_or_verify",
+        "action_class": "NONCRITICAL_RESEARCH_ACTION",
+        "ccf_rank": null
+      }
+    },
+    {
+      "fixture_id": "RBV1-031",
+      "fixture_version": "1.0",
+      "primary_benchmark_category": "pqc_standard_positive",
+      "record_kind": "synthetic_control",
+      "provenance": "explicitly_synthetic_offline_benchmark_control",
+      "title": "Kyber Study 2",
+      "authors": [
+        "Synthetic Control Author"
+      ],
+      "abstract": "We evaluate a lattice-based post-quantum scheme, its security assumptions, and deployment constraints.",
+      "conclusion": "",
+      "source": "offline_benchmark",
+      "source_url": "https://example.invalid/retrieval-benchmark/RBV1-031",
+      "publication_date": "2026-08-11",
+      "venue": null,
+      "expected": {
+        "relevant": true,
+        "relevance_classes": [
+          "A",
+          "B",
+          "C"
+        ],
+        "topic_family": "pqc_standard_positive",
+        "critical": false,
+        "security_impact": "UNKNOWN",
+        "evidence_confidence": "TODO_VERIFY_OR_DEFAULT",
+        "research_value_bucket": "NONZERO",
+        "route_class": "primary_or_verify",
+        "action_class": "NONCRITICAL_RESEARCH_ACTION",
+        "ccf_rank": null
+      }
+    },
+    {
+      "fixture_id": "RBV1-032",
+      "fixture_version": "1.0",
+      "primary_benchmark_category": "pqc_standard_positive",
+      "record_kind": "synthetic_control",
+      "provenance": "explicitly_synthetic_offline_benchmark_control",
+      "title": "ML-DSA Study 3",
+      "authors": [
+        "Synthetic Control Author"
+      ],
+      "abstract": "We evaluate a lattice-based post-quantum scheme, its security assumptions, and deployment constraints.",
+      "conclusion": "",
+      "source": "offline_benchmark",
+      "source_url": "https://example.invalid/retrieval-benchmark/RBV1-032",
+      "publication_date": "2026-08-11",
+      "venue": null,
+      "expected": {
+        "relevant": true,
+        "relevance_classes": [
+          "A",
+          "B",
+          "C"
+        ],
+        "topic_family": "pqc_standard_positive",
+        "critical": false,
+        "security_impact": "UNKNOWN",
+        "evidence_confidence": "TODO_VERIFY_OR_DEFAULT",
+        "research_value_bucket": "NONZERO",
+        "route_class": "primary_or_verify",
+        "action_class": "NONCRITICAL_RESEARCH_ACTION",
+        "ccf_rank": null
+      }
+    },
+    {
+      "fixture_id": "RBV1-033",
+      "fixture_version": "1.0",
+      "primary_benchmark_category": "pqc_standard_positive",
+      "record_kind": "synthetic_control",
+      "provenance": "explicitly_synthetic_offline_benchmark_control",
+      "title": "Dilithium Study 4",
+      "authors": [
+        "Synthetic Control Author"
+      ],
+      "abstract": "We evaluate a lattice-based post-quantum scheme, its security assumptions, and deployment constraints.",
+      "conclusion": "",
+      "source": "offline_benchmark",
+      "source_url": "https://example.invalid/retrieval-benchmark/RBV1-033",
+      "publication_date": "2026-08-11",
+      "venue": null,
+      "expected": {
+        "relevant": true,
+        "relevance_classes": [
+          "A",
+          "B",
+          "C"
+        ],
+        "topic_family": "pqc_standard_positive",
+        "critical": false,
+        "security_impact": "UNKNOWN",
+        "evidence_confidence": "TODO_VERIFY_OR_DEFAULT",
+        "research_value_bucket": "NONZERO",
+        "route_class": "primary_or_verify",
+        "action_class": "NONCRITICAL_RESEARCH_ACTION",
+        "ccf_rank": null
+      }
+    },
+    {
+      "fixture_id": "RBV1-034",
+      "fixture_version": "1.0",
+      "primary_benchmark_category": "pqc_standard_positive",
+      "record_kind": "synthetic_control",
+      "provenance": "explicitly_synthetic_offline_benchmark_control",
+      "title": "Falcon Study 5",
+      "authors": [
+        "Synthetic Control Author"
+      ],
+      "abstract": "We evaluate a lattice-based post-quantum scheme, its security assumptions, and deployment constraints.",
+      "conclusion": "",
+      "source": "offline_benchmark",
+      "source_url": "https://example.invalid/retrieval-benchmark/RBV1-034",
+      "publication_date": "2026-08-11",
+      "venue": null,
+      "expected": {
+        "relevant": true,
+        "relevance_classes": [
+          "A",
+          "B",
+          "C"
+        ],
+        "topic_family": "pqc_standard_positive",
+        "critical": false,
+        "security_impact": "UNKNOWN",
+        "evidence_confidence": "TODO_VERIFY_OR_DEFAULT",
+        "research_value_bucket": "NONZERO",
+        "route_class": "primary_or_verify",
+        "action_class": "NONCRITICAL_RESEARCH_ACTION",
+        "ccf_rank": null
+      }
+    },
+    {
+      "fixture_id": "RBV1-035",
+      "fixture_version": "1.0",
+      "primary_benchmark_category": "pqc_standard_positive",
+      "record_kind": "synthetic_control",
+      "provenance": "explicitly_synthetic_offline_benchmark_control",
+      "title": "FN-DSA Study 6",
+      "authors": [
+        "Synthetic Control Author"
+      ],
+      "abstract": "We evaluate a lattice-based post-quantum scheme, its security assumptions, and deployment constraints.",
+      "conclusion": "",
+      "source": "offline_benchmark",
+      "source_url": "https://example.invalid/retrieval-benchmark/RBV1-035",
+      "publication_date": "2026-08-11",
+      "venue": null,
+      "expected": {
+        "relevant": true,
+        "relevance_classes": [
+          "A",
+          "B",
+          "C"
+        ],
+        "topic_family": "pqc_standard_positive",
+        "critical": false,
+        "security_impact": "UNKNOWN",
+        "evidence_confidence": "TODO_VERIFY_OR_DEFAULT",
+        "research_value_bucket": "NONZERO",
+        "route_class": "primary_or_verify",
+        "action_class": "NONCRITICAL_RESEARCH_ACTION",
+        "ccf_rank": null
+      }
+    },
+    {
+      "fixture_id": "RBV1-036",
+      "fixture_version": "1.0",
+      "primary_benchmark_category": "pqc_standard_positive",
+      "record_kind": "synthetic_control",
+      "provenance": "explicitly_synthetic_offline_benchmark_control",
+      "title": "HAWK Study 7",
+      "authors": [
+        "Synthetic Control Author"
+      ],
+      "abstract": "We evaluate a lattice-based post-quantum scheme, its security assumptions, and deployment constraints.",
+      "conclusion": "",
+      "source": "offline_benchmark",
+      "source_url": "https://example.invalid/retrieval-benchmark/RBV1-036",
+      "publication_date": "2026-08-11",
+      "venue": null,
+      "expected": {
+        "relevant": true,
+        "relevance_classes": [
+          "A",
+          "B",
+          "C"
+        ],
+        "topic_family": "pqc_standard_positive",
+        "critical": false,
+        "security_impact": "UNKNOWN",
+        "evidence_confidence": "TODO_VERIFY_OR_DEFAULT",
+        "research_value_bucket": "NONZERO",
+        "route_class": "primary_or_verify",
+        "action_class": "NONCRITICAL_RESEARCH_ACTION",
+        "ccf_rank": null
+      }
+    },
+    {
+      "fixture_id": "RBV1-037",
+      "fixture_version": "1.0",
+      "primary_benchmark_category": "lattice_signature_ch_positive",
+      "record_kind": "synthetic_control",
+      "provenance": "explicitly_synthetic_offline_benchmark_control",
+      "title": "Module-SIS Chameleon Hash Study 1",
+      "authors": [
+        "Synthetic Control Author"
+      ],
+      "abstract": "We present a lattice-based signature or commitment construction from SIS and analyze its security reduction.",
+      "conclusion": "",
+      "source": "offline_benchmark",
+      "source_url": "https://example.invalid/retrieval-benchmark/RBV1-037",
+      "publication_date": "2026-08-11",
+      "venue": null,
+      "expected": {
+        "relevant": true,
+        "relevance_classes": [
+          "A",
+          "B",
+          "C"
+        ],
+        "topic_family": "lattice_signature_ch_positive",
+        "critical": false,
+        "security_impact": "UNKNOWN",
+        "evidence_confidence": "TODO_VERIFY_OR_DEFAULT",
+        "research_value_bucket": "NONZERO",
+        "route_class": "primary_or_verify",
+        "action_class": "NONCRITICAL_RESEARCH_ACTION",
+        "ccf_rank": null
+      }
+    },
+    {
+      "fixture_id": "RBV1-038",
+      "fixture_version": "1.0",
+      "primary_benchmark_category": "lattice_signature_ch_positive",
+      "record_kind": "synthetic_control",
+      "provenance": "explicitly_synthetic_offline_benchmark_control",
+      "title": "Lattice Ring Signature Study 2",
+      "authors": [
+        "Synthetic Control Author"
+      ],
+      "abstract": "We present a lattice-based signature or commitment construction from SIS and analyze its security reduction.",
+      "conclusion": "",
+      "source": "offline_benchmark",
+      "source_url": "https://example.invalid/retrieval-benchmark/RBV1-038",
+      "publication_date": "2026-08-11",
+      "venue": null,
+      "expected": {
+        "relevant": true,
+        "relevance_classes": [
+          "A",
+          "B",
+          "C"
+        ],
+        "topic_family": "lattice_signature_ch_positive",
+        "critical": false,
+        "security_impact": "UNKNOWN",
+        "evidence_confidence": "TODO_VERIFY_OR_DEFAULT",
+        "research_value_bucket": "NONZERO",
+        "route_class": "primary_or_verify",
+        "action_class": "NONCRITICAL_RESEARCH_ACTION",
+        "ccf_rank": null
+      }
+    },
+    {
+      "fixture_id": "RBV1-039",
+      "fixture_version": "1.0",
+      "primary_benchmark_category": "lattice_signature_ch_positive",
+      "record_kind": "synthetic_control",
+      "provenance": "explicitly_synthetic_offline_benchmark_control",
+      "title": "Linkable Lattice Ring Signature Study 3",
+      "authors": [
+        "Synthetic Control Author"
+      ],
+      "abstract": "We present a lattice-based signature or commitment construction from SIS and analyze its security reduction.",
+      "conclusion": "",
+      "source": "offline_benchmark",
+      "source_url": "https://example.invalid/retrieval-benchmark/RBV1-039",
+      "publication_date": "2026-08-11",
+      "venue": null,
+      "expected": {
+        "relevant": true,
+        "relevance_classes": [
+          "A",
+          "B",
+          "C"
+        ],
+        "topic_family": "lattice_signature_ch_positive",
+        "critical": false,
+        "security_impact": "UNKNOWN",
+        "evidence_confidence": "TODO_VERIFY_OR_DEFAULT",
+        "research_value_bucket": "NONZERO",
+        "route_class": "primary_or_verify",
+        "action_class": "NONCRITICAL_RESEARCH_ACTION",
+        "ccf_rank": null
+      }
+    },
+    {
+      "fixture_id": "RBV1-040",
+      "fixture_version": "1.0",
+      "primary_benchmark_category": "lattice_signature_ch_positive",
+      "record_kind": "synthetic_control",
+      "provenance": "explicitly_synthetic_offline_benchmark_control",
+      "title": "Lattice Blind Signature Study 4",
+      "authors": [
+        "Synthetic Control Author"
+      ],
+      "abstract": "We present a lattice-based signature or commitment construction from SIS and analyze its security reduction.",
+      "conclusion": "",
+      "source": "offline_benchmark",
+      "source_url": "https://example.invalid/retrieval-benchmark/RBV1-040",
+      "publication_date": "2026-08-11",
+      "venue": null,
+      "expected": {
+        "relevant": true,
+        "relevance_classes": [
+          "A",
+          "B",
+          "C"
+        ],
+        "topic_family": "lattice_signature_ch_positive",
+        "critical": false,
+        "security_impact": "UNKNOWN",
+        "evidence_confidence": "TODO_VERIFY_OR_DEFAULT",
+        "research_value_bucket": "NONZERO",
+        "route_class": "primary_or_verify",
+        "action_class": "NONCRITICAL_RESEARCH_ACTION",
+        "ccf_rank": null
+      }
+    },
+    {
+      "fixture_id": "RBV1-041",
+      "fixture_version": "1.0",
+      "primary_benchmark_category": "lattice_signature_ch_positive",
+      "record_kind": "synthetic_control",
+      "provenance": "explicitly_synthetic_offline_benchmark_control",
+      "title": "Lattice Group Signature Study 5",
+      "authors": [
+        "Synthetic Control Author"
+      ],
+      "abstract": "We present a lattice-based signature or commitment construction from SIS and analyze its security reduction.",
+      "conclusion": "",
+      "source": "offline_benchmark",
+      "source_url": "https://example.invalid/retrieval-benchmark/RBV1-041",
+      "publication_date": "2026-08-11",
+      "venue": null,
+      "expected": {
+        "relevant": true,
+        "relevance_classes": [
+          "A",
+          "B",
+          "C"
+        ],
+        "topic_family": "lattice_signature_ch_positive",
+        "critical": false,
+        "security_impact": "UNKNOWN",
+        "evidence_confidence": "TODO_VERIFY_OR_DEFAULT",
+        "research_value_bucket": "NONZERO",
+        "route_class": "primary_or_verify",
+        "action_class": "NONCRITICAL_RESEARCH_ACTION",
+        "ccf_rank": null
+      }
+    },
+    {
+      "fixture_id": "RBV1-042",
+      "fixture_version": "1.0",
+      "primary_benchmark_category": "lattice_signature_ch_positive",
+      "record_kind": "synthetic_control",
+      "provenance": "explicitly_synthetic_offline_benchmark_control",
+      "title": "Anonymous Lattice Authentication Study 6",
+      "authors": [
+        "Synthetic Control Author"
+      ],
+      "abstract": "We present a lattice-based signature or commitment construction from SIS and analyze its security reduction.",
+      "conclusion": "",
+      "source": "offline_benchmark",
+      "source_url": "https://example.invalid/retrieval-benchmark/RBV1-042",
+      "publication_date": "2026-08-11",
+      "venue": null,
+      "expected": {
+        "relevant": true,
+        "relevance_classes": [
+          "A",
+          "B",
+          "C"
+        ],
+        "topic_family": "lattice_signature_ch_positive",
+        "critical": false,
+        "security_impact": "UNKNOWN",
+        "evidence_confidence": "TODO_VERIFY_OR_DEFAULT",
+        "research_value_bucket": "NONZERO",
+        "route_class": "primary_or_verify",
+        "action_class": "NONCRITICAL_RESEARCH_ACTION",
+        "ccf_rank": null
+      }
+    },
+    {
+      "fixture_id": "RBV1-043",
+      "fixture_version": "1.0",
+      "primary_benchmark_category": "lattice_signature_ch_positive",
+      "record_kind": "synthetic_control",
+      "provenance": "explicitly_synthetic_offline_benchmark_control",
+      "title": "Lattice Commitment Study 7",
+      "authors": [
+        "Synthetic Control Author"
+      ],
+      "abstract": "We present a lattice-based signature or commitment construction from SIS and analyze its security reduction.",
+      "conclusion": "",
+      "source": "offline_benchmark",
+      "source_url": "https://example.invalid/retrieval-benchmark/RBV1-043",
+      "publication_date": "2026-08-11",
+      "venue": null,
+      "expected": {
+        "relevant": true,
+        "relevance_classes": [
+          "A",
+          "B",
+          "C"
+        ],
+        "topic_family": "lattice_signature_ch_positive",
+        "critical": false,
+        "security_impact": "UNKNOWN",
+        "evidence_confidence": "TODO_VERIFY_OR_DEFAULT",
+        "research_value_bucket": "NONZERO",
+        "route_class": "primary_or_verify",
+        "action_class": "NONCRITICAL_RESEARCH_ACTION",
+        "ccf_rank": null
+      }
+    },
+    {
+      "fixture_id": "RBV1-044",
+      "fixture_version": "1.0",
+      "primary_benchmark_category": "ai4lc_positive",
+      "record_kind": "synthetic_control",
+      "provenance": "explicitly_synthetic_offline_benchmark_control",
+      "title": "Neural Lattice Reduction Study 1",
+      "authors": [
+        "Synthetic Control Author"
+      ],
+      "abstract": "Machine learning is explicitly used for lattice cryptanalysis of LWE, with a classical attack baseline.",
+      "conclusion": "",
+      "source": "offline_benchmark",
+      "source_url": "https://example.invalid/retrieval-benchmark/RBV1-044",
+      "publication_date": "2026-08-11",
+      "venue": null,
+      "expected": {
+        "relevant": true,
+        "relevance_classes": [
+          "A",
+          "B",
+          "C"
+        ],
+        "topic_family": "ai4lc_positive",
+        "critical": false,
+        "security_impact": "UNKNOWN",
+        "evidence_confidence": "TODO_VERIFY_OR_DEFAULT",
+        "research_value_bucket": "NONZERO",
+        "route_class": "primary_or_verify",
+        "action_class": "NONCRITICAL_RESEARCH_ACTION",
+        "ccf_rank": null
+      }
+    },
+    {
+      "fixture_id": "RBV1-045",
+      "fixture_version": "1.0",
+      "primary_benchmark_category": "ai4lc_positive",
+      "record_kind": "synthetic_control",
+      "provenance": "explicitly_synthetic_offline_benchmark_control",
+      "title": "Learning-Guided BKZ Study 2",
+      "authors": [
+        "Synthetic Control Author"
+      ],
+      "abstract": "Machine learning is explicitly used for lattice cryptanalysis of LWE, with a classical attack baseline.",
+      "conclusion": "",
+      "source": "offline_benchmark",
+      "source_url": "https://example.invalid/retrieval-benchmark/RBV1-045",
+      "publication_date": "2026-08-11",
+      "venue": null,
+      "expected": {
+        "relevant": true,
+        "relevance_classes": [
+          "A",
+          "B",
+          "C"
+        ],
+        "topic_family": "ai4lc_positive",
+        "critical": false,
+        "security_impact": "UNKNOWN",
+        "evidence_confidence": "TODO_VERIFY_OR_DEFAULT",
+        "research_value_bucket": "NONZERO",
+        "route_class": "primary_or_verify",
+        "action_class": "NONCRITICAL_RESEARCH_ACTION",
+        "ccf_rank": null
+      }
+    },
+    {
+      "fixture_id": "RBV1-046",
+      "fixture_version": "1.0",
+      "primary_benchmark_category": "ai4lc_positive",
+      "record_kind": "synthetic_control",
+      "provenance": "explicitly_synthetic_offline_benchmark_control",
+      "title": "Transformer for LWE Study 3",
+      "authors": [
+        "Synthetic Control Author"
+      ],
+      "abstract": "Machine learning is explicitly used for lattice cryptanalysis of LWE, with a classical attack baseline.",
+      "conclusion": "",
+      "source": "offline_benchmark",
+      "source_url": "https://example.invalid/retrieval-benchmark/RBV1-046",
+      "publication_date": "2026-08-11",
+      "venue": null,
+      "expected": {
+        "relevant": true,
+        "relevance_classes": [
+          "A",
+          "B",
+          "C"
+        ],
+        "topic_family": "ai4lc_positive",
+        "critical": false,
+        "security_impact": "UNKNOWN",
+        "evidence_confidence": "TODO_VERIFY_OR_DEFAULT",
+        "research_value_bucket": "NONZERO",
+        "route_class": "primary_or_verify",
+        "action_class": "NONCRITICAL_RESEARCH_ACTION",
+        "ccf_rank": null
+      }
+    },
+    {
+      "fixture_id": "RBV1-047",
+      "fixture_version": "1.0",
+      "primary_benchmark_category": "ai4lc_positive",
+      "record_kind": "synthetic_control",
+      "provenance": "explicitly_synthetic_offline_benchmark_control",
+      "title": "AI-Guided Enumeration Study 4",
+      "authors": [
+        "Synthetic Control Author"
+      ],
+      "abstract": "Machine learning is explicitly used for lattice cryptanalysis of LWE, with a classical attack baseline.",
+      "conclusion": "",
+      "source": "offline_benchmark",
+      "source_url": "https://example.invalid/retrieval-benchmark/RBV1-047",
+      "publication_date": "2026-08-11",
+      "venue": null,
+      "expected": {
+        "relevant": true,
+        "relevance_classes": [
+          "A",
+          "B",
+          "C"
+        ],
+        "topic_family": "ai4lc_positive",
+        "critical": false,
+        "security_impact": "UNKNOWN",
+        "evidence_confidence": "TODO_VERIFY_OR_DEFAULT",
+        "research_value_bucket": "NONZERO",
+        "route_class": "primary_or_verify",
+        "action_class": "NONCRITICAL_RESEARCH_ACTION",
+        "ccf_rank": null
+      }
+    },
+    {
+      "fixture_id": "RBV1-048",
+      "fixture_version": "1.0",
+      "primary_benchmark_category": "ai4lc_positive",
+      "record_kind": "synthetic_control",
+      "provenance": "explicitly_synthetic_offline_benchmark_control",
+      "title": "Learned Pruning for LWE Study 5",
+      "authors": [
+        "Synthetic Control Author"
+      ],
+      "abstract": "Machine learning is explicitly used for lattice cryptanalysis of LWE, with a classical attack baseline.",
+      "conclusion": "",
+      "source": "offline_benchmark",
+      "source_url": "https://example.invalid/retrieval-benchmark/RBV1-048",
+      "publication_date": "2026-08-11",
+      "venue": null,
+      "expected": {
+        "relevant": true,
+        "relevance_classes": [
+          "A",
+          "B",
+          "C"
+        ],
+        "topic_family": "ai4lc_positive",
+        "critical": false,
+        "security_impact": "UNKNOWN",
+        "evidence_confidence": "TODO_VERIFY_OR_DEFAULT",
+        "research_value_bucket": "NONZERO",
+        "route_class": "primary_or_verify",
+        "action_class": "NONCRITICAL_RESEARCH_ACTION",
+        "ccf_rank": null
+      }
+    },
+    {
+      "fixture_id": "RBV1-049",
+      "fixture_version": "1.0",
+      "primary_benchmark_category": "ai4lc_positive",
+      "record_kind": "synthetic_control",
+      "provenance": "explicitly_synthetic_offline_benchmark_control",
+      "title": "Coordinate Ranking for Hybrid LWE Study 6",
+      "authors": [
+        "Synthetic Control Author"
+      ],
+      "abstract": "Machine learning is explicitly used for lattice cryptanalysis of LWE, with a classical attack baseline.",
+      "conclusion": "",
+      "source": "offline_benchmark",
+      "source_url": "https://example.invalid/retrieval-benchmark/RBV1-049",
+      "publication_date": "2026-08-11",
+      "venue": null,
+      "expected": {
+        "relevant": true,
+        "relevance_classes": [
+          "A",
+          "B",
+          "C"
+        ],
+        "topic_family": "ai4lc_positive",
+        "critical": false,
+        "security_impact": "UNKNOWN",
+        "evidence_confidence": "TODO_VERIFY_OR_DEFAULT",
+        "research_value_bucket": "NONZERO",
+        "route_class": "primary_or_verify",
+        "action_class": "NONCRITICAL_RESEARCH_ACTION",
+        "ccf_rank": null
+      }
+    },
+    {
+      "fixture_id": "RBV1-050",
+      "fixture_version": "1.0",
+      "primary_benchmark_category": "zk_lattice_positive",
+      "record_kind": "synthetic_control",
+      "provenance": "explicitly_synthetic_offline_benchmark_control",
+      "title": "Lattice-Based Zero-Knowledge Protocol 1",
+      "authors": [
+        "Synthetic Control Author"
+      ],
+      "abstract": "We construct a post-quantum zero-knowledge proof from lattice commitments and Module-SIS.",
+      "conclusion": "",
+      "source": "offline_benchmark",
+      "source_url": "https://example.invalid/retrieval-benchmark/RBV1-050",
+      "publication_date": "2026-08-11",
+      "venue": null,
+      "expected": {
+        "relevant": true,
+        "relevance_classes": [
+          "A",
+          "B",
+          "C"
+        ],
+        "topic_family": "zk_lattice_positive",
+        "critical": false,
+        "security_impact": "UNKNOWN",
+        "evidence_confidence": "TODO_VERIFY_OR_DEFAULT",
+        "research_value_bucket": "NONZERO",
+        "route_class": "primary_or_verify",
+        "action_class": "NONCRITICAL_RESEARCH_ACTION",
+        "ccf_rank": null
+      }
+    },
+    {
+      "fixture_id": "RBV1-051",
+      "fixture_version": "1.0",
+      "primary_benchmark_category": "zk_lattice_positive",
+      "record_kind": "synthetic_control",
+      "provenance": "explicitly_synthetic_offline_benchmark_control",
+      "title": "Lattice-Based Zero-Knowledge Protocol 2",
+      "authors": [
+        "Synthetic Control Author"
+      ],
+      "abstract": "We construct a post-quantum zero-knowledge proof from lattice commitments and Module-SIS.",
+      "conclusion": "",
+      "source": "offline_benchmark",
+      "source_url": "https://example.invalid/retrieval-benchmark/RBV1-051",
+      "publication_date": "2026-08-11",
+      "venue": null,
+      "expected": {
+        "relevant": true,
+        "relevance_classes": [
+          "A",
+          "B",
+          "C"
+        ],
+        "topic_family": "zk_lattice_positive",
+        "critical": false,
+        "security_impact": "UNKNOWN",
+        "evidence_confidence": "TODO_VERIFY_OR_DEFAULT",
+        "research_value_bucket": "NONZERO",
+        "route_class": "primary_or_verify",
+        "action_class": "NONCRITICAL_RESEARCH_ACTION",
+        "ccf_rank": null
+      }
+    },
+    {
+      "fixture_id": "RBV1-052",
+      "fixture_version": "1.0",
+      "primary_benchmark_category": "zk_lattice_positive",
+      "record_kind": "synthetic_control",
+      "provenance": "explicitly_synthetic_offline_benchmark_control",
+      "title": "Lattice-Based Zero-Knowledge Protocol 3",
+      "authors": [
+        "Synthetic Control Author"
+      ],
+      "abstract": "We construct a post-quantum zero-knowledge proof from lattice commitments and Module-SIS.",
+      "conclusion": "",
+      "source": "offline_benchmark",
+      "source_url": "https://example.invalid/retrieval-benchmark/RBV1-052",
+      "publication_date": "2026-08-11",
+      "venue": null,
+      "expected": {
+        "relevant": true,
+        "relevance_classes": [
+          "A",
+          "B",
+          "C"
+        ],
+        "topic_family": "zk_lattice_positive",
+        "critical": false,
+        "security_impact": "UNKNOWN",
+        "evidence_confidence": "TODO_VERIFY_OR_DEFAULT",
+        "research_value_bucket": "NONZERO",
+        "route_class": "primary_or_verify",
+        "action_class": "NONCRITICAL_RESEARCH_ACTION",
+        "ccf_rank": null
+      }
+    },
+    {
+      "fixture_id": "RBV1-053",
+      "fixture_version": "1.0",
+      "primary_benchmark_category": "zk_lattice_positive",
+      "record_kind": "synthetic_control",
+      "provenance": "explicitly_synthetic_offline_benchmark_control",
+      "title": "Lattice-Based Zero-Knowledge Protocol 4",
+      "authors": [
+        "Synthetic Control Author"
+      ],
+      "abstract": "We construct a post-quantum zero-knowledge proof from lattice commitments and Module-SIS.",
+      "conclusion": "",
+      "source": "offline_benchmark",
+      "source_url": "https://example.invalid/retrieval-benchmark/RBV1-053",
+      "publication_date": "2026-08-11",
+      "venue": null,
+      "expected": {
+        "relevant": true,
+        "relevance_classes": [
+          "A",
+          "B",
+          "C"
+        ],
+        "topic_family": "zk_lattice_positive",
+        "critical": false,
+        "security_impact": "UNKNOWN",
+        "evidence_confidence": "TODO_VERIFY_OR_DEFAULT",
+        "research_value_bucket": "NONZERO",
+        "route_class": "primary_or_verify",
+        "action_class": "NONCRITICAL_RESEARCH_ACTION",
+        "ccf_rank": null
+      }
+    },
+    {
+      "fixture_id": "RBV1-054",
+      "fixture_version": "1.0",
+      "primary_benchmark_category": "zk_lattice_positive",
+      "record_kind": "synthetic_control",
+      "provenance": "explicitly_synthetic_offline_benchmark_control",
+      "title": "Lattice-Based Zero-Knowledge Protocol 5",
+      "authors": [
+        "Synthetic Control Author"
+      ],
+      "abstract": "We construct a post-quantum zero-knowledge proof from lattice commitments and Module-SIS.",
+      "conclusion": "",
+      "source": "offline_benchmark",
+      "source_url": "https://example.invalid/retrieval-benchmark/RBV1-054",
+      "publication_date": "2026-08-11",
+      "venue": null,
+      "expected": {
+        "relevant": true,
+        "relevance_classes": [
+          "A",
+          "B",
+          "C"
+        ],
+        "topic_family": "zk_lattice_positive",
+        "critical": false,
+        "security_impact": "UNKNOWN",
+        "evidence_confidence": "TODO_VERIFY_OR_DEFAULT",
+        "research_value_bucket": "NONZERO",
+        "route_class": "primary_or_verify",
+        "action_class": "NONCRITICAL_RESEARCH_ACTION",
+        "ccf_rank": null
+      }
+    },
+    {
+      "fixture_id": "RBV1-055",
+      "fixture_version": "1.0",
+      "primary_benchmark_category": "fhe_lattice_he_positive",
+      "record_kind": "synthetic_control",
+      "provenance": "explicitly_synthetic_offline_benchmark_control",
+      "title": "CKKS Study 1",
+      "authors": [
+        "Synthetic Control Author"
+      ],
+      "abstract": "We improve lattice-based fully homomorphic encryption performance without claiming cryptanalysis.",
+      "conclusion": "",
+      "source": "offline_benchmark",
+      "source_url": "https://example.invalid/retrieval-benchmark/RBV1-055",
+      "publication_date": "2026-08-11",
+      "venue": null,
+      "expected": {
+        "relevant": true,
+        "relevance_classes": [
+          "A",
+          "B",
+          "C"
+        ],
+        "topic_family": "fhe_lattice_he_positive",
+        "critical": false,
+        "security_impact": "UNKNOWN",
+        "evidence_confidence": "TODO_VERIFY_OR_DEFAULT",
+        "research_value_bucket": "NONZERO",
+        "route_class": "primary_or_verify",
+        "action_class": "NONCRITICAL_RESEARCH_ACTION",
+        "ccf_rank": null
+      }
+    },
+    {
+      "fixture_id": "RBV1-056",
+      "fixture_version": "1.0",
+      "primary_benchmark_category": "fhe_lattice_he_positive",
+      "record_kind": "synthetic_control",
+      "provenance": "explicitly_synthetic_offline_benchmark_control",
+      "title": "BFV Study 2",
+      "authors": [
+        "Synthetic Control Author"
+      ],
+      "abstract": "We improve lattice-based fully homomorphic encryption performance without claiming cryptanalysis.",
+      "conclusion": "",
+      "source": "offline_benchmark",
+      "source_url": "https://example.invalid/retrieval-benchmark/RBV1-056",
+      "publication_date": "2026-08-11",
+      "venue": null,
+      "expected": {
+        "relevant": true,
+        "relevance_classes": [
+          "A",
+          "B",
+          "C"
+        ],
+        "topic_family": "fhe_lattice_he_positive",
+        "critical": false,
+        "security_impact": "UNKNOWN",
+        "evidence_confidence": "TODO_VERIFY_OR_DEFAULT",
+        "research_value_bucket": "NONZERO",
+        "route_class": "primary_or_verify",
+        "action_class": "NONCRITICAL_RESEARCH_ACTION",
+        "ccf_rank": null
+      }
+    },
+    {
+      "fixture_id": "RBV1-057",
+      "fixture_version": "1.0",
+      "primary_benchmark_category": "fhe_lattice_he_positive",
+      "record_kind": "synthetic_control",
+      "provenance": "explicitly_synthetic_offline_benchmark_control",
+      "title": "BGV Study 3",
+      "authors": [
+        "Synthetic Control Author"
+      ],
+      "abstract": "We improve lattice-based fully homomorphic encryption performance without claiming cryptanalysis.",
+      "conclusion": "",
+      "source": "offline_benchmark",
+      "source_url": "https://example.invalid/retrieval-benchmark/RBV1-057",
+      "publication_date": "2026-08-11",
+      "venue": null,
+      "expected": {
+        "relevant": true,
+        "relevance_classes": [
+          "A",
+          "B",
+          "C"
+        ],
+        "topic_family": "fhe_lattice_he_positive",
+        "critical": false,
+        "security_impact": "UNKNOWN",
+        "evidence_confidence": "TODO_VERIFY_OR_DEFAULT",
+        "research_value_bucket": "NONZERO",
+        "route_class": "primary_or_verify",
+        "action_class": "NONCRITICAL_RESEARCH_ACTION",
+        "ccf_rank": null
+      }
+    },
+    {
+      "fixture_id": "RBV1-058",
+      "fixture_version": "1.0",
+      "primary_benchmark_category": "fhe_lattice_he_positive",
+      "record_kind": "synthetic_control",
+      "provenance": "explicitly_synthetic_offline_benchmark_control",
+      "title": "TFHE Study 4",
+      "authors": [
+        "Synthetic Control Author"
+      ],
+      "abstract": "We improve lattice-based fully homomorphic encryption performance without claiming cryptanalysis.",
+      "conclusion": "",
+      "source": "offline_benchmark",
+      "source_url": "https://example.invalid/retrieval-benchmark/RBV1-058",
+      "publication_date": "2026-08-11",
+      "venue": null,
+      "expected": {
+        "relevant": true,
+        "relevance_classes": [
+          "A",
+          "B",
+          "C"
+        ],
+        "topic_family": "fhe_lattice_he_positive",
+        "critical": false,
+        "security_impact": "UNKNOWN",
+        "evidence_confidence": "TODO_VERIFY_OR_DEFAULT",
+        "research_value_bucket": "NONZERO",
+        "route_class": "primary_or_verify",
+        "action_class": "NONCRITICAL_RESEARCH_ACTION",
+        "ccf_rank": null
+      }
+    },
+    {
+      "fixture_id": "RBV1-059",
+      "fixture_version": "1.0",
+      "primary_benchmark_category": "fhe_lattice_he_positive",
+      "record_kind": "synthetic_control",
+      "provenance": "explicitly_synthetic_offline_benchmark_control",
+      "title": "GSW Study 5",
+      "authors": [
+        "Synthetic Control Author"
+      ],
+      "abstract": "We improve lattice-based fully homomorphic encryption performance without claiming cryptanalysis.",
+      "conclusion": "",
+      "source": "offline_benchmark",
+      "source_url": "https://example.invalid/retrieval-benchmark/RBV1-059",
+      "publication_date": "2026-08-11",
+      "venue": null,
+      "expected": {
+        "relevant": true,
+        "relevance_classes": [
+          "A",
+          "B",
+          "C"
+        ],
+        "topic_family": "fhe_lattice_he_positive",
+        "critical": false,
+        "security_impact": "UNKNOWN",
+        "evidence_confidence": "TODO_VERIFY_OR_DEFAULT",
+        "research_value_bucket": "NONZERO",
+        "route_class": "primary_or_verify",
+        "action_class": "NONCRITICAL_RESEARCH_ACTION",
+        "ccf_rank": null
+      }
+    },
+    {
+      "fixture_id": "RBV1-060",
+      "fixture_version": "1.0",
+      "primary_benchmark_category": "indirect_quantum_lattice_positive",
+      "record_kind": "synthetic_control",
+      "provenance": "explicitly_synthetic_offline_benchmark_control",
+      "title": "Dihedral Coset Methods Study 1",
+      "authors": [
+        "Synthetic Control Author"
+      ],
+      "abstract": "We study quantum algorithms and their relationship to DCP, EDCP, LWE, SVP, and reductions for lattice problems. No new polynomial-time attack is claimed.",
+      "conclusion": "",
+      "source": "offline_benchmark",
+      "source_url": "https://example.invalid/retrieval-benchmark/RBV1-060",
+      "publication_date": "2026-08-11",
+      "venue": null,
+      "expected": {
+        "relevant": true,
+        "relevance_classes": [
+          "A",
+          "B",
+          "C"
+        ],
+        "topic_family": "indirect_quantum_lattice_positive",
+        "critical": false,
+        "security_impact": "UNKNOWN",
+        "evidence_confidence": "TODO_VERIFY_OR_DEFAULT",
+        "research_value_bucket": "NONZERO",
+        "route_class": "primary_or_verify",
+        "action_class": "NONCRITICAL_RESEARCH_ACTION",
+        "ccf_rank": null
+      }
+    },
+    {
+      "fixture_id": "RBV1-061",
+      "fixture_version": "1.0",
+      "primary_benchmark_category": "indirect_quantum_lattice_positive",
+      "record_kind": "synthetic_control",
+      "provenance": "explicitly_synthetic_offline_benchmark_control",
+      "title": "Hidden Subgroup Methods Study 2",
+      "authors": [
+        "Synthetic Control Author"
+      ],
+      "abstract": "We study quantum algorithms and their relationship to DCP, EDCP, LWE, SVP, and reductions for lattice problems. No new polynomial-time attack is claimed.",
+      "conclusion": "",
+      "source": "offline_benchmark",
+      "source_url": "https://example.invalid/retrieval-benchmark/RBV1-061",
+      "publication_date": "2026-08-11",
+      "venue": null,
+      "expected": {
+        "relevant": true,
+        "relevance_classes": [
+          "A",
+          "B",
+          "C"
+        ],
+        "topic_family": "indirect_quantum_lattice_positive",
+        "critical": false,
+        "security_impact": "UNKNOWN",
+        "evidence_confidence": "TODO_VERIFY_OR_DEFAULT",
+        "research_value_bucket": "NONZERO",
+        "route_class": "primary_or_verify",
+        "action_class": "NONCRITICAL_RESEARCH_ACTION",
+        "ccf_rank": null
+      }
+    },
+    {
+      "fixture_id": "RBV1-062",
+      "fixture_version": "1.0",
+      "primary_benchmark_category": "indirect_quantum_lattice_positive",
+      "record_kind": "synthetic_control",
+      "provenance": "explicitly_synthetic_offline_benchmark_control",
+      "title": "Hidden Shift Methods Study 3",
+      "authors": [
+        "Synthetic Control Author"
+      ],
+      "abstract": "We study quantum algorithms and their relationship to DCP, EDCP, LWE, SVP, and reductions for lattice problems. No new polynomial-time attack is claimed.",
+      "conclusion": "",
+      "source": "offline_benchmark",
+      "source_url": "https://example.invalid/retrieval-benchmark/RBV1-062",
+      "publication_date": "2026-08-11",
+      "venue": null,
+      "expected": {
+        "relevant": true,
+        "relevance_classes": [
+          "A",
+          "B",
+          "C"
+        ],
+        "topic_family": "indirect_quantum_lattice_positive",
+        "critical": false,
+        "security_impact": "UNKNOWN",
+        "evidence_confidence": "TODO_VERIFY_OR_DEFAULT",
+        "research_value_bucket": "NONZERO",
+        "route_class": "primary_or_verify",
+        "action_class": "NONCRITICAL_RESEARCH_ACTION",
+        "ccf_rank": null
+      }
+    },
+    {
+      "fixture_id": "RBV1-063",
+      "fixture_version": "1.0",
+      "primary_benchmark_category": "indirect_quantum_lattice_positive",
+      "record_kind": "synthetic_control",
+      "provenance": "explicitly_synthetic_offline_benchmark_control",
+      "title": "EDCP Survey Study 4",
+      "authors": [
+        "Synthetic Control Author"
+      ],
+      "abstract": "We study quantum algorithms and their relationship to DCP, EDCP, LWE, SVP, and reductions for lattice problems. No new polynomial-time attack is claimed.",
+      "conclusion": "",
+      "source": "offline_benchmark",
+      "source_url": "https://example.invalid/retrieval-benchmark/RBV1-063",
+      "publication_date": "2026-08-11",
+      "venue": null,
+      "expected": {
+        "relevant": true,
+        "relevance_classes": [
+          "A",
+          "B",
+          "C"
+        ],
+        "topic_family": "indirect_quantum_lattice_positive",
+        "critical": false,
+        "security_impact": "UNKNOWN",
+        "evidence_confidence": "TODO_VERIFY_OR_DEFAULT",
+        "research_value_bucket": "NONZERO",
+        "route_class": "primary_or_verify",
+        "action_class": "NONCRITICAL_RESEARCH_ACTION",
+        "ccf_rank": null
+      }
+    },
+    {
+      "fixture_id": "RBV1-064",
+      "fixture_version": "1.0",
+      "primary_benchmark_category": "indirect_quantum_lattice_positive",
+      "record_kind": "synthetic_control",
+      "provenance": "explicitly_synthetic_offline_benchmark_control",
+      "title": "Quantum Lattice Reductions Study 5",
+      "authors": [
+        "Synthetic Control Author"
+      ],
+      "abstract": "We study quantum algorithms and their relationship to DCP, EDCP, LWE, SVP, and reductions for lattice problems. No new polynomial-time attack is claimed.",
+      "conclusion": "",
+      "source": "offline_benchmark",
+      "source_url": "https://example.invalid/retrieval-benchmark/RBV1-064",
+      "publication_date": "2026-08-11",
+      "venue": null,
+      "expected": {
+        "relevant": true,
+        "relevance_classes": [
+          "A",
+          "B",
+          "C"
+        ],
+        "topic_family": "indirect_quantum_lattice_positive",
+        "critical": false,
+        "security_impact": "UNKNOWN",
+        "evidence_confidence": "TODO_VERIFY_OR_DEFAULT",
+        "research_value_bucket": "NONZERO",
+        "route_class": "primary_or_verify",
+        "action_class": "NONCRITICAL_RESEARCH_ACTION",
+        "ccf_rank": null
+      }
+    },
+    {
+      "fixture_id": "RBV1-065",
+      "fixture_version": "1.0",
+      "primary_benchmark_category": "indirect_quantum_lattice_positive",
+      "record_kind": "synthetic_control",
+      "provenance": "explicitly_synthetic_offline_benchmark_control",
+      "title": "Regev Reduction Survey Study 6",
+      "authors": [
+        "Synthetic Control Author"
+      ],
+      "abstract": "We study quantum algorithms and their relationship to DCP, EDCP, LWE, SVP, and reductions for lattice problems. No new polynomial-time attack is claimed.",
+      "conclusion": "",
+      "source": "offline_benchmark",
+      "source_url": "https://example.invalid/retrieval-benchmark/RBV1-065",
+      "publication_date": "2026-08-11",
+      "venue": null,
+      "expected": {
+        "relevant": true,
+        "relevance_classes": [
+          "A",
+          "B",
+          "C"
+        ],
+        "topic_family": "indirect_quantum_lattice_positive",
+        "critical": false,
+        "security_impact": "UNKNOWN",
+        "evidence_confidence": "TODO_VERIFY_OR_DEFAULT",
+        "research_value_bucket": "NONZERO",
+        "route_class": "primary_or_verify",
+        "action_class": "NONCRITICAL_RESEARCH_ACTION",
+        "ccf_rank": null
+      }
+    },
+    {
+      "fixture_id": "SIMON_DCP_2026_CANARY_MUST_NOT_BE_MISSED",
+      "fixture_version": "1.0",
+      "primary_benchmark_category": "critical_security_positive",
+      "record_kind": "incident_canary",
+      "provenance": "user_supplied_incident_metadata_and_claim_excerpt",
+      "title": "A Polynomial-Time Quantum Algorithm for the Dihedral Coset Problem",
+      "authors": [
+        "Daniel R. Simon"
+      ],
+      "abstract": "This preliminary draft claims a polynomial-time quantum algorithm for the Dihedral Coset Problem. Combined with Regev's reduction of lattice problems to DCP and later improved reductions, it yields polynomial-time quantum algorithms for approximate SVP and LWE. The algorithm can tolerate a faulty sample rate 1/O(log n).",
+      "conclusion": "The concluding corollary claims polynomial-time quantum algorithms for O(sqrt(n) polylog(n))-factor SVP and corresponding LWE instances.",
+      "source": "offline_benchmark",
+      "source_url": "https://example.invalid/retrieval-benchmark/SIMON_DCP_2026_CANARY_MUST_NOT_BE_MISSED",
+      "publication_date": "2026-08-11",
+      "venue": "Preliminary Draft",
+      "expected": {
+        "relevant": true,
+        "relevance_classes": [
+          "A",
+          "B",
+          "C"
+        ],
+        "topic_family": "critical_security_positive",
+        "critical": true,
+        "security_impact": "CRITICAL",
+        "evidence_confidence": "TODO_VERIFY",
+        "research_value_bucket": "HIGHEST",
+        "route_class": "verify_first",
+        "action_class": "READ_AND_VERIFY_IMMEDIATELY",
+        "ccf_rank": null
+      }
+    },
+    {
+      "fixture_id": "RBV1-067",
+      "fixture_version": "1.0",
+      "primary_benchmark_category": "critical_security_positive",
+      "record_kind": "synthetic_control",
+      "provenance": "explicitly_synthetic_offline_benchmark_control",
+      "title": "Preliminary Polynomial-Time Quantum Cryptanalysis of LWE 1",
+      "authors": [
+        "Synthetic Control Author"
+      ],
+      "abstract": "This preliminary draft claims a polynomial-time quantum algorithm that solves LWE under stated conditional assumptions. The claim may threaten lattice hardness but is unverified.",
+      "conclusion": "",
+      "source": "offline_benchmark",
+      "source_url": "https://example.invalid/retrieval-benchmark/RBV1-067",
+      "publication_date": "2026-08-11",
+      "venue": "Preliminary Draft",
+      "expected": {
+        "relevant": true,
+        "relevance_classes": [
+          "A",
+          "B",
+          "C"
+        ],
+        "topic_family": "critical_security_positive",
+        "critical": true,
+        "security_impact": "CRITICAL",
+        "evidence_confidence": "TODO_VERIFY",
+        "research_value_bucket": "HIGHEST",
+        "route_class": "verify_first",
+        "action_class": "READ_AND_VERIFY_IMMEDIATELY",
+        "ccf_rank": null
+      }
+    },
+    {
+      "fixture_id": "RBV1-068",
+      "fixture_version": "1.0",
+      "primary_benchmark_category": "critical_security_positive",
+      "record_kind": "synthetic_control",
+      "provenance": "explicitly_synthetic_offline_benchmark_control",
+      "title": "Preliminary Polynomial-Time Quantum Cryptanalysis of LWE 2",
+      "authors": [
+        "Synthetic Control Author"
+      ],
+      "abstract": "This preliminary draft claims a polynomial-time quantum algorithm that solves LWE under stated conditional assumptions. The claim may threaten lattice hardness but is unverified.",
+      "conclusion": "",
+      "source": "offline_benchmark",
+      "source_url": "https://example.invalid/retrieval-benchmark/RBV1-068",
+      "publication_date": "2026-08-11",
+      "venue": "Preliminary Draft",
+      "expected": {
+        "relevant": true,
+        "relevance_classes": [
+          "A",
+          "B",
+          "C"
+        ],
+        "topic_family": "critical_security_positive",
+        "critical": true,
+        "security_impact": "CRITICAL",
+        "evidence_confidence": "TODO_VERIFY",
+        "research_value_bucket": "HIGHEST",
+        "route_class": "verify_first",
+        "action_class": "READ_AND_VERIFY_IMMEDIATELY",
+        "ccf_rank": null
+      }
+    },
+    {
+      "fixture_id": "RBV1-069",
+      "fixture_version": "1.0",
+      "primary_benchmark_category": "critical_security_positive",
+      "record_kind": "synthetic_control",
+      "provenance": "explicitly_synthetic_offline_benchmark_control",
+      "title": "Preliminary Polynomial-Time Quantum Cryptanalysis of LWE 3",
+      "authors": [
+        "Synthetic Control Author"
+      ],
+      "abstract": "This preliminary draft claims a polynomial-time quantum algorithm that solves LWE under stated conditional assumptions. The claim may threaten lattice hardness but is unverified.",
+      "conclusion": "",
+      "source": "offline_benchmark",
+      "source_url": "https://example.invalid/retrieval-benchmark/RBV1-069",
+      "publication_date": "2026-08-11",
+      "venue": "Preliminary Draft",
+      "expected": {
+        "relevant": true,
+        "relevance_classes": [
+          "A",
+          "B",
+          "C"
+        ],
+        "topic_family": "critical_security_positive",
+        "critical": true,
+        "security_impact": "CRITICAL",
+        "evidence_confidence": "TODO_VERIFY",
+        "research_value_bucket": "HIGHEST",
+        "route_class": "verify_first",
+        "action_class": "READ_AND_VERIFY_IMMEDIATELY",
+        "ccf_rank": null
+      }
+    },
+    {
+      "fixture_id": "RBV1-070",
+      "fixture_version": "1.0",
+      "primary_benchmark_category": "critical_security_positive",
+      "record_kind": "synthetic_control",
+      "provenance": "explicitly_synthetic_offline_benchmark_control",
+      "title": "Preliminary Polynomial-Time Quantum Cryptanalysis of LWE 4",
+      "authors": [
+        "Synthetic Control Author"
+      ],
+      "abstract": "This preliminary draft claims a polynomial-time quantum algorithm that solves LWE under stated conditional assumptions. The claim may threaten lattice hardness but is unverified.",
+      "conclusion": "",
+      "source": "offline_benchmark",
+      "source_url": "https://example.invalid/retrieval-benchmark/RBV1-070",
+      "publication_date": "2026-08-11",
+      "venue": "Preliminary Draft",
+      "expected": {
+        "relevant": true,
+        "relevance_classes": [
+          "A",
+          "B",
+          "C"
+        ],
+        "topic_family": "critical_security_positive",
+        "critical": true,
+        "security_impact": "CRITICAL",
+        "evidence_confidence": "TODO_VERIFY",
+        "research_value_bucket": "HIGHEST",
+        "route_class": "verify_first",
+        "action_class": "READ_AND_VERIFY_IMMEDIATELY",
+        "ccf_rank": null
+      }
+    },
+    {
+      "fixture_id": "RBV1-071",
+      "fixture_version": "1.0",
+      "primary_benchmark_category": "critical_security_positive",
+      "record_kind": "synthetic_control",
+      "provenance": "explicitly_synthetic_offline_benchmark_control",
+      "title": "Preliminary Polynomial-Time Quantum Cryptanalysis of LWE 5",
+      "authors": [
+        "Synthetic Control Author"
+      ],
+      "abstract": "This preliminary draft claims a polynomial-time quantum algorithm that solves LWE under stated conditional assumptions. The claim may threaten lattice hardness but is unverified.",
+      "conclusion": "",
+      "source": "offline_benchmark",
+      "source_url": "https://example.invalid/retrieval-benchmark/RBV1-071",
+      "publication_date": "2026-08-11",
+      "venue": "Preliminary Draft",
+      "expected": {
+        "relevant": true,
+        "relevance_classes": [
+          "A",
+          "B",
+          "C"
+        ],
+        "topic_family": "critical_security_positive",
+        "critical": true,
+        "security_impact": "CRITICAL",
+        "evidence_confidence": "TODO_VERIFY",
+        "research_value_bucket": "HIGHEST",
+        "route_class": "verify_first",
+        "action_class": "READ_AND_VERIFY_IMMEDIATELY",
+        "ccf_rank": null
+      }
+    },
+    {
+      "fixture_id": "RBV1-072",
+      "fixture_version": "1.0",
+      "primary_benchmark_category": "generic_quantum_negative",
+      "record_kind": "synthetic_control",
+      "provenance": "explicitly_synthetic_offline_benchmark_control",
+      "title": "Polynomial-Time Quantum Algorithm for Non-Cryptographic Task 1",
+      "authors": [
+        "Synthetic Control Author"
+      ],
+      "abstract": "A quantum algorithm improves graph sampling without any cryptographic or lattice consequence.",
+      "conclusion": "",
+      "source": "offline_benchmark",
+      "source_url": "https://example.invalid/retrieval-benchmark/RBV1-072",
+      "publication_date": "2026-08-11",
+      "venue": null,
+      "expected": {
+        "relevant": false,
+        "relevance_classes": [
+          "D"
+        ],
+        "topic_family": "generic_quantum_negative",
+        "critical": false,
+        "security_impact": "UNKNOWN",
+        "evidence_confidence": "TODO_VERIFY_OR_DEFAULT",
+        "research_value_bucket": "LOW",
+        "route_class": "excluded",
+        "action_class": "EXCLUDE",
+        "ccf_rank": null
+      }
+    },
+    {
+      "fixture_id": "RBV1-073",
+      "fixture_version": "1.0",
+      "primary_benchmark_category": "generic_quantum_negative",
+      "record_kind": "synthetic_control",
+      "provenance": "explicitly_synthetic_offline_benchmark_control",
+      "title": "Polynomial-Time Quantum Algorithm for Non-Cryptographic Task 2",
+      "authors": [
+        "Synthetic Control Author"
+      ],
+      "abstract": "A quantum algorithm improves graph sampling without any cryptographic or lattice consequence.",
+      "conclusion": "",
+      "source": "offline_benchmark",
+      "source_url": "https://example.invalid/retrieval-benchmark/RBV1-073",
+      "publication_date": "2026-08-11",
+      "venue": null,
+      "expected": {
+        "relevant": false,
+        "relevance_classes": [
+          "D"
+        ],
+        "topic_family": "generic_quantum_negative",
+        "critical": false,
+        "security_impact": "UNKNOWN",
+        "evidence_confidence": "TODO_VERIFY_OR_DEFAULT",
+        "research_value_bucket": "LOW",
+        "route_class": "excluded",
+        "action_class": "EXCLUDE",
+        "ccf_rank": null
+      }
+    },
+    {
+      "fixture_id": "RBV1-074",
+      "fixture_version": "1.0",
+      "primary_benchmark_category": "generic_quantum_negative",
+      "record_kind": "synthetic_control",
+      "provenance": "explicitly_synthetic_offline_benchmark_control",
+      "title": "Polynomial-Time Quantum Algorithm for Non-Cryptographic Task 3",
+      "authors": [
+        "Synthetic Control Author"
+      ],
+      "abstract": "A quantum algorithm improves graph sampling without any cryptographic or lattice consequence.",
+      "conclusion": "",
+      "source": "offline_benchmark",
+      "source_url": "https://example.invalid/retrieval-benchmark/RBV1-074",
+      "publication_date": "2026-08-11",
+      "venue": null,
+      "expected": {
+        "relevant": false,
+        "relevance_classes": [
+          "D"
+        ],
+        "topic_family": "generic_quantum_negative",
+        "critical": false,
+        "security_impact": "UNKNOWN",
+        "evidence_confidence": "TODO_VERIFY_OR_DEFAULT",
+        "research_value_bucket": "LOW",
+        "route_class": "excluded",
+        "action_class": "EXCLUDE",
+        "ccf_rank": null
+      }
+    },
+    {
+      "fixture_id": "RBV1-075",
+      "fixture_version": "1.0",
+      "primary_benchmark_category": "generic_quantum_negative",
+      "record_kind": "synthetic_control",
+      "provenance": "explicitly_synthetic_offline_benchmark_control",
+      "title": "Polynomial-Time Quantum Algorithm for Non-Cryptographic Task 4",
+      "authors": [
+        "Synthetic Control Author"
+      ],
+      "abstract": "A quantum algorithm improves graph sampling without any cryptographic or lattice consequence.",
+      "conclusion": "",
+      "source": "offline_benchmark",
+      "source_url": "https://example.invalid/retrieval-benchmark/RBV1-075",
+      "publication_date": "2026-08-11",
+      "venue": null,
+      "expected": {
+        "relevant": false,
+        "relevance_classes": [
+          "D"
+        ],
+        "topic_family": "generic_quantum_negative",
+        "critical": false,
+        "security_impact": "UNKNOWN",
+        "evidence_confidence": "TODO_VERIFY_OR_DEFAULT",
+        "research_value_bucket": "LOW",
+        "route_class": "excluded",
+        "action_class": "EXCLUDE",
+        "ccf_rank": null
+      }
+    },
+    {
+      "fixture_id": "RBV1-076",
+      "fixture_version": "1.0",
+      "primary_benchmark_category": "generic_quantum_negative",
+      "record_kind": "synthetic_control",
+      "provenance": "explicitly_synthetic_offline_benchmark_control",
+      "title": "Polynomial-Time Quantum Algorithm for Non-Cryptographic Task 5",
+      "authors": [
+        "Synthetic Control Author"
+      ],
+      "abstract": "A quantum algorithm improves graph sampling without any cryptographic or lattice consequence.",
+      "conclusion": "",
+      "source": "offline_benchmark",
+      "source_url": "https://example.invalid/retrieval-benchmark/RBV1-076",
+      "publication_date": "2026-08-11",
+      "venue": null,
+      "expected": {
+        "relevant": false,
+        "relevance_classes": [
+          "D"
+        ],
+        "topic_family": "generic_quantum_negative",
+        "critical": false,
+        "security_impact": "UNKNOWN",
+        "evidence_confidence": "TODO_VERIFY_OR_DEFAULT",
+        "research_value_bucket": "LOW",
+        "route_class": "excluded",
+        "action_class": "EXCLUDE",
+        "ccf_rank": null
+      }
+    },
+    {
+      "fixture_id": "RBV1-077",
+      "fixture_version": "1.0",
+      "primary_benchmark_category": "generic_ai_negative",
+      "record_kind": "synthetic_control",
+      "provenance": "explicitly_synthetic_offline_benchmark_control",
+      "title": "Generic Transformer Learning Study 1",
+      "authors": [
+        "Synthetic Control Author"
+      ],
+      "abstract": "We study generic machine learning without cryptography, LWE, or lattice cryptanalysis.",
+      "conclusion": "",
+      "source": "offline_benchmark",
+      "source_url": "https://example.invalid/retrieval-benchmark/RBV1-077",
+      "publication_date": "2026-08-11",
+      "venue": null,
+      "expected": {
+        "relevant": false,
+        "relevance_classes": [
+          "D"
+        ],
+        "topic_family": "generic_ai_negative",
+        "critical": false,
+        "security_impact": "UNKNOWN",
+        "evidence_confidence": "TODO_VERIFY_OR_DEFAULT",
+        "research_value_bucket": "LOW",
+        "route_class": "excluded",
+        "action_class": "EXCLUDE",
+        "ccf_rank": null
+      }
+    },
+    {
+      "fixture_id": "RBV1-078",
+      "fixture_version": "1.0",
+      "primary_benchmark_category": "generic_ai_negative",
+      "record_kind": "synthetic_control",
+      "provenance": "explicitly_synthetic_offline_benchmark_control",
+      "title": "Generic Transformer Learning Study 2",
+      "authors": [
+        "Synthetic Control Author"
+      ],
+      "abstract": "We study generic machine learning without cryptography, LWE, or lattice cryptanalysis.",
+      "conclusion": "",
+      "source": "offline_benchmark",
+      "source_url": "https://example.invalid/retrieval-benchmark/RBV1-078",
+      "publication_date": "2026-08-11",
+      "venue": null,
+      "expected": {
+        "relevant": false,
+        "relevance_classes": [
+          "D"
+        ],
+        "topic_family": "generic_ai_negative",
+        "critical": false,
+        "security_impact": "UNKNOWN",
+        "evidence_confidence": "TODO_VERIFY_OR_DEFAULT",
+        "research_value_bucket": "LOW",
+        "route_class": "excluded",
+        "action_class": "EXCLUDE",
+        "ccf_rank": null
+      }
+    },
+    {
+      "fixture_id": "RBV1-079",
+      "fixture_version": "1.0",
+      "primary_benchmark_category": "generic_ai_negative",
+      "record_kind": "synthetic_control",
+      "provenance": "explicitly_synthetic_offline_benchmark_control",
+      "title": "Generic Transformer Learning Study 3",
+      "authors": [
+        "Synthetic Control Author"
+      ],
+      "abstract": "We study generic machine learning without cryptography, LWE, or lattice cryptanalysis.",
+      "conclusion": "",
+      "source": "offline_benchmark",
+      "source_url": "https://example.invalid/retrieval-benchmark/RBV1-079",
+      "publication_date": "2026-08-11",
+      "venue": null,
+      "expected": {
+        "relevant": false,
+        "relevance_classes": [
+          "D"
+        ],
+        "topic_family": "generic_ai_negative",
+        "critical": false,
+        "security_impact": "UNKNOWN",
+        "evidence_confidence": "TODO_VERIFY_OR_DEFAULT",
+        "research_value_bucket": "LOW",
+        "route_class": "excluded",
+        "action_class": "EXCLUDE",
+        "ccf_rank": null
+      }
+    },
+    {
+      "fixture_id": "RBV1-080",
+      "fixture_version": "1.0",
+      "primary_benchmark_category": "generic_ai_negative",
+      "record_kind": "synthetic_control",
+      "provenance": "explicitly_synthetic_offline_benchmark_control",
+      "title": "Generic Transformer Learning Study 4",
+      "authors": [
+        "Synthetic Control Author"
+      ],
+      "abstract": "We study generic machine learning without cryptography, LWE, or lattice cryptanalysis.",
+      "conclusion": "",
+      "source": "offline_benchmark",
+      "source_url": "https://example.invalid/retrieval-benchmark/RBV1-080",
+      "publication_date": "2026-08-11",
+      "venue": null,
+      "expected": {
+        "relevant": false,
+        "relevance_classes": [
+          "D"
+        ],
+        "topic_family": "generic_ai_negative",
+        "critical": false,
+        "security_impact": "UNKNOWN",
+        "evidence_confidence": "TODO_VERIFY_OR_DEFAULT",
+        "research_value_bucket": "LOW",
+        "route_class": "excluded",
+        "action_class": "EXCLUDE",
+        "ccf_rank": null
+      }
+    },
+    {
+      "fixture_id": "RBV1-081",
+      "fixture_version": "1.0",
+      "primary_benchmark_category": "generic_cybersecurity_negative",
+      "record_kind": "synthetic_control",
+      "provenance": "explicitly_synthetic_offline_benchmark_control",
+      "title": "Enterprise Cybersecurity Detection 1",
+      "authors": [
+        "Synthetic Control Author"
+      ],
+      "abstract": "A cybersecurity detection system is evaluated with no post-quantum or lattice component.",
+      "conclusion": "",
+      "source": "offline_benchmark",
+      "source_url": "https://example.invalid/retrieval-benchmark/RBV1-081",
+      "publication_date": "2026-08-11",
+      "venue": null,
+      "expected": {
+        "relevant": false,
+        "relevance_classes": [
+          "D"
+        ],
+        "topic_family": "generic_cybersecurity_negative",
+        "critical": false,
+        "security_impact": "UNKNOWN",
+        "evidence_confidence": "TODO_VERIFY_OR_DEFAULT",
+        "research_value_bucket": "LOW",
+        "route_class": "excluded",
+        "action_class": "EXCLUDE",
+        "ccf_rank": null
+      }
+    },
+    {
+      "fixture_id": "RBV1-082",
+      "fixture_version": "1.0",
+      "primary_benchmark_category": "generic_cybersecurity_negative",
+      "record_kind": "synthetic_control",
+      "provenance": "explicitly_synthetic_offline_benchmark_control",
+      "title": "Enterprise Cybersecurity Detection 2",
+      "authors": [
+        "Synthetic Control Author"
+      ],
+      "abstract": "A cybersecurity detection system is evaluated with no post-quantum or lattice component.",
+      "conclusion": "",
+      "source": "offline_benchmark",
+      "source_url": "https://example.invalid/retrieval-benchmark/RBV1-082",
+      "publication_date": "2026-08-11",
+      "venue": null,
+      "expected": {
+        "relevant": false,
+        "relevance_classes": [
+          "D"
+        ],
+        "topic_family": "generic_cybersecurity_negative",
+        "critical": false,
+        "security_impact": "UNKNOWN",
+        "evidence_confidence": "TODO_VERIFY_OR_DEFAULT",
+        "research_value_bucket": "LOW",
+        "route_class": "excluded",
+        "action_class": "EXCLUDE",
+        "ccf_rank": null
+      }
+    },
+    {
+      "fixture_id": "RBV1-083",
+      "fixture_version": "1.0",
+      "primary_benchmark_category": "generic_cybersecurity_negative",
+      "record_kind": "synthetic_control",
+      "provenance": "explicitly_synthetic_offline_benchmark_control",
+      "title": "Enterprise Cybersecurity Detection 3",
+      "authors": [
+        "Synthetic Control Author"
+      ],
+      "abstract": "A cybersecurity detection system is evaluated with no post-quantum or lattice component.",
+      "conclusion": "",
+      "source": "offline_benchmark",
+      "source_url": "https://example.invalid/retrieval-benchmark/RBV1-083",
+      "publication_date": "2026-08-11",
+      "venue": null,
+      "expected": {
+        "relevant": false,
+        "relevance_classes": [
+          "D"
+        ],
+        "topic_family": "generic_cybersecurity_negative",
+        "critical": false,
+        "security_impact": "UNKNOWN",
+        "evidence_confidence": "TODO_VERIFY_OR_DEFAULT",
+        "research_value_bucket": "LOW",
+        "route_class": "excluded",
+        "action_class": "EXCLUDE",
+        "ccf_rank": null
+      }
+    },
+    {
+      "fixture_id": "RBV1-084",
+      "fixture_version": "1.0",
+      "primary_benchmark_category": "generic_cybersecurity_negative",
+      "record_kind": "synthetic_control",
+      "provenance": "explicitly_synthetic_offline_benchmark_control",
+      "title": "Enterprise Cybersecurity Detection 4",
+      "authors": [
+        "Synthetic Control Author"
+      ],
+      "abstract": "A cybersecurity detection system is evaluated with no post-quantum or lattice component.",
+      "conclusion": "",
+      "source": "offline_benchmark",
+      "source_url": "https://example.invalid/retrieval-benchmark/RBV1-084",
+      "publication_date": "2026-08-11",
+      "venue": null,
+      "expected": {
+        "relevant": false,
+        "relevance_classes": [
+          "D"
+        ],
+        "topic_family": "generic_cybersecurity_negative",
+        "critical": false,
+        "security_impact": "UNKNOWN",
+        "evidence_confidence": "TODO_VERIFY_OR_DEFAULT",
+        "research_value_bucket": "LOW",
+        "route_class": "excluded",
+        "action_class": "EXCLUDE",
+        "ccf_rank": null
+      }
+    },
+    {
+      "fixture_id": "RBV1-085",
+      "fixture_version": "1.0",
+      "primary_benchmark_category": "strong_venue_irrelevant_negative",
+      "record_kind": "synthetic_control",
+      "provenance": "explicitly_synthetic_offline_benchmark_control",
+      "title": "Strong Venue Irrelevant Security Study 1",
+      "authors": [
+        "Synthetic Control Author"
+      ],
+      "abstract": "The paper has a strong venue label but no lattice-cryptography evidence.",
+      "conclusion": "",
+      "source": "offline_benchmark",
+      "source_url": "https://example.invalid/retrieval-benchmark/RBV1-085",
+      "publication_date": "2026-08-11",
+      "venue": "CRYPTO",
+      "expected": {
+        "relevant": false,
+        "relevance_classes": [
+          "D"
+        ],
+        "topic_family": "strong_venue_irrelevant_negative",
+        "critical": false,
+        "security_impact": "UNKNOWN",
+        "evidence_confidence": "TODO_VERIFY_OR_DEFAULT",
+        "research_value_bucket": "LOW",
+        "route_class": "excluded",
+        "action_class": "EXCLUDE",
+        "ccf_rank": "A"
+      }
+    },
+    {
+      "fixture_id": "RBV1-086",
+      "fixture_version": "1.0",
+      "primary_benchmark_category": "strong_venue_irrelevant_negative",
+      "record_kind": "synthetic_control",
+      "provenance": "explicitly_synthetic_offline_benchmark_control",
+      "title": "Strong Venue Irrelevant Security Study 2",
+      "authors": [
+        "Synthetic Control Author"
+      ],
+      "abstract": "The paper has a strong venue label but no lattice-cryptography evidence.",
+      "conclusion": "",
+      "source": "offline_benchmark",
+      "source_url": "https://example.invalid/retrieval-benchmark/RBV1-086",
+      "publication_date": "2026-08-11",
+      "venue": "CRYPTO",
+      "expected": {
+        "relevant": false,
+        "relevance_classes": [
+          "D"
+        ],
+        "topic_family": "strong_venue_irrelevant_negative",
+        "critical": false,
+        "security_impact": "UNKNOWN",
+        "evidence_confidence": "TODO_VERIFY_OR_DEFAULT",
+        "research_value_bucket": "LOW",
+        "route_class": "excluded",
+        "action_class": "EXCLUDE",
+        "ccf_rank": "A"
+      }
+    },
+    {
+      "fixture_id": "RBV1-087",
+      "fixture_version": "1.0",
+      "primary_benchmark_category": "strong_venue_irrelevant_negative",
+      "record_kind": "synthetic_control",
+      "provenance": "explicitly_synthetic_offline_benchmark_control",
+      "title": "Strong Venue Irrelevant Security Study 3",
+      "authors": [
+        "Synthetic Control Author"
+      ],
+      "abstract": "The paper has a strong venue label but no lattice-cryptography evidence.",
+      "conclusion": "",
+      "source": "offline_benchmark",
+      "source_url": "https://example.invalid/retrieval-benchmark/RBV1-087",
+      "publication_date": "2026-08-11",
+      "venue": "CRYPTO",
+      "expected": {
+        "relevant": false,
+        "relevance_classes": [
+          "D"
+        ],
+        "topic_family": "strong_venue_irrelevant_negative",
+        "critical": false,
+        "security_impact": "UNKNOWN",
+        "evidence_confidence": "TODO_VERIFY_OR_DEFAULT",
+        "research_value_bucket": "LOW",
+        "route_class": "excluded",
+        "action_class": "EXCLUDE",
+        "ccf_rank": "A"
+      }
+    },
+    {
+      "fixture_id": "RBV1-088",
+      "fixture_version": "1.0",
+      "primary_benchmark_category": "strong_venue_irrelevant_negative",
+      "record_kind": "synthetic_control",
+      "provenance": "explicitly_synthetic_offline_benchmark_control",
+      "title": "Strong Venue Irrelevant Security Study 4",
+      "authors": [
+        "Synthetic Control Author"
+      ],
+      "abstract": "The paper has a strong venue label but no lattice-cryptography evidence.",
+      "conclusion": "",
+      "source": "offline_benchmark",
+      "source_url": "https://example.invalid/retrieval-benchmark/RBV1-088",
+      "publication_date": "2026-08-11",
+      "venue": "CRYPTO",
+      "expected": {
+        "relevant": false,
+        "relevance_classes": [
+          "D"
+        ],
+        "topic_family": "strong_venue_irrelevant_negative",
+        "critical": false,
+        "security_impact": "UNKNOWN",
+        "evidence_confidence": "TODO_VERIFY_OR_DEFAULT",
+        "research_value_bucket": "LOW",
+        "route_class": "excluded",
+        "action_class": "EXCLUDE",
+        "ccf_rank": "A"
+      }
+    },
+    {
+      "fixture_id": "RBV1-089",
+      "fixture_version": "1.0",
+      "primary_benchmark_category": "ambiguous_boundary",
+      "record_kind": "synthetic_control",
+      "provenance": "explicitly_synthetic_offline_benchmark_control",
+      "title": "Post-Quantum Cryptography Survey with Lattice Section 1",
+      "authors": [
+        "Synthetic Control Author"
+      ],
+      "abstract": "A broad post-quantum survey includes a substantive comparison of ML-KEM, ML-DSA, and lattice assumptions.",
+      "conclusion": "",
+      "source": "offline_benchmark",
+      "source_url": "https://example.invalid/retrieval-benchmark/RBV1-089",
+      "publication_date": "2025-01-15",
+      "venue": null,
+      "expected": {
+        "relevant": true,
+        "relevance_classes": [
+          "A",
+          "B",
+          "C"
+        ],
+        "topic_family": "ambiguous_boundary",
+        "critical": false,
+        "security_impact": "UNKNOWN",
+        "evidence_confidence": "TODO_VERIFY_OR_DEFAULT",
+        "research_value_bucket": "NONZERO",
+        "route_class": "backfill",
+        "action_class": "NONCRITICAL_RESEARCH_ACTION",
+        "ccf_rank": null
+      }
+    },
+    {
+      "fixture_id": "RBV1-090",
+      "fixture_version": "1.0",
+      "primary_benchmark_category": "ambiguous_boundary",
+      "record_kind": "synthetic_control",
+      "provenance": "explicitly_synthetic_offline_benchmark_control",
+      "title": "Post-Quantum Cryptography Survey with Lattice Section 2",
+      "authors": [
+        "Synthetic Control Author"
+      ],
+      "abstract": "A broad post-quantum survey includes a substantive comparison of ML-KEM, ML-DSA, and lattice assumptions.",
+      "conclusion": "",
+      "source": "offline_benchmark",
+      "source_url": "https://example.invalid/retrieval-benchmark/RBV1-090",
+      "publication_date": "2026-08-11",
+      "venue": null,
+      "expected": {
+        "relevant": true,
+        "relevance_classes": [
+          "A",
+          "B",
+          "C"
+        ],
+        "topic_family": "ambiguous_boundary",
+        "critical": false,
+        "security_impact": "UNKNOWN",
+        "evidence_confidence": "TODO_VERIFY_OR_DEFAULT",
+        "research_value_bucket": "NONZERO",
+        "route_class": "primary_or_verify",
+        "action_class": "NONCRITICAL_RESEARCH_ACTION",
+        "ccf_rank": null
+      }
+    },
+    {
+      "fixture_id": "RBV1-091",
+      "fixture_version": "1.0",
+      "primary_benchmark_category": "ambiguous_boundary",
+      "record_kind": "synthetic_control",
+      "provenance": "explicitly_synthetic_offline_benchmark_control",
+      "title": "Ambiguous Non-Cryptographic Lattice Study 3",
+      "authors": [
+        "Synthetic Control Author"
+      ],
+      "abstract": "We study distributive lattices or lattice physics without cryptography.",
+      "conclusion": "",
+      "source": "offline_benchmark",
+      "source_url": "https://example.invalid/retrieval-benchmark/RBV1-091",
+      "publication_date": "2026-08-11",
+      "venue": null,
+      "expected": {
+        "relevant": false,
+        "relevance_classes": [
+          "D"
+        ],
+        "topic_family": "ambiguous_boundary",
+        "critical": false,
+        "security_impact": "UNKNOWN",
+        "evidence_confidence": "TODO_VERIFY_OR_DEFAULT",
+        "research_value_bucket": "LOW",
+        "route_class": "excluded",
+        "action_class": "EXCLUDE",
+        "ccf_rank": null
+      }
+    },
+    {
+      "fixture_id": "RBV1-092",
+      "fixture_version": "1.0",
+      "primary_benchmark_category": "ambiguous_boundary",
+      "record_kind": "synthetic_control",
+      "provenance": "explicitly_synthetic_offline_benchmark_control",
+      "title": "Ambiguous Non-Cryptographic Lattice Study 4",
+      "authors": [
+        "Synthetic Control Author"
+      ],
+      "abstract": "We study distributive lattices or lattice physics without cryptography.",
+      "conclusion": "",
+      "source": "offline_benchmark",
+      "source_url": "https://example.invalid/retrieval-benchmark/RBV1-092",
+      "publication_date": "2026-08-11",
+      "venue": null,
+      "expected": {
+        "relevant": false,
+        "relevance_classes": [
+          "D"
+        ],
+        "topic_family": "ambiguous_boundary",
+        "critical": false,
+        "security_impact": "UNKNOWN",
+        "evidence_confidence": "TODO_VERIFY_OR_DEFAULT",
+        "research_value_bucket": "LOW",
+        "route_class": "excluded",
+        "action_class": "EXCLUDE",
+        "ccf_rank": null
+      }
+    },
+    {
+      "fixture_id": "RBV1-093",
+      "fixture_version": "1.0",
+      "primary_benchmark_category": "ambiguous_boundary",
+      "record_kind": "synthetic_control",
+      "provenance": "explicitly_synthetic_offline_benchmark_control",
+      "title": "Ambiguous Non-Cryptographic Lattice Study 5",
+      "authors": [
+        "Synthetic Control Author"
+      ],
+      "abstract": "We study distributive lattices or lattice physics without cryptography.",
+      "conclusion": "",
+      "source": "offline_benchmark",
+      "source_url": "https://example.invalid/retrieval-benchmark/RBV1-093",
+      "publication_date": "2026-08-11",
+      "venue": null,
+      "expected": {
+        "relevant": false,
+        "relevance_classes": [
+          "D"
+        ],
+        "topic_family": "ambiguous_boundary",
+        "critical": false,
+        "security_impact": "UNKNOWN",
+        "evidence_confidence": "TODO_VERIFY_OR_DEFAULT",
+        "research_value_bucket": "LOW",
+        "route_class": "excluded",
+        "action_class": "EXCLUDE",
+        "ccf_rank": null
+      }
+    },
+    {
+      "fixture_id": "RBV1-094",
+      "fixture_version": "1.0",
+      "primary_benchmark_category": "title_evidence_contrast",
+      "record_kind": "synthetic_control",
+      "provenance": "explicitly_synthetic_offline_benchmark_control",
+      "title": "Indirect Methods 1",
+      "authors": [
+        "Synthetic Control Author"
+      ],
+      "abstract": "The abstract directly studies LWE cryptanalysis in cryptographic context.",
+      "conclusion": "",
+      "source": "offline_benchmark",
+      "source_url": "https://example.invalid/retrieval-benchmark/RBV1-094",
+      "publication_date": "2026-08-11",
+      "venue": null,
+      "expected": {
+        "relevant": true,
+        "relevance_classes": [
+          "A",
+          "B",
+          "C"
+        ],
+        "topic_family": "title_evidence_contrast",
+        "critical": false,
+        "security_impact": "UNKNOWN",
+        "evidence_confidence": "TODO_VERIFY_OR_DEFAULT",
+        "research_value_bucket": "NONZERO",
+        "route_class": "primary_or_verify",
+        "action_class": "NONCRITICAL_RESEARCH_ACTION",
+        "ccf_rank": null
+      }
+    },
+    {
+      "fixture_id": "RBV1-095",
+      "fixture_version": "1.0",
+      "primary_benchmark_category": "title_evidence_contrast",
+      "record_kind": "synthetic_control",
+      "provenance": "explicitly_synthetic_offline_benchmark_control",
+      "title": "Indirect Methods 2",
+      "authors": [
+        "Synthetic Control Author"
+      ],
+      "abstract": "The abstract directly studies Module-SIS signatures in cryptographic context.",
+      "conclusion": "",
+      "source": "offline_benchmark",
+      "source_url": "https://example.invalid/retrieval-benchmark/RBV1-095",
+      "publication_date": "2026-08-11",
+      "venue": null,
+      "expected": {
+        "relevant": true,
+        "relevance_classes": [
+          "A",
+          "B",
+          "C"
+        ],
+        "topic_family": "title_evidence_contrast",
+        "critical": false,
+        "security_impact": "UNKNOWN",
+        "evidence_confidence": "TODO_VERIFY_OR_DEFAULT",
+        "research_value_bucket": "NONZERO",
+        "route_class": "primary_or_verify",
+        "action_class": "NONCRITICAL_RESEARCH_ACTION",
+        "ccf_rank": null
+      }
+    },
+    {
+      "fixture_id": "RBV1-096",
+      "fixture_version": "1.0",
+      "primary_benchmark_category": "title_evidence_contrast",
+      "record_kind": "synthetic_control",
+      "provenance": "explicitly_synthetic_offline_benchmark_control",
+      "title": "Indirect Methods 3",
+      "authors": [
+        "Synthetic Control Author"
+      ],
+      "abstract": "The abstract directly studies BKZ lattice attacks in cryptographic context.",
+      "conclusion": "",
+      "source": "offline_benchmark",
+      "source_url": "https://example.invalid/retrieval-benchmark/RBV1-096",
+      "publication_date": "2026-08-11",
+      "venue": null,
+      "expected": {
+        "relevant": true,
+        "relevance_classes": [
+          "A",
+          "B",
+          "C"
+        ],
+        "topic_family": "title_evidence_contrast",
+        "critical": false,
+        "security_impact": "UNKNOWN",
+        "evidence_confidence": "TODO_VERIFY_OR_DEFAULT",
+        "research_value_bucket": "NONZERO",
+        "route_class": "primary_or_verify",
+        "action_class": "NONCRITICAL_RESEARCH_ACTION",
+        "ccf_rank": null
+      }
+    },
+    {
+      "fixture_id": "RBV1-097",
+      "fixture_version": "1.0",
+      "primary_benchmark_category": "title_evidence_contrast",
+      "record_kind": "synthetic_control",
+      "provenance": "explicitly_synthetic_offline_benchmark_control",
+      "title": "Indirect Methods 4",
+      "authors": [
+        "Synthetic Control Author"
+      ],
+      "abstract": "The abstract directly studies ML-KEM side-channel security in cryptographic context.",
+      "conclusion": "",
+      "source": "offline_benchmark",
+      "source_url": "https://example.invalid/retrieval-benchmark/RBV1-097",
+      "publication_date": "2026-08-11",
+      "venue": null,
+      "expected": {
+        "relevant": true,
+        "relevance_classes": [
+          "A",
+          "B",
+          "C"
+        ],
+        "topic_family": "title_evidence_contrast",
+        "critical": false,
+        "security_impact": "UNKNOWN",
+        "evidence_confidence": "TODO_VERIFY_OR_DEFAULT",
+        "research_value_bucket": "NONZERO",
+        "route_class": "primary_or_verify",
+        "action_class": "NONCRITICAL_RESEARCH_ACTION",
+        "ccf_rank": null
+      }
+    },
+    {
+      "fixture_id": "RBV1-098",
+      "fixture_version": "1.0",
+      "primary_benchmark_category": "title_evidence_contrast",
+      "record_kind": "synthetic_control",
+      "provenance": "explicitly_synthetic_offline_benchmark_control",
+      "title": "Quantum Lattice Structure 5",
+      "authors": [
+        "Synthetic Control Author"
+      ],
+      "abstract": "Despite the title, this is a non-cryptographic physics paper with no LWE, SIS, PQC, or cryptanalysis.",
+      "conclusion": "",
+      "source": "offline_benchmark",
+      "source_url": "https://example.invalid/retrieval-benchmark/RBV1-098",
+      "publication_date": "2026-08-11",
+      "venue": null,
+      "expected": {
+        "relevant": false,
+        "relevance_classes": [
+          "D"
+        ],
+        "topic_family": "title_evidence_contrast",
+        "critical": false,
+        "security_impact": "UNKNOWN",
+        "evidence_confidence": "TODO_VERIFY_OR_DEFAULT",
+        "research_value_bucket": "LOW",
+        "route_class": "excluded",
+        "action_class": "EXCLUDE",
+        "ccf_rank": null
+      }
+    },
+    {
+      "fixture_id": "RBV1-099",
+      "fixture_version": "1.0",
+      "primary_benchmark_category": "title_evidence_contrast",
+      "record_kind": "synthetic_control",
+      "provenance": "explicitly_synthetic_offline_benchmark_control",
+      "title": "Quantum Lattice Structure 6",
+      "authors": [
+        "Synthetic Control Author"
+      ],
+      "abstract": "Despite the title, this is a non-cryptographic physics paper with no LWE, SIS, PQC, or cryptanalysis.",
+      "conclusion": "",
+      "source": "offline_benchmark",
+      "source_url": "https://example.invalid/retrieval-benchmark/RBV1-099",
+      "publication_date": "2026-08-11",
+      "venue": null,
+      "expected": {
+        "relevant": false,
+        "relevance_classes": [
+          "D"
+        ],
+        "topic_family": "title_evidence_contrast",
+        "critical": false,
+        "security_impact": "UNKNOWN",
+        "evidence_confidence": "TODO_VERIFY_OR_DEFAULT",
+        "research_value_bucket": "LOW",
+        "route_class": "excluded",
+        "action_class": "EXCLUDE",
+        "ccf_rank": null
+      }
+    },
+    {
+      "fixture_id": "RBV1-100",
+      "fixture_version": "1.0",
+      "primary_benchmark_category": "title_evidence_contrast",
+      "record_kind": "synthetic_control",
+      "provenance": "explicitly_synthetic_offline_benchmark_control",
+      "title": "Quantum Lattice Structure 7",
+      "authors": [
+        "Synthetic Control Author"
+      ],
+      "abstract": "Despite the title, this is a non-cryptographic physics paper with no LWE, SIS, PQC, or cryptanalysis.",
+      "conclusion": "",
+      "source": "offline_benchmark",
+      "source_url": "https://example.invalid/retrieval-benchmark/RBV1-100",
+      "publication_date": "2026-08-11",
+      "venue": null,
+      "expected": {
+        "relevant": false,
+        "relevance_classes": [
+          "D"
+        ],
+        "topic_family": "title_evidence_contrast",
+        "critical": false,
+        "security_impact": "UNKNOWN",
+        "evidence_confidence": "TODO_VERIFY_OR_DEFAULT",
+        "research_value_bucket": "LOW",
+        "route_class": "excluded",
+        "action_class": "EXCLUDE",
+        "ccf_rank": null
+      }
+    }
+  ]
+}

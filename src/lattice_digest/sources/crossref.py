@@ -28,34 +28,51 @@ class CrossrefSource(SourceAdapter):
         seen: set[str] = set()
         raw_count = 0
         for request in requests:
+            attempt_id = context.begin_query_attempt(self.name, request)
             params = urllib.parse.urlencode({"query.bibliographic": request.query_text, "rows": min(int(self.config.get("max_results", 50)), 25), "sort": "published", "order": "desc"})
             data = fetch_json(context, f"{self.config['url']}?{params}", source_name=self.name)
             if data is None:
-                context.record_query_attempt(self.name, request.family_id, request.query_text, status="failed")
+                context.finish_query_attempt(attempt_id, status="failed", raw_candidates=None, error_category=health.error_type())
                 health.query_groups_failed += 1
                 continue
             health.query_groups_success += 1
             items = data.get("message", {}).get("items", [])
-            context.record_query_attempt(self.name, request.family_id, request.query_text, status="success", raw_candidates=len(items))
+            context.finish_query_attempt(attempt_id, status="success", raw_candidates=len(items))
             raw_count += len(items)
             for item in items:
                 titles = item.get("title") or []
                 title = titles[0] if titles else None
                 doi = item.get("DOI")
                 source_url = item.get("URL") or (f"https://doi.org/{doi}" if doi else None)
-                if not title or not source_url or source_url in seen:
+                abstract = normalize_whitespace(TAG_RE.sub(" ", html.unescape(item.get("abstract") or "")))
+                occurrence_id = context.record_raw_occurrence(
+                    self.name,
+                    attempt_id,
+                    raw_title=str(title or ""),
+                    source_identifier=doi,
+                    source_url=source_url,
+                    abstract_present=bool(abstract),
+                    parser_result="PARSED" if title and source_url else "RAW_PARSE_FAILED",
+                    parser_failure_reason=None if title and source_url else "missing title or source URL",
+                    normalization_eligible=bool(title and source_url),
+                )
+                if not title or not source_url:
+                    continue
+                if source_url in seen:
+                    context.record_route_event("raw_occurrence", occurrence_id, "DEDUP", "DUPLICATE_WITHIN_SOURCE", "same Crossref URL returned by another query", terminal=True)
                     continue
                 authors = [" ".join(part for part in [author.get("given"), author.get("family")] if part) for author in item.get("author", [])]
-                abstract = normalize_whitespace(TAG_RE.sub(" ", html.unescape(item.get("abstract") or "")))
                 date_parts = (item.get("published-print") or item.get("published-online") or item.get("created") or {}).get("date-parts", [])
                 date_text = "-".join(str(part) for part in date_parts[0]) if date_parts else None
-                normalized.append(make_paper_record(
+                record = make_paper_record(
                     title=title, authors=[author for author in authors if author], abstract=abstract, source="crossref",
                     source_url=source_url, paper_id=doi or source_url, doi=doi, venue=(item.get("container-title") or [None])[0],
                     publication_date=normalize_date(date_text), categories=["crossref"],
                     source_query_family=request.family_id, source_query_text=request.query_text,
                     retrieval_timestamp=datetime.now(timezone.utc).isoformat(),
-                ))
+                )
+                context.record_normalized_candidate(occurrence_id, record)
+                normalized.append(record)
                 seen.add(source_url)
         filtered = [
             record
