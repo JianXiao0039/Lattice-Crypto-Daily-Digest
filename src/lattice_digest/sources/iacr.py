@@ -99,6 +99,7 @@ class IacrEprintSource(SourceAdapter):
     def fetch(self, context: FetchContext) -> list[PaperRecord]:
         url = self.config["url"]
         if context.dry_run:
+            context.record_query_attempt(self.name, "native_iacr_latest_feed", url, status="dry_run")
             context.set_latest_feed_state(self.name, status="dry_run", reachable=None, parsed=False, records=0)
             context.add_warning("dry-run: skipped IACR ePrint network request", self.name)
             return []
@@ -115,6 +116,7 @@ class IacrEprintSource(SourceAdapter):
             latest_feed_status = "cache_hit"
         elif attempt_path.exists():
             if not (context.retry_failed_sources or context.include_latest_sources):
+                context.record_query_attempt(self.name, "native_iacr_latest_feed", url, status="skipped_by_guard")
                 context.set_latest_feed_state(
                     self.name,
                     status="skipped_by_guard",
@@ -133,6 +135,7 @@ class IacrEprintSource(SourceAdapter):
             attempt_path.write_text(datetime.now(timezone.utc).isoformat(), encoding="utf-8")
             xml_text = fetch_text(context, url, source_name=self.name)
             if xml_text is None:
+                context.record_query_attempt(self.name, "native_iacr_latest_feed", url, status="failed")
                 context.set_latest_feed_state(
                     self.name,
                     status="failed",
@@ -147,6 +150,7 @@ class IacrEprintSource(SourceAdapter):
             attempt_path.write_text(datetime.now(timezone.utc).isoformat(), encoding="utf-8")
             xml_text = fetch_text(context, url, source_name=self.name)
             if xml_text is None:
+                context.record_query_attempt(self.name, "native_iacr_latest_feed", url, status="failed")
                 context.set_latest_feed_state(
                     self.name,
                     status="failed",
@@ -162,7 +166,24 @@ class IacrEprintSource(SourceAdapter):
         rss_items = root.findall(".//item")
         atom_entries = [element for element in root.iter() if _local_name(element.tag) == "entry"]
         raw_count = len(rss_items or atom_entries)
+        context.record_query_attempt(
+            self.name,
+            "native_iacr_latest_feed",
+            url,
+            status="cache_hit" if latest_feed_status == "cache_hit" else "success",
+            raw_candidates=raw_count,
+        )
         normalized = parse_iacr_feed(xml_text, source_url=url)
+        normalized = [
+            record.model_copy(
+                update={
+                    "source_query_family": "native_iacr_latest_feed",
+                    "source_query_text": url,
+                    "retrieval_timestamp": datetime.now(timezone.utc).isoformat(),
+                }
+            )
+            for record in normalized
+        ]
         expected_ids = [str(item) for item in self.config.get("expected_latest_ids", [])]
         found_ids = {record.eprint_id for record in normalized if record.eprint_id}
         missing_expected = [item for item in expected_ids if item not in found_ids]

@@ -44,6 +44,8 @@ class PaperRecord(BaseModel):
     categories: list[str] = Field(default_factory=list)
     taxonomy_tags: list[str] = Field(default_factory=list)
     keywords_matched: list[str] = Field(default_factory=list)
+    source_evidence_terms: list[str] = Field(default_factory=list)
+    inferred_topic_tags: list[str] = Field(default_factory=list)
     negative_keywords_matched: list[str] = Field(default_factory=list)
     relevance_score: int = 0
     relevance_label: str = "D"
@@ -73,6 +75,17 @@ class PaperRecord(BaseModel):
     source_refs: list[str] = Field(default_factory=list)
     evidence_tier: str = ""
     source_health: str = ""
+    security_impact_severity: str = "UNKNOWN"
+    evidence_confidence: str = "TODO_VERIFY"
+    document_maturity: str = "unknown"
+    critical_signal_relations: list[dict[str, str]] = Field(default_factory=list)
+    critical_signal_explanation: str = ""
+    critical_claim_zh: str = ""
+    translation_fidelity_status: str = "not_applicable"
+    translation_fidelity_flags: list[str] = Field(default_factory=list)
+    source_query_family: str = ""
+    source_query_text: str = ""
+    retrieval_timestamp: str = ""
 
 
 def make_paper_record(**data: Any) -> PaperRecord:
@@ -88,6 +101,8 @@ def make_paper_record(**data: Any) -> PaperRecord:
     data.setdefault("categories", [])
     data.setdefault("taxonomy_tags", [])
     data.setdefault("keywords_matched", [])
+    data.setdefault("source_evidence_terms", [])
+    data.setdefault("inferred_topic_tags", [])
     data.setdefault("negative_keywords_matched", [])
     return PaperRecord(**data)
 

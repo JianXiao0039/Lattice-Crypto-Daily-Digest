@@ -132,6 +132,7 @@ class FetchContext:
     api_keys: dict[str, str] = field(default_factory=dict)
     warnings: list[str] = field(default_factory=list)
     source_health: dict[str, SourceHealth] = field(default_factory=dict)
+    query_attempts: list[dict[str, object]] = field(default_factory=list)
 
     def __post_init__(self) -> None:
         if self.cache_dir is None:
@@ -197,6 +198,26 @@ class FetchContext:
             self.source_health[name].to_dict()
             for name in sorted(self.source_health)
         ]
+
+    def record_query_attempt(
+        self,
+        source_name: str,
+        query_family: str,
+        query_text: str,
+        *,
+        status: str,
+        raw_candidates: int = 0,
+    ) -> None:
+        self.query_attempts.append(
+            {
+                "source_family": source_name,
+                "query_family": query_family,
+                "query_text": query_text,
+                "status": status,
+                "raw_candidates": raw_candidates,
+                "retrieval_timestamp": datetime.now(timezone.utc).isoformat(),
+            }
+        )
 
 
 class SourceAdapter:

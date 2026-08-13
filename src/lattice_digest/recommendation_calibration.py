@@ -79,6 +79,8 @@ def calibrate_recommendation(
     )
     raw_research_value = sum(breakdown.values())
     research_value = _clamp(raw_research_value, 0, 100)
+    if record.security_impact_severity == "CRITICAL":
+        research_value = 100
     primary_allowed = primary_today_new_eligible and freshness_bucket == "primary_today_new"
     public_score = _public_score(research_value, primary_allowed, freshness_bucket, risk_flags)
     if primary_allowed and _has_strong_axis(axes) and public_score >= 45 and not _has_hard_verify_flag(risk_flags):
@@ -87,6 +89,10 @@ def calibrate_recommendation(
         public_score = max(public_score, 65)
     level = _level(public_score, primary_allowed, freshness_bucket, risk_flags, axes)
     action = _suggested_action(level, primary_allowed, research_value, freshness_bucket)
+    if record.security_impact_severity == "CRITICAL":
+        risk_flags.extend(["critical_security_claim_todo_verify", "extraordinary_security_claim"])
+        level = TODO_VERIFY
+        action = "READ_AND_VERIFY_IMMEDIATELY"
     tags = [axis.tag for axis in axes]
     reason = _reason(level, tags, risk_flags, research_value, primary_allowed)
     return RecommendationCalibration(
@@ -100,21 +106,21 @@ def calibrate_recommendation(
         recommendation_evidence_basis=_evidence_basis(record, axes),
         recommendation_score_breakdown=breakdown,
         research_value_score=research_value,
-        primary_action_allowed=primary_allowed and action == "Read today",
+        primary_action_allowed=primary_allowed and action in {"Read today", "READ_AND_VERIFY_IMMEDIATELY"},
         reading_priority=_reading_priority(level),
         suggested_action=action,
     )
 
 
 def _record_text(record: PaperRecord) -> str:
+    # Inferred aliases are excluded: recommendation evidence must remain source-grounded.
     parts: list[str] = [
         record.title,
         record.abstract,
-        record.reason,
+        record.conclusion,
         record.venue or "",
         record.source,
-        " ".join(record.taxonomy_tags),
-        " ".join(record.keywords_matched),
+        " ".join(record.source_evidence_terms),
         " ".join(record.categories),
     ]
     return " ".join(part for part in parts if part).lower()
@@ -392,9 +398,11 @@ def _evidence_basis(record: PaperRecord, axes: list[RelevanceAxis]) -> list[str]
     if record.reason:
         basis.append("classifier_reason")
     if record.taxonomy_tags:
-        basis.append("taxonomy_tags")
+        basis.append("inferred_topic_tags")
     if record.keywords_matched:
-        basis.append("keywords")
+        basis.append("source_evidence_terms")
+    if record.critical_signal_relations:
+        basis.append("source_grounded_reduction_relations")
     if record.source_url:
         basis.append("source_url")
     if axes:

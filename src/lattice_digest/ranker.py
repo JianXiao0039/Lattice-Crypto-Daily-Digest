@@ -23,6 +23,7 @@ from typing import Iterable, Mapping, Sequence
 
 from lattice_digest.filters import negative_matches as config_negative_matches
 from lattice_digest.filters import should_exclude_as_negative
+from lattice_digest.critical_security import apply_critical_security_analysis
 from lattice_digest.models import PaperRecord, copy_record
 from lattice_digest.pqc_radar import classify_hawk_context
 from lattice_digest.text import combined_text, find_terms
@@ -925,8 +926,10 @@ def classify_record(
         key=str.lower,
     )
 
-    ranked.taxonomy_tags = sorted(set(actual_tags + aliases), key=str.lower)
+    ranked.inferred_topic_tags = sorted(set(actual_tags + aliases), key=str.lower)
+    ranked.taxonomy_tags = list(ranked.inferred_topic_tags)
     ranked.keywords_matched = all_keywords
+    ranked.source_evidence_terms = list(all_keywords)
     ranked.negative_keywords_matched = sorted(
         set(result.negative_keywords + config_negatives), key=str.lower
     )
@@ -934,6 +937,15 @@ def classify_record(
     ranked.relevance_label = label
     ranked.reading_priority = _priority_for_label(label)
     ranked.reason = reason
+    ranked = apply_critical_security_analysis(ranked)
+    if ranked.security_impact_severity == "CRITICAL":
+        ranked.relevance_score = 100
+        ranked.relevance_label = "A"
+        ranked.reading_priority = 1
+        ranked.reason = (
+            "检测到 source-grounded 的关键格密码安全后果链：多项式时间量子算法、"
+            "方向明确的格问题到 DCP 归约，以及 LWE/SVP 后果；影响为 CRITICAL，证据仍为 TODO_VERIFY。"
+        )
     return ranked
 
 

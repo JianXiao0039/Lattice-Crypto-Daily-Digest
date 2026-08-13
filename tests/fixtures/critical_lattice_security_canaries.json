@@ -1,0 +1,44 @@
+{
+  "canaries": [
+    {
+      "id": "SIMON_DCP_2026_CANARY_MUST_NOT_BE_MISSED",
+      "title": "A Polynomial-Time Quantum Algorithm for the Dihedral Coset Problem",
+      "authors": ["Daniel R. Simon"],
+      "publication_date": "2026-08-11",
+      "venue": "Preliminary Draft",
+      "abstract": "This preliminary draft claims a polynomial-time quantum algorithm for the Dihedral Coset Problem. Combined with Regev's reduction of lattice problems to DCP and later improved reductions, it yields polynomial-time quantum algorithms for approximate SVP and LWE. The algorithm can tolerate a faulty sample rate 1/O(log n).",
+      "conclusion": "The concluding corollary claims polynomial-time quantum algorithms for O(sqrt(n) polylog(n))-factor SVP and corresponding LWE instances.",
+      "expected_critical": true
+    },
+    {
+      "id": "DIRECT_TITLE_LWE_QUANTUM_CRYPTANALYSIS",
+      "title": "Polynomial-Time Quantum Cryptanalysis of LWE",
+      "abstract": "We claim a polynomial-time quantum algorithm that solves LWE under the stated conditional assumptions.",
+      "expected_critical": true
+    },
+    {
+      "id": "WEAK_TITLE_EDCP_REDUCTION_CONSEQUENCE",
+      "title": "An Improved Algorithm for Extrapolated Dihedral Cosets",
+      "abstract": "We claim a polynomial-time quantum algorithm for EDCP. LWE reduces to EDCP, and the result yields a polynomial-time quantum algorithm for LWE under the stated conditions.",
+      "expected_critical": true
+    },
+    {
+      "id": "GENERIC_QUANTUM_NEGATIVE",
+      "title": "A Polynomial-Time Quantum Algorithm for Graph Sampling",
+      "abstract": "A quantum algorithm accelerates graph sampling without any cryptographic or lattice consequence.",
+      "expected_critical": false
+    },
+    {
+      "id": "GENERIC_FHE_NONCRITICAL",
+      "title": "Efficient CKKS Bootstrapping for Fully Homomorphic Encryption",
+      "abstract": "We optimize CKKS bootstrapping and evaluate homomorphic encryption throughput. No cryptanalytic consequence is claimed.",
+      "expected_critical": false
+    },
+    {
+      "id": "GENERIC_CYBERSECURITY_NEGATIVE",
+      "title": "Enterprise Phishing Detection with Graph Models",
+      "abstract": "We evaluate phishing detection for enterprise cybersecurity operations.",
+      "expected_critical": false
+    }
+  ]
+}

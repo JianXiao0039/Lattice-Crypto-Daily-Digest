@@ -1,9 +1,11 @@
 from __future__ import annotations
 
 import urllib.parse
+from datetime import datetime, timezone
 
 from lattice_digest.models import PaperRecord, make_paper_record
 from lattice_digest.sources.base import FetchContext, SourceAdapter, fetch_json, normalize_date, within_since
+from lattice_digest.source_queries import critical_query_requests, legacy_query_requests
 
 
 class DblpSource(SourceAdapter):
@@ -14,21 +16,30 @@ class DblpSource(SourceAdapter):
         normalized: list[PaperRecord] = []
         seen_urls: set[str] = set()
         raw_count = 0
-        queries = self.config.get("queries") or ["lattice cryptography LWE SIS NTRU BKZ"]
+        requests = critical_query_requests(self.config, syntax="free_text")
+        requests.extend(legacy_query_requests(self.config, keys=("queries",)))
+        if not requests:
+            requests = legacy_query_requests({"queries": ["lattice cryptography LWE SIS NTRU BKZ"]}, keys=("queries",))
+        health = context.health(self.name)
+        health.query_groups_total = len(requests)
         per_query = int(self.config.get("per_query_results", self.config.get("max_results", 50)))
         per_query = min(per_query, int(self.config.get("max_results", 50)))
-        for query in queries:
+        for request in requests:
             params = urllib.parse.urlencode(
                 {
-                    "q": str(query),
+                    "q": request.query_text,
                     "format": "json",
                     "h": per_query,
                 }
             )
             data = fetch_json(context, f"{self.config['url']}?{params}", source_name=self.name)
             if data is None:
+                context.record_query_attempt(self.name, request.family_id, request.query_text, status="failed")
+                health.query_groups_failed += 1
                 continue
+            health.query_groups_success += 1
             hits = data.get("result", {}).get("hits", {}).get("hit", [])
+            context.record_query_attempt(self.name, request.family_id, request.query_text, status="success", raw_candidates=len(hits))
             raw_count += len(hits)
             for hit in hits:
                 info = hit.get("info", {})
@@ -52,6 +63,9 @@ class DblpSource(SourceAdapter):
                     venue=info.get("venue"),
                     publication_date=normalize_date(str(info.get("year")) if info.get("year") else None),
                     categories=["dblp"],
+                    source_query_family=request.family_id,
+                    source_query_text=request.query_text,
+                    retrieval_timestamp=datetime.now(timezone.utc).isoformat(),
                 )
                 seen_urls.add(url)
                 normalized.append(record)

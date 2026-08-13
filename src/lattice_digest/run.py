@@ -9,6 +9,7 @@ from pathlib import Path
 from zoneinfo import ZoneInfo
 
 from lattice_digest.config import load_config_bundle, project_root
+from lattice_digest.candidate_ledger import build_candidate_ledger, write_candidate_ledger
 from lattice_digest.dedup import deduplicate
 from lattice_digest.digest import generate_markdown
 from lattice_digest.artifact_paths import (
@@ -50,6 +51,11 @@ def parse_args(argv: list[str] | None = None) -> argparse.Namespace:
             "Useful for scratch QA; preserves the normal data/YYYY/daily and digests/YYYY/daily layout."
         ),
     )
+    parser.add_argument(
+        "--candidate-ledger",
+        action="store_true",
+        help="Write a non-authoritative decision ledger under OUTPUT_ROOT/audits/worktree.",
+    )
     parser.add_argument("--target-date", default=None, help="Output report date in YYYY-MM-DD format.")
     parser.add_argument("--collector", choices=("local_codex", "github_actions"), default=None)
     parser.add_argument(
@@ -86,7 +92,20 @@ def _parse_cli_date(value: str) -> date:
 
 
 def _enabled_source_configs(sources_config: dict) -> list[dict]:
-    return [source for source in sources_config.get("sources", []) if source.get("enabled", False)]
+    catalog = {
+        str(item.get("id")): item
+        for item in sources_config.get("critical_query_groups", [])
+        if isinstance(item, dict) and item.get("id")
+    }
+    enabled: list[dict] = []
+    for source in sources_config.get("sources", []):
+        if not source.get("enabled", False):
+            continue
+        merged = dict(source)
+        ids = [str(item) for item in source.get("critical_query_family_ids", [])]
+        merged["critical_query_groups"] = [catalog[item] for item in ids if item in catalog]
+        enabled.append(merged)
+    return enabled
 
 
 def _collect_records(source_configs: list[dict], context: FetchContext) -> list[PaperRecord]:
@@ -363,6 +382,8 @@ def main(argv: list[str] | None = None) -> int:
     args = parse_args(argv)
     root = project_root()
     output_root = args.output_root.expanduser().resolve() if args.output_root is not None else root
+    if args.candidate_ledger and args.output_root is None:
+        raise SystemExit("--candidate-ledger requires an explicit external --output-root")
     _load_dotenv(root)
     configs = load_config_bundle(args.config_dir)
     run_datetime = datetime.now(ZoneInfo("Asia/Singapore"))
@@ -413,15 +434,30 @@ def main(argv: list[str] | None = None) -> int:
     source_configs = _enabled_source_configs(configs["sources"])
     records = _collect_records(source_configs, context)
     ranked = rank_records(records, configs["taxonomy"], configs["keywords"], configs["negative"])
+    ranked_before_coverage = list(ranked)
     if args.target_date is not None or exact_date is not None:
         ranked, coverage_dropped = _filter_records_to_coverage(ranked, coverage_start, coverage_end)
         if coverage_dropped:
             context.warnings.append(f"coverage filter dropped {coverage_dropped} records outside target_date window")
+    coverage_kept = list(ranked)
     reliable, dropped_count = _filter_reliable(ranked)
     deduped = deduplicate(reliable)
     ordered = _sort_records(deduped)
     _update_source_health_after_pipeline(context, ranked, reliable, deduped, ordered)
     source_health = context.source_health_summary()
+    if args.candidate_ledger and not args.dry_run:
+        ledger = build_candidate_ledger(
+            records,
+            ranked_before_coverage,
+            coverage_kept,
+            reliable,
+            deduped,
+            ordered,
+            source_health,
+            digest_date,
+            context.query_attempts,
+        )
+        write_candidate_ledger(ledger, output_root, digest_date)
     outputs = {item.strip().lower() for item in args.output.split(",") if item.strip()}
 
     if args.send != "none":

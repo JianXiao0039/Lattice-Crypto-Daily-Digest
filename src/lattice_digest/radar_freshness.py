@@ -6,6 +6,7 @@ from datetime import date, datetime, timedelta
 from typing import Any, Mapping
 
 from lattice_digest.models import PaperRecord
+from lattice_digest.critical_translation import apply_critical_translation
 from lattice_digest.recommendation_calibration import calibrate_recommendation, calibration_to_update
 from lattice_digest.venue_registry import TODO_VERIFY, VenueRegistryEntry, find_registry_entry
 
@@ -255,7 +256,7 @@ def enrich_record_for_daily_radar(
     )
     todo_flags = sorted(set(todo_flags) | set(calibration.recommendation_risk_flags))
     calibrated_update = calibration_to_update(calibration)
-    return record.model_copy(
+    enriched = record.model_copy(
         update={
             "title_en": record.title,
             "title_zh": record.chinese_title or f"model-generated zh title: {record.title}",
@@ -281,6 +282,7 @@ def enrich_record_for_daily_radar(
             "source_refs": [record.source_url] if record.source_url else [],
         }
     )
+    return apply_critical_translation(enriched)
 
 
 def apply_daily_freshness_policy(

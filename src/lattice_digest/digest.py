@@ -1076,6 +1076,33 @@ def _summary_display_lines(record: PaperRecord) -> list[str]:
     ]
 
 
+def _critical_alert_lines(record: PaperRecord) -> list[str]:
+    if record.security_impact_severity != "CRITICAL":
+        return []
+    relation_basis = "; ".join(
+        f"{item.get('relation')}({item.get('subject')} -> {item.get('object')})"
+        for item in record.critical_signal_relations
+    ) or "TODO_VERIFY"
+    source_text = " ".join(part for part in (record.abstract, record.conclusion) if part) or "TODO_VERIFY"
+    return [
+        "#### 🚨 潜在关键格密码安全信号 · TODO_VERIFY",
+        f"- Paper title：{record.title}",
+        f"- Source / document maturity：{record.source}；{record.document_maturity}",
+        f"- Security impact：{record.security_impact_severity}",
+        f"- Evidence confidence：{record.evidence_confidence}",
+        f"- What it claims：{record.critical_claim_zh or 'TODO_VERIFY_TRANSLATION'}",
+        f"- Why it matters：{record.critical_signal_explanation}",
+        "- What remains unverified：论文正文、证明、归约方向、复杂度、参数范围和错误样本模型均需独立核验。",
+        "- What it does NOT establish：不构成 ML-KEM、ML-DSA、标准化 Module-LWE 或 NIST PQC 已被攻破的结论。",
+        f"- Recommended action：{record.suggested_action or 'READ_AND_VERIFY_IMMEDIATELY'}",
+        f"- Chinese faithful translation：{record.critical_claim_zh or 'TODO_VERIFY_TRANSLATION'}",
+        f"- English source text / evidence：{_truncate_text(source_text, 700)}",
+        f"- Evidence basis：{relation_basis}",
+        f"- Translation fidelity：{record.translation_fidelity_status}",
+        "- Verification priorities：核对原稿来源与日期；复核 Regev/后续归约方向；检查近似因子、复杂度与 faulty-sample 假设；避免标准化方案外推。",
+    ]
+
+
 def _audit_detail_lines(record: PaperRecord) -> list[str]:
     intel = record_intelligence(record)
     rationale = build_recommendation_rationale(record)
@@ -1127,6 +1154,13 @@ def _audit_detail_lines(record: PaperRecord) -> list[str]:
         f"- source_refs：{', '.join(record.source_refs) if record.source_refs else (record.source_url or 'unknown')}",
         f"- evidence_tier：{record.evidence_tier or 'unknown'}",
         f"- source_health：{record.source_health or 'unknown'}",
+        f"- security_impact_severity：{record.security_impact_severity}",
+        f"- evidence_confidence：{record.evidence_confidence}",
+        f"- document_maturity：{record.document_maturity}",
+        f"- source_evidence_terms：{', '.join(record.source_evidence_terms) if record.source_evidence_terms else 'none'}",
+        f"- inferred_topic_tags：{', '.join(record.inferred_topic_tags) if record.inferred_topic_tags else 'none'}",
+        f"- critical_signal_relations：{record.critical_signal_relations if record.critical_signal_relations else 'none'}",
+        f"- translation_fidelity_status：{record.translation_fidelity_status}",
         f"- {concise_ranking_explanation(record)}",
         f"- {anchor_evidence_text(record)}",
         f"- false-positive risk note：{false_positive_risk_text(record)}",
@@ -1152,11 +1186,12 @@ def _audit_detail_lines(record: PaperRecord) -> list[str]:
 
 
 def _basic_paper_lines(record: PaperRecord) -> list[str]:
-    lines = [
+    lines = _critical_alert_lines(record)
+    lines.extend([
         f"- Placement：{_placement_label(record)}",
         f"- Source / date basis：{record.source}；selected_date_basis={record.selected_date_basis}；freshness_bucket={record.freshness_bucket}",
         f"- Venue / CCF：{record.venue or 'unknown'}；{record.venue_type}；CCF={record.CCF_rank}",
-    ]
+    ])
     lines.extend(_recommendation_display_lines(record))
     lines.extend(_workflow_display_lines(record))
     lines.extend(_risk_display_lines(record))

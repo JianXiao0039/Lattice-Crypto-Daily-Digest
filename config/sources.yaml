@@ -6,6 +6,37 @@ request:
   max_retries: 2
   source_failure_policy: warn_and_continue
 
+# Bounded P0 watch queries. Every group is a conjunction of OR-groups; no bare
+# DCP or generic quantum-computing query is permitted.
+critical_query_groups:
+  - id: exact_dihedral_problem_family
+    all_of_groups:
+      - [dihedral coset problem, dihedral hidden subgroup problem, extrapolated dihedral coset problem]
+  - id: quantum_lwe_consequence
+    all_of_groups:
+      - [quantum algorithm, polynomial-time quantum algorithm]
+      - [LWE, learning with errors]
+  - id: quantum_svp_consequence
+    all_of_groups:
+      - [quantum algorithm, polynomial-time quantum algorithm]
+      - [SVP, shortest vector problem]
+  - id: regev_reduction_lattice
+    all_of_groups:
+      - [Regev reduction]
+      - [lattice]
+  - id: dcp_lattice
+    all_of_groups:
+      - [DCP]
+      - [lattice]
+  - id: edcp_lwe
+    all_of_groups:
+      - [EDCP]
+      - [LWE]
+  - id: hidden_subgroup_lattice
+    all_of_groups:
+      - [hidden subgroup]
+      - [lattice]
+
 sources:
   - name: iacr_eprint
     type: iacr_eprint
@@ -180,6 +211,7 @@ sources:
       - - lattice-based zero-knowledge proof
       - - PQC attribute-based encryption
     max_results: 100
+    critical_query_family_ids: [exact_dihedral_problem_family, quantum_lwe_consequence, quantum_svp_consequence, regev_reduction_lattice, dcp_lattice, edcp_lwe, hidden_subgroup_lattice]
 
   - name: dblp
     type: dblp
@@ -227,6 +259,7 @@ sources:
       - lattice-based zero-knowledge proof
     require_strong_title_when_no_abstract: true
     note: "DBLP is useful for venue coverage, but year-only records must still pass date reliability and strong relevance filters. DBLP title-only records must have strong title evidence or be merged with another confirming source."
+    critical_query_family_ids: [exact_dihedral_problem_family, dcp_lattice, edcp_lwe]
 
   - name: openalex
     type: openalex
@@ -254,6 +287,11 @@ sources:
       - lattice isomorphism problem
       - Module-SIS chameleon hash
       - lattice-based commitment
+    query_groups:
+      - [lattice cryptography, LWE, SIS, NTRU, BKZ]
+      - [FHE, Kyber, ML-KEM, Dilithium, ML-DSA, Falcon]
+      - [lattice-based registration-based encryption, lattice isomorphism problem, Module-SIS chameleon hash]
+    critical_query_family_ids: [exact_dihedral_problem_family, quantum_lwe_consequence, quantum_svp_consequence, regev_reduction_lattice, dcp_lattice, edcp_lwe, hidden_subgroup_lattice]
     note: "OpenAlex 429/rate-limit responses should be recorded as warnings and must not stop the main run."
 
   - name: crossref
@@ -284,6 +322,11 @@ sources:
       - lattice isomorphism post-quantum
       - SIS-based commitment
       - PQC attribute-based encryption
+    query_groups:
+      - [lattice cryptography, LWE, SIS, NTRU, BKZ]
+      - [FHE, Kyber, ML-KEM, Dilithium, ML-DSA, Falcon]
+      - [lattice-based registration-based encryption, lattice isomorphism post-quantum]
+    critical_query_family_ids: [exact_dihedral_problem_family, quantum_lwe_consequence, quantum_svp_consequence, regev_reduction_lattice, dcp_lattice, edcp_lwe, hidden_subgroup_lattice]
     note: "Crossref is a supplemental source; candidates must pass hard negative and strong relevance filters before inclusion."
 
   - name: semantic_scholar
@@ -314,6 +357,11 @@ sources:
       - structured lattice isomorphism
       - lattice-based anonymous credential
       - LWE-based functional encryption
+    query_groups:
+      - [lattice cryptography, LWE, SIS, NTRU, BKZ]
+      - [FHE, Kyber, ML-KEM, Dilithium, ML-DSA, Falcon]
+      - [LWE-based registration-based encryption, structured lattice isomorphism]
+    critical_query_family_ids: [exact_dihedral_problem_family, quantum_lwe_consequence, quantum_svp_consequence, regev_reduction_lattice, dcp_lattice, edcp_lwe, hidden_subgroup_lattice]
     note: "Semantic Scholar records with only year and no publicationDate/updatedAt must not enter a 36h digest."
 
   - name: crypto_venues
