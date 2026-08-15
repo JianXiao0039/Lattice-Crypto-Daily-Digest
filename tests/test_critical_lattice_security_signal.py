@@ -293,15 +293,16 @@ def test_critical_translation_exposes_status_and_source_text_in_markdown() -> No
     item = _fixtures()["SIMON_DCP_2026_CANARY_MUST_NOT_BE_MISSED"]
     ranked, _ = _rank_and_enrich(item)
     markdown = generate_markdown([ranked], date(2026, 8, 12))
-    assert "Translation fidelity：VERIFIED_TERM_LOCKS" in markdown
+    assert "Translation fidelity：TODO_VERIFY_TRANSLATION" in markdown
     assert "polynomial-time quantum algorithm" in markdown
     assert "1/O(log n)" in markdown
 
 
-def test_noncritical_translation_guard_is_not_applied() -> None:
+def test_noncritical_english_placeholder_is_marked_for_translation_verification() -> None:
     item = _fixtures()["GENERIC_FHE_NONCRITICAL"]
     _, enriched = _rank_and_enrich(item)
-    assert enriched.translation_fidelity_status == "not_applicable"
+    assert enriched.translation_fidelity_status == "TODO_VERIFY_TRANSLATION"
+    assert enriched.abstract_zh.startswith("TODO_VERIFY: TODO_VERIFY_TRANSLATION:")
     assert enriched.critical_claim_zh == ""
 
 

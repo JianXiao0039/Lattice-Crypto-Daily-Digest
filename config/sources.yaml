@@ -4,6 +4,11 @@ request:
   cache_ttl_seconds: 43200
   per_domain_min_interval_seconds: 1.0
   max_retries: 2
+  max_retry_after_seconds: 10
+  per_source_time_budget_seconds: 120
+  global_time_budget_seconds: 600
+  source_circuit_breaker_failures: 3
+  runtime_journal_max_events: 2000
   source_failure_policy: warn_and_continue
 
 # Bounded P0 watch queries. Every group is a conjunction of OR-groups; no bare

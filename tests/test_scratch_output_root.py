@@ -121,9 +121,9 @@ def test_output_root_writes_scratch_artifacts_without_overwriting_authoritative_
     assert item["venue_type"] == "preprint"
     assert item["CCF_rank"] == "N/A"
     assert item["abstract_en"]
-    assert item["abstract_zh"].startswith("model-generated zh summary:")
+    assert item["abstract_zh"].startswith("TODO_VERIFY: TODO_VERIFY_TRANSLATION:")
     assert item["conclusion_en"].startswith("model-generated from available metadata:")
-    assert item["conclusion_zh"].startswith("model-generated zh summary:")
+    assert item["conclusion_zh"].startswith("TODO_VERIFY: TODO_VERIFY_TRANSLATION:")
     assert item["recommendation_level"] == "Strong"
     assert item["recommendation_score"] >= 85
     assert "LWE/RLWE/MLWE" in item["recommendation_reason"]

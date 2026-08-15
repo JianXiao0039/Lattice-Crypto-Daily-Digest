@@ -78,8 +78,8 @@ def test_legacy_2026_07_01_json_is_normalized_to_freshness_and_metadata_contract
             "TODO_VERIFY_flags",
         ):
             assert field in item
-        assert item["abstract_zh"].startswith("model-generated zh summary:")
-        assert item["conclusion_zh"].startswith("model-generated zh summary:")
+        assert item["abstract_zh"].startswith("TODO_VERIFY: TODO_VERIFY_TRANSLATION:")
+        assert item["conclusion_zh"].startswith("TODO_VERIFY: TODO_VERIFY_TRANSLATION:")
         assert item["CCF_rank"] == "N/A"
 
     stale = [item for item in records if item["publication_date"] in {"2026-06-25", "2026-06-29"}]

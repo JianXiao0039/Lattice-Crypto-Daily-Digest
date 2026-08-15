@@ -21,6 +21,7 @@ from lattice_digest.artifact_paths import (
 )
 from lattice_digest.models import PaperRecord
 from lattice_digest.ranker import rank_records
+from lattice_digest.radar_freshness import enrich_record_for_daily_radar
 from lattice_digest.source_health_ledger import write_source_health_ledger
 from lattice_digest.sources import FetchContext, build_source
 from lattice_digest.sources.base import parse_date_for_filter
@@ -129,6 +130,11 @@ def _collect_records(source_configs: list[dict], context: FetchContext) -> list[
                 type(exc).__name__,
                 terminal=True,
             )
+        finally:
+            fetched_count = len(fetched) if "fetched" in locals() else 0
+            context.finish_source(str(name), fetched_count)
+            if "fetched" in locals():
+                del fetched
     return records
 
 
@@ -235,24 +241,46 @@ def _exact_date_coverage_window(target_date: date) -> tuple[datetime, datetime]:
 
 
 def _record_effective_datetime(record: PaperRecord) -> datetime | None:
-    return parse_date_for_filter(record.update_date) or parse_date_for_filter(record.publication_date)
+    if record.update_date_kind == "AUTHORITATIVE_CONTENT_REVISION_DATE":
+        parsed_update = parse_date_for_filter(record.update_timestamp or record.update_date)
+        if parsed_update is not None:
+            return parsed_update
+    if record.announcement_date_kind == "AUTHORITATIVE_ANNOUNCEMENT_DATE":
+        parsed_announcement = parse_date_for_filter(record.announcement_date)
+        if parsed_announcement is not None:
+            return parsed_announcement
+    if record.publication_date_kind == "AUTHORITATIVE_PUBLICATION_DATE":
+        return parse_date_for_filter(record.publication_timestamp or record.publication_date)
+    return None
 
 
 def _filter_records_to_coverage(
     records: list[PaperRecord],
     coverage_start: datetime,
     coverage_end: datetime,
+    *,
+    digest_date: date,
+    include_backfill: bool,
 ) -> tuple[list[PaperRecord], int]:
     kept: list[PaperRecord] = []
     dropped = 0
     for record in records:
-        parsed = _record_effective_datetime(record)
-        if parsed is not None and coverage_start <= parsed < coverage_end:
-            kept.append(record)
-        elif parsed is None:
-            kept.append(record)
-        else:
-            dropped += 1
+        enriched = enrich_record_for_daily_radar(
+            record,
+            digest_date,
+            coverage_start=coverage_start,
+            coverage_end=coverage_end,
+        )
+        if enriched.primary_today_new_eligible:
+            kept.append(enriched)
+            continue
+        if enriched.freshness_bucket in {"CRITICAL_NEWLY_OBSERVED_VERIFY_FIRST", "recent_content_revision"}:
+            kept.append(enriched)
+            continue
+        if include_backfill:
+            kept.append(enriched)
+            continue
+        dropped += 1
     return kept, dropped
 
 
@@ -479,6 +507,11 @@ def main(argv: list[str] | None = None) -> int:
         http_cache_ttl_seconds=int(request_config.get("cache_ttl_seconds", 12 * 60 * 60)),
         per_domain_min_interval_seconds=float(request_config.get("per_domain_min_interval_seconds", 1.0)),
         max_retries=int(request_config.get("max_retries", 2)),
+        max_retry_after_seconds=float(request_config.get("max_retry_after_seconds", 10)),
+        per_source_time_budget_seconds=float(request_config.get("per_source_time_budget_seconds", 120)),
+        global_time_budget_seconds=float(request_config.get("global_time_budget_seconds", 600)),
+        source_circuit_breaker_failures=int(request_config.get("source_circuit_breaker_failures", 3)),
+        runtime_journal_max_events=int(request_config.get("runtime_journal_max_events", 2000)),
         retry_failed_sources=args.retry_failed_sources,
         include_latest_sources=args.include_latest_sources,
         api_keys={
@@ -492,10 +525,17 @@ def main(argv: list[str] | None = None) -> int:
     records = _collect_records(source_configs, context)
     ranked = rank_records(records, configs["taxonomy"], configs["keywords"], configs["negative"])
     ranked_before_coverage = list(ranked)
-    if args.target_date is not None or exact_date is not None:
-        ranked, coverage_dropped = _filter_records_to_coverage(ranked, coverage_start, coverage_end)
-        if coverage_dropped:
-            context.warnings.append(f"coverage filter dropped {coverage_dropped} records outside target_date window")
+    ranked, coverage_dropped = _filter_records_to_coverage(
+        ranked,
+        coverage_start,
+        coverage_end,
+        digest_date=digest_date,
+        include_backfill=run_mode == "backfill",
+    )
+    if coverage_dropped:
+        context.warnings.append(
+            f"strict freshness filter dropped {coverage_dropped} ordinary records outside the {since_window} window"
+        )
     coverage_kept = list(ranked)
     reliable, dropped_count = _filter_reliable(ranked)
     deduped = deduplicate(reliable)
@@ -507,6 +547,18 @@ def main(argv: list[str] | None = None) -> int:
     ordered = _sort_records(role_eligible)
     _update_source_health_after_pipeline(context, ranked, reliable, deduped, ordered)
     source_health = context.source_health_summary()
+    degraded_sources = [
+        str(item.get("source"))
+        for item in source_health
+        if item.get("runtime_state") == "partial" or item.get("health_status") in {"yellow", "red"}
+    ]
+    metadata["completion_state"] = "degraded_complete" if degraded_sources else "complete"
+    metadata["degraded_sources"] = degraded_sources
+    metadata["runtime_journal"] = str(context.runtime_journal_path)
+    context.checkpoint(
+        "PIPELINE_FINALIZED",
+        {"completion_state": metadata["completion_state"], "final_records": len(ordered)},
+    )
     if args.candidate_ledger and not args.dry_run:
         ledger = build_candidate_ledger(
             records,

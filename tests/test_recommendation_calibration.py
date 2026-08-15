@@ -181,8 +181,8 @@ def test_json_serializes_calibrated_fields_and_generated_markers_remain_intact()
         "suggested_action",
     ):
         assert field in item
-    assert item["abstract_zh"].startswith("model-generated zh summary:")
-    assert item["conclusion_zh"].startswith("model-generated zh summary:")
+    assert item["abstract_zh"].startswith("TODO_VERIFY: TODO_VERIFY_TRANSLATION:")
+    assert item["conclusion_zh"].startswith("TODO_VERIFY: TODO_VERIFY_TRANSLATION:")
     assert item["recommendation_reason"] != "important paper"
 
 

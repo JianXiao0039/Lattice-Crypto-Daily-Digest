@@ -30,9 +30,9 @@ def test_enriched_record_requires_bilingual_abstract_conclusion_and_recommendati
     assert enriched.title_en == "Module-SIS chameleon hash commitments from lattices"
     assert enriched.title_zh
     assert enriched.abstract_en.startswith("We construct")
-    assert enriched.abstract_zh.startswith("model-generated zh summary:")
+    assert enriched.abstract_zh.startswith("TODO_VERIFY: TODO_VERIFY_TRANSLATION:")
     assert enriched.conclusion_en.startswith("model-generated from available metadata:")
-    assert enriched.conclusion_zh.startswith("model-generated zh summary:")
+    assert enriched.conclusion_zh.startswith("TODO_VERIFY: TODO_VERIFY_TRANSLATION:")
     assert enriched.recommendation_level == "Strong"
     assert enriched.recommendation_score >= 85
     assert "Module-SIS" in enriched.recommendation_reason
@@ -44,7 +44,7 @@ def test_missing_abstract_and_conclusion_use_todo_verify_markers() -> None:
     enriched = enrich_record_for_daily_radar(_paper(abstract=""), date(2026, 7, 1))
 
     assert enriched.abstract_en == "TODO_VERIFY"
-    assert enriched.abstract_zh.startswith("TODO_VERIFY:")
+    assert enriched.abstract_zh.startswith("TODO_VERIFY: TODO_VERIFY_TRANSLATION:")
     assert enriched.conclusion_en == "TODO_VERIFY"
     assert enriched.conclusion_zh.startswith("TODO_VERIFY:")
     assert {"abstract_en", "conclusion_en"} <= set(enriched.TODO_VERIFY_flags)
@@ -79,5 +79,5 @@ def test_json_output_contains_required_bilingual_and_recommendation_metadata() -
         "suggested_action",
     ):
         assert field in item
-    assert item["abstract_zh"].startswith("model-generated zh summary:")
+    assert item["abstract_zh"].startswith("TODO_VERIFY: TODO_VERIFY_TRANSLATION:")
     assert item["recommendation_level"] == "Strong"

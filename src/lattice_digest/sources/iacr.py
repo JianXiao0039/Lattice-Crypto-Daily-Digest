@@ -71,8 +71,10 @@ def parse_iacr_feed(xml_text: str, source_url: str = "https://eprint.iacr.org/rs
                 author_name = _child_text(child, "name") or normalize_whitespace(child.text)
                 if author_name:
                     authors.append(author_name)
-        publication_date = normalize_date(_child_text(item, "pubdate", "published", "date"))
-        update_date = normalize_date(_child_text(item, "updated"))
+        publication_text = _child_text(item, "pubdate", "published", "date")
+        update_text = _child_text(item, "updated")
+        publication_date = normalize_date(publication_text)
+        update_date = normalize_date(update_text)
         eprint_id = _extract_eprint_id(link, title)
         pdf_url = f"https://eprint.iacr.org/{eprint_id}.pdf" if eprint_id else None
         if not title or not link:
@@ -89,7 +91,9 @@ def parse_iacr_feed(xml_text: str, source_url: str = "https://eprint.iacr.org/rs
                 eprint_id=eprint_id,
                 venue="IACR ePrint",
                 publication_date=publication_date,
+                publication_timestamp=publication_text or None,
                 update_date=update_date,
+                update_timestamp=update_text or None,
                 categories=["iacr_eprint"],
             )
         )
@@ -117,6 +121,7 @@ class IacrEprintSource(SourceAdapter):
         if cache_path.exists():
             xml_text = cache_path.read_text(encoding="utf-8")
             latest_feed_status = "cache_hit"
+            observed_at = datetime.fromtimestamp(cache_path.stat().st_mtime, tz=timezone.utc).isoformat()
         elif attempt_path.exists():
             if not (context.retry_failed_sources or context.include_latest_sources):
                 context.finish_query_attempt(attempt_id, status="skipped_by_guard", raw_candidates=None)
@@ -149,6 +154,7 @@ class IacrEprintSource(SourceAdapter):
                 )
                 return []
             cache_path.write_text(xml_text, encoding="utf-8")
+            observed_at = datetime.now(timezone.utc).isoformat()
         else:
             attempt_path.write_text(datetime.now(timezone.utc).isoformat(), encoding="utf-8")
             xml_text = fetch_text(context, url, source_name=self.name)
@@ -164,6 +170,7 @@ class IacrEprintSource(SourceAdapter):
                 )
                 return []
             cache_path.write_text(xml_text, encoding="utf-8")
+            observed_at = datetime.now(timezone.utc).isoformat()
 
         root = ET.fromstring(xml_text)
         rss_items = root.findall(".//item")
@@ -197,10 +204,12 @@ class IacrEprintSource(SourceAdapter):
         expected_ids = [str(item) for item in self.config.get("expected_latest_ids", [])]
         found_ids = {record.eprint_id for record in normalized if record.eprint_id}
         missing_expected = [item for item in expected_ids if item not in found_ids]
+        # The source-native latest feed is already bounded. Keep its normalized
+        # candidates for central relevance/freshness routing so an older-dated,
+        # newly observed CRITICAL item cannot disappear before classification.
         filtered = [
-            record
+            record.model_copy(update={"first_seen_at": observed_at, "source_observed_at": observed_at})
             for record in normalized
-            if within_since(record.publication_date, record.update_date, context.since)
         ]
         context.set_latest_feed_state(
             self.name,

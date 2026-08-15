@@ -98,6 +98,8 @@ def parse_arxiv_atom(xml_text: str) -> list[PaperRecord]:
         arxiv_id = _extract_arxiv_id(source_url)
         if not title or not source_url:
             continue
+        published_text = _child_text(entry, "published")
+        updated_text = _child_text(entry, "updated")
         records.append(
             make_paper_record(
                 title=title,
@@ -110,8 +112,12 @@ def parse_arxiv_atom(xml_text: str) -> list[PaperRecord]:
                 arxiv_id=arxiv_id,
                 doi=doi,
                 venue="arXiv",
-                publication_date=normalize_date(_child_text(entry, "published")),
-                update_date=normalize_date(_child_text(entry, "updated")),
+                publication_date=normalize_date(published_text),
+                publication_timestamp=published_text or None,
+                publication_date_kind="AUTHORITATIVE_PUBLICATION_DATE",
+                update_date=normalize_date(updated_text),
+                update_timestamp=updated_text or None,
+                update_date_kind="AUTHORITATIVE_CONTENT_REVISION_DATE",
                 categories=categories,
             )
         )

@@ -31,9 +31,17 @@ class PaperRecord(BaseModel):
     venue_relevance: str = "peripheral"
     venue_confidence: str = "low"
     publication_date: str | None = None
+    publication_timestamp: str | None = None
+    publication_date_kind: str = "AUTHORITATIVE_PUBLICATION_DATE"
     announcement_date: str | None = None
+    announcement_date_kind: str = "AUTHORITATIVE_ANNOUNCEMENT_DATE"
     update_date: str | None = None
+    update_timestamp: str | None = None
+    update_date_kind: str = "AUTHORITATIVE_CONTENT_REVISION_DATE"
     first_seen_date: str | None = None
+    first_seen_at: str | None = None
+    source_observed_at: str | None = None
+    document_claimed_date: str | None = None
     official_status_change_date: str | None = None
     source_metadata_correction_date: str | None = None
     manually_requested_backfill_date: str | None = None
@@ -41,6 +49,7 @@ class PaperRecord(BaseModel):
     freshness_bucket: str = "date_uncertain_todo_verify"
     freshness_reason: str = ""
     primary_today_new_eligible: bool = False
+    freshness_policy_version: str = ""
     categories: list[str] = Field(default_factory=list)
     taxonomy_tags: list[str] = Field(default_factory=list)
     keywords_matched: list[str] = Field(default_factory=list)

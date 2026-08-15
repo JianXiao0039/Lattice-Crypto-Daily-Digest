@@ -116,12 +116,15 @@ def apply_critical_translation(record: PaperRecord) -> PaperRecord:
     flags = list(record.translation_fidelity_flags)
     flags.extend(check.missing)
     flags.extend(f"forbidden:{item}" for item in check.forbidden)
-    if check.status == TODO_VERIFY_TRANSLATION:
+    overall_status = check.status
+    if record.translation_fidelity_status == TODO_VERIFY_TRANSLATION:
+        overall_status = TODO_VERIFY_TRANSLATION
+    if overall_status == TODO_VERIFY_TRANSLATION:
         flags.append(TODO_VERIFY_TRANSLATION)
     return record.model_copy(
         update={
             "critical_claim_zh": translation,
-            "translation_fidelity_status": check.status,
+            "translation_fidelity_status": overall_status,
             "translation_fidelity_flags": sorted(set(flags)),
         }
     )

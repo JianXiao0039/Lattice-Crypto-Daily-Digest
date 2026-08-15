@@ -65,6 +65,13 @@ def normalize_source_health(source_health: list[dict[str, object]] | None) -> li
                 "latest_feed_records": _as_int(item.get("latest_feed_records")),
                 "latest_feed_missing_expected": _as_list(item.get("latest_feed_missing_expected")),
                 "latest_feed_skipped_by_guard": bool(item.get("latest_feed_skipped_by_guard")),
+                "runtime_state": item.get("runtime_state") or "unknown",
+                "runtime_reason_code": item.get("runtime_reason_code"),
+                "requests_attempted": _as_int(item.get("requests_attempted")),
+                "requests_skipped": _as_int(item.get("requests_skipped")),
+                "consecutive_failures": _as_int(item.get("consecutive_failures")),
+                "circuit_open": bool(item.get("circuit_open")),
+                "partial_results_preserved": bool(item.get("partial_results_preserved")),
                 "warnings": warnings,
                 "errors": errors,
             }
@@ -110,17 +117,19 @@ def render_source_health_markdown(payload: dict[str, object]) -> str:
 
     lines.extend(
         [
-            "| Source | Status | Latest | Raw | Normalized | Final | Error Type | Retryable | Warnings | Errors |",
-            "|---|---:|---|---:|---:|---:|---|---:|---:|---:|",
+            "| Source | Status | Runtime | Reason | Latest | Raw | Normalized | Final | Error Type | Retryable | Warnings | Errors |",
+            "|---|---:|---|---|---|---:|---:|---:|---|---:|---:|---:|",
         ]
     )
     for item in rows:
         if not isinstance(item, dict):
             continue
         lines.append(
-            "| {source} | {status} | {latest} | {raw} | {normalized} | {final} | {error_type} | {retryable} | {warnings} | {errors} |".format(
+            "| {source} | {status} | {runtime} | {reason} | {latest} | {raw} | {normalized} | {final} | {error_type} | {retryable} | {warnings} | {errors} |".format(
                 source=_escape_table_text(item.get("source")),
                 status=_escape_table_text(item.get("status")),
+                runtime=_escape_table_text(item.get("runtime_state")),
+                reason=_escape_table_text(item.get("runtime_reason_code") or "none"),
                 latest=_escape_table_text(
                     "{status}/{records}".format(
                         status=item.get("latest_feed_status") or "n/a",

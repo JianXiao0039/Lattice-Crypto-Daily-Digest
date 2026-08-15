@@ -121,5 +121,5 @@ def test_generated_markers_freshness_and_ranking_remain_unchanged_by_registry() 
     assert routed[0].freshness_bucket == "backfill"
     assert routed[0].primary_today_new_eligible is False
     assert routed[0].recommendation_level == "Backfill"
-    assert routed[0].abstract_zh.startswith("model-generated zh summary:")
-    assert routed[0].conclusion_zh.startswith("model-generated zh summary:")
+    assert routed[0].abstract_zh.startswith("TODO_VERIFY: TODO_VERIFY_TRANSLATION:")
+    assert routed[0].conclusion_zh.startswith("TODO_VERIFY: TODO_VERIFY_TRANSLATION:")

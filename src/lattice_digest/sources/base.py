@@ -3,8 +3,10 @@ from __future__ import annotations
 from dataclasses import dataclass, field
 from datetime import datetime, timezone
 import hashlib
+import json
 from pathlib import Path
-from typing import Any
+import time
+from typing import Any, Callable
 from uuid import uuid4
 
 from lattice_digest.http import request_json, request_text
@@ -35,6 +37,13 @@ class SourceHealth:
     latest_feed_records: int = 0
     latest_feed_missing_expected: list[str] = field(default_factory=list)
     latest_feed_skipped_by_guard: bool = False
+    runtime_state: str = "not_started"
+    runtime_reason_code: str | None = None
+    requests_attempted: int = 0
+    requests_skipped: int = 0
+    consecutive_failures: int = 0
+    circuit_open: bool = False
+    partial_results_preserved: bool = False
 
     def _problem_text(self) -> str:
         values = [*self.errors, *self.warnings]
@@ -75,6 +84,8 @@ class SourceHealth:
             if self.raw_candidates or self.date_filtered_candidates or self.final_records or self.query_groups_success:
                 return "yellow"
             return "red"
+        if self.runtime_state == "complete":
+            return "green"
         if self.final_records:
             return "green"
         return "yellow"
@@ -115,6 +126,13 @@ class SourceHealth:
             "latest_feed_records": self.latest_feed_records,
             "latest_feed_missing_expected": list(self.latest_feed_missing_expected),
             "latest_feed_skipped_by_guard": self.latest_feed_skipped_by_guard,
+            "runtime_state": self.runtime_state,
+            "runtime_reason_code": self.runtime_reason_code,
+            "requests_attempted": self.requests_attempted,
+            "requests_skipped": self.requests_skipped,
+            "consecutive_failures": self.consecutive_failures,
+            "circuit_open": self.circuit_open,
+            "partial_results_preserved": self.partial_results_preserved,
             "warnings": list(self.warnings),
             "errors": list(self.errors),
         }
@@ -131,6 +149,11 @@ class FetchContext:
     http_cache_ttl_seconds: int = 12 * 60 * 60
     per_domain_min_interval_seconds: float = 1.0
     max_retries: int = 2
+    max_retry_after_seconds: float = 10.0
+    per_source_time_budget_seconds: float = 120.0
+    global_time_budget_seconds: float = 600.0
+    source_circuit_breaker_failures: int = 3
+    runtime_journal_max_events: int = 2000
     retry_failed_sources: bool = False
     include_latest_sources: bool = False
     api_keys: dict[str, str] = field(default_factory=dict)
@@ -143,6 +166,12 @@ class FetchContext:
     source_role_map: dict[str, list[str]] = field(default_factory=dict)
     run_id: str = ""
     run_started_at: str = ""
+    monotonic_func: Callable[[], float] = time.monotonic
+    run_started_monotonic: float = 0.0
+    source_started_monotonic: dict[str, float] = field(default_factory=dict)
+    source_failure_counts: dict[str, int] = field(default_factory=dict)
+    circuit_open_sources: set[str] = field(default_factory=set)
+    runtime_journal_events: int = 0
 
     def __post_init__(self) -> None:
         if self.cache_dir is None:
@@ -152,10 +181,102 @@ class FetchContext:
         if not self.run_id:
             stamp = self.run_started_at.replace(":", "").replace("-", "").replace("+", "_")
             self.run_id = f"retrieval-{stamp}-{uuid4().hex[:8]}"
+        if not self.run_started_monotonic:
+            self.run_started_monotonic = self.monotonic_func()
+        self.checkpoint("RUN_STARTED", {"since": self.since.isoformat()})
+
+    @property
+    def runtime_journal_path(self) -> Path:
+        return self.root / "audits" / "worktree" / "runtime-journals" / f"{self.run_id}.jsonl"
+
+    def checkpoint(self, event: str, details: dict[str, object] | None = None) -> None:
+        if self.dry_run:
+            return
+        if self.runtime_journal_events >= self.runtime_journal_max_events:
+            return
+        path = self.runtime_journal_path
+        path.parent.mkdir(parents=True, exist_ok=True)
+        row = {
+            "run_id": self.run_id,
+            "recorded_at": datetime.now(timezone.utc).isoformat(),
+            "event": event,
+            "details": details or {},
+        }
+        with path.open("a", encoding="utf-8") as handle:
+            handle.write(json.dumps(row, ensure_ascii=False, sort_keys=True) + "\n")
+        self.runtime_journal_events += 1
+
+    def start_source(self, source_name: str) -> None:
+        now = self.monotonic_func()
+        self.source_started_monotonic.setdefault(source_name, now)
+        self.health(source_name).runtime_state = "running"
+        self.checkpoint("SOURCE_STARTED", {"source": source_name})
+
+    def finish_source(self, source_name: str, record_count: int) -> None:
+        health = self.health(source_name)
+        if health.runtime_state == "running":
+            health.runtime_state = "complete"
+        health.partial_results_preserved = record_count > 0 and health.runtime_state != "complete"
+        self.checkpoint(
+            "SOURCE_FINISHED",
+            {
+                "source": source_name,
+                "runtime_state": health.runtime_state,
+                "runtime_reason_code": health.runtime_reason_code,
+                "record_count": record_count,
+            },
+        )
+
+    def request_allowed(self, source_name: str) -> bool:
+        health = self.health(source_name)
+        now = self.monotonic_func()
+        if source_name in self.circuit_open_sources:
+            health.requests_skipped += 1
+            health.runtime_state = "partial"
+            health.runtime_reason_code = "SOURCE_CIRCUIT_OPEN"
+            health.circuit_open = True
+            self.checkpoint("REQUEST_SKIPPED", {"source": source_name, "reason": "SOURCE_CIRCUIT_OPEN"})
+            return False
+        if now - self.run_started_monotonic >= self.global_time_budget_seconds:
+            health.requests_skipped += 1
+            health.runtime_state = "partial"
+            health.runtime_reason_code = "GLOBAL_TIME_BUDGET_EXHAUSTED"
+            self.checkpoint("REQUEST_SKIPPED", {"source": source_name, "reason": "GLOBAL_TIME_BUDGET_EXHAUSTED"})
+            return False
+        source_start = self.source_started_monotonic.setdefault(source_name, now)
+        if now - source_start >= self.per_source_time_budget_seconds:
+            health.requests_skipped += 1
+            health.runtime_state = "partial"
+            health.runtime_reason_code = "SOURCE_TIME_BUDGET_EXHAUSTED"
+            self.checkpoint("REQUEST_SKIPPED", {"source": source_name, "reason": "SOURCE_TIME_BUDGET_EXHAUSTED"})
+            return False
+        health.requests_attempted += 1
+        return True
+
+    def note_request_result(self, source_name: str, *, ok: bool, failure_category: str | None = None) -> None:
+        health = self.health(source_name)
+        if ok:
+            self.source_failure_counts[source_name] = 0
+            health.consecutive_failures = 0
+            self.checkpoint("REQUEST_SUCCEEDED", {"source": source_name})
+            return
+        category = str(failure_category or "source_error")
+        eligible = category in {"rate_limit", "timeout", "ssl_error", "network_error", "connection_error", "server_error"}
+        if eligible:
+            count = self.source_failure_counts.get(source_name, 0) + 1
+            self.source_failure_counts[source_name] = count
+            health.consecutive_failures = count
+            if count >= self.source_circuit_breaker_failures:
+                self.circuit_open_sources.add(source_name)
+                health.circuit_open = True
+                health.runtime_state = "partial"
+                health.runtime_reason_code = "SOURCE_CIRCUIT_OPEN"
+        self.checkpoint("REQUEST_FAILED", {"source": source_name, "category": category})
 
     def register_source(self, config: dict[str, Any]) -> None:
         name = str(config.get("name") or config.get("type") or "unknown")
         self.source_role_map[name] = serialized_source_roles(config)
+        self.start_source(name)
 
     def source_roles(self, source_name: str) -> list[str]:
         return list(self.source_role_map.get(source_name, ["LOW_CONFIDENCE_FALLBACK"]))
@@ -246,6 +367,7 @@ class FetchContext:
                 "finished_at": None,
             }
         )
+        self.checkpoint("QUERY_STARTED", {"source": source_name, "attempt_id": attempt_id, "query_id": request.query_id})
         return attempt_id
 
     def finish_query_attempt(
@@ -271,6 +393,10 @@ class FetchContext:
         elif status in {"failed", "rate_limited"}:
             decision = "RATE_LIMITED" if error_category == "rate_limit" else "SOURCE_FAILED"
             self.record_route_event("query_attempt", attempt_id, "SOURCE", decision, error_category or "source request failed")
+        self.checkpoint(
+            "QUERY_FINISHED",
+            {"attempt_id": attempt_id, "status": status, "raw_candidates": raw_candidates, "error_category": error_category},
+        )
 
     def record_query_attempt(
         self,
@@ -367,7 +493,13 @@ class FetchContext:
                     "update_date" if record and record.update_date else "publication_date" if record and record.publication_date else "NOT_OBSERVABLE"
                 ),
                 "publication_date": record.publication_date if record else None,
+                "publication_timestamp": record.publication_timestamp if record else None,
+                "publication_date_kind": record.publication_date_kind if record else None,
                 "update_date": record.update_date if record else None,
+                "update_timestamp": record.update_timestamp if record else None,
+                "update_date_kind": record.update_date_kind if record else None,
+                "first_seen_at": record.first_seen_at if record else None,
+                "source_observed_at": record.source_observed_at if record else None,
                 "abstract_present": bool(record and record.abstract),
                 "evidence_availability": "TITLE_AND_ABSTRACT" if record and record.abstract else "TITLE_ONLY",
                 "source_evidence_terms": list(record.source_evidence_terms) if record else [],
@@ -430,6 +562,8 @@ def fetch_text(
     headers: dict[str, str] | None = None,
     source_name: str = "http",
 ) -> str | None:
+    if not context.request_allowed(source_name):
+        return None
     assert context.cache_dir is not None
     source_warnings: list[str] = []
     response = request_text(
@@ -442,10 +576,13 @@ def fetch_text(
         cache_ttl_seconds=context.http_cache_ttl_seconds,
         min_interval_seconds=context.per_domain_min_interval_seconds,
         max_retries=context.max_retries,
+        max_retry_after_seconds=context.max_retry_after_seconds,
         warnings=source_warnings,
     )
     for warning in source_warnings:
         context.add_warning(warning, source_name)
+    category = _response_failure_category(response) if not response.ok else None
+    context.note_request_result(source_name, ok=response.ok, failure_category=category)
     return response.text if response.ok else None
 
 
@@ -455,9 +592,11 @@ def fetch_json(
     headers: dict[str, str] | None = None,
     source_name: str = "http",
 ) -> dict[str, Any] | None:
+    if not context.request_allowed(source_name):
+        return None
     assert context.cache_dir is not None
     source_warnings: list[str] = []
-    data, _ = request_json(
+    data, response = request_json(
         url,
         source=source_name,
         user_agent=context.user_agent,
@@ -467,11 +606,36 @@ def fetch_json(
         cache_ttl_seconds=context.http_cache_ttl_seconds,
         min_interval_seconds=context.per_domain_min_interval_seconds,
         max_retries=context.max_retries,
+        max_retry_after_seconds=context.max_retry_after_seconds,
         warnings=source_warnings,
     )
     for warning in source_warnings:
         context.add_warning(warning, source_name)
+    category = _response_failure_category(response) if not response.ok else None
+    context.note_request_result(source_name, ok=response.ok, failure_category=category)
     return data
+
+
+def _response_failure_category(response: Any) -> str:
+    warning = getattr(response, "warning", None)
+    status_code = getattr(warning, "status_code", None)
+    text = " ".join(
+        str(value or "")
+        for value in (getattr(warning, "reason", ""), getattr(warning, "error", ""))
+    ).lower()
+    if status_code == 429:
+        return "rate_limit"
+    if status_code is not None and int(status_code) >= 500:
+        return "server_error"
+    if "timeout" in text:
+        return "timeout"
+    if "ssl" in text or "tls" in text:
+        return "ssl_error"
+    if "connection" in text:
+        return "connection_error"
+    if "urlerror" in text or "network" in text or "name resolution" in text:
+        return "network_error"
+    return "source_error"
 
 
 def normalize_date(value: str | None) -> str | None:
@@ -512,8 +676,17 @@ def parse_date_for_filter(value: str | None) -> datetime | None:
         return None
 
 
-def within_since(publication_date: str | None, update_date: str | None, since: datetime) -> bool:
-    parsed = parse_date_for_filter(update_date) or parse_date_for_filter(publication_date)
+def within_since(
+    publication_date: str | None,
+    update_date: str | None,
+    since: datetime,
+    *,
+    update_date_kind: str = "AUTHORITATIVE_CONTENT_REVISION_DATE",
+) -> bool:
+    parsed_update = None
+    if update_date_kind == "AUTHORITATIVE_CONTENT_REVISION_DATE":
+        parsed_update = parse_date_for_filter(update_date)
+    parsed = parsed_update or parse_date_for_filter(publication_date)
     if parsed is None:
         return False
     return parsed >= since

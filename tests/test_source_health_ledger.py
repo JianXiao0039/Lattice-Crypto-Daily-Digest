@@ -81,8 +81,8 @@ def test_source_health_ledger_writes_markdown() -> None:
         markdown = markdown_path.read_text(encoding="utf-8")
 
     assert "# Source Health Ledger - 2026-05-27" in markdown
-    assert "| Source | Status | Latest | Raw | Normalized | Final | Error Type | Retryable | Warnings | Errors |" in markdown
-    assert "| arxiv | green | cache_hit/5 | 5 | 4 | 1 | none | False | 1 | 0 |" in markdown
+    assert "| Source | Status | Runtime | Reason | Latest | Raw | Normalized | Final | Error Type | Retryable | Warnings | Errors |" in markdown
+    assert "| arxiv | green | unknown | none | cache_hit/5 | 5 | 4 | 1 | none | False | 1 | 0 |" in markdown
 
 
 def test_source_health_ledger_handles_empty_sources() -> None:

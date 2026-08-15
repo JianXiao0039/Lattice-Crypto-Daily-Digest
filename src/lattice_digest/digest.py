@@ -888,8 +888,18 @@ def _daily_reading_verdict(
         if record.research_value_score >= 70 or record.recommendation_level == "Backfill"
     ]
     degraded = _degraded_source_names(source_health)
+    critical_newly_observed = [
+        record
+        for record in routed_records
+        if record.freshness_bucket == "CRITICAL_NEWLY_OBSERVED_VERIFY_FIRST"
+    ]
 
-    if strong:
+    if critical_newly_observed:
+        action = (
+            f"检测到 {len(critical_newly_observed)} 条 CRITICAL newly-observed 安全信号；"
+            "它不是 primary-new，必须 READ_AND_VERIFY_IMMEDIATELY，并保持 TODO_VERIFY。"
+        )
+    elif strong:
         action = f"今日优先读 {len(strong)} 篇 Strong primary-new。"
     elif medium:
         action = f"今日可读 {len(medium)} 篇 Medium primary-new，先略读再决定是否精读。"
@@ -1480,6 +1490,11 @@ def _append_source_health_and_empty(
     if records:
         lines.extend(["当前最终入选论文数量非 0，不需要空报告补救。", ""])
         return
+    degraded = any(_source_status(item) in {"yellow", "red"} or item.get("runtime_state") == "partial" for item in (source_health or []))
+    if degraded:
+        lines.append("最近 36 小时的检索覆盖不完整，当前不能据此断言没有相关新论文。")
+    else:
+        lines.append("最近 36 小时未发现满足当前格密码研究门槛的新论文。")
     lines.append("今日没有通过筛选的论文。")
     lines.append("如果需要周计划材料，建议扩大窗口重试：")
     lines.append("- `python -m lattice_digest.run --since 7d --output markdown,json --send none`")
@@ -1517,6 +1532,9 @@ def generate_markdown(
         "### 今日读什么 / What to read today",
         "",
         f"- Daily verdict：{_daily_reading_verdict(records, freshness_routed_records, source_health)}",
+        f"- Previous 36h genuine primary count：{len(records)}",
+        f"- CRITICAL newly observed verify-first count：{sum(record.freshness_bucket == 'CRITICAL_NEWLY_OBSERVED_VERIFY_FIRST' for record in freshness_routed_records)}",
+        f"- Coverage completeness：{_metadata_text(metadata, 'completion_state', 'unknown')}",
         f"- Action counts：read_now={action_counts['read_now']}；skim={action_counts['skim']}；save/backfill={action_counts['save_or_backfill']}；verify_first={action_counts['verify_first']}",
         f"- Primary/backfill split：primary today/new={len(records)}；backfill/older/TODO_VERIFY={len(freshness_routed_records)}",
         f"- Top-level risk：{_source_health_risk_line(source_health)}",
@@ -1547,6 +1565,15 @@ def generate_markdown(
     if metadata and (metadata.get("collector") == "github_actions" or metadata.get("quality_status") == "provisional"):
         lines.append("- 质量提示：该报告由 GitHub Actions 生成，可能受限于 runner 网络环境；建议后续由本地 Codex backfill 增强。")
     if len(all_records) == 0:
+        degraded = any(
+            _source_status(item) in {"yellow", "red"} or item.get("runtime_state") == "partial"
+            for item in (source_health or [])
+        )
+        lines.append(
+            "最近 36 小时的检索覆盖不完整，当前不能据此断言没有相关新论文。"
+            if degraded
+            else "最近 36 小时未发现满足当前格密码研究门槛的新论文。"
+        )
         lines.append("今日未发现值得记录的格密码相关新论文。")
     if warnings:
         lines.append(f"- Warning：{len(warnings)} 条，详见第 8 节。")

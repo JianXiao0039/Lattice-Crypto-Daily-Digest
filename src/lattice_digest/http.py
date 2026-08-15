@@ -147,6 +147,7 @@ def request_text(
     cache_ttl_seconds: int = 12 * 60 * 60,
     min_interval_seconds: float = 1.0,
     max_retries: int = 2,
+    max_retry_after_seconds: float = 10.0,
     retry_statuses: tuple[int, ...] = (429, 503),
     warnings: list[str] | None = None,
     sleep_func: Callable[[float], None] = time.sleep,
@@ -193,6 +194,7 @@ def request_text(
             if status_code not in retry_statuses or attempt >= attempts:
                 break
             delay = retry_after if retry_after is not None else min(60.0, 2 ** (attempt - 1))
+            delay = min(max(0.0, delay), max(0.0, max_retry_after_seconds))
             sleep_func(delay)
         except (URLError, TimeoutError, OSError) as exc:
             last_warning = HttpWarning(

@@ -2,7 +2,8 @@ from __future__ import annotations
 
 import re
 from dataclasses import dataclass
-from datetime import date, datetime, timedelta
+from datetime import date, datetime, time, timedelta, timezone
+from email.utils import parsedate_to_datetime
 from typing import Any, Mapping
 
 from lattice_digest.models import PaperRecord
@@ -12,6 +13,19 @@ from lattice_digest.venue_registry import TODO_VERIFY, VenueRegistryEntry, find_
 
 
 FRESHNESS_WINDOW_DAYS = 1
+STRICT_FRESHNESS_POLICY_VERSION = "strict_36h_v1"
+
+AUTHORITATIVE_PUBLICATION_DATE = "AUTHORITATIVE_PUBLICATION_DATE"
+AUTHORITATIVE_ANNOUNCEMENT_DATE = "AUTHORITATIVE_ANNOUNCEMENT_DATE"
+AUTHORITATIVE_CONTENT_REVISION_DATE = "AUTHORITATIVE_CONTENT_REVISION_DATE"
+INDEX_METADATA_UPDATE_DATE = "INDEX_METADATA_UPDATE_DATE"
+FIRST_OBSERVED_AT = "FIRST_OBSERVED_AT"
+SOURCE_METADATA_CORRECTION = "SOURCE_METADATA_CORRECTION"
+PRIMARY_DATE_KINDS = {
+    AUTHORITATIVE_PUBLICATION_DATE,
+    AUTHORITATIVE_ANNOUNCEMENT_DATE,
+    AUTHORITATIVE_CONTENT_REVISION_DATE,
+}
 
 
 @dataclass(frozen=True)
@@ -72,6 +86,44 @@ def _in_window(value: str | None, run_date: date, window_days: int) -> bool:
     return start <= parsed <= end
 
 
+def _parse_timestamp(value: str | None) -> datetime | None:
+    if not value:
+        return None
+    text = str(value).strip()
+    if not text or text.lower() in {"unknown", TODO_VERIFY.lower()}:
+        return None
+    try:
+        parsed = datetime.fromisoformat(text.replace("Z", "+00:00"))
+    except ValueError:
+        try:
+            parsed = parsedate_to_datetime(text)
+        except (TypeError, ValueError, IndexError):
+            parsed_date = parse_date(text)
+            if parsed_date is None:
+                return None
+            return datetime.combine(parsed_date, time.min, timezone.utc)
+    if parsed.tzinfo is None:
+        parsed = parsed.replace(tzinfo=timezone.utc)
+    return parsed.astimezone(timezone.utc)
+
+
+def _in_coverage(
+    value: str | None,
+    coverage_start: datetime | None,
+    coverage_end: datetime | None,
+    run_date: date,
+    window_days: int,
+) -> bool:
+    if coverage_start is None or coverage_end is None:
+        return _in_window(value, run_date, window_days)
+    parsed = _parse_timestamp(value)
+    if parsed is None:
+        return False
+    start = coverage_start.astimezone(timezone.utc)
+    end = coverage_end.astimezone(timezone.utc)
+    return start <= parsed < end
+
+
 def _field(record: PaperRecord | Mapping[str, Any], name: str) -> Any:
     if isinstance(record, Mapping):
         return record.get(name)
@@ -100,11 +152,41 @@ def decide_freshness(
     record: PaperRecord | Mapping[str, Any],
     run_date: date,
     window_days: int = FRESHNESS_WINDOW_DAYS,
+    *,
+    coverage_start: datetime | None = None,
+    coverage_end: datetime | None = None,
 ) -> FreshnessDecision:
-    for basis in ("publication_date", "announcement_date", "update_date"):
-        value = _field(record, basis)
-        if _in_window(value, run_date, window_days):
-            return FreshnessDecision(basis, "primary_today_new", f"{basis} within freshness window", True)
+    for basis, kind_field, default_kind in (
+        ("publication_date", "publication_date_kind", AUTHORITATIVE_PUBLICATION_DATE),
+        ("announcement_date", "announcement_date_kind", AUTHORITATIVE_ANNOUNCEMENT_DATE),
+    ):
+        timestamp_field = basis.replace("_date", "_timestamp")
+        value = _field(record, timestamp_field) or _field(record, basis)
+        kind = str(_field(record, kind_field) or default_kind)
+        if kind not in PRIMARY_DATE_KINDS:
+            continue
+        if _in_coverage(value, coverage_start, coverage_end, run_date, window_days):
+            return FreshnessDecision(
+                basis,
+                "primary_today_new",
+                f"{basis} ({kind}) within freshness window",
+                True,
+            )
+
+    update_kind = str(_field(record, "update_date_kind") or AUTHORITATIVE_CONTENT_REVISION_DATE)
+    if update_kind == AUTHORITATIVE_CONTENT_REVISION_DATE and _in_coverage(
+        _field(record, "update_timestamp") or _field(record, "update_date"),
+        coverage_start,
+        coverage_end,
+        run_date,
+        window_days,
+    ):
+        return FreshnessDecision(
+            "update_date",
+            "recent_content_revision",
+            "source-authenticated content revision within freshness window; original publication is not relabeled new",
+            False,
+        )
 
     if _in_window(_field(record, "official_status_change_date"), run_date, window_days):
         return FreshnessDecision(
@@ -130,10 +212,17 @@ def decide_freshness(
             False,
         )
 
-    first_seen = _field(record, "first_seen_date")
-    if _in_window(first_seen, run_date, window_days):
+    first_seen = _field(record, "first_seen_at") or _field(record, "first_seen_date")
+    if _in_coverage(first_seen, coverage_start, coverage_end, run_date, window_days):
+        if str(_field(record, "security_impact_severity") or "").upper() == "CRITICAL":
+            return FreshnessDecision(
+                "first_seen_at",
+                "CRITICAL_NEWLY_OBSERVED_VERIFY_FIRST",
+                "critical source-grounded item newly observed; publication freshness remains unverified/older",
+                False,
+            )
         return FreshnessDecision(
-            "first_seen_date",
+            "first_seen_at" if _field(record, "first_seen_at") else "first_seen_date",
             "newly_discovered_but_older",
             "first seen within freshness window; original source date is older or absent",
             False,
@@ -215,17 +304,34 @@ def recommendation_reason(record: PaperRecord | Mapping[str, Any]) -> str:
 
 def _generated_zh_summary(text: str, fallback: str) -> str:
     if not text:
-        return f"TODO_VERIFY: {fallback}"
+        return f"TODO_VERIFY: TODO_VERIFY_TRANSLATION: {fallback}"
     compact = " ".join(text.split())
-    return f"model-generated zh summary: {compact[:180]}"
+    return f"TODO_VERIFY: TODO_VERIFY_TRANSLATION: English source: {compact[:180]}"
 
 
 def enrich_record_for_daily_radar(
     record: PaperRecord,
     run_date: date,
     window_days: int = FRESHNESS_WINDOW_DAYS,
+    *,
+    coverage_start: datetime | None = None,
+    coverage_end: datetime | None = None,
 ) -> PaperRecord:
-    freshness = decide_freshness(record, run_date, window_days)
+    if record.freshness_policy_version == STRICT_FRESHNESS_POLICY_VERSION and coverage_start is None and coverage_end is None:
+        freshness = FreshnessDecision(
+            record.selected_date_basis,
+            record.freshness_bucket,
+            record.freshness_reason,
+            record.primary_today_new_eligible,
+        )
+    else:
+        freshness = decide_freshness(
+            record,
+            run_date,
+            window_days,
+            coverage_start=coverage_start,
+            coverage_end=coverage_end,
+        )
     venue = detect_venue_metadata(record)
     abstract_en = record.abstract or TODO_VERIFY
     conclusion = getattr(record, "conclusion", "") or ""
@@ -237,6 +343,7 @@ def enrich_record_for_daily_radar(
         todo_flags.append("abstract_en")
     if conclusion == "":
         todo_flags.append("conclusion_en")
+    todo_flags.extend(["abstract_zh", "conclusion_zh", "TODO_VERIFY_TRANSLATION"])
     if freshness.selected_date_basis == TODO_VERIFY:
         todo_flags.append("selected_date_basis")
     if venue.venue_status == TODO_VERIFY:
@@ -272,10 +379,13 @@ def enrich_record_for_daily_radar(
             "freshness_bucket": freshness.freshness_bucket,
             "freshness_reason": freshness.freshness_reason,
             "primary_today_new_eligible": freshness.primary_today_new_eligible,
+            "freshness_policy_version": STRICT_FRESHNESS_POLICY_VERSION,
             "abstract_en": abstract_en,
             "abstract_zh": _generated_zh_summary(record.abstract, "source abstract missing"),
             "conclusion_en": conclusion_en,
             "conclusion_zh": _generated_zh_summary(conclusion or record.abstract, "source conclusion missing"),
+            "translation_fidelity_status": "TODO_VERIFY_TRANSLATION",
+            "translation_fidelity_flags": sorted(set(record.translation_fidelity_flags) | {"TODO_VERIFY_TRANSLATION"}),
             **calibrated_update,
             "TODO_VERIFY_flags": todo_flags,
             "source_urls": [record.source_url] if record.source_url else [],
@@ -289,8 +399,20 @@ def apply_daily_freshness_policy(
     records: list[PaperRecord],
     run_date: date,
     window_days: int = FRESHNESS_WINDOW_DAYS,
+    *,
+    coverage_start: datetime | None = None,
+    coverage_end: datetime | None = None,
 ) -> tuple[list[PaperRecord], list[PaperRecord]]:
-    enriched = [enrich_record_for_daily_radar(record, run_date, window_days) for record in records]
+    enriched = [
+        enrich_record_for_daily_radar(
+            record,
+            run_date,
+            window_days,
+            coverage_start=coverage_start,
+            coverage_end=coverage_end,
+        )
+        for record in records
+    ]
     primary = [record for record in enriched if record.primary_today_new_eligible]
     routed = [record for record in enriched if not record.primary_today_new_eligible]
     return primary, routed

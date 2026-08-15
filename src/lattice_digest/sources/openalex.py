@@ -19,7 +19,11 @@ def _abstract_from_inverted_index(index: dict | None) -> str:
 
 
 def _sort_key(record: PaperRecord) -> datetime:
-    for value in (record.update_date, record.publication_date):
+    values = []
+    if record.update_date_kind == "AUTHORITATIVE_CONTENT_REVISION_DATE":
+        values.append(record.update_date)
+    values.append(record.publication_date)
+    for value in values:
         if value:
             try:
                 return datetime.fromisoformat(value[:10]).replace(tzinfo=timezone.utc)
@@ -88,9 +92,13 @@ class OpenAlexSource(SourceAdapter):
                     abstract=abstract, source="openalex",
                     source_url=source_url, paper_id=item.get("id"), doi=item.get("doi"),
                     venue=((item.get("primary_location") or {}).get("source") or {}).get("display_name"),
-                    publication_date=normalize_date(item.get("publication_date")), update_date=normalize_date(item.get("updated_date")),
+                    publication_date=normalize_date(item.get("publication_date")),
+                    publication_date_kind="AUTHORITATIVE_PUBLICATION_DATE",
+                    update_date=normalize_date(item.get("updated_date")),
+                    update_date_kind="INDEX_METADATA_UPDATE_DATE",
                     categories=["openalex"], source_query_family=request.family_id, source_query_text=request.query_text,
                     retrieval_timestamp=datetime.now(timezone.utc).isoformat(),
+                    source_observed_at=datetime.now(timezone.utc).isoformat(),
                 )
                 context.record_normalized_candidate(occurrence_id, record)
                 seen.add(source_url)
@@ -98,7 +106,12 @@ class OpenAlexSource(SourceAdapter):
         filtered = [
             record
             for record in normalized
-            if within_since(record.publication_date, record.update_date, context.since)
+            if within_since(
+                record.publication_date,
+                record.update_date,
+                context.since,
+                update_date_kind=record.update_date_kind,
+            )
         ]
         filtered.sort(key=_sort_key, reverse=True)
         context.set_source_counts(
