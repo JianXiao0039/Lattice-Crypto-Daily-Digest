@@ -20,6 +20,7 @@ class SourceHealth:
     name: str
     raw_candidates: int = 0
     normalized_candidates: int = 0
+    observability_candidates: int = 0
     date_filtered_candidates: int = 0
     deduped_candidates: int = 0
     relevance_filtered_candidates: int = 0
@@ -106,6 +107,7 @@ class SourceHealth:
             "raw_count": self.raw_candidates,
             "normalized_candidates": self.normalized_candidates,
             "normalized_count": self.normalized_candidates,
+            "observability_candidates": self.observability_candidates,
             "date_filtered_candidates": self.date_filtered_candidates,
             "date_filtered_count": self.date_filtered_candidates,
             "deduped_candidates": self.deduped_candidates,
@@ -302,6 +304,7 @@ class FetchContext:
         *,
         raw: int | None = None,
         normalized: int | None = None,
+        observability: int | None = None,
         date_filtered: int | None = None,
     ) -> None:
         health = self.health(source_name)
@@ -309,6 +312,8 @@ class FetchContext:
             health.raw_candidates = raw
         if normalized is not None:
             health.normalized_candidates = normalized
+        if observability is not None:
+            health.observability_candidates = observability
         if date_filtered is not None:
             health.date_filtered_candidates = date_filtered
 

@@ -1,0 +1,248 @@
+schema_version: "3.0"
+portfolio_id: global-lattice-query-portfolio-v3
+activation: shadow
+families:
+  - family_id: Q3-FND-LWE-VARIANTS
+    intent: DISCOVERY_HIGH_RECALL
+    concept_ids: [FND.LWE, FND.RLWE, FND.MLWE, FND.PLWE, FND.LWR]
+    relation_types: [USES_ASSUMPTION, REDUCES_TO, ATTACKS]
+    expected_positives: [LWE variants, hardness reductions, attacks]
+    required_coanchors: []
+    hard_negatives: [locally weighted estimation, generic learning noise]
+    cost_class: MEDIUM
+    expected_recall_contribution: HIGH
+    expected_precision_risk: MEDIUM
+    budget: 6
+    cadence: daily
+    source_native:
+      arxiv: '(all:"Learning With Errors" OR all:"Ring-LWE" OR all:"Module-LWE" OR all:PLWE OR all:LWR)'
+      openalex: '"Learning With Errors" OR "Ring-LWE" OR "Module-LWE" OR PLWE OR LWR'
+      semantic_scholar: 'Learning With Errors OR Ring-LWE OR Module-LWE OR PLWE OR LWR'
+  - family_id: Q3-FND-SIS-MSIS
+    intent: DISCOVERY_HIGH_RECALL
+    concept_ids: [FND.SIS, FND.MSIS]
+    relation_types: [USES_ASSUMPTION, REDUCES_TO]
+    expected_positives: [SIS assumptions, Module-SIS primitives]
+    required_coanchors: [cryptography, signature, commitment, zero knowledge]
+    hard_negatives: [student information system]
+    cost_class: MEDIUM
+    expected_recall_contribution: HIGH
+    expected_precision_risk: MEDIUM
+    budget: 5
+    cadence: daily
+    source_native:
+      arxiv: '(all:"Short Integer Solution" OR all:"Module-SIS" OR all:"Ring-SIS")'
+      openalex: '"Short Integer Solution" OR "Module-SIS" OR "Ring-SIS"'
+      semantic_scholar: 'Short Integer Solution OR Module-SIS OR Ring-SIS'
+      crossref: '"Module-SIS" cryptography'
+  - family_id: Q3-STRUCT-IDEAL-CYCLOTOMIC
+    intent: DISCOVERY_RELATION
+    concept_ids: [HARD.STRUCTURED, HARD.STRUCTURED_CVP, HARD.CVP]
+    relation_types: [PROVES_HARDNESS, PROVES_REDUCTION, SPECIALIZES]
+    expected_positives: [structured lattice hardness, ideal or cyclotomic CVP]
+    required_coanchors: [hardness, reduction, cryptography, ideal]
+    hard_negatives: [crystal lattice, lattice QCD, order theory]
+    cost_class: MEDIUM_HIGH
+    expected_recall_contribution: HIGH
+    expected_precision_risk: HIGH
+    budget: 4
+    cadence: daily
+    source_native:
+      arxiv: '((all:"ideal lattice" OR all:"cyclotomic lattice" OR all:"structured CVP") AND (all:hardness OR all:reduction))'
+      openalex: '("ideal lattice" OR "cyclotomic lattice" OR "structured CVP") AND (hardness OR reduction)'
+      semantic_scholar: 'ideal lattice cyclotomic CVP hardness reduction'
+  - family_id: Q3-STRUCT-LIP-MLIP-PIP
+    intent: DISCOVERY_RELATION
+    concept_ids: [FND.LIP, FND.MLIP, FND.PIP, ATTACK.QUATERNION]
+    relation_types: [ATTACKS, IMPROVES, REDUCES_TO]
+    expected_positives: [LIP or MLIP assumptions, PIP and nrd-PIP attacks]
+    required_coanchors: [lattice, ideal, quaternion, cryptography]
+    hard_negatives: [picture in picture, lipid]
+    cost_class: MEDIUM_HIGH
+    expected_recall_contribution: HIGH
+    expected_precision_risk: MEDIUM_HIGH
+    budget: 4
+    cadence: daily
+    source_native:
+      arxiv: '(all:"Lattice Isomorphism Problem" OR all:MLIP OR all:"Principal Ideal Problem" OR all:"nrd-PIP" OR all:"quaternion BKZ")'
+      openalex: '"Lattice Isomorphism Problem" OR MLIP OR "Principal Ideal Problem" OR "nrd-PIP" OR "quaternion BKZ"'
+      semantic_scholar: 'lattice isomorphism MLIP principal ideal nrd-PIP quaternion BKZ'
+  - family_id: Q3-NTRU-VARIANTS-ATTACKS
+    intent: DISCOVERY_RELATION
+    concept_ids: [FND.NTRU, PRIM.FN_DSA, PRIM.HAWK]
+    relation_types: [ATTACKS, USES_ASSUMPTION, VERSION_OF]
+    expected_positives: [NTRU variants, assumptions, attacks, signatures]
+    required_coanchors: []
+    hard_negatives: [generic polynomial rings]
+    cost_class: MEDIUM
+    expected_recall_contribution: HIGH
+    expected_precision_risk: MEDIUM
+    budget: 5
+    cadence: daily
+    source_native:
+      arxiv: '(all:NTRU OR all:"NTRU Prime" OR all:"NTRU lattice" OR all:"Hawk signature" OR all:Falcon)'
+      openalex: 'NTRU OR "NTRU Prime" OR "NTRU lattice" OR "Hawk signature" OR Falcon'
+      semantic_scholar: 'NTRU NTRU Prime Hawk Falcon lattice attack'
+      crossref: 'NTRU lattice cryptography'
+  - family_id: Q3-ATTACK-LLL-BKZ-SIEVING
+    intent: DISCOVERY_RELATION
+    concept_ids: [ATTACK.LATTICE_REDUCTION, ATTACK.QUATERNION, HARD.SVP]
+    relation_types: [ATTACKS, IMPROVES, ACCELERATES]
+    expected_positives: [lattice reduction, BKZ, sieving, enumeration]
+    required_coanchors: [lattice, SVP, LWE, cryptanalysis, NTRU, MLIP]
+    hard_negatives: [generic enumeration, generic pruning]
+    cost_class: MEDIUM
+    expected_recall_contribution: HIGH
+    expected_precision_risk: MEDIUM
+    budget: 6
+    cadence: daily
+    source_native:
+      arxiv: '((all:BKZ OR all:LLL OR all:"lattice sieving" OR all:G6K) AND (all:lattice OR all:SVP OR all:LWE OR all:NTRU))'
+      openalex: '(BKZ OR LLL OR "lattice sieving" OR G6K) AND (lattice OR SVP OR LWE OR NTRU)'
+      semantic_scholar: 'BKZ LLL lattice sieving G6K SVP LWE NTRU'
+  - family_id: Q3-ATTACK-PRIMAL-DUAL-HYBRID
+    intent: DISCOVERY_RELATION
+    concept_ids: [ATTACK.PRIMAL_DUAL_HYBRID, FND.LWE]
+    relation_types: [ATTACKS, IMPROVES]
+    expected_positives: [primal, dual, hybrid and sparse-LWE attacks]
+    required_coanchors: [LWE, lattice, NTRU]
+    hard_negatives: [generic hybrid attack]
+    cost_class: MEDIUM
+    expected_recall_contribution: HIGH
+    expected_precision_risk: MEDIUM
+    budget: 5
+    cadence: daily
+    source_native:
+      arxiv: '((all:"primal attack" OR all:"dual attack" OR all:"hybrid attack" OR all:"sparse LWE") AND (all:LWE OR all:lattice OR all:NTRU))'
+      openalex: '("primal attack" OR "dual attack" OR "hybrid attack" OR "sparse LWE") AND (LWE OR lattice OR NTRU)'
+      semantic_scholar: 'primal dual hybrid attack sparse LWE lattice'
+  - family_id: Q3-ZK-THRESHOLD-EXACT
+    intent: DISCOVERY_RELATION
+    concept_ids: [PROOF.LATTICE_ZK, PROOF.THRESHOLD_ZK, FND.MLWE, FND.SIS]
+    relation_types: [INSTANTIATES, USES_ASSUMPTION]
+    expected_positives: [threshold lattice ZK, exact relations, Hint-MLWE]
+    required_coanchors: [lattice, LWE, SIS, Hint-MLWE]
+    hard_negatives: [generic zk-SNARK, generic threshold proof]
+    cost_class: MEDIUM_HIGH
+    expected_recall_contribution: HIGH
+    expected_precision_risk: MEDIUM_HIGH
+    budget: 5
+    cadence: daily
+    source_native:
+      arxiv: '((all:"zero knowledge" OR all:"commit-and-prove" OR all:"exact relation") AND (all:lattice OR all:"Hint-MLWE" OR all:"Module-SIS"))'
+      openalex: '("zero knowledge" OR "commit-and-prove" OR "exact relation") AND (lattice OR "Hint-MLWE" OR "Module-SIS")'
+      semantic_scholar: 'zero knowledge commit-and-prove exact relation lattice Hint-MLWE Module-SIS'
+      crossref: 'lattice zero knowledge threshold proof'
+  - family_id: Q3-SIG-RING-BLIND-ADAPTOR-PRIVACY
+    intent: DISCOVERY_RELATION
+    concept_ids: [PRIM.PRIVACY_SIGNATURE, FND.SIS, FND.LWE]
+    relation_types: [INSTANTIATES, USES_ASSUMPTION]
+    expected_positives: [ring, linkable, blind and adaptor lattice signatures]
+    required_coanchors: [lattice, LWE, SIS, NTRU]
+    hard_negatives: [ECDSA adaptor signature, Schnorr adaptor signature]
+    cost_class: MEDIUM_HIGH
+    expected_recall_contribution: HIGH
+    expected_precision_risk: HIGH
+    budget: 5
+    cadence: daily
+    source_native:
+      arxiv: '((all:"ring signature" OR all:"blind signature" OR all:"adaptor signature" OR all:"anonymous authentication") AND (all:lattice OR all:LWE OR all:SIS OR all:NTRU))'
+      openalex: '("ring signature" OR "blind signature" OR "adaptor signature" OR "anonymous authentication") AND (lattice OR LWE OR SIS OR NTRU)'
+      semantic_scholar: 'ring blind adaptor signature anonymous authentication lattice LWE SIS NTRU'
+  - family_id: Q3-SIG-COMPACT-REJECTION
+    intent: DISCOVERY_RELATION
+    concept_ids: [PRIM.LATTICE_SIGNATURE, IMPL.REJECTION, PROOF.FIAT_SHAMIR]
+    relation_types: [IMPLEMENTS, ACCELERATES]
+    expected_positives: [compact lattice signatures, signing sampler improvements]
+    required_coanchors: [lattice signature, ML-DSA, Dilithium, Fiat-Shamir]
+    hard_negatives: [generic rejection sampling]
+    cost_class: MEDIUM
+    expected_recall_contribution: MEDIUM_HIGH
+    expected_precision_risk: MEDIUM
+    budget: 4
+    cadence: daily
+    source_native:
+      arxiv: '((all:"rejection sampling" OR all:"iterative rejection sampling" OR all:"compact signature") AND (all:"lattice signature" OR all:"ML-DSA" OR all:Dilithium OR all:"Fiat-Shamir"))'
+      openalex: '("rejection sampling" OR "iterative rejection sampling" OR "compact signature") AND ("lattice signature" OR "ML-DSA" OR Dilithium OR "Fiat-Shamir")'
+      semantic_scholar: 'rejection sampling compact lattice signature ML-DSA Fiat-Shamir'
+  - family_id: Q3-PROTOCOL-AKE-AUTH
+    intent: DISCOVERY_RELATION
+    concept_ids: [PRIM.AKE, PRIM.ML_KEM, FND.LWE]
+    relation_types: [INSTANTIATES, USES_ASSUMPTION]
+    expected_positives: [lattice AKE and authentication]
+    required_coanchors: [lattice, LWE, ML-KEM, Kyber]
+    hard_negatives: [generic AKE, classical TLS]
+    cost_class: MEDIUM_HIGH
+    expected_recall_contribution: MEDIUM_HIGH
+    expected_precision_risk: HIGH
+    budget: 4
+    cadence: daily
+    source_native:
+      arxiv: '((all:"authenticated key exchange" OR all:AKE OR all:authentication) AND (all:lattice OR all:LWE OR all:"ML-KEM" OR all:Kyber))'
+      openalex: '("authenticated key exchange" OR AKE OR authentication) AND (lattice OR LWE OR "ML-KEM" OR Kyber)'
+      semantic_scholar: 'authenticated key exchange AKE lattice LWE ML-KEM Kyber'
+  - family_id: Q3-FHE-SECURITY-IMPLEMENTATION
+    intent: DISCOVERY_RELATION
+    concept_ids: [FHE.RLWE, FHE.BOOTSTRAP, IMPL.ACCELERATION]
+    relation_types: [IMPROVES, IMPLEMENTS, AFFECTS_SECURITY]
+    expected_positives: [FHE security, bootstrapping and implementation]
+    required_coanchors: [security, algorithm, implementation, bootstrapping, CCA]
+    hard_negatives: [application-only homomorphic encryption]
+    cost_class: MEDIUM
+    expected_recall_contribution: HIGH
+    expected_precision_risk: HIGH
+    budget: 5
+    cadence: daily
+    source_native:
+      arxiv: '((all:FHE OR all:CKKS OR all:BFV OR all:BGV OR all:TFHE) AND (all:security OR all:bootstrapping OR all:implementation OR all:CCA))'
+      openalex: '(FHE OR CKKS OR BFV OR BGV OR TFHE) AND (security OR bootstrapping OR implementation OR CCA)'
+      semantic_scholar: 'FHE CKKS BFV BGV TFHE security bootstrapping implementation'
+  - family_id: Q3-QUANTUM-LATTICE-CONSEQUENCE
+    intent: CRITICAL_SECURITY_DISCOVERY
+    concept_ids: [RED.QUANTUM_DCP, HARD.SVP, FND.LWE]
+    relation_types: [SOLVES, REDUCES_TO, AFFECTS_SECURITY, PROVES_REDUCTION]
+    expected_positives: [DCP or hidden-shift algorithms with explicit lattice consequence]
+    required_coanchors: [reduction, lattice, LWE, SVP]
+    hard_negatives: [generic quantum algorithm, quantum error correction]
+    cost_class: HIGH
+    expected_recall_contribution: CRITICAL
+    expected_precision_risk: HIGH
+    budget: 4
+    cadence: daily
+    source_native:
+      arxiv: '((all:"Dihedral Coset Problem" OR all:EDCP OR all:"hidden shift") AND (all:reduction OR all:lattice OR all:LWE OR all:SVP))'
+      openalex: '("Dihedral Coset Problem" OR EDCP OR "hidden shift") AND (reduction OR lattice OR LWE OR SVP)'
+      semantic_scholar: 'Dihedral Coset Problem EDCP hidden shift reduction lattice LWE SVP'
+  - family_id: Q3-AI4LC
+    intent: DISCOVERY_RELATION
+    concept_ids: [AI4LC.REDUCTION, AI4LC.HYBRID, ATTACK.LATTICE_REDUCTION]
+    relation_types: [IMPROVES, ACCELERATES, ATTACKS]
+    expected_positives: [AI-assisted reduction, enumeration and hybrid attacks]
+    required_coanchors: [lattice, LWE, BKZ, enumeration, cryptanalysis]
+    hard_negatives: [generic neural optimization, generic modular arithmetic]
+    cost_class: MEDIUM_HIGH
+    expected_recall_contribution: MEDIUM_HIGH
+    expected_precision_risk: HIGH
+    budget: 4
+    cadence: daily
+    source_native:
+      arxiv: '((all:neural OR all:learning OR all:transformer OR all:AI) AND (all:"lattice reduction" OR all:LWE OR all:BKZ OR all:"hybrid attack"))'
+      openalex: '(neural OR learning OR transformer OR AI) AND ("lattice reduction" OR LWE OR BKZ OR "hybrid attack")'
+      semantic_scholar: 'neural learning transformer lattice reduction LWE BKZ hybrid attack'
+  - family_id: Q3-STANDARDS-ECOSYSTEM
+    intent: OFFICIAL_METADATA_WATCH
+    concept_ids: [STD.NIST, STD.IETF, PRIM.ML_KEM, PRIM.ML_DSA, PRIM.HAWK]
+    relation_types: [TARGETS_SCHEME, IMPLEMENTS, AFFECTS_SECURITY]
+    expected_positives: [official lattice PQC standards and protocol metadata]
+    required_coanchors: [ML-KEM, ML-DSA, FN-DSA, HAWK]
+    hard_negatives: [generic PQ marketing]
+    cost_class: LOW
+    expected_recall_contribution: UNIQUE
+    expected_precision_risk: MEDIUM
+    budget: 3
+    cadence: daily
+    source_native:
+      crossref: 'ML-KEM OR ML-DSA OR FN-DSA OR HAWK'
+      dblp: 'ML-KEM ML-DSA FN-DSA HAWK lattice cryptography'
+      openalex: 'ML-KEM OR ML-DSA OR FN-DSA OR "Hawk signature"'
+      semantic_scholar: 'ML-KEM ML-DSA FN-DSA Hawk signature'

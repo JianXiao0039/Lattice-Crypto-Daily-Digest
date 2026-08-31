@@ -22,6 +22,10 @@ from lattice_digest.artifact_paths import (
 from lattice_digest.models import PaperRecord
 from lattice_digest.ranker import rank_records
 from lattice_digest.radar_freshness import enrich_record_for_daily_radar
+from lattice_digest.observability_v3 import assign_observability_routes
+from lattice_digest.query_portfolio_v3 import load_query_portfolio_v3
+from lattice_digest.retrieval_metrics_v3 import evidence_metrics, query_marginal_yield, source_diversity_metrics
+from lattice_digest.retrieval_v3 import apply_semantic_consequence_analysis_v3, prepare_for_semantic_analysis_v3
 from lattice_digest.source_health_ledger import write_source_health_ledger
 from lattice_digest.sources import FetchContext, build_source
 from lattice_digest.sources.base import parse_date_for_filter
@@ -523,8 +527,55 @@ def main(argv: list[str] | None = None) -> int:
 
     source_configs = _enabled_source_configs(configs["sources"])
     records = _collect_records(source_configs, context)
-    ranked = rank_records(records, configs["taxonomy"], configs["keywords"], configs["negative"])
+    prepared_v3 = prepare_for_semantic_analysis_v3(records)
+    ranked = rank_records(
+        list(prepared_v3.records),
+        configs["taxonomy"],
+        configs["keywords"],
+        configs["negative"],
+    )
+    ranked = apply_semantic_consequence_analysis_v3(ranked)
+    observed, observability_decisions = assign_observability_routes(
+        ranked,
+        digest_date,
+        coverage_start=coverage_start,
+        coverage_end=coverage_end,
+    )
+    ranked = list(observed)
     ranked_before_coverage = list(ranked)
+    query_portfolio_v3 = load_query_portfolio_v3()
+    shadow_schedule = query_portfolio_v3.fair_schedule(
+        [str(item.get("name") or item.get("type")) for item in source_configs],
+        global_budget=48,
+        per_source_budget=12,
+    )
+    metadata["retrieval_v3"] = {
+        "pipeline_order": [
+            "RAW_OCCURRENCE",
+            "OBSERVABILITY_LEDGER",
+            "IDENTITY_RESOLUTION",
+            "EVIDENCE_MERGE",
+            "SELECTIVE_ENRICHMENT",
+            "SEMANTIC_CONSEQUENCE_ANALYSIS",
+            "STRICT_DAILY_ELIGIBILITY",
+        ],
+        "raw_occurrences": len(records),
+        "canonical_candidates": len(prepared_v3.identity.canonical_records),
+        "strong_identity_merges": prepared_v3.identity.strong_merge_count,
+        "secondary_identity_merges": prepared_v3.identity.secondary_merge_count,
+        "unsafe_fuzzy_auto_merges": 0,
+        "merge_proposals": len(prepared_v3.identity.merge_proposals),
+        "metadata_conflicts": prepared_v3.identity.conflict_count,
+        "enrichment_selected": prepared_v3.enrichment.selected_count,
+        "enrichment_requests": prepared_v3.enrichment.request_count,
+        "enrichment_upgraded": prepared_v3.enrichment.upgraded_count,
+        "observability_routes": [decision.model_dump(mode="json") for decision in observability_decisions],
+        "query_portfolio_v3_activation": "active" if query_portfolio_v3.production_active else "shadow",
+        "production_query_activation_decision": (
+            "ACTIVE" if query_portfolio_v3.production_active else "BATCH_A_PRODUCTION_QUERY_ACTIVATION_DEFERRED_BY_FROZEN_BOUNDARY"
+        ),
+        "shadow_query_schedule": [query.model_dump(mode="json") for query in shadow_schedule],
+    }
     ranked, coverage_dropped = _filter_records_to_coverage(
         ranked,
         coverage_start,
@@ -545,6 +596,9 @@ def main(argv: list[str] | None = None) -> int:
             f"source-role policy dropped {len(role_dropped)} standalone low-evidence metadata records"
         )
     ordered = _sort_records(role_eligible)
+    metadata["retrieval_v3"]["source_diversity_unique_marginal_recall"] = source_diversity_metrics(ranked_before_coverage)
+    metadata["retrieval_v3"]["query_marginal_yield"] = query_marginal_yield(ranked_before_coverage)
+    metadata["retrieval_v3"]["evidence_metrics"] = evidence_metrics(ranked_before_coverage)
     _update_source_health_after_pipeline(context, ranked, reliable, deduped, ordered)
     source_health = context.source_health_summary()
     degraded_sources = [

@@ -286,7 +286,7 @@ def test_candidate_ledger_freshness_drop_is_diagnosable() -> None:
     ranked, _ = _rank_and_enrich(item)
     payload = build_candidate_ledger([ranked], [ranked], [], [], [], [], [], date(2026, 8, 11))
     row = payload["candidates"][0]
-    assert (row["drop_stage"], row["final_route"]) == ("FRESHNESS", "dropped")
+    assert (row["drop_stage"], row["final_route"]) == ("STRICT_DAILY_ELIGIBILITY", "dropped")
 
 
 def test_critical_translation_exposes_status_and_source_text_in_markdown() -> None:
@@ -360,7 +360,11 @@ def test_edcp_positive_requires_explicit_lwe_consequence() -> None:
 
 def test_candidate_ledger_schema_has_complete_diagnostic_chain() -> None:
     payload = build_candidate_ledger([], [], [], [], [], [], [], date(2026, 8, 11))
-    assert payload["diagnostic_chain"] == ["SOURCE", "QUERY", "NORMALIZATION", "RELEVANCE", "FRESHNESS", "ROUTE"]
+    assert payload["diagnostic_chain"] == [
+        "SOURCE", "QUERY", "RAW_OCCURRENCE", "OBSERVABILITY", "IDENTITY_RESOLUTION",
+        "EVIDENCE_MERGE", "SELECTIVE_ENRICHMENT", "SEMANTIC_CONSEQUENCE_ANALYSIS",
+        "STRICT_DAILY_ELIGIBILITY", "ROUTE",
+    ]
 
 
 def test_candidate_ledger_records_zero_result_query_attempts() -> None:

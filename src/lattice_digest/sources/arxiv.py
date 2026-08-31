@@ -6,7 +6,7 @@ import xml.etree.ElementTree as ET
 from datetime import datetime, timezone
 
 from lattice_digest.models import PaperRecord, make_paper_record
-from lattice_digest.sources.base import FetchContext, SourceAdapter, fetch_text, normalize_date, within_since
+from lattice_digest.sources.base import FetchContext, SourceAdapter, fetch_text, normalize_date
 from lattice_digest.text import normalize_whitespace
 from lattice_digest.source_queries import QueryRequest, critical_query_requests, stable_query_id
 
@@ -201,21 +201,19 @@ class ArxivSource(SourceAdapter):
                         "source_query_family": request.family_id,
                         "source_query_text": request.query_text,
                         "retrieval_timestamp": datetime.now(timezone.utc).isoformat(),
+                        "raw_occurrence_ids": [occurrence_id],
+                        "query_ids": [request.query_id],
                     }
                 )
                 context.record_normalized_candidate(occurrence_id, record)
                 key = record.arxiv_id or record.source_url or record.title.lower()
                 normalized_by_key.setdefault(key, record)
         normalized = list(normalized_by_key.values())
-        filtered = [
-            record
-            for record in normalized
-            if within_since(record.publication_date, record.update_date, context.since)
-        ]
         context.set_source_counts(
             self.name,
             raw=raw_count,
             normalized=len(normalized),
-            date_filtered=len(filtered),
+            observability=len(normalized),
+            date_filtered=0,
         )
-        return filtered
+        return normalized

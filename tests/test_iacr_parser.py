@@ -174,7 +174,8 @@ def test_iacr_failed_attempt_requires_manual_retry_to_fetch_again(tmp_path: Path
 
     assert recovered_records[0].eprint_id == "2026/1117"
     assert recovered_health["raw_count"] == 1
-    assert recovered_health["date_filtered_count"] == 1
+    assert recovered_health["date_filtered_count"] == 0
+    assert recovered_health["observability_candidates"] == 1
     assert "manual retry enabled" in str(recovered_health["warnings"][0])
 
 

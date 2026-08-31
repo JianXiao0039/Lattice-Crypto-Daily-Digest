@@ -4,7 +4,7 @@ import urllib.parse
 from datetime import datetime, timezone
 
 from lattice_digest.models import PaperRecord, make_paper_record
-from lattice_digest.sources.base import FetchContext, SourceAdapter, fetch_json, normalize_date, within_since
+from lattice_digest.sources.base import FetchContext, SourceAdapter, fetch_json, normalize_date
 from lattice_digest.source_queries import critical_query_requests, legacy_query_requests
 
 
@@ -99,25 +99,17 @@ class OpenAlexSource(SourceAdapter):
                     categories=["openalex"], source_query_family=request.family_id, source_query_text=request.query_text,
                     retrieval_timestamp=datetime.now(timezone.utc).isoformat(),
                     source_observed_at=datetime.now(timezone.utc).isoformat(),
+                    raw_occurrence_ids=[occurrence_id], query_ids=[request.query_id],
                 )
                 context.record_normalized_candidate(occurrence_id, record)
                 seen.add(source_url)
                 normalized.append(record)
-        filtered = [
-            record
-            for record in normalized
-            if within_since(
-                record.publication_date,
-                record.update_date,
-                context.since,
-                update_date_kind=record.update_date_kind,
-            )
-        ]
-        filtered.sort(key=_sort_key, reverse=True)
+        normalized.sort(key=_sort_key, reverse=True)
         context.set_source_counts(
             self.name,
             raw=raw_count,
             normalized=len(normalized),
-            date_filtered=len(filtered),
+            observability=len(normalized),
+            date_filtered=0,
         )
-        return filtered
+        return normalized

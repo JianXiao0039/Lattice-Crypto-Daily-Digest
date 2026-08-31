@@ -95,6 +95,21 @@ class PaperRecord(BaseModel):
     source_query_family: str = ""
     source_query_text: str = ""
     retrieval_timestamp: str = ""
+    observability_route: str = "OBSERVED_PENDING_EVIDENCE"
+    observability_reasons: list[str] = Field(default_factory=list)
+    raw_occurrence_ids: list[str] = Field(default_factory=list)
+    source_ids: list[dict[str, str]] = Field(default_factory=list)
+    query_ids: list[str] = Field(default_factory=list)
+    date_evidence: list[dict[str, str | None]] = Field(default_factory=list)
+    evidence_versions: list[dict[str, Any]] = Field(default_factory=list)
+    content_hashes: list[str] = Field(default_factory=list)
+    version_relations: list[dict[str, str]] = Field(default_factory=list)
+    conflicting_metadata: list[dict[str, Any]] = Field(default_factory=list)
+    merge_rationale: list[str] = Field(default_factory=list)
+    provenance_strength: str = "unknown"
+    merge_proposals: list[dict[str, Any]] = Field(default_factory=list)
+    consequence_edges: list[dict[str, Any]] = Field(default_factory=list)
+    enrichment_events: list[dict[str, Any]] = Field(default_factory=list)
 
 
 def make_paper_record(**data: Any) -> PaperRecord:

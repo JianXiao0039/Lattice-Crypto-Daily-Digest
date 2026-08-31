@@ -1,12 +1,13 @@
 from __future__ import annotations
 
-from datetime import datetime, timezone
+from datetime import date, datetime, timedelta, timezone
 from pathlib import Path
 from tempfile import TemporaryDirectory
 
 import lattice_digest.sources.semantic_scholar as semantic_scholar
 from lattice_digest.sources.base import FetchContext
 from lattice_digest.sources.semantic_scholar import SemanticScholarSource
+from lattice_digest.run import _filter_records_to_coverage
 
 
 def test_semantic_scholar_year_only_record_is_not_in_36h_digest() -> None:
@@ -48,5 +49,15 @@ def test_semantic_scholar_year_only_record_is_not_in_36h_digest() -> None:
     finally:
         semantic_scholar.fetch_json = original_fetch_json
 
-    assert records == []
+    assert len(records) == 1
+    coverage_end = datetime(2026, 1, 2, tzinfo=timezone.utc)
+    kept, dropped = _filter_records_to_coverage(
+        records,
+        coverage_end - timedelta(hours=36),
+        coverage_end,
+        digest_date=date(2026, 1, 2),
+        include_backfill=False,
+    )
+    assert kept == []
+    assert dropped == 1
     assert any("year-only" in warning for warning in context.warnings)

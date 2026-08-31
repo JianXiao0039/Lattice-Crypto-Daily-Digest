@@ -6,7 +6,7 @@ import xml.etree.ElementTree as ET
 from datetime import datetime, timezone
 
 from lattice_digest.models import PaperRecord, make_paper_record
-from lattice_digest.sources.base import FetchContext, SourceAdapter, fetch_text, normalize_date, within_since
+from lattice_digest.sources.base import FetchContext, SourceAdapter, fetch_text, normalize_date
 from lattice_digest.text import normalize_whitespace
 from lattice_digest.source_queries import native_feed_query_request
 
@@ -196,6 +196,8 @@ class IacrEprintSource(SourceAdapter):
                     "source_query_family": "native_iacr_latest_feed",
                     "source_query_text": url,
                     "retrieval_timestamp": datetime.now(timezone.utc).isoformat(),
+                    "raw_occurrence_ids": [occurrence_id],
+                    "query_ids": [request.query_id],
                 }
             )
             context.record_normalized_candidate(occurrence_id, record)
@@ -224,6 +226,7 @@ class IacrEprintSource(SourceAdapter):
             self.name,
             raw=raw_count,
             normalized=len(normalized),
-            date_filtered=len(filtered),
+            observability=len(filtered),
+            date_filtered=0,
         )
         return filtered

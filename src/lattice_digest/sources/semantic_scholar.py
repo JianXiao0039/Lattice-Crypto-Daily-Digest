@@ -4,7 +4,7 @@ import urllib.parse
 from datetime import datetime, timezone
 
 from lattice_digest.models import PaperRecord, make_paper_record
-from lattice_digest.sources.base import FetchContext, SourceAdapter, fetch_json, normalize_date, within_since
+from lattice_digest.sources.base import FetchContext, SourceAdapter, fetch_json, normalize_date
 from lattice_digest.source_queries import critical_query_requests, legacy_query_requests
 
 
@@ -28,7 +28,6 @@ class SemanticScholarSource(SourceAdapter):
         if api_key:
             headers["x-api-key"] = api_key
         normalized: list[PaperRecord] = []
-        filtered: list[PaperRecord] = []
         skipped_year_only = 0
         raw_count = 0
         seen: set[str] = set()
@@ -75,24 +74,23 @@ class SemanticScholarSource(SourceAdapter):
                     publication_date=publication_date, update_date=update_date, categories=["semantic_scholar"],
                     source_query_family=request.family_id, source_query_text=request.query_text,
                     retrieval_timestamp=datetime.now(timezone.utc).isoformat(),
+                    raw_occurrence_ids=[occurrence_id], query_ids=[request.query_id],
                 )
                 context.record_normalized_candidate(occurrence_id, record)
                 seen.add(source_url)
                 normalized.append(record)
                 if self.config.get("exclude_year_only_from_since_window", True) and item.get("year") and not publication_date and not update_date:
                     skipped_year_only += 1
-                    continue
-                if within_since(record.publication_date, record.update_date, context.since):
-                    filtered.append(record)
         if skipped_year_only:
             context.add_warning(
-                f"{self.name}: skipped {skipped_year_only} year-only record(s) without publicationDate/updatedAt",
+                f"{self.name}: preserved {skipped_year_only} year-only record(s) in observability without Daily freshness eligibility",
                 self.name,
             )
         context.set_source_counts(
             self.name,
             raw=raw_count,
             normalized=len(normalized),
-            date_filtered=len(filtered),
+            observability=len(normalized),
+            date_filtered=0,
         )
-        return filtered
+        return normalized

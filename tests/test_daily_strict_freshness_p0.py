@@ -203,6 +203,11 @@ def test_openalex_adapter_records_index_update_semantics_without_freshness_promo
     )
     records = source.fetch(context)
     normalized = context.normalized_candidates[0]
-    assert records == []
+    assert len(records) == 1  # V3 observability retains the occurrence for semantic/evidence analysis.
+    kept, dropped = _filter_records_to_coverage(
+        records, COVERAGE_START, COVERAGE_END, digest_date=RUN_DATE, include_backfill=False
+    )
+    assert kept == []
+    assert dropped == 1
     assert normalized["update_date_kind"] == "INDEX_METADATA_UPDATE_DATE"
     assert normalized["publication_date_kind"] == "AUTHORITATIVE_PUBLICATION_DATE"

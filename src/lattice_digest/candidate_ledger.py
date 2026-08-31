@@ -8,6 +8,7 @@ from pathlib import Path
 from typing import Any
 
 from lattice_digest.dedup import dedup_keys
+from lattice_digest.identity_v3 import resolve_identity_and_merge
 from lattice_digest.models import PaperRecord
 
 
@@ -46,10 +47,12 @@ def _terminal_route(
 ) -> tuple[str | None, str | None, str, str]:
     if not record.title or not record.source or not record.source_url:
         return "NORMALIZATION", "missing required title/source/source_url", "dropped", "NORMALIZATION_FAILED"
-    if not _matches_any(record, coverage_kept):
-        return "FRESHNESS", "outside selected coverage window", "dropped", "COVERAGE_DATE_REJECTED"
-    if record.relevance_label == "D" or not _matches_any(record, reliable):
+    if record.relevance_label == "D":
         return "RELEVANCE", record.reason or "D classification", "dropped", "RELEVANCE_REJECTED"
+    if not _matches_any(record, coverage_kept):
+        return "STRICT_DAILY_ELIGIBILITY", "outside selected coverage window", "dropped", "COVERAGE_DATE_REJECTED"
+    if not _matches_any(record, reliable):
+        return "RELIABILITY", "insufficient trustworthy source evidence", "dropped", "RELIABILITY_REJECTED"
     if not _matches_any(record, deduped):
         return "ROUTE", "deduplicated into another canonical record", "merged", "DEDUP_MERGED"
     if not _matches_any(record, final_records):
@@ -322,6 +325,20 @@ def build_candidate_ledger(
                 "selected_date_basis": record.selected_date_basis,
                 "freshness_bucket": record.freshness_bucket,
                 "abstract_present": bool(record.abstract),
+                "observability_route": record.observability_route,
+                "observability_reasons": list(record.observability_reasons),
+                "raw_occurrence_ids": list(record.raw_occurrence_ids),
+                "query_ids": list(record.query_ids),
+                "source_urls": list(record.source_urls),
+                "source_ids": list(record.source_ids),
+                "date_evidence": list(record.date_evidence),
+                "evidence_versions": list(record.evidence_versions),
+                "version_relations": list(record.version_relations),
+                "metadata_conflicts": list(record.conflicting_metadata),
+                "merge_rationale": list(record.merge_rationale),
+                "merge_proposals": list(record.merge_proposals),
+                "consequence_edges": list(record.consequence_edges),
+                "enrichment_events": list(record.enrichment_events),
                 "normalization_status": "normalized" if record.normalized_title else "incomplete",
                 "pre_relevance_status": "candidate",
                 "post_relevance_status": f"{record.relevance_label}:{record.relevance_score}",
@@ -335,7 +352,16 @@ def build_candidate_ledger(
                 "lifecycle_terminal_state": lifecycle_terminal_state,
             }
         )
-    canonical_candidates = _canonical_candidates(collected, deduped, raw_occurrences, normalized_candidates)
+    # Preserve the complete post-identity semantic population. Daily eligibility
+    # must not collapse the observability ledger to final-output candidates, while
+    # repeated occurrences still need one evidence-merged canonical row.
+    observable_identity = resolve_identity_and_merge(ranked)
+    canonical_candidates = _canonical_candidates(
+        collected,
+        list(observable_identity.canonical_records),
+        raw_occurrences,
+        normalized_candidates,
+    )
     final_canonical_ids = {
         str(item.get("canonical_candidate_id"))
         for item in canonical_candidates
@@ -370,10 +396,15 @@ def build_candidate_ledger(
         "run_started_at": run_started_at,
         "target_date": target_date.isoformat(),
         "generated_at": datetime.now(timezone.utc).isoformat(),
-        "diagnostic_chain": ["SOURCE", "QUERY", "NORMALIZATION", "RELEVANCE", "FRESHNESS", "ROUTE"],
+        "diagnostic_chain": [
+            "SOURCE", "QUERY", "RAW_OCCURRENCE", "OBSERVABILITY", "IDENTITY_RESOLUTION",
+            "EVIDENCE_MERGE", "SELECTIVE_ENRICHMENT", "SEMANTIC_CONSEQUENCE_ANALYSIS",
+            "STRICT_DAILY_ELIGIBILITY", "ROUTE",
+        ],
         "lifecycle_chain_v2": [
-            "SOURCE", "QUERY_PORTFOLIO", "RAW_OCCURRENCE", "NORMALIZATION", "EVIDENCE_AVAILABILITY",
-            "RELEVANCE", "CRITICAL_SIGNAL", "COVERAGE_DATE_GATE", "RELIABILITY", "DEDUP",
+            "SOURCE", "QUERY_PORTFOLIO", "RAW_OCCURRENCE", "NORMALIZATION", "OBSERVABILITY_LEDGER",
+            "IDENTITY_RESOLUTION", "EVIDENCE_MERGE", "SELECTIVE_ENRICHMENT", "EVIDENCE_AVAILABILITY",
+            "SEMANTIC_CONSEQUENCE_ANALYSIS", "RELEVANCE", "CRITICAL_SIGNAL", "STRICT_DAILY_ELIGIBILITY", "RELIABILITY", "DEDUP",
             "RECOMMENDATION", "DAILY_FRESHNESS_ROUTE", "OUTPUT",
         ],
         "source_health": source_health,

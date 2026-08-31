@@ -1,0 +1,519 @@
+schema_version: "3.0"
+ontology_id: global-lattice-research-ontology-v3
+concepts:
+  - concept_id: FND.LWE
+    canonical_name: Learning With Errors
+    domain: foundations_hardness
+    aliases: [LWE, Learning With Errors]
+    source_grounded_terms: [LWE, Learning With Errors]
+    inferred_tags: [lwe_family, noisy_linear_equations]
+    parents: []
+    children: [FND.RLWE, FND.MLWE, FND.PLWE]
+    consequence_relations: [USES_ASSUMPTION, REDUCES_TO, ATTACKS]
+    neighboring_topics: [HARD.SVP, ATTACK.PRIMAL_DUAL_HYBRID]
+    hard_negatives: [locally weighted estimation]
+    evidence_policy: SOURCE_TERM_OR_TYPED_EDGE
+  - concept_id: FND.RLWE
+    canonical_name: Ring Learning With Errors
+    domain: foundations_hardness
+    aliases: [RLWE, Ring-LWE, Ring Learning With Errors]
+    source_grounded_terms: [RLWE, Ring-LWE, Ring Learning With Errors]
+    inferred_tags: [lwe_family, ring_structure]
+    parents: [FND.LWE]
+    children: []
+    consequence_relations: [SPECIALIZES, USES_ASSUMPTION]
+    neighboring_topics: [FHE.RLWE]
+    hard_negatives: []
+    evidence_policy: SOURCE_TERM_OR_TYPED_EDGE
+  - concept_id: FND.MLWE
+    canonical_name: Module Learning With Errors
+    domain: foundations_hardness
+    aliases: [MLWE, Module-LWE, Module Learning With Errors, Hint-MLWE]
+    source_grounded_terms: [MLWE, Module-LWE, Module Learning With Errors, Hint-MLWE]
+    inferred_tags: [lwe_family, module_structure]
+    parents: [FND.LWE]
+    children: []
+    consequence_relations: [SPECIALIZES, USES_ASSUMPTION]
+    neighboring_topics: [PRIM.ML_KEM, PRIM.ML_DSA, PROOF.LATTICE_ZK]
+    hard_negatives: []
+    evidence_policy: SOURCE_TERM_OR_TYPED_EDGE
+  - concept_id: FND.PLWE
+    canonical_name: Polynomial Learning With Errors
+    domain: foundations_hardness
+    aliases: [PLWE, Polynomial-LWE, Polynomial Learning With Errors]
+    source_grounded_terms: [PLWE, Polynomial-LWE, Polynomial Learning With Errors]
+    inferred_tags: [lwe_family, polynomial_structure]
+    parents: [FND.LWE]
+    children: []
+    consequence_relations: [SPECIALIZES, ATTACKS]
+    neighboring_topics: [HARD.STRUCTURED]
+    hard_negatives: []
+    evidence_policy: SOURCE_TERM_OR_TYPED_EDGE
+  - concept_id: FND.LWR
+    canonical_name: Learning With Rounding
+    domain: foundations_hardness
+    aliases: [LWR, Learning With Rounding]
+    source_grounded_terms: [LWR, Learning With Rounding]
+    inferred_tags: [rounding_assumption]
+    parents: []
+    children: []
+    consequence_relations: [USES_ASSUMPTION]
+    neighboring_topics: [FND.LWE]
+    hard_negatives: []
+    evidence_policy: SOURCE_TERM_OR_TYPED_EDGE
+  - concept_id: FND.SIS
+    canonical_name: Short Integer Solution
+    domain: foundations_hardness
+    aliases: [SIS, Short Integer Solution, Ring-SIS, Module-SIS, MSIS]
+    source_grounded_terms: [Short Integer Solution, Ring-SIS, Module-SIS, MSIS]
+    inferred_tags: [sis_family, short_relation]
+    parents: []
+    children: [FND.MSIS]
+    consequence_relations: [USES_ASSUMPTION, REDUCES_TO]
+    neighboring_topics: [PRIM.LATTICE_SIGNATURE, PROOF.LATTICE_ZK]
+    hard_negatives: [student information system, surgical information system]
+    evidence_policy: SOURCE_TERM_WITH_COANCHOR_FOR_ACRONYM
+  - concept_id: FND.MSIS
+    canonical_name: Module Short Integer Solution
+    domain: foundations_hardness
+    aliases: [Module-SIS, MSIS, Module Short Integer Solution]
+    source_grounded_terms: [Module-SIS, MSIS, Module Short Integer Solution]
+    inferred_tags: [sis_family, module_structure]
+    parents: [FND.SIS]
+    children: []
+    consequence_relations: [SPECIALIZES, USES_ASSUMPTION]
+    neighboring_topics: [PRIM.ML_DSA, PROOF.LATTICE_ZK]
+    hard_negatives: []
+    evidence_policy: SOURCE_TERM_OR_TYPED_EDGE
+  - concept_id: FND.NTRU
+    canonical_name: NTRU
+    domain: foundations_hardness
+    aliases: [NTRU, NTRU lattice, NTRU Prime, NTRU-HRSS]
+    source_grounded_terms: [NTRU, NTRU lattice, NTRU Prime, NTRU-HRSS]
+    inferred_tags: [ntru_family, structured_lattice]
+    parents: []
+    children: []
+    consequence_relations: [USES_ASSUMPTION, ATTACKS, VERSION_OF]
+    neighboring_topics: [PRIM.FN_DSA, PRIM.HAWK]
+    hard_negatives: []
+    evidence_policy: SOURCE_TERM_OR_TYPED_EDGE
+  - concept_id: FND.LIP
+    canonical_name: Lattice Isomorphism Problem
+    domain: foundations_hardness
+    aliases: [LIP, Lattice Isomorphism Problem, MLIP, Module Lattice Isomorphism Problem]
+    source_grounded_terms: [Lattice Isomorphism Problem, MLIP, Module Lattice Isomorphism Problem]
+    inferred_tags: [isomorphism_assumption, hawk_neighbor]
+    parents: []
+    children: [FND.MLIP]
+    consequence_relations: [SPECIALIZES, ATTACKS]
+    neighboring_topics: [PRIM.HAWK, ATTACK.QUATERNION]
+    hard_negatives: [lip reading, lipid]
+    evidence_policy: SOURCE_TERM_WITH_COANCHOR_FOR_ACRONYM
+  - concept_id: FND.MLIP
+    canonical_name: Module Lattice Isomorphism Problem
+    domain: foundations_hardness
+    aliases: [MLIP, Module-LIP, Module Lattice Isomorphism Problem]
+    source_grounded_terms: [MLIP, Module-LIP, Module Lattice Isomorphism Problem]
+    inferred_tags: [isomorphism_assumption, module_structure]
+    parents: [FND.LIP]
+    children: []
+    consequence_relations: [SPECIALIZES, ATTACKS]
+    neighboring_topics: [PRIM.HAWK, ATTACK.QUATERNION]
+    hard_negatives: []
+    evidence_policy: SOURCE_TERM_OR_TYPED_EDGE
+  - concept_id: FND.PIP
+    canonical_name: Principal Ideal Problem
+    domain: foundations_hardness
+    aliases: [PIP, Principal Ideal Problem, nrd-PIP, reduced norm PIP]
+    source_grounded_terms: [Principal Ideal Problem, nrd-PIP, reduced norm PIP]
+    inferred_tags: [ideal_problem, algebraic_structure]
+    parents: []
+    children: []
+    consequence_relations: [REDUCES_TO, SPECIALIZES]
+    neighboring_topics: [HARD.STRUCTURED, ATTACK.QUATERNION]
+    hard_negatives: [picture in picture, package installer for python]
+    evidence_policy: SOURCE_TERM_WITH_COANCHOR_FOR_ACRONYM
+  - concept_id: HARD.SVP
+    canonical_name: Shortest Vector Problem
+    domain: foundations_hardness
+    aliases: [SVP, Shortest Vector Problem, SIVP, BDD]
+    source_grounded_terms: [Shortest Vector Problem, SIVP, Bounded Distance Decoding]
+    inferred_tags: [geometric_lattice_problem]
+    parents: []
+    children: []
+    consequence_relations: [REDUCES_TO, PROVES_HARDNESS, ATTACKS]
+    neighboring_topics: [ATTACK.LATTICE_REDUCTION]
+    hard_negatives: [support vector]
+    evidence_policy: SOURCE_TERM_WITH_COANCHOR_FOR_ACRONYM
+  - concept_id: HARD.CVP
+    canonical_name: Closest Vector Problem
+    domain: foundations_hardness
+    aliases: [CVP, Closest Vector Problem, exact CVP, GapCVP]
+    source_grounded_terms: [Closest Vector Problem, exact CVP, GapCVP]
+    inferred_tags: [geometric_lattice_problem]
+    parents: []
+    children: [HARD.STRUCTURED_CVP]
+    consequence_relations: [PROVES_HARDNESS, REDUCES_TO]
+    neighboring_topics: [HARD.STRUCTURED]
+    hard_negatives: [customer value proposition]
+    evidence_policy: SOURCE_TERM_WITH_COANCHOR_FOR_ACRONYM
+  - concept_id: HARD.STRUCTURED
+    canonical_name: Structured Lattice Problems
+    domain: foundations_hardness
+    aliases: [ideal lattice, principal lattice, cyclotomic lattice, structured lattice]
+    source_grounded_terms: [ideal lattice, principal lattice, cyclotomic lattice, structured lattice]
+    inferred_tags: [algebraic_lattice, structured_assumption]
+    parents: []
+    children: [HARD.STRUCTURED_CVP]
+    consequence_relations: [PROVES_HARDNESS, SPECIALIZES]
+    neighboring_topics: [FND.NTRU, FND.PIP]
+    hard_negatives: [crystal lattice, lattice QCD, lattice Boltzmann]
+    evidence_policy: SOURCE_TERM_OR_TYPED_EDGE
+  - concept_id: HARD.STRUCTURED_CVP
+    canonical_name: Structured Closest Vector Problem
+    domain: foundations_hardness
+    aliases: [principal cyclotomic CVP, ideal CVP, structured CVP]
+    source_grounded_terms: [principal cyclotomic CVP, ideal CVP, structured CVP]
+    inferred_tags: [structured_hardness]
+    parents: [HARD.CVP, HARD.STRUCTURED]
+    children: []
+    consequence_relations: [PROVES_HARDNESS, SPECIALIZES]
+    neighboring_topics: [FND.PIP]
+    hard_negatives: []
+    evidence_policy: SOURCE_TERM_OR_TYPED_EDGE
+  - concept_id: RED.WORST_AVERAGE
+    canonical_name: Worst-case to Average-case Reduction
+    domain: reductions_complexity
+    aliases: [worst-case to average-case, worst case reduction, average-case hardness]
+    source_grounded_terms: [worst-case to average-case, worst case reduction, average-case hardness]
+    inferred_tags: [hardness_reduction]
+    parents: []
+    children: []
+    consequence_relations: [PROVES_REDUCTION, REDUCES_TO]
+    neighboring_topics: [FND.LWE, FND.SIS]
+    hard_negatives: []
+    evidence_policy: SOURCE_TERM_OR_TYPED_EDGE
+  - concept_id: RED.SEARCH_DECISION
+    canonical_name: Search Decision Reduction
+    domain: reductions_complexity
+    aliases: [search-to-decision, decision-to-search, search versus decision]
+    source_grounded_terms: [search-to-decision, decision-to-search, search versus decision]
+    inferred_tags: [problem_equivalence]
+    parents: []
+    children: []
+    consequence_relations: [PROVES_REDUCTION]
+    neighboring_topics: [FND.LWE]
+    hard_negatives: []
+    evidence_policy: SOURCE_TERM_OR_TYPED_EDGE
+  - concept_id: RED.QUANTUM_DCP
+    canonical_name: Dihedral Coset and Hidden Shift Consequences
+    domain: reductions_complexity
+    aliases: [DCP, EDCP, Dihedral Coset Problem, Extrapolated Dihedral Coset Problem, hidden shift, Hidden Subgroup Problem]
+    source_grounded_terms: [Dihedral Coset Problem, Extrapolated Dihedral Coset Problem, hidden shift, Hidden Subgroup Problem]
+    inferred_tags: [quantum_consequence_candidate]
+    parents: []
+    children: []
+    consequence_relations: [SOLVES, REDUCES_TO, AFFECTS_SECURITY]
+    neighboring_topics: [HARD.SVP, FND.LWE]
+    hard_negatives: [generic quantum algorithm]
+    evidence_policy: TYPED_REDUCTION_PATH_REQUIRED
+  - concept_id: ATTACK.LATTICE_REDUCTION
+    canonical_name: Lattice Reduction
+    domain: cryptanalysis
+    aliases: [LLL, BKZ, HKZ, lattice reduction, G6K, lattice sieving, lattice enumeration]
+    source_grounded_terms: [LLL, BKZ, HKZ, lattice reduction, G6K, lattice sieving, lattice enumeration]
+    inferred_tags: [lattice_attack_method]
+    parents: []
+    children: [ATTACK.QUATERNION, ATTACK.PRIMAL_DUAL_HYBRID]
+    consequence_relations: [ATTACKS, IMPROVES, ACCELERATES]
+    neighboring_topics: [HARD.SVP, FND.LWE]
+    hard_negatives: [generic enumeration, generic pruning]
+    evidence_policy: TARGET_COANCHOR_REQUIRED_FOR_GENERIC_METHOD
+  - concept_id: ATTACK.QUATERNION
+    canonical_name: Quaternion Lattice Reduction
+    domain: cryptanalysis
+    aliases: [quaternion LLL, quaternion BKZ, quaternion lattice reduction, non-commutative lattice reduction]
+    source_grounded_terms: [quaternion LLL, quaternion BKZ, quaternion lattice reduction, non-commutative lattice reduction]
+    inferred_tags: [algebraic_attack, mlip_attack_candidate]
+    parents: [ATTACK.LATTICE_REDUCTION]
+    children: []
+    consequence_relations: [ATTACKS, IMPROVES]
+    neighboring_topics: [FND.MLIP, FND.PIP, PRIM.HAWK]
+    hard_negatives: [quaternion neural rotation]
+    evidence_policy: SOURCE_TERM_OR_TYPED_EDGE
+  - concept_id: ATTACK.PRIMAL_DUAL_HYBRID
+    canonical_name: Primal Dual and Hybrid Lattice Attacks
+    domain: cryptanalysis
+    aliases: [primal attack, dual attack, hybrid attack, sparse LWE attack]
+    source_grounded_terms: [primal attack, dual attack, hybrid attack, sparse LWE attack]
+    inferred_tags: [lwe_cryptanalysis]
+    parents: [ATTACK.LATTICE_REDUCTION]
+    children: []
+    consequence_relations: [ATTACKS, IMPROVES]
+    neighboring_topics: [FND.LWE]
+    hard_negatives: [generic hybrid attack]
+    evidence_policy: TARGET_COANCHOR_REQUIRED_FOR_GENERIC_METHOD
+  - concept_id: ATTACK.PHYSICAL
+    canonical_name: Physical Attacks on Lattice Schemes
+    domain: cryptanalysis
+    aliases: [side-channel attack, fault attack, fault injection, power analysis, masking]
+    source_grounded_terms: [side-channel attack, fault attack, fault injection, power analysis, masking]
+    inferred_tags: [implementation_security]
+    parents: []
+    children: []
+    consequence_relations: [ATTACKS, AFFECTS_SECURITY]
+    neighboring_topics: [IMPL.CONSTANT_TIME, PRIM.ML_KEM, PRIM.ML_DSA]
+    hard_negatives: [generic side-channel]
+    evidence_policy: TARGET_COANCHOR_REQUIRED_FOR_GENERIC_METHOD
+  - concept_id: PRIM.ML_KEM
+    canonical_name: ML-KEM
+    domain: pqc_primitives
+    aliases: [ML-KEM, Kyber, CRYSTALS-Kyber, FIPS 203]
+    source_grounded_terms: [ML-KEM, Kyber, CRYSTALS-Kyber, FIPS 203]
+    inferred_tags: [lattice_kem, standardized_pqc]
+    parents: []
+    children: []
+    consequence_relations: [TARGETS_SCHEME, IMPLEMENTS]
+    neighboring_topics: [FND.MLWE]
+    hard_negatives: []
+    evidence_policy: SOURCE_TERM_OR_TYPED_EDGE
+  - concept_id: PRIM.ML_DSA
+    canonical_name: ML-DSA
+    domain: pqc_primitives
+    aliases: [ML-DSA, Dilithium, CRYSTALS-Dilithium, FIPS 204]
+    source_grounded_terms: [ML-DSA, Dilithium, CRYSTALS-Dilithium, FIPS 204]
+    inferred_tags: [lattice_signature, standardized_pqc]
+    parents: []
+    children: []
+    consequence_relations: [TARGETS_SCHEME, IMPLEMENTS]
+    neighboring_topics: [FND.MLWE, FND.MSIS, IMPL.REJECTION]
+    hard_negatives: []
+    evidence_policy: SOURCE_TERM_OR_TYPED_EDGE
+  - concept_id: PRIM.FN_DSA
+    canonical_name: FN-DSA
+    domain: pqc_primitives
+    aliases: [FN-DSA, Falcon, FALCON, GPV signature]
+    source_grounded_terms: [FN-DSA, Falcon, FALCON, GPV signature]
+    inferred_tags: [ntru_signature, compact_signature]
+    parents: []
+    children: []
+    consequence_relations: [TARGETS_SCHEME, IMPLEMENTS]
+    neighboring_topics: [FND.NTRU, IMPL.GAUSSIAN]
+    hard_negatives: [falcon bird, Falcon language model]
+    evidence_policy: SOURCE_TERM_WITH_COANCHOR_FOR_AMBIGUOUS_ALIAS
+  - concept_id: PRIM.HAWK
+    canonical_name: HAWK
+    domain: pqc_primitives
+    aliases: [HAWK, Hawk signature]
+    source_grounded_terms: [Hawk signature, HAWK signature]
+    inferred_tags: [ntru_signature, mlip_neighbor]
+    parents: []
+    children: []
+    consequence_relations: [TARGETS_SCHEME, USES_ASSUMPTION]
+    neighboring_topics: [FND.NTRU, FND.MLIP]
+    hard_negatives: [hawk bird, Hawk malware, Hawk optimization]
+    evidence_policy: SOURCE_TERM_WITH_COANCHOR_FOR_AMBIGUOUS_ALIAS
+  - concept_id: PRIM.LATTICE_SIGNATURE
+    canonical_name: Lattice-based Signatures
+    domain: pqc_primitives
+    aliases: [lattice signature, lattice-based signature, Fiat-Shamir with aborts]
+    source_grounded_terms: [lattice signature, lattice-based signature, Fiat-Shamir with aborts]
+    inferred_tags: [signature_primitive]
+    parents: []
+    children: [PRIM.PRIVACY_SIGNATURE]
+    consequence_relations: [INSTANTIATES, USES_ASSUMPTION, IMPLEMENTS]
+    neighboring_topics: [FND.SIS, FND.LWE, IMPL.REJECTION]
+    hard_negatives: [generic digital signature]
+    evidence_policy: LATTICE_COANCHOR_REQUIRED
+  - concept_id: PRIM.PRIVACY_SIGNATURE
+    canonical_name: Lattice Privacy Signatures
+    domain: pqc_primitives
+    aliases: [lattice ring signature, lattice-based ring signature, linkable ring signature, lattice blind signature, lattice-based blind signature, lattice adaptor signature, anonymous authentication]
+    source_grounded_terms: [lattice ring signature, lattice-based ring signature, ring signature from lattice, ring signature over lattices, linkable ring signature from lattices, lattice blind signature, lattice-based blind signature, lattice adaptor signature, anonymous authentication from lattices, lattice-based anonymous authentication]
+    inferred_tags: [privacy_signature]
+    parents: [PRIM.LATTICE_SIGNATURE]
+    children: []
+    consequence_relations: [INSTANTIATES, USES_ASSUMPTION]
+    neighboring_topics: [PROOF.LATTICE_ZK]
+    hard_negatives: [Schnorr adaptor signature, ECDSA adaptor signature, generic blind signature]
+    evidence_policy: LATTICE_ASSUMPTION_EDGE_REQUIRED
+  - concept_id: PRIM.AKE
+    canonical_name: Lattice Authenticated Key Exchange
+    domain: pqc_primitives
+    aliases: [lattice AKE, lattice-based authenticated key exchange, post-quantum AKE with ML-KEM]
+    source_grounded_terms: [lattice AKE, lattice-based authenticated key exchange, post-quantum AKE with ML-KEM]
+    inferred_tags: [authentication_protocol]
+    parents: []
+    children: []
+    consequence_relations: [USES_ASSUMPTION, INSTANTIATES]
+    neighboring_topics: [PRIM.ML_KEM, STD.IETF]
+    hard_negatives: [generic AKE, classical TLS]
+    evidence_policy: LATTICE_SCHEME_COANCHOR_REQUIRED
+  - concept_id: PROOF.LATTICE_ZK
+    canonical_name: Lattice Zero Knowledge
+    domain: zk_proofs
+    aliases: [lattice zero knowledge, lattice ZK, lattice ZKP, Stern-like lattice proof, commit-and-prove]
+    source_grounded_terms: [lattice zero knowledge, lattice ZK, lattice ZKP, Stern-like lattice proof, commit-and-prove from lattices]
+    inferred_tags: [zero_knowledge, lattice_proof]
+    parents: []
+    children: [PROOF.THRESHOLD_ZK]
+    consequence_relations: [INSTANTIATES, USES_ASSUMPTION]
+    neighboring_topics: [FND.MLWE, FND.SIS]
+    hard_negatives: [generic zk-SNARK]
+    evidence_policy: LATTICE_ASSUMPTION_EDGE_REQUIRED
+  - concept_id: PROOF.THRESHOLD_ZK
+    canonical_name: Threshold Lattice Zero Knowledge
+    domain: zk_proofs
+    aliases: [threshold lattice ZK, threshold zero knowledge from lattices, threshold commit-and-prove, exact lattice relation]
+    source_grounded_terms: [threshold lattice ZK, threshold zero knowledge from lattices, threshold commit-and-prove, exact lattice relation]
+    inferred_tags: [threshold_crypto, exact_relation]
+    parents: [PROOF.LATTICE_ZK]
+    children: []
+    consequence_relations: [INSTANTIATES, USES_ASSUMPTION]
+    neighboring_topics: [FND.MLWE]
+    hard_negatives: [generic threshold proof]
+    evidence_policy: LATTICE_ASSUMPTION_EDGE_REQUIRED
+  - concept_id: PROOF.FIAT_SHAMIR
+    canonical_name: Fiat-Shamir Lattice Proofs and Signatures
+    domain: zk_proofs
+    aliases: [Fiat-Shamir, Fiat-Shamir with aborts, simulation extractability]
+    source_grounded_terms: [Fiat-Shamir with aborts, simulation extractability in lattice proofs]
+    inferred_tags: [fiat_shamir_transform]
+    parents: []
+    children: []
+    consequence_relations: [INSTANTIATES, ACCELERATES]
+    neighboring_topics: [IMPL.REJECTION, PRIM.LATTICE_SIGNATURE]
+    hard_negatives: [generic Fiat-Shamir transform]
+    evidence_policy: LATTICE_COANCHOR_REQUIRED
+  - concept_id: FHE.RLWE
+    canonical_name: LWE and RLWE Fully Homomorphic Encryption
+    domain: fhe
+    aliases: [lattice FHE, RLWE FHE, CKKS, BFV, BGV, TFHE, GSW]
+    source_grounded_terms: [lattice FHE, RLWE FHE, CKKS, BFV, BGV, TFHE, GSW]
+    inferred_tags: [homomorphic_encryption]
+    parents: []
+    children: [FHE.BOOTSTRAP]
+    consequence_relations: [USES_ASSUMPTION, IMPLEMENTS]
+    neighboring_topics: [FND.RLWE]
+    hard_negatives: [application using homomorphic encryption only]
+    evidence_policy: CRYPTOGRAPHIC_CONTRIBUTION_REQUIRED
+  - concept_id: FHE.BOOTSTRAP
+    canonical_name: FHE Bootstrapping and Active Security
+    domain: fhe
+    aliases: [FHE bootstrapping, programmable bootstrapping, CCA-secure FHE, active security for FHE]
+    source_grounded_terms: [FHE bootstrapping, programmable bootstrapping, CCA-secure FHE, active security for FHE]
+    inferred_tags: [fhe_security, fhe_implementation]
+    parents: [FHE.RLWE]
+    children: []
+    consequence_relations: [IMPROVES, IMPLEMENTS]
+    neighboring_topics: [IMPL.ACCELERATION]
+    hard_negatives: [generic machine learning on encrypted data]
+    evidence_policy: CRYPTOGRAPHIC_CONTRIBUTION_REQUIRED
+  - concept_id: IMPL.GAUSSIAN
+    canonical_name: Gaussian Sampling
+    domain: implementation
+    aliases: [Gaussian sampling, discrete Gaussian sampler, Knuth-Yao, CDT sampler]
+    source_grounded_terms: [discrete Gaussian sampler, Gaussian sampling for lattice cryptography, Knuth-Yao sampler, CDT sampler]
+    inferred_tags: [sampling_implementation]
+    parents: []
+    children: []
+    consequence_relations: [IMPLEMENTS, ACCELERATES]
+    neighboring_topics: [PRIM.FN_DSA]
+    hard_negatives: [generic Gaussian sampling]
+    evidence_policy: LATTICE_SCHEME_COANCHOR_REQUIRED
+  - concept_id: IMPL.REJECTION
+    canonical_name: Rejection Sampling
+    domain: implementation
+    aliases: [rejection sampling, iterative rejection sampling, rejection sampler]
+    source_grounded_terms: [rejection sampling for lattice signatures, iterative rejection sampling, lattice rejection sampler]
+    inferred_tags: [signature_sampling]
+    parents: []
+    children: []
+    consequence_relations: [IMPLEMENTS, ACCELERATES]
+    neighboring_topics: [PRIM.ML_DSA, PROOF.FIAT_SHAMIR]
+    hard_negatives: [generic rejection sampling, Monte Carlo rejection sampling]
+    evidence_policy: LATTICE_SIGNATURE_COANCHOR_REQUIRED
+  - concept_id: IMPL.NTT
+    canonical_name: Number Theoretic Transform Implementation
+    domain: implementation
+    aliases: [NTT, number theoretic transform, polynomial multiplication, modular reduction]
+    source_grounded_terms: [NTT for ML-KEM, NTT for ML-DSA, number theoretic transform for lattice cryptography]
+    inferred_tags: [polynomial_arithmetic]
+    parents: []
+    children: []
+    consequence_relations: [IMPLEMENTS, ACCELERATES]
+    neighboring_topics: [PRIM.ML_KEM, PRIM.ML_DSA]
+    hard_negatives: [generic FFT, generic polynomial multiplication]
+    evidence_policy: LATTICE_SCHEME_COANCHOR_REQUIRED
+  - concept_id: IMPL.CONSTANT_TIME
+    canonical_name: Constant-time Lattice Implementation
+    domain: implementation
+    aliases: [constant-time lattice implementation, masked ML-KEM, masked ML-DSA]
+    source_grounded_terms: [constant-time lattice implementation, masked ML-KEM, masked ML-DSA]
+    inferred_tags: [side_channel_countermeasure]
+    parents: []
+    children: []
+    consequence_relations: [IMPLEMENTS, AFFECTS_SECURITY]
+    neighboring_topics: [ATTACK.PHYSICAL]
+    hard_negatives: [generic constant time]
+    evidence_policy: LATTICE_SCHEME_COANCHOR_REQUIRED
+  - concept_id: IMPL.ACCELERATION
+    canonical_name: Lattice Hardware and Software Acceleration
+    domain: implementation
+    aliases: [AVX2 lattice, AVX-512 lattice, FPGA lattice cryptography, RISC-V PQC accelerator]
+    source_grounded_terms: [AVX2 lattice, AVX-512 lattice, FPGA lattice cryptography, RISC-V PQC accelerator]
+    inferred_tags: [implementation_acceleration]
+    parents: []
+    children: []
+    consequence_relations: [IMPLEMENTS, ACCELERATES]
+    neighboring_topics: [PRIM.ML_KEM, PRIM.ML_DSA, FHE.RLWE]
+    hard_negatives: [generic hardware accelerator]
+    evidence_policy: LATTICE_SCHEME_COANCHOR_REQUIRED
+  - concept_id: AI4LC.REDUCTION
+    canonical_name: AI-assisted Lattice Reduction
+    domain: ai4lc
+    aliases: [neural lattice reduction, learning-guided BKZ, learned pruning, AI-assisted enumeration]
+    source_grounded_terms: [neural lattice reduction, learning-guided BKZ, learned pruning for lattice enumeration, AI-assisted lattice cryptanalysis]
+    inferred_tags: [ai4lc, learning_augmented_attack]
+    parents: []
+    children: []
+    consequence_relations: [IMPROVES, ACCELERATES]
+    neighboring_topics: [ATTACK.LATTICE_REDUCTION]
+    hard_negatives: [generic neural optimization, generic pruning]
+    evidence_policy: LATTICE_ATTACK_COANCHOR_REQUIRED
+  - concept_id: AI4LC.HYBRID
+    canonical_name: AI-assisted Hybrid Lattice Attacks
+    domain: ai4lc
+    aliases: [coordinate ranking for LWE, learned hybrid attack, attack-cost prediction for LWE]
+    source_grounded_terms: [coordinate ranking for LWE, learned hybrid attack on LWE, attack-cost prediction for lattice cryptanalysis]
+    inferred_tags: [ai4lc, hybrid_attack_scheduling]
+    parents: []
+    children: []
+    consequence_relations: [IMPROVES, ACCELERATES]
+    neighboring_topics: [ATTACK.PRIMAL_DUAL_HYBRID]
+    hard_negatives: [generic ranking model, generic cost prediction]
+    evidence_policy: LATTICE_ATTACK_COANCHOR_REQUIRED
+  - concept_id: STD.NIST
+    canonical_name: NIST Post-Quantum Cryptography
+    domain: standards_ecosystem
+    aliases: [NIST PQC, FIPS 203, FIPS 204, additional digital signatures, threshold cryptography call]
+    source_grounded_terms: [NIST PQC, FIPS 203, FIPS 204, NIST additional digital signatures, NIST threshold cryptography]
+    inferred_tags: [standards_event]
+    parents: []
+    children: []
+    consequence_relations: [AFFECTS_SECURITY, TARGETS_SCHEME]
+    neighboring_topics: [PRIM.ML_KEM, PRIM.ML_DSA, PRIM.HAWK]
+    hard_negatives: [generic post-quantum marketing]
+    evidence_policy: OFFICIAL_SOURCE_OR_SCHEME_COANCHOR_REQUIRED
+  - concept_id: STD.IETF
+    canonical_name: IETF and CFRG PQC Ecosystem
+    domain: standards_ecosystem
+    aliases: [IETF PQC, CFRG PQC, LAMPS PQC, hybrid key exchange, ML-KEM draft]
+    source_grounded_terms: [IETF PQC, CFRG PQC, LAMPS PQC, ML-KEM draft, ML-DSA draft]
+    inferred_tags: [protocol_ecosystem]
+    parents: []
+    children: []
+    consequence_relations: [IMPLEMENTS, TARGETS_SCHEME]
+    neighboring_topics: [PRIM.ML_KEM, PRIM.ML_DSA, PRIM.AKE]
+    hard_negatives: [generic TLS migration]
+    evidence_policy: OFFICIAL_SOURCE_OR_SCHEME_COANCHOR_REQUIRED

@@ -6,7 +6,7 @@ import urllib.parse
 from datetime import datetime, timezone
 
 from lattice_digest.models import PaperRecord, make_paper_record
-from lattice_digest.sources.base import FetchContext, SourceAdapter, fetch_json, normalize_date, within_since
+from lattice_digest.sources.base import FetchContext, SourceAdapter, fetch_json, normalize_date
 from lattice_digest.text import normalize_whitespace
 from lattice_digest.source_queries import critical_query_requests, legacy_query_requests
 
@@ -70,19 +70,16 @@ class CrossrefSource(SourceAdapter):
                     publication_date=normalize_date(date_text), categories=["crossref"],
                     source_query_family=request.family_id, source_query_text=request.query_text,
                     retrieval_timestamp=datetime.now(timezone.utc).isoformat(),
+                    raw_occurrence_ids=[occurrence_id], query_ids=[request.query_id],
                 )
                 context.record_normalized_candidate(occurrence_id, record)
                 normalized.append(record)
                 seen.add(source_url)
-        filtered = [
-            record
-            for record in normalized
-            if within_since(record.publication_date, record.update_date, context.since)
-        ]
         context.set_source_counts(
             self.name,
             raw=raw_count,
             normalized=len(normalized),
-            date_filtered=len(filtered),
+            observability=len(normalized),
+            date_filtered=0,
         )
-        return filtered
+        return normalized
