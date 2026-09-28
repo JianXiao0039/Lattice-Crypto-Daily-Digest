@@ -170,7 +170,8 @@ def test_english_placeholder_is_not_marked_as_completed_chinese_translation() ->
 
 
 def test_empty_report_distinguishes_healthy_from_degraded_coverage() -> None:
-    healthy = [{"source": "arxiv", "health_status": "green", "runtime_state": "complete"}]
+    from lattice_digest.authority import configured_sources
+    healthy = [{"source": s['name'], "health_status": "green", "runtime_state": "complete"} for s in configured_sources() if s.get('enabled')]
     degraded = [{"source": "arxiv", "health_status": "yellow", "runtime_state": "partial"}]
     assert "最近 36 小时未发现满足当前格密码研究门槛的新论文。" in generate_markdown([], RUN_DATE, source_health=healthy)
     assert "最近 36 小时的检索覆盖不完整，当前不能据此断言没有相关新论文。" in generate_markdown([], RUN_DATE, source_health=degraded)

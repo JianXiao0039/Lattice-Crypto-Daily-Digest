@@ -30,6 +30,9 @@ from lattice_digest.source_health_ledger import write_source_health_ledger
 from lattice_digest.sources import FetchContext, build_source
 from lattice_digest.sources.base import parse_date_for_filter
 from lattice_digest.storage import write_json, write_markdown, write_sqlite
+from lattice_digest.promotion_history import load_promotion_history, apply_promotion_history
+from lattice_digest.authority import derive_authority
+from lattice_digest.storage import publish_daily_pair
 from lattice_digest.text import parse_duration_to_hours
 
 
@@ -596,6 +599,9 @@ def main(argv: list[str] | None = None) -> int:
             f"source-role policy dropped {len(role_dropped)} standalone low-evidence metadata records"
         )
     ordered = _sort_records(role_eligible)
+    prior_promotions, history_evidence = load_promotion_history(output_root / "data", digest_date)
+    ordered = apply_promotion_history(ordered, prior_promotions)
+    metadata["promotion_history"] = history_evidence
     metadata["retrieval_v3"]["source_diversity_unique_marginal_recall"] = source_diversity_metrics(ranked_before_coverage)
     metadata["retrieval_v3"]["query_marginal_yield"] = query_marginal_yield(ranked_before_coverage)
     metadata["retrieval_v3"]["evidence_metrics"] = evidence_metrics(ranked_before_coverage)
@@ -607,6 +613,7 @@ def main(argv: list[str] | None = None) -> int:
         if item.get("runtime_state") == "partial" or item.get("health_status") in {"yellow", "red"}
     ]
     metadata["completion_state"] = "degraded_complete" if degraded_sources else "complete"
+    metadata.update(derive_authority(ordered, source_health, source_configs=source_configs))
     metadata["degraded_sources"] = degraded_sources
     metadata["runtime_journal"] = str(context.runtime_journal_path)
     context.checkpoint(
@@ -645,7 +652,7 @@ def main(argv: list[str] | None = None) -> int:
                 print(f"- {warning}")
         _print_source_health(source_health)
         print("\nMarkdown preview:")
-        print(generate_markdown(ordered, digest_date, dropped_count, source_health, context.warnings, since_window, metadata))
+        print(generate_markdown(ordered, digest_date, dropped_count, source_health, context.warnings, since_window, metadata, source_configs=source_configs))
         return 0
 
     write_source_health_ledger(source_health, output_root, digest_date, run_datetime)
@@ -666,21 +673,14 @@ def main(argv: list[str] | None = None) -> int:
     written: list[Path] = []
     if quality_status == "authoritative_backfill" and supersedes:
         written.extend(_archive_existing_provisional(output_root, digest_date, existing_metadata))
-    if "json" in outputs:
-        written.append(write_json(ordered, output_root / "data", digest_date, source_health, context.warnings, since_window, metadata))
-    if "markdown" in outputs or "md" in outputs:
-        written.append(
-            write_markdown(
-                ordered,
-                output_root / "digests",
-                digest_date,
-                dropped_count,
-                source_health,
-                context.warnings,
-                since_window,
-                metadata,
-            )
-        )
+    if outputs & {"json", "markdown", "md"}:
+        try:
+            written.extend(publish_daily_pair(ordered, output_root, digest_date, dropped_count,
+                                             source_health, context.warnings, since_window, metadata,
+                                             force=args.force or bool(supersedes), source_configs=source_configs))
+        except (ValueError, OSError) as exc:
+            print(f"Daily canonical promotion failed: {exc}")
+            return 2
     written.append(write_sqlite(ordered, output_root / "papers.db"))
 
     print(f"Generated {len(ordered)} digest records.")

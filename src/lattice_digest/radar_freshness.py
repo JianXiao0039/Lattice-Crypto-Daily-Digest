@@ -156,6 +156,10 @@ def decide_freshness(
     coverage_start: datetime | None = None,
     coverage_end: datetime | None = None,
 ) -> FreshnessDecision:
+    event = _field(record, 'cross_day_event')
+    if event and event != 'NEW_DISTINCT_PAPER':
+        bucket = 'recent_content_revision' if event in {'GENUINE_NEW_VERSION', 'GENUINE_CONTENT_REVISION'} else ('date_uncertain_todo_verify' if event == 'IDENTITY_UNCERTAIN' else 'cross_day_duplicate')
+        return FreshnessDecision('promotion_history', bucket, str(event), False)
     for basis, kind_field, default_kind in (
         ("publication_date", "publication_date_kind", AUTHORITATIVE_PUBLICATION_DATE),
         ("announcement_date", "announcement_date_kind", AUTHORITATIVE_ANNOUNCEMENT_DATE),

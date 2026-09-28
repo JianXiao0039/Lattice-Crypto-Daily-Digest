@@ -24,6 +24,8 @@ from lattice_digest.artifact_paths import (
     weekly_data_path,
 )
 from lattice_digest.weekly_synthesis import LABEL_ORDER, dedup_key
+from lattice_digest.reading_actions import ReadingAction, reading_action, has_source_content
+from lattice_digest.daily_inputs import assess_daily_input, summarize_daily_inputs
 
 
 SCHEMA_VERSION = 1
@@ -245,24 +247,18 @@ def build_source_health_summary(daily_payloads: list[tuple[date, dict[str, Any]]
 
 
 def _reading_bucket(record: dict[str, Any]) -> str:
-    label = str(record.get("priority_label") or "")
-    if label in {"必须精读", "Read today"}:
-        return "Must Read"
-    if label in {"建议精读", "Read this week"}:
-        return "Should Skim"
-    if label in {"可略读", "暂存", "Skim for related work", "Save for background"}:
-        return "Track Later"
-    priority = int(record.get("reading_priority_score") or record.get("reading_priority") or 0)
-    if priority >= 70:
-        return "Must Read"
-    if priority >= 50:
-        return "Should Skim"
-    if priority >= 30:
-        return "Track Later"
-    return "Ignore / Peripheral"
+    return reading_action(record).value
 
 
 def _rationale_payload(record: dict[str, Any]) -> dict[str, Any]:
+    if not has_source_content(record):
+        return {'problem': 'TODO_VERIFY: only bibliographic metadata is available.',
+                'method': 'TODO_VERIFY: source method evidence unavailable.',
+                'contribution': 'TODO_VERIFY: source contribution evidence unavailable.',
+                'radar_relevance': 'Metadata navigation only; relevance requires source verification.',
+                'reading_action': _reading_bucket(record), 'evidence_basis': ['METADATA_ONLY'],
+                'confidence': 'METADATA_ONLY', 'todo_verify': ['Obtain source abstract or independent source excerpt.'],
+                'caveat': 'Metadata and classifier keywords do not establish research claims.', 'bilingual': None}
     rationale = build_recommendation_rationale(record).to_dict()
     bilingual = build_bilingual_rationale(record, top_paper=True).to_dict()
     return {
@@ -270,7 +266,7 @@ def _rationale_payload(record: dict[str, Any]) -> dict[str, Any]:
         "method": rationale["method_summary"],
         "contribution": rationale["contribution_summary"],
         "radar_relevance": rationale["radar_relevance"],
-        "reading_action": rationale["recommendation_reason"],
+        "reading_action": _reading_bucket(record),
         "evidence_basis": rationale["evidence_basis"],
         "confidence": rationale["confidence"],
         "todo_verify": rationale["todo_verify"],
@@ -291,6 +287,8 @@ def build_core_paper(record: dict[str, Any]) -> dict[str, Any]:
         "seen_dates": record.get("seen_dates", []),
         "seen_sources": record.get("seen_sources", []),
         "rationale": _rationale_payload(record),
+        "reading_action": _reading_bucket(record),
+        "evidence_status": 'SOURCE_CONTENT_AVAILABLE' if has_source_content(record) else 'METADATA_ONLY',
     }
 
 
@@ -305,7 +303,11 @@ def build_reading_priority(records: list[dict[str, Any]]) -> dict[str, list[dict
                 "relevance_score": int(record.get("relevance_score") or 0),
                 "reading_priority_score": int(record.get("reading_priority_score") or record.get("reading_priority") or 0),
                 "direction": direction_for_record(record),
-                "reason": build_recommendation_rationale(record).recommendation_reason,
+                "reason": _reading_bucket(record) + (': TODO_VERIFY source content before interpreting claims.' if not has_source_content(record) else ': source content available; verify proof and experiment details.'),
+                "reading_action": _reading_bucket(record),
+                "evidence_status": 'SOURCE_CONTENT_AVAILABLE' if has_source_content(record) else 'METADATA_ONLY',
+                "canonical_id": dedup_key(record),
+                "source_url": record.get('source_url') or record.get('url') or '',
             }
         )
     return {name: sorted(items, key=_display_sort_key) for name, items in buckets.items()}
@@ -379,7 +381,7 @@ def build_monthly_synthesis(
             continue
         if used_legacy:
             print(f"Warning: using legacy daily JSON fallback: {path}")
-        loaded.append((day, read_json(path)))
+        loaded.append((day, assess_daily_input(path, day, data_dir, used_legacy)))
         input_daily_files.append(path.as_posix())
     records = aggregate_records(loaded)
     class_counts = Counter(str(record.get("relevance_label") or "D") for record in records)
@@ -405,6 +407,10 @@ def build_monthly_synthesis(
         "input_daily_files": input_daily_files,
         "input_weekly_files": _weekly_files_for_month(data_dir, start, end),
         "missing_days": missing_days,
+        "input_quality": summarize_daily_inputs(loaded, missing_days),
+        "paper_index": [{**r, 'canonical_id': dedup_key(r), 'reading_action': _reading_bucket(r), 'evidence_status': 'SOURCE_CONTENT_AVAILABLE' if has_source_content(r) else 'METADATA_ONLY'} for r in records],
+        "translation_status": 'TRANSLATION_BACKEND_SELECTION_REQUIRED',
+        "bilingual_release_status": 'BILINGUAL_RELEASE_NOT_YET_AVAILABLE',
         "total_unique_records": len(records),
         "class_counts": dict(sorted(class_counts.items(), key=lambda item: LABEL_ORDER.get(item[0], 9))),
         "direction_counts": dict(sorted(direction_counts.items())),
@@ -463,6 +469,9 @@ def render_markdown(payload: dict[str, Any]) -> str:
         "## Executive Summary",
         "",
         f"- total unique papers: {payload['total_unique_records']}",
+        f"- Input authority: {payload.get('input_quality', {}).get('authority_state', 'UNKNOWN')}; fully valid Daily={len(payload.get('input_quality', {}).get('fully_valid_days', []))}",
+        f"- Daily semantic failures: {payload.get('input_quality', {}).get('semantic_failed_days', [])}; unknown: {payload.get('input_quality', {}).get('semantic_unknown_days', [])}",
+        '- Translation: TRANSLATION_BACKEND_SELECTION_REQUIRED; BILINGUAL_RELEASE_NOT_YET_AVAILABLE',
         f"- A/B/C class counts: {payload['class_counts']}",
         f"- top directions: {', '.join(f'{name} ({count})' for name, count in top_directions) if top_directions else 'none'}",
         f"- source-health status: {'source-starved days present' if health['source_starved'] else 'usable with recorded caveats'}",
@@ -522,6 +531,9 @@ def render_markdown(payload: dict[str, Any]) -> str:
     for key, values in todo.items():
         lines.append(f"- {key}: {', '.join(values[:12]) if values else 'none'}")
     lines.append("")
+    lines.extend(['## Complete canonical paper index', '', 'Detailed cards and reading lists above are bounded selections; this index contains every canonical indexed paper. The full machine-readable evidence is in paper_index in the matching Monthly JSON.', ''])
+    for item in payload.get('paper_index', []):
+        lines.append(f"- [{item.get('title', 'unknown')}]({item.get('source_url') or item.get('url') or ''}) | {item['canonical_id']} | {item['reading_action']} | {item['evidence_status']}")
     return "\n".join(lines)
 
 

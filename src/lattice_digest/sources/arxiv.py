@@ -174,6 +174,8 @@ class ArxivSource(SourceAdapter):
                 continue
             try:
                 root = ET.fromstring(xml_text)
+                if root.tag != '{http://www.w3.org/2005/Atom}feed':
+                    raise ET.ParseError('expected arXiv Atom feed, received another document')
                 group_raw_count = sum(1 for element in root.iter() if _local_name(element.tag) == "entry")
                 group_records = parse_arxiv_atom(xml_text)
             except ET.ParseError as exc:

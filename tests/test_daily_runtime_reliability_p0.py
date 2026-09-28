@@ -107,7 +107,8 @@ def test_huge_retry_after_never_sleeps_past_configured_cap(tmp_path: Path) -> No
         sleep_func=sleeps.append,
         open_func=opener,
     )
-    assert response.ok and sleeps == [3]
+    assert not response.ok and sleeps == [] and calls == 1
+    assert response.warning.retry_after == 3600
 
 
 def test_timeout_finishes_without_unbounded_retry(tmp_path: Path) -> None:

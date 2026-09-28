@@ -154,24 +154,53 @@ def request_text(
     monotonic_func: Callable[[], float] = time.monotonic,
     now_func: Callable[[], datetime] = _now_utc,
     open_func=None,
+    expected_format: str | None = None,
+    time_budget_seconds: float | None = None,
 ) -> HttpResponse:
+    deadline = monotonic_func() + max(0.0, time_budget_seconds) if time_budget_seconds is not None else None
     now = now_func()
     cache_hit = _read_cache(cache_dir, url, timedelta(seconds=cache_ttl_seconds), now)
     if cache_hit is not None:
-        return cache_hit
+        try:
+            if expected_format == 'json' and not isinstance(json.loads(cache_hit.text), dict):
+                raise ValueError('JSON root is not an object')
+            return cache_hit
+        except (ValueError, TypeError):
+            pass  # Retain historical bad cache evidence, but do not reuse it.
 
     attempts = max(1, max_retries + 1)
     request_headers = {"User-Agent": user_agent, **(headers or {})}
+    if expected_format == 'json':
+        request_headers.setdefault('Accept', 'application/json')
     opener = open_func or urlopen
     last_warning: HttpWarning | None = None
 
     for attempt in range(1, attempts + 1):
+        if deadline is not None:
+            remaining = deadline - monotonic_func()
+            domain_wait = max(0.0, min_interval_seconds - (monotonic_func() - _LAST_REQUEST_BY_DOMAIN.get(_domain(url), float('-inf'))))
+            if remaining <= domain_wait:
+                last_warning = HttpWarning(url=url, source=source, reason='time budget exhausted', attempts=attempt-1)
+                break
         _respect_domain_interval(url, min_interval_seconds, sleep_func, monotonic_func)
         request = Request(url, headers=request_headers)
         try:
-            with opener(request, timeout=timeout_seconds) as response:
+            timeout = min(timeout_seconds, max(0.001, deadline - monotonic_func())) if deadline is not None else timeout_seconds
+            with opener(request, timeout=timeout) as response:
                 body = response.read().decode("utf-8", errors="replace")
                 status_code = int(getattr(response, "status", None) or getattr(response, "code", None) or 200)
+                if expected_format == 'json':
+                    response_headers = getattr(response, 'headers', {}) or {}
+                    content_type = str(response_headers.get('Content-Type', '')).lower()
+                    try:
+                        if content_type and 'json' not in content_type:
+                            raise ValueError('unexpected Content-Type: ' + content_type)
+                        if not isinstance(json.loads(body), dict):
+                            raise ValueError('JSON root is not an object')
+                    except (ValueError, TypeError) as exc:
+                        last_warning = HttpWarning(url=url, source=source, status_code=status_code,
+                                                   reason='invalid JSON response', attempts=attempt, error=str(exc))
+                        break
                 _write_cache(cache_dir, url, body, status_code, now_func())
                 return HttpResponse(ok=True, url=url, status_code=status_code, text=body)
         except HTTPError as exc:
@@ -193,8 +222,12 @@ def request_text(
             )
             if status_code not in retry_statuses or attempt >= attempts:
                 break
+            if retry_after is not None and retry_after > max(0.0, max_retry_after_seconds):
+                break  # Defer rather than retry before the provider permits it.
             delay = retry_after if retry_after is not None else min(60.0, 2 ** (attempt - 1))
             delay = min(max(0.0, delay), max(0.0, max_retry_after_seconds))
+            if deadline is not None and monotonic_func() + delay >= deadline:
+                break
             sleep_func(delay)
         except (URLError, TimeoutError, OSError) as exc:
             last_warning = HttpWarning(
@@ -213,7 +246,7 @@ def request_text(
 
 
 def request_json(*args, **kwargs) -> tuple[dict | None, HttpResponse]:
-    response = request_text(*args, **kwargs)
+    response = request_text(*args, expected_format='json', **kwargs)
     if not response.ok:
         return None, response
     try:

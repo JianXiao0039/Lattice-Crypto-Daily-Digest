@@ -110,6 +110,18 @@ def _write_day(
         ],
     }
     path = daily_data_path(day, data_dir)
+    from lattice_digest.authority import derive_authority, semantic_qa
+    from lattice_digest.artifact_paths import daily_digest_path
+    payload['metadata'].update(derive_authority(records, payload['source_health']))
+    # This fixture tests Weekly routing, using an explicitly validated Daily.
+    md = '# Daily\n' + payload['metadata']['authority_state']
+    if not records:
+        from lattice_digest.authority import INCOMPLETE_ZERO_TEXT
+        md += '\n' + INCOMPLETE_ZERO_TEXT + '\n' + ', '.join(payload['metadata']['source_coverage']['incomplete_required_sources'])
+    payload['metadata']['semantic_qa'] = semantic_qa(payload, md, candidate=True)
+    md_path = daily_digest_path(day, data_dir.parent / 'digests')
+    md_path.parent.mkdir(parents=True, exist_ok=True)
+    md_path.write_text(md, encoding='utf-8')
     path.parent.mkdir(parents=True, exist_ok=True)
     path.write_text(json.dumps(payload, ensure_ascii=False, indent=2), encoding="utf-8")
 

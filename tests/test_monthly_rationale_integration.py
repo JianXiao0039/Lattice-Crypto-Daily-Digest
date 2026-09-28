@@ -65,9 +65,10 @@ def test_monthly_title_only_record_does_not_hallucinate_method_or_contribution()
         markdown = render_markdown(payload)
 
     rationale = payload["core_papers"][0]["rationale"]
-    assert rationale["confidence"] == "metadata_supported"
-    assert "不能可靠判断具体方法" in rationale["method"]
-    assert "不能可靠判断论文声称的新贡献" in rationale["contribution"]
+    assert rationale["confidence"] == "METADATA_ONLY"
+    assert "TODO_VERIFY" in rationale["method"]
+    assert "TODO_VERIFY" in rationale["contribution"]
+    assert rationale['reading_action'] == 'Track Later'
     assert "TODO_VERIFY" in markdown
 
 

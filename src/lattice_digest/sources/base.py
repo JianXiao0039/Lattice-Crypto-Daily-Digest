@@ -62,9 +62,13 @@ class SourceHealth:
             return "timeout"
         if "sslerror" in message or "ssl" in message:
             return "ssl_error"
+        if "invalid json" in message or "content-type" in message:
+            return "malformed_response"
+        if "http 406" in message:
+            return "not_acceptable"
         if "http 400" in message or "bad request" in message:
             return "invalid_request"
-        if "http 500" in message or "internal server error" in message:
+        if "http 500" in message or "http 503" in message or "internal server error" in message:
             return "server_error"
         if self.errors:
             return "source_error"
@@ -173,6 +177,7 @@ class FetchContext:
     source_started_monotonic: dict[str, float] = field(default_factory=dict)
     source_failure_counts: dict[str, int] = field(default_factory=dict)
     circuit_open_sources: set[str] = field(default_factory=set)
+    deferred_sources: set[str] = field(default_factory=set)
     runtime_journal_events: int = 0
 
     def __post_init__(self) -> None:
@@ -232,6 +237,12 @@ class FetchContext:
     def request_allowed(self, source_name: str) -> bool:
         health = self.health(source_name)
         now = self.monotonic_func()
+        if source_name in self.deferred_sources:
+            health.requests_skipped += 1
+            health.runtime_state = 'partial'
+            health.runtime_reason_code = 'PROVIDER_RETRY_AFTER_DEFERRED'
+            self.checkpoint('REQUEST_SKIPPED', {'source': source_name, 'reason': health.runtime_reason_code})
+            return False
         if source_name in self.circuit_open_sources:
             health.requests_skipped += 1
             health.runtime_state = "partial"
@@ -255,6 +266,11 @@ class FetchContext:
         health.requests_attempted += 1
         return True
 
+    def remaining_request_budget(self, source_name: str) -> float:
+        now = self.monotonic_func()
+        return max(0.0, min(self.global_time_budget_seconds - (now - self.run_started_monotonic),
+                            self.per_source_time_budget_seconds - (now - self.source_started_monotonic.get(source_name, now))))
+
     def note_request_result(self, source_name: str, *, ok: bool, failure_category: str | None = None) -> None:
         health = self.health(source_name)
         if ok:
@@ -263,7 +279,7 @@ class FetchContext:
             self.checkpoint("REQUEST_SUCCEEDED", {"source": source_name})
             return
         category = str(failure_category or "source_error")
-        eligible = category in {"rate_limit", "timeout", "ssl_error", "network_error", "connection_error", "server_error"}
+        eligible = category in {"rate_limit", "timeout", "ssl_error", "network_error", "connection_error", "server_error", "malformed_response", "not_acceptable"}
         if eligible:
             count = self.source_failure_counts.get(source_name, 0) + 1
             self.source_failure_counts[source_name] = count
@@ -579,14 +595,18 @@ def fetch_text(
         headers=headers,
         cache_dir=context.cache_dir / "http",
         cache_ttl_seconds=context.http_cache_ttl_seconds,
-        min_interval_seconds=context.per_domain_min_interval_seconds,
+        min_interval_seconds=max(context.per_domain_min_interval_seconds, 3.0 if source_name == 'arxiv' else 0.0),
         max_retries=context.max_retries,
         max_retry_after_seconds=context.max_retry_after_seconds,
         warnings=source_warnings,
+        time_budget_seconds=context.remaining_request_budget(source_name),
+        monotonic_func=context.monotonic_func,
     )
     for warning in source_warnings:
         context.add_warning(warning, source_name)
     category = _response_failure_category(response) if not response.ok else None
+    if response.warning and response.warning.retry_after is not None and response.warning.retry_after > context.max_retry_after_seconds:
+        context.deferred_sources.add(source_name)
     context.note_request_result(source_name, ok=response.ok, failure_category=category)
     return response.text if response.ok else None
 
@@ -613,10 +633,14 @@ def fetch_json(
         max_retries=context.max_retries,
         max_retry_after_seconds=context.max_retry_after_seconds,
         warnings=source_warnings,
+        time_budget_seconds=context.remaining_request_budget(source_name),
+        monotonic_func=context.monotonic_func,
     )
     for warning in source_warnings:
         context.add_warning(warning, source_name)
     category = _response_failure_category(response) if not response.ok else None
+    if response.warning and response.warning.retry_after is not None and response.warning.retry_after > context.max_retry_after_seconds:
+        context.deferred_sources.add(source_name)
     context.note_request_result(source_name, ok=response.ok, failure_category=category)
     return data
 
@@ -630,6 +654,10 @@ def _response_failure_category(response: Any) -> str:
     ).lower()
     if status_code == 429:
         return "rate_limit"
+    if status_code == 406:
+        return "not_acceptable"
+    if 'invalid json' in text or 'content-type' in text:
+        return 'malformed_response'
     if status_code is not None and int(status_code) >= 500:
         return "server_error"
     if "timeout" in text:

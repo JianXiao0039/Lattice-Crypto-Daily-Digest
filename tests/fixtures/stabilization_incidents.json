@@ -1,0 +1,397 @@
+{
+  "2026-09-02": {
+    "provenance": {
+      "path": "data/2026/daily/2026-09-02.json",
+      "sha256": "c770118ff9453ed268973e5fd8ab896ef97f6953ce51e68ec917fda1a1759cba"
+    },
+    "records": [
+      {
+        "title": "Verifiable quantum advantage in extremely low depth",
+        "abstract": "We give a sampling problem that is solvable by shallow quantum circuits, hard for polynomial-time classical algorithms under lattice-based assumptions, and efficiently verifiable by a classical computer. The quantum sampler admits two implementations: one uses log-logarithmic-depth quantum circuits with one- and two-qubit gates, i.e., $\\mathsf{QNC}^0[\\log\\log]$ circuits, while the other uses constant-depth quantum circuits with unbounded fan-in gates, i.e., $\\mathsf{QAC}^0$ circuits. Our construction can be seen as compiling the Learning with Errors (LWE)-based single-round proof of quantumness of Arabadjieva et al. (2025) to very low depth. The price paid for this compilation is the reliance on less standard, though well-motivated, assumptions: in addition to the lattice knowledge assumption used by Arabadjieva et al. (2025), we require a strengthened variant of the adaptive-hardcore-bit property of LWE, for which we provide supporting evidence. Unlike previous low-depth proofs of quantumness, the quantum computation here requires no mid-circuit measurements or feed-forward: it consists only of running a shallow circuit and sampling from its output distribution. This shows that shallow quantum circuits have sufficient structure to solve certain classically hard tasks whose solutions can be verified efficiently.",
+        "source": "arxiv",
+        "source_url": "http://arxiv.org/abs/2609.01448v1",
+        "arxiv_id": "2609.01448",
+        "paper_id": "arxiv:2609.01448",
+        "publication_date": "2026-09-01",
+        "publication_timestamp": "2026-09-01T15:54:34Z",
+        "update_date": "2026-09-01",
+        "update_timestamp": "2026-09-01T15:54:34Z",
+        "update_date_kind": "AUTHORITATIVE_CONTENT_REVISION_DATE",
+        "relevance_label": "A",
+        "primary_today_new_eligible": true,
+        "freshness_bucket": "primary_today_new",
+        "content_hashes": [
+          "815a3950b3e15edfe9bef4fa5a75b27d384a0a918b238ecaaea0b95d0b7ee6fb"
+        ],
+        "authors": [
+          "Alexandru Gheorghiu"
+        ],
+        "venue": "arXiv",
+        "doi": null
+      }
+    ],
+    "source_health": [
+      {
+        "source": "arxiv",
+        "health_status": "yellow",
+        "runtime_state": "partial",
+        "query_groups_total": 44,
+        "query_groups_success": 20,
+        "query_groups_failed": 24,
+        "circuit_open": true,
+        "requests_skipped": 21
+      },
+      {
+        "source": "crossref",
+        "health_status": "green",
+        "runtime_state": "complete",
+        "query_groups_total": 18,
+        "query_groups_success": 18,
+        "query_groups_failed": 0,
+        "circuit_open": false,
+        "requests_skipped": 0
+      },
+      {
+        "source": "dblp",
+        "health_status": "yellow",
+        "runtime_state": "partial",
+        "query_groups_total": 16,
+        "query_groups_success": 3,
+        "query_groups_failed": 13,
+        "circuit_open": true,
+        "requests_skipped": 10
+      },
+      {
+        "source": "iacr_eprint",
+        "health_status": "green",
+        "runtime_state": "complete",
+        "query_groups_total": 0,
+        "query_groups_success": 0,
+        "query_groups_failed": 0,
+        "circuit_open": false,
+        "requests_skipped": 0
+      },
+      {
+        "source": "openalex",
+        "health_status": "green",
+        "runtime_state": "complete",
+        "query_groups_total": 10,
+        "query_groups_success": 10,
+        "query_groups_failed": 0,
+        "circuit_open": false,
+        "requests_skipped": 0
+      },
+      {
+        "source": "semantic_scholar",
+        "health_status": "yellow",
+        "runtime_state": "partial",
+        "query_groups_total": 10,
+        "query_groups_success": 1,
+        "query_groups_failed": 9,
+        "circuit_open": true,
+        "requests_skipped": 6
+      }
+    ]
+  },
+  "2026-09-03": {
+    "provenance": {
+      "path": "data/2026/daily/2026-09-03.json",
+      "sha256": "fbeee309dd87293801e95b9fe2cf8beb9a4e12f5a27f82d60e530ae45f13c291"
+    },
+    "records": [
+      {
+        "title": "Verifiable quantum advantage in extremely low depth",
+        "abstract": "We give a sampling problem that is solvable by shallow quantum circuits, hard for polynomial-time classical algorithms under lattice-based assumptions, and efficiently verifiable by a classical computer. The quantum sampler admits two implementations: one uses log-logarithmic-depth quantum circuits with one- and two-qubit gates, i.e., $\\mathsf{QNC}^0[\\log\\log]$ circuits, while the other uses constant-depth quantum circuits with unbounded fan-in gates, i.e., $\\mathsf{QAC}^0$ circuits. Our construction can be seen as compiling the Learning with Errors (LWE)-based single-round proof of quantumness of Arabadjieva et al. (2025) to very low depth. The price paid for this compilation is the reliance on less standard, though well-motivated, assumptions: in addition to the lattice knowledge assumption used by Arabadjieva et al. (2025), we require a strengthened variant of the adaptive-hardcore-bit property of LWE, for which we provide supporting evidence. Unlike previous low-depth proofs of quantumness, the quantum computation here requires no mid-circuit measurements or feed-forward: it consists only of running a shallow circuit and sampling from its output distribution. This shows that shallow quantum circuits have sufficient structure to solve certain classically hard tasks whose solutions can be verified efficiently.",
+        "source": "arxiv",
+        "source_url": "http://arxiv.org/abs/2609.01448v1",
+        "arxiv_id": "2609.01448",
+        "paper_id": "arxiv:2609.01448",
+        "publication_date": "2026-09-01",
+        "publication_timestamp": "2026-09-01T15:54:34Z",
+        "update_date": "2026-09-01",
+        "update_timestamp": "2026-09-01T15:54:34Z",
+        "update_date_kind": "AUTHORITATIVE_CONTENT_REVISION_DATE",
+        "relevance_label": "A",
+        "primary_today_new_eligible": true,
+        "freshness_bucket": "primary_today_new",
+        "content_hashes": [
+          "815a3950b3e15edfe9bef4fa5a75b27d384a0a918b238ecaaea0b95d0b7ee6fb"
+        ],
+        "authors": [
+          "Alexandru Gheorghiu"
+        ],
+        "venue": "arXiv",
+        "doi": null
+      }
+    ],
+    "source_health": [
+      {
+        "source": "arxiv",
+        "health_status": "yellow",
+        "runtime_state": "partial",
+        "query_groups_total": 44,
+        "query_groups_success": 10,
+        "query_groups_failed": 34,
+        "circuit_open": false,
+        "requests_skipped": 32
+      },
+      {
+        "source": "crossref",
+        "health_status": "green",
+        "runtime_state": "complete",
+        "query_groups_total": 18,
+        "query_groups_success": 18,
+        "query_groups_failed": 0,
+        "circuit_open": false,
+        "requests_skipped": 0
+      },
+      {
+        "source": "dblp",
+        "health_status": "yellow",
+        "runtime_state": "partial",
+        "query_groups_total": 16,
+        "query_groups_success": 3,
+        "query_groups_failed": 13,
+        "circuit_open": true,
+        "requests_skipped": 10
+      },
+      {
+        "source": "iacr_eprint",
+        "health_status": "green",
+        "runtime_state": "complete",
+        "query_groups_total": 0,
+        "query_groups_success": 0,
+        "query_groups_failed": 0,
+        "circuit_open": false,
+        "requests_skipped": 0
+      },
+      {
+        "source": "openalex",
+        "health_status": "green",
+        "runtime_state": "complete",
+        "query_groups_total": 10,
+        "query_groups_success": 10,
+        "query_groups_failed": 0,
+        "circuit_open": false,
+        "requests_skipped": 0
+      },
+      {
+        "source": "semantic_scholar",
+        "health_status": "red",
+        "runtime_state": "partial",
+        "query_groups_total": 10,
+        "query_groups_success": 0,
+        "query_groups_failed": 10,
+        "circuit_open": true,
+        "requests_skipped": 7
+      }
+    ]
+  },
+  "2026-09-05": {
+    "provenance": {
+      "path": "data/2026/daily/2026-09-05.json",
+      "sha256": "ce963a0d053f5ee7b1c1f5c333ebc77ab217040aa3782def4bb1345771d47b70"
+    },
+    "records": [],
+    "source_health": [
+      {
+        "source": "arxiv",
+        "health_status": "yellow",
+        "runtime_state": "partial",
+        "query_groups_total": 44,
+        "query_groups_success": 20,
+        "query_groups_failed": 24,
+        "circuit_open": true,
+        "requests_skipped": 21
+      },
+      {
+        "source": "crossref",
+        "health_status": "green",
+        "runtime_state": "complete",
+        "query_groups_total": 18,
+        "query_groups_success": 18,
+        "query_groups_failed": 0,
+        "circuit_open": false,
+        "requests_skipped": 0
+      },
+      {
+        "source": "dblp",
+        "health_status": "yellow",
+        "runtime_state": "complete",
+        "query_groups_total": 16,
+        "query_groups_success": 13,
+        "query_groups_failed": 3,
+        "circuit_open": false,
+        "requests_skipped": 0
+      },
+      {
+        "source": "iacr_eprint",
+        "health_status": "green",
+        "runtime_state": "complete",
+        "query_groups_total": 0,
+        "query_groups_success": 0,
+        "query_groups_failed": 0,
+        "circuit_open": false,
+        "requests_skipped": 0
+      },
+      {
+        "source": "openalex",
+        "health_status": "green",
+        "runtime_state": "complete",
+        "query_groups_total": 10,
+        "query_groups_success": 10,
+        "query_groups_failed": 0,
+        "circuit_open": false,
+        "requests_skipped": 0
+      },
+      {
+        "source": "semantic_scholar",
+        "health_status": "yellow",
+        "runtime_state": "partial",
+        "query_groups_total": 10,
+        "query_groups_success": 2,
+        "query_groups_failed": 8,
+        "circuit_open": true,
+        "requests_skipped": 5
+      }
+    ]
+  },
+  "2026-09-07": {
+    "provenance": {
+      "path": "data/2026/daily/2026-09-07.json",
+      "sha256": "5ecccb5f70e756707b800e3762c36db91ece356a3922439683b5c12f48ce4f08"
+    },
+    "records": [],
+    "source_health": [
+      {
+        "source": "arxiv",
+        "health_status": "red",
+        "runtime_state": "partial",
+        "query_groups_total": 44,
+        "query_groups_success": 0,
+        "query_groups_failed": 44,
+        "circuit_open": true,
+        "requests_skipped": 41
+      },
+      {
+        "source": "crossref",
+        "health_status": "green",
+        "runtime_state": "complete",
+        "query_groups_total": 18,
+        "query_groups_success": 18,
+        "query_groups_failed": 0,
+        "circuit_open": false,
+        "requests_skipped": 0
+      },
+      {
+        "source": "dblp",
+        "health_status": "yellow",
+        "runtime_state": "partial",
+        "query_groups_total": 16,
+        "query_groups_success": 5,
+        "query_groups_failed": 11,
+        "circuit_open": true,
+        "requests_skipped": 7
+      },
+      {
+        "source": "iacr_eprint",
+        "health_status": "green",
+        "runtime_state": "complete",
+        "query_groups_total": 0,
+        "query_groups_success": 0,
+        "query_groups_failed": 0,
+        "circuit_open": false,
+        "requests_skipped": 0
+      },
+      {
+        "source": "openalex",
+        "health_status": "green",
+        "runtime_state": "complete",
+        "query_groups_total": 10,
+        "query_groups_success": 10,
+        "query_groups_failed": 0,
+        "circuit_open": false,
+        "requests_skipped": 0
+      },
+      {
+        "source": "semantic_scholar",
+        "health_status": "red",
+        "runtime_state": "partial",
+        "query_groups_total": 10,
+        "query_groups_success": 0,
+        "query_groups_failed": 10,
+        "circuit_open": true,
+        "requests_skipped": 7
+      }
+    ]
+  },
+  "2026-09-17": {
+    "provenance": {
+      "path": "data/2026/daily/2026-09-17.json",
+      "sha256": "c7ac7d62d7abc8ae2c2974bcdaec350cb51ad50bd4bfc49ca8627efaa57a508a"
+    },
+    "records": [],
+    "source_health": [
+      {
+        "source": "arxiv",
+        "health_status": "red",
+        "runtime_state": "partial",
+        "query_groups_total": 44,
+        "query_groups_success": 0,
+        "query_groups_failed": 44,
+        "circuit_open": true,
+        "requests_skipped": 21
+      },
+      {
+        "source": "crossref",
+        "health_status": "green",
+        "runtime_state": "complete",
+        "query_groups_total": 18,
+        "query_groups_success": 18,
+        "query_groups_failed": 0,
+        "circuit_open": false,
+        "requests_skipped": 0
+      },
+      {
+        "source": "dblp",
+        "health_status": "red",
+        "runtime_state": "partial",
+        "query_groups_total": 16,
+        "query_groups_success": 0,
+        "query_groups_failed": 16,
+        "circuit_open": true,
+        "requests_skipped": 10
+      },
+      {
+        "source": "iacr_eprint",
+        "health_status": "green",
+        "runtime_state": "complete",
+        "query_groups_total": 0,
+        "query_groups_success": 0,
+        "query_groups_failed": 0,
+        "circuit_open": false,
+        "requests_skipped": 0
+      },
+      {
+        "source": "openalex",
+        "health_status": "green",
+        "runtime_state": "complete",
+        "query_groups_total": 10,
+        "query_groups_success": 10,
+        "query_groups_failed": 0,
+        "circuit_open": false,
+        "requests_skipped": 0
+      },
+      {
+        "source": "semantic_scholar",
+        "health_status": "red",
+        "runtime_state": "partial",
+        "query_groups_total": 10,
+        "query_groups_success": 0,
+        "query_groups_failed": 10,
+        "circuit_open": true,
+        "requests_skipped": 7
+      }
+    ]
+  }
+}

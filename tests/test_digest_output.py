@@ -50,10 +50,10 @@ def test_empty_digest_generates_intelligence_report_sections() -> None:
 
     for section in EXPECTED_SECTIONS:
         assert section in markdown
-    assert "今日没有通过筛选的论文" in markdown
-    assert "今日未发现值得记录的格密码相关新论文" in markdown
-    assert "绿色：正常" in markdown
-    assert "python -m lattice_digest.run --since 7d --output markdown,json --send none" in markdown
+    assert "本次运行未形成满足严格入选条件的论文" in markdown
+    assert "不能据此判断该时间窗口内没有值得关注的新研究" in markdown
+    assert "INCOMPLETE_DO_NOT_INTERPRET_AS_NO_NEWS" in markdown
+    assert "可跳过" not in markdown
 
 
 def test_ai4lattice_record_enters_ai4lattice_section() -> None:

@@ -1503,6 +1503,31 @@ def _append_source_health_and_empty(
     lines.append("")
 
 
+def _render_incomplete_zero(digest_date, decision, source_health, metadata, warnings, since_window):
+    from lattice_digest.authority import INCOMPLETE_ZERO_TEXT
+    lines = [f"# 格密码科研情报日报 - {digest_date.isoformat()}", "", "## 1. 今日核心结论", "", INCOMPLETE_ZERO_TEXT,
+             "最近 36 小时的检索覆盖不完整，当前不能据此断言没有相关新论文。",
+             f"- authority_state：{decision['authority_state']}",
+             "- source-starved / source coverage：存在未知覆盖；零入选不代表零研究。",
+             f"- 检索窗口：{since_window}",
+             f"- Coverage completeness：{decision['source_coverage']['complete']}",
+             f"- 必需来源待恢复：{', '.join(decision['source_coverage']['incomplete_required_sources'])}",
+             f"- 降级来源：{', '.join(decision['source_coverage']['degraded_sources'])}",
+             "- Previous 36h genuine primary count：0", "- 最终入选论文数：0", ""]
+    for key in ['target_date', 'run_date', 'collector', 'quality_status', 'run_mode', 'coverage_start', 'coverage_end', 'completion_state', 'backfill', 'supersedes']:
+        lines.append(f"- {key}：{_metadata_text(metadata, key)}")
+    for heading in ['2. 高优先级论文', '3. AI4Lattice 与机器学习辅助密码分析', '4. 格基约简与经典攻击', '5. PQC 标准、原语与实现', '6. 阅读队列与精读建议', '7. 可孵化研究 idea 与导师讨论问题']:
+        lines.extend(['', '## ' + heading, '', '本节暂未形成可核验的入选记录；来源覆盖尚待恢复，不能作负面研究判断。'])
+    lines.extend(['', '## 8. 数据源健康与空报告处理', '', '- Source health caveat：' + source_health_caveat_text(source_health),
+                  '- 建议先核查失败来源和已有可核验证据；恢复后在受控 scratch 中重跑，再审核候选产物。'])
+    for row in source_health or []:
+        lines.append(f"- {row.get('source')}：{row.get('health_status') or row.get('status')}；成功查询 {row.get('query_groups_success', 'unknown')}/{row.get('query_groups_total', 'unknown')}；{row.get('error_type') or row.get('runtime_state') or 'unknown'}")
+    for warning in warnings or []:
+        lines.append('- 运行限制：' + str(warning))
+    lines.extend(['', '- TRANSLATION_BACKEND_SELECTION_REQUIRED', '- BILINGUAL_RELEASE_NOT_YET_AVAILABLE', ''])
+    return '\n'.join(lines)
+
+
 def generate_markdown(
     records: list[PaperRecord],
     digest_date: date,
@@ -1511,8 +1536,15 @@ def generate_markdown(
     warnings: list[str] | None = None,
     since_window: str = "36h",
     metadata: dict[str, object] | None = None,
+    *,
+    source_configs: list[dict] | None = None,
 ) -> str:
     all_records = [record for record in records if record.relevance_label in {"A", "B", "C"}]
+    from lattice_digest.authority import derive_authority
+    decision = derive_authority(all_records, source_health, source_configs=source_configs)
+    metadata = {**(metadata or {}), **decision}
+    if decision['render_branch'] == 'ZERO_SELECTED_INCOMPLETE':
+        return _render_incomplete_zero(digest_date, decision, source_health, metadata, warnings, since_window)
     records, freshness_routed_records = apply_daily_freshness_policy(all_records, digest_date)
     sorted_records = _sort_by_reading_priority(records)
     high_priority = [record for record in sorted_records if reading_priority_score(record) >= 70]
@@ -1535,6 +1567,9 @@ def generate_markdown(
         f"- Previous 36h genuine primary count：{len(records)}",
         f"- CRITICAL newly observed verify-first count：{sum(record.freshness_bucket == 'CRITICAL_NEWLY_OBSERVED_VERIFY_FIRST' for record in freshness_routed_records)}",
         f"- Coverage completeness：{_metadata_text(metadata, 'completion_state', 'unknown')}",
+        f"- authority_state：{decision['authority_state']}",
+        f"- Source coverage：{decision['source_coverage']}",
+        "- Bilingual release：BILINGUAL_RELEASE_NOT_YET_AVAILABLE；TRANSLATION_BACKEND_SELECTION_REQUIRED",
         f"- Action counts：read_now={action_counts['read_now']}；skim={action_counts['skim']}；save/backfill={action_counts['save_or_backfill']}；verify_first={action_counts['verify_first']}",
         f"- Primary/backfill split：primary today/new={len(records)}；backfill/older/TODO_VERIFY={len(freshness_routed_records)}",
         f"- Top-level risk：{_source_health_risk_line(source_health)}",

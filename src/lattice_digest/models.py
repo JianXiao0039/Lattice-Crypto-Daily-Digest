@@ -50,6 +50,8 @@ class PaperRecord(BaseModel):
     freshness_reason: str = ""
     primary_today_new_eligible: bool = False
     freshness_policy_version: str = ""
+    cross_day_event: str = ""
+    prior_promotion_dates: list[str] = Field(default_factory=list)
     categories: list[str] = Field(default_factory=list)
     taxonomy_tags: list[str] = Field(default_factory=list)
     keywords_matched: list[str] = Field(default_factory=list)

@@ -59,5 +59,8 @@ def test_durable_verifier_accepts_daily_weekly_monthly_artifacts(tmp_path: Path)
 
     report = verify_artifacts(tmp_path, target_date="2026-06-15", week="2026-W25", month="2026-06")
 
-    assert report["overall_status"] == "verified"
+    # Legacy structural presence remains readable, but is not semantic proof.
+    assert report["overall_status"] == "partial_or_missing"
+    assert report['checks'][0]['structural_valid'] is True
+    assert report['checks'][0]['semantic_valid'] is False
     assert [check["kind"] for check in report["checks"]] == ["daily", "weekly", "monthly"]

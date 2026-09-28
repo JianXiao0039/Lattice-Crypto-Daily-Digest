@@ -290,6 +290,8 @@ def _merge_record(base: dict[str, Any], incoming: dict[str, Any]) -> dict[str, A
             )
             if reason:
                 merged["freshness_reason"] = reason
+    merged['daily_input_defects'] = sorted(set(base.get('daily_input_defects', []) + incoming.get('daily_input_defects', [])))
+    merged['publication_events'] = sorted(set(base.get('publication_events', []) + incoming.get('publication_events', [])))
     return merged
 
 
@@ -329,7 +331,8 @@ def load_daily_json(data_dir: Path, selected_days: list[date]) -> tuple[list[tup
             continue
         if used_legacy:
             print(f"Warning: using legacy daily JSON fallback: {path}")
-        loaded.append((day, _read_json(path)))
+        from lattice_digest.daily_inputs import assess_daily_input
+        loaded.append((day, assess_daily_input(path, day, data_dir, used_legacy)))
     return loaded, missing
 
 
@@ -341,6 +344,7 @@ def _prepare_record(record: dict[str, Any], day: date) -> dict[str, Any]:
     item["research_sections"] = _research_sections(item)
     item["report_buckets"] = _report_buckets(item)
     item["dedup_key"] = dedup_key(item)
+    item['publication_events'] = [item['dedup_key']] if record.get('primary_today_new_eligible') is True else []
     item[PRIVATE_WEEKLY_PREFIX + "occurrences"] = [
         {
             "date": day.isoformat(),
@@ -442,6 +446,8 @@ def _record_risk_flags(record: dict[str, Any], source_statuses: dict[str, str]) 
 
 
 def _hard_verify_required(record: dict[str, Any], risk_flags: list[str]) -> bool:
+    if record.get('daily_input_defects'):
+        return True
     if str(record.get("recommendation_level") or "") == "TODO_VERIFY":
         return True
     if _string_values(record, "TODO_VERIFY_flags"):
@@ -571,6 +577,8 @@ def _source_health_confidence(payload: dict[str, Any]) -> tuple[str, str, list[s
     )
     if expected and loaded * 2 <= expected:
         return "low", "source-starved partial coverage", degraded_sources
+    if coverage.get('semantic_failed_days') or coverage.get('semantic_unknown_days'):
+        return "low", "Daily semantic evidence failed or unknown", degraded_sources
     if unique == 0 or loaded == 0 or (red and green == 0):
         return "low", "source-starved", degraded_sources
     if red or yellow or loaded < expected:
@@ -708,6 +716,8 @@ def build_weekly_synthesis(
     sections = _section_map(records)
     report_buckets = _report_bucket_map(records)
     total_records = sum(len(_records(payload)) for _, payload in loaded_payloads)
+    from lattice_digest.daily_inputs import summarize_daily_inputs
+    input_quality = summarize_daily_inputs(loaded_payloads, missing_days)
     label_counts = Counter(str(record.get("relevance_label") or "D") for record in records)
     generated = generated_at or datetime.now(timezone.utc)
     return {
@@ -717,6 +727,7 @@ def build_weekly_synthesis(
         "to_date": to_date.isoformat(),
         "generated_at": generated.isoformat(),
         "coverage": {
+            **input_quality,
             "expected_days": len(selected_days),
             "loaded_days": [day.isoformat() for day, _ in loaded_payloads],
             "missing_days": missing_days,
@@ -864,6 +875,8 @@ def render_markdown(payload: dict[str, Any]) -> str:
         "",
         f"- Date range: {payload['from_date']} .. {payload['to_date']}",
         f"- Coverage: {len(coverage['loaded_days'])}/{coverage['expected_days']} days; missing={len(missing_days)}",
+        f"- Fully valid Daily: {len(coverage.get('fully_valid_days', []))}/{coverage['expected_days']}; authority={coverage.get('authority_state', 'UNKNOWN')}",
+        f"- Daily semantic defects: failed={coverage.get('semantic_failed_days', [])}; unknown={coverage.get('semantic_unknown_days', [])}",
         "",
         "## Executive Summary",
         "",

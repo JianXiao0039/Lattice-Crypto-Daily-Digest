@@ -88,6 +88,18 @@ def _fixture_root(root: Path) -> None:
     )
     _write(root / "exports/obsidian-paper-notes/Papers/lwe-paper.md", note)
     _write(root / "exports/reading-queue/reading-dashboard.md", "# Reading Dashboard\n")
+    # Modern complete fixtures include machine-checked semantic evidence.
+    from datetime import date
+    from lattice_digest.models import make_paper_record
+    from lattice_digest.storage import publish_daily_pair
+    from lattice_digest.weekly_synthesis import build_weekly_synthesis, write_weekly_outputs
+    from lattice_digest.monthly_synthesis import build_monthly_synthesis, write_monthly_outputs
+    record = make_paper_record(title='LWE paper', abstract='LWE security analysis.', source='arxiv', source_url='https://example.org/lwe', publication_date='2026-06-15', relevance_label='A')
+    publish_daily_pair([record], root, date(2026,6,15), source_health=daily['source_health'], force=True)
+    weekly = build_weekly_synthesis(root/'data', date(2026,6,15), date(2026,6,21))
+    write_weekly_outputs(weekly, root/'data', root/'digests')
+    monthly = build_monthly_synthesis(root/'data', '2026-06')
+    write_monthly_outputs(monthly, root/'data', root/'digests')
 
 
 def test_v0_5_rc_verifier_passes_complete_fixture(tmp_path: Path) -> None:

@@ -2,7 +2,7 @@ from __future__ import annotations
 
 import argparse
 import json
-from datetime import datetime
+from datetime import date, datetime, timedelta
 from pathlib import Path
 from typing import Any
 
@@ -12,6 +12,9 @@ import sys
 
 if str(PROJECT_ROOT / "src") not in sys.path:
     sys.path.insert(0, str(PROJECT_ROOT / "src"))
+
+from lattice_digest.authority import semantic_qa
+from lattice_digest.daily_inputs import assess_daily_input, summarize_daily_inputs
 
 from lattice_digest.artifact_paths import (
     daily_data_path,
@@ -112,6 +115,29 @@ def _status_from_checks(checks: list[bool]) -> str:
     return "verified" if all(checks) else "incomplete"
 
 
+def _period_semantics(root, payload, result, start, end, quality):
+    result['structural_valid'] = result['status'] == 'verified'
+    loaded, missing = [], []
+    for offset in range((end - start).days + 1):
+        day = start + timedelta(days=offset)
+        path, legacy = resolve_existing(daily_data_path(day, root / 'data'), legacy_daily_data_candidates(day, root / 'data'))
+        if path.exists():
+            loaded.append((day, assess_daily_input(path, day, root / 'data', legacy)))
+        else:
+            missing.append(day.isoformat())
+    derived = summarize_daily_inputs(loaded, missing)
+    issues = []
+    if quality and any(quality.get(k) != derived[k] for k in derived):
+        issues.append('period_input_quality_mismatch')
+    status = 'FAIL' if issues else ('PASS' if quality else 'UNKNOWN')
+    result['semantic_qa'] = {'status': status, 'issues': issues, 'derived_input_quality': derived}
+    result['semantic_valid'] = status == 'PASS'
+    result['authority_state'] = derived['authority_state']
+    if status != 'PASS':
+        result['status'] = 'semantic_failed' if issues else 'incomplete'
+        result['TODO_VERIFY'].append('period semantic evidence failed or missing')
+
+
 def verify_daily(root: Path, target_date: str) -> dict[str, Any]:
     json_path, json_legacy = resolve_existing(
         daily_data_path(target_date, root / "data"),
@@ -166,6 +192,16 @@ def verify_daily(root: Path, target_date: str) -> dict[str, Any]:
             result["source_starved_explicit"],
         ]
     )
+    result['structural_valid'] = result['status'] == 'verified'
+    qa = semantic_qa(payload or {}, markdown_path.read_text(encoding='utf-8') if markdown_path.exists() else None)
+    if payload is None:
+        qa.update(status='UNKNOWN', semantic_valid=False, issues=[], unknown=['missing_or_unparseable_artifact'])
+    result['semantic_qa'] = qa
+    result['semantic_valid'] = qa['semantic_valid']
+    result['authority_state'] = qa['derived_authority']['authority_state']
+    if not result['semantic_valid']:
+        result['status'] = 'semantic_failed' if qa['status'] == 'FAIL' else 'incomplete'
+        result['TODO_VERIFY'].extend(qa['issues'] + qa['unknown'])
     return result
 
 
@@ -227,6 +263,11 @@ def verify_weekly(root: Path, week: str) -> dict[str, Any]:
             result["input_dates_or_coverage_present"],
         ]
     )
+    iso_year, iso_week = map(int, week.split('-W'))
+    start = date.fromisocalendar(iso_year, iso_week, 1)
+    coverage = (payload or {}).get('coverage', {})
+    quality = {k: v for k, v in coverage.items() if k in {'authority_state', 'fully_valid_days', 'structurally_valid_days', 'semantically_valid_days', 'semantic_failed_days', 'semantic_unknown_days', 'source_degraded_days', 'legacy_fallback_days', 'missing_days', 'daily_input_quality'}} if 'daily_input_quality' in coverage else None
+    _period_semantics(root, payload, result, start, start + timedelta(days=6), quality)
     return result
 
 
@@ -286,6 +327,9 @@ def verify_monthly(root: Path, month: str) -> dict[str, Any]:
             result["source_starved_explicit"],
         ]
     )
+    from lattice_digest.monthly_synthesis import parse_month
+    start, end = parse_month(month)
+    _period_semantics(root, payload, result, start, end, (payload or {}).get('input_quality'))
     return result
 
 
@@ -317,7 +361,9 @@ def main(argv: list[str] | None = None) -> int:
     args = parser.parse_args(argv)
     report = verify_artifacts(args.root, target_date=args.target_date, week=args.week, month=args.month)
     print(json.dumps(report, ensure_ascii=False, indent=2))
-    return 0
+    # Historical missing-artifact queries retain their documented zero exit.
+    # An explicit semantic failure is a hard QA error, not a missing artifact.
+    return 2 if any(c.get('semantic_qa', {}).get('status') == 'FAIL' for c in report['checks']) else 0
 
 
 if __name__ == "__main__":  # pragma: no cover
