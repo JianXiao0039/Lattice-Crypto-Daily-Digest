@@ -127,7 +127,10 @@ def _period_semantics(root, payload, result, start, end, quality):
             missing.append(day.isoformat())
     derived = summarize_daily_inputs(loaded, missing)
     issues = []
-    if quality and any(quality.get(k) != derived[k] for k in derived):
+    # Continuity telemetry is additive. Old durable period artifacts did not
+    # carry it; their original semantic/authority fields remain strictly checked.
+    checked_keys = [k for k in derived if k != 'continuity_status' or (quality and k in quality)]
+    if quality and any(quality.get(k) != derived[k] for k in checked_keys):
         issues.append('period_input_quality_mismatch')
     status = 'FAIL' if issues else ('PASS' if quality else 'UNKNOWN')
     result['semantic_qa'] = {'status': status, 'issues': issues, 'derived_input_quality': derived}
@@ -266,7 +269,7 @@ def verify_weekly(root: Path, week: str) -> dict[str, Any]:
     iso_year, iso_week = map(int, week.split('-W'))
     start = date.fromisocalendar(iso_year, iso_week, 1)
     coverage = (payload or {}).get('coverage', {})
-    quality = {k: v for k, v in coverage.items() if k in {'authority_state', 'fully_valid_days', 'structurally_valid_days', 'semantically_valid_days', 'semantic_failed_days', 'semantic_unknown_days', 'source_degraded_days', 'legacy_fallback_days', 'missing_days', 'daily_input_quality'}} if 'daily_input_quality' in coverage else None
+    quality = {k: v for k, v in coverage.items() if k in {'authority_state', 'fully_valid_days', 'structurally_valid_days', 'semantically_valid_days', 'semantic_failed_days', 'semantic_unknown_days', 'source_degraded_days', 'legacy_fallback_days', 'missing_days', 'daily_input_quality', 'continuity_status'}} if 'daily_input_quality' in coverage else None
     _period_semantics(root, payload, result, start, start + timedelta(days=6), quality)
     return result
 

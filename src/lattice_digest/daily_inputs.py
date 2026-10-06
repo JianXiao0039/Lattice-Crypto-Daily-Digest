@@ -53,6 +53,10 @@ def summarize_daily_inputs(loaded, missing):
         state = DEGRADED
     return {
         'authority_state': state, 'fully_valid_days': valid,
+        'continuity_status': {'state': 'INCOMPLETE' if missing else 'INPUTS_PRESENT',
+                              'missing_dates': list(missing),
+                              'gap_causes': {day: 'UNKNOWN' for day in missing},
+                              'mode': 'READ_ONLY_LOADED_INPUTS'},
         'structurally_valid_days': [r['date'] for r in rows if r['structural_valid']],
         'semantically_valid_days': [r['date'] for r in rows if r['semantic_valid']],
         'semantic_failed_days': [r['date'] for r in rows if r['semantic_status'] == 'FAIL'],

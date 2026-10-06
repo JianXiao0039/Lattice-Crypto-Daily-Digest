@@ -207,3 +207,26 @@ def query_portfolio_for_source(config: dict) -> list[QueryRequest]:
         keys = ("queries",)
     requests.extend(legacy_query_requests(config, keys=keys))
     return [request for request in requests if request.enabled]
+
+
+def fair_query_schedule(requests: list[QueryRequest], *, rotation: int = 0) -> list[QueryRequest]:
+    """Round robin active families, rotating first family each run-date.
+
+    Expressions, IDs, enabled state, and query set are unchanged. This is an
+    execution order for production queries, never a V3 portfolio replacement.
+    """
+    from collections import OrderedDict, deque
+    queues = OrderedDict()
+    for request in requests:
+        queues.setdefault(request.family_id, deque()).append(request)
+    names = list(queues)
+    if not names:
+        return []
+    offset = rotation % len(names)
+    names = names[offset:] + names[:offset]
+    scheduled = []
+    while any(queues.values()):
+        for name in names:
+            if queues[name]:
+                scheduled.append(queues[name].popleft())
+    return scheduled

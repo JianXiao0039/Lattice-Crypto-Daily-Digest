@@ -479,6 +479,14 @@ def main(argv: list[str] | None = None) -> int:
     _load_dotenv(root)
     configs = load_config_bundle(args.config_dir)
     run_datetime = datetime.now(ZoneInfo("Asia/Singapore"))
+    from lattice_digest.runtime_provenance import runtime_provenance, public_runtime_allowed, schedule_telemetry
+    code_provenance = runtime_provenance(root)
+    public_automation = (args.collector == 'github_actions' or os.getenv('LATTICE_DIGEST_PUBLIC_AUTOMATION') == '1'
+                         or (output_root == root and args.run_mode == 'daily'
+                             and code_provenance['runtime_code_state'] == 'UNPUBLISHED_RUNTIME_CODE'))
+    if not args.dry_run and not public_runtime_allowed(code_provenance, public_automation=public_automation):
+        print('PUBLIC_AUTOMATION_RUNTIME_CODE_BLOCKED: ' + json.dumps(code_provenance, ensure_ascii=False))
+        return 2
     exact_date = args.date
     since_window = "24h" if exact_date is not None else (args.since or "36h")
     hours = parse_duration_to_hours(since_window)
@@ -504,6 +512,8 @@ def main(argv: list[str] | None = None) -> int:
         since_window=since_window,
         supersedes=supersedes,
     )
+    metadata.update(code_provenance)
+    metadata.update(schedule_telemetry(run_datetime))
     request_config = configs["sources"].get("request", {})
     context = FetchContext(
         root=output_root,
@@ -640,6 +650,10 @@ def main(argv: list[str] | None = None) -> int:
             route_events=context.route_events,
         )
         write_candidate_ledger(ledger, output_root, digest_date)
+    # Actual finish is journaled after durable publication. It cannot truthfully
+    # be embedded in an artifact before that artifact has finished being written.
+    metadata.update(schedule_telemetry(run_datetime))
+    metadata['source_query_runtime'] = list(context.query_attempts)
     outputs = {item.strip().lower() for item in args.output.split(",") if item.strip()}
 
     if args.send != "none":
@@ -684,6 +698,7 @@ def main(argv: list[str] | None = None) -> int:
             print(f"Daily canonical promotion failed: {exc}")
             return 2
     written.append(write_sqlite(ordered, output_root / "papers.db"))
+    context.checkpoint('RUN_FINISHED', schedule_telemetry(run_datetime, datetime.now(ZoneInfo('Asia/Singapore'))))
 
     print(f"Generated {len(ordered)} digest records.")
     for path in written:

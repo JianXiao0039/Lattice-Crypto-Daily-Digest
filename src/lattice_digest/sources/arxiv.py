@@ -8,7 +8,7 @@ from datetime import datetime, timezone
 from lattice_digest.models import PaperRecord, make_paper_record
 from lattice_digest.sources.base import FetchContext, SourceAdapter, fetch_text, normalize_date
 from lattice_digest.text import normalize_whitespace
-from lattice_digest.source_queries import QueryRequest, critical_query_requests, stable_query_id
+from lattice_digest.source_queries import fair_query_schedule, QueryRequest, critical_query_requests, stable_query_id
 
 ARXIV_ID_RE = re.compile(r"arxiv\.org/abs/([^?#]+)", re.IGNORECASE)
 VERSION_RE = re.compile(r"v\d+$")
@@ -148,6 +148,9 @@ class ArxivSource(SourceAdapter):
             for index, group in enumerate(groups)
         ]
         requests = critical_query_requests(self.config, syntax="arxiv") + legacy_requests
+        requests = fair_query_schedule(requests, rotation=context.since.date().toordinal())
+        context.checkpoint('QUERY_SCHEDULE', {'source': self.name, 'policy': 'PRODUCTION_FAMILY_ROUND_ROBIN',
+                                           'query_ids': [r.query_id for r in requests]})
         health = context.health(self.name)
         health.query_groups_total = len(requests)
         raw_count = 0

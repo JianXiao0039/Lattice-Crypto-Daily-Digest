@@ -23,6 +23,9 @@ class HttpWarning:
     retry_after: float | None = None
     error: str | None = None
     response_body_preview: str | None = None
+    content_type: str | None = None
+    effective_url: str | None = None
+    redirect_chain: list[str] | None = None
 
     def to_message(self) -> str:
         if self.status_code == 429:
@@ -43,6 +46,9 @@ class HttpResponse:
     text: str = ""
     from_cache: bool = False
     warning: HttpWarning | None = None
+    content_type: str | None = None
+    effective_url: str | None = None
+    redirect_chain: list[str] | None = None
 
 
 _LAST_REQUEST_BY_DOMAIN: dict[str, float] = {}
@@ -189,6 +195,9 @@ def request_text(
             with opener(request, timeout=timeout) as response:
                 body = response.read().decode("utf-8", errors="replace")
                 status_code = int(getattr(response, "status", None) or getattr(response, "code", None) or 200)
+                effective_url = response.geturl() if hasattr(response, 'geturl') else url
+                response_headers = getattr(response, 'headers', {}) or {}
+                content_type = str(response_headers.get('Content-Type', '')).lower()
                 if expected_format == 'json':
                     response_headers = getattr(response, 'headers', {}) or {}
                     content_type = str(response_headers.get('Content-Type', '')).lower()
@@ -199,10 +208,11 @@ def request_text(
                             raise ValueError('JSON root is not an object')
                     except (ValueError, TypeError) as exc:
                         last_warning = HttpWarning(url=url, source=source, status_code=status_code,
-                                                   reason='invalid JSON response', attempts=attempt, error=str(exc))
+                                                   reason='invalid JSON response', attempts=attempt, error=str(exc),
+                                                   response_body_preview=body[:500], content_type=content_type, effective_url=effective_url)
                         break
                 _write_cache(cache_dir, url, body, status_code, now_func())
-                return HttpResponse(ok=True, url=url, status_code=status_code, text=body)
+                return HttpResponse(ok=True, url=url, status_code=status_code, text=body, content_type=content_type, effective_url=effective_url)
         except HTTPError as exc:
             status_code = int(exc.code)
             retry_after = _retry_after_seconds(exc.headers.get("Retry-After"), now_func())
@@ -219,8 +229,9 @@ def request_text(
                 attempts=attempt,
                 retry_after=retry_after,
                 response_body_preview=response_body_preview,
+                content_type=exc.headers.get('Content-Type'), effective_url=exc.geturl(),
             )
-            if status_code not in retry_statuses or attempt >= attempts:
+            if status_code not in retry_statuses or attempt >= attempts or (status_code == 429 and attempt >= 2):
                 break
             if retry_after is not None and retry_after > max(0.0, max_retry_after_seconds):
                 break  # Defer rather than retry before the provider permits it.
@@ -242,7 +253,8 @@ def request_text(
     assert last_warning is not None
     if warnings is not None:
         warnings.append(last_warning.to_message())
-    return HttpResponse(ok=False, url=url, warning=last_warning)
+    return HttpResponse(ok=False, url=url, status_code=last_warning.status_code, warning=last_warning,
+                        content_type=last_warning.content_type, effective_url=last_warning.effective_url)
 
 
 def request_json(*args, **kwargs) -> tuple[dict | None, HttpResponse]:

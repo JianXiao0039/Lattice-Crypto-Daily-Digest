@@ -157,7 +157,7 @@ def test_source_circuit_breaker_opens_after_repeated_retryable_failures(tmp_path
     context.note_request_result("openalex", ok=False, failure_category="timeout")
     context.note_request_result("openalex", ok=False, failure_category="rate_limit")
     assert context.request_allowed("openalex") is False
-    assert context.health("openalex").runtime_reason_code == "SOURCE_CIRCUIT_OPEN"
+    assert context.health("openalex").runtime_reason_code == "PROVIDER_RETRY_AFTER_DEFERRED"
 
 
 def test_successful_zero_hit_does_not_trip_circuit(tmp_path: Path) -> None:

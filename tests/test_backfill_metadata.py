@@ -32,6 +32,7 @@ sources:
 
 def _run_in_temp_root(root: Path, args: list[str], records: list | None = None) -> int:
     import lattice_digest.run as run_module
+    import lattice_digest.runtime_provenance as runtime_module
 
     class FakeSource(SourceAdapter):
         def fetch(self, context):  # type: ignore[no-untyped-def]
@@ -41,15 +42,20 @@ def _run_in_temp_root(root: Path, args: list[str], records: list | None = None) 
     original_project_root = run_module.project_root
     original_build_source = run_module.build_source
     original_rank_records = run_module.rank_records
+    original_provenance = runtime_module.runtime_provenance
     try:
         run_module.project_root = lambda: root
         run_module.build_source = lambda config: FakeSource(config)
         run_module.rank_records = lambda incoming, taxonomy, keywords, negative: list(incoming)
+        # These are isolated artifact-policy fixtures, not executable Git trees.
+        # Runtime publication enforcement has dedicated real-Git regression tests.
+        runtime_module.runtime_provenance = lambda _: {'runtime_code_state': 'PUBLISHED_CLEAN_RUNTIME'}
         return run_module.main(args)
     finally:
         run_module.project_root = original_project_root
         run_module.build_source = original_build_source
         run_module.rank_records = original_rank_records
+        runtime_module.runtime_provenance = original_provenance
 
 
 def test_target_date_writes_metadata_and_named_outputs() -> None:

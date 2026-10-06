@@ -10,6 +10,7 @@ from typing import Any, Callable
 from uuid import uuid4
 
 from lattice_digest.http import request_json, request_text
+from lattice_digest.failure_scope import FailureScope, failure_scope
 from lattice_digest.models import PaperRecord
 from lattice_digest.source_queries import QueryRequest
 from lattice_digest.source_roles import primary_source_role, serialized_source_roles
@@ -45,6 +46,11 @@ class SourceHealth:
     consecutive_failures: int = 0
     circuit_open: bool = False
     partial_results_preserved: bool = False
+    last_failure_scope: str | None = None
+    last_failure_category: str | None = None
+    failure_scope_counts: dict[str, int] = field(default_factory=dict)
+    request_diagnostics: list[dict[str, object]] = field(default_factory=list)
+    cache_hits: int = 0
 
     def _problem_text(self) -> str:
         values = [*self.errors, *self.warnings]
@@ -139,6 +145,10 @@ class SourceHealth:
             "consecutive_failures": self.consecutive_failures,
             "circuit_open": self.circuit_open,
             "partial_results_preserved": self.partial_results_preserved,
+            "failure_scope": self.last_failure_scope,
+            "failure_scope_counts": dict(self.failure_scope_counts),
+            "request_diagnostics": list(self.request_diagnostics),
+            "cache_hits": self.cache_hits,
             "warnings": list(self.warnings),
             "errors": list(self.errors),
         }
@@ -222,7 +232,9 @@ class FetchContext:
     def finish_source(self, source_name: str, record_count: int) -> None:
         health = self.health(source_name)
         if health.runtime_state == "running":
-            health.runtime_state = "complete"
+            health.runtime_state = "partial" if health.query_groups_failed else "complete"
+            if health.query_groups_failed and not health.runtime_reason_code:
+                health.runtime_reason_code = 'QUERY_FAILURE_PARTIAL'
         health.partial_results_preserved = record_count > 0 and health.runtime_state != "complete"
         self.checkpoint(
             "SOURCE_FINISHED",
@@ -271,15 +283,29 @@ class FetchContext:
         return max(0.0, min(self.global_time_budget_seconds - (now - self.run_started_monotonic),
                             self.per_source_time_budget_seconds - (now - self.source_started_monotonic.get(source_name, now))))
 
-    def note_request_result(self, source_name: str, *, ok: bool, failure_category: str | None = None) -> None:
+    def note_request_result(self, source_name: str, *, ok: bool, failure_category: str | None = None,
+                            scope: FailureScope | str | None = None) -> None:
         health = self.health(source_name)
         if ok:
             self.source_failure_counts[source_name] = 0
             health.consecutive_failures = 0
+            health.last_failure_scope = None
+            health.last_failure_category = None
             self.checkpoint("REQUEST_SUCCEEDED", {"source": source_name})
             return
         category = str(failure_category or "source_error")
-        eligible = category in {"rate_limit", "timeout", "ssl_error", "network_error", "connection_error", "server_error", "malformed_response", "not_acceptable"}
+        resolved_scope = FailureScope(scope) if scope else failure_scope(category)
+        health.last_failure_scope = resolved_scope.value
+        health.last_failure_category = category
+        health.failure_scope_counts[resolved_scope.value] = health.failure_scope_counts.get(resolved_scope.value, 0) + 1
+        if category == 'time_budget':
+            health.runtime_state = 'partial'
+            health.runtime_reason_code = 'SOURCE_TIME_BUDGET_EXHAUSTED'
+        if resolved_scope == FailureScope.RATE_LIMIT_DEFERRED:
+            self.deferred_sources.add(source_name)
+            health.runtime_state = 'partial'
+            health.runtime_reason_code = 'PROVIDER_RETRY_AFTER_DEFERRED'
+        eligible = resolved_scope in {FailureScope.TRANSPORT_FAILURE, FailureScope.PROVIDER_WIDE, FailureScope.MALFORMED_RESPONSE}
         if eligible:
             count = self.source_failure_counts.get(source_name, 0) + 1
             self.source_failure_counts[source_name] = count
@@ -289,7 +315,7 @@ class FetchContext:
                 health.circuit_open = True
                 health.runtime_state = "partial"
                 health.runtime_reason_code = "SOURCE_CIRCUIT_OPEN"
-        self.checkpoint("REQUEST_FAILED", {"source": source_name, "category": category})
+        self.checkpoint("REQUEST_FAILED", {"source": source_name, "category": category, "failure_scope": resolved_scope.value})
 
     def register_source(self, config: dict[str, Any]) -> None:
         name = str(config.get("name") or config.get("type") or "unknown")
@@ -359,7 +385,7 @@ class FetchContext:
 
     def source_health_summary(self) -> list[dict[str, object]]:
         return [
-            self.source_health[name].to_dict()
+            {**self.source_health[name].to_dict(), 'source_roles': self.source_roles(name)}
             for name in sorted(self.source_health)
         ]
 
@@ -375,6 +401,8 @@ class FetchContext:
                 "source_role": self.source_roles(source_name)[0],
                 "query_id": request.query_id,
                 "query_family": request.family_id,
+                "critical_security_relevant": request.critical_security_relevant,
+                "started_monotonic": self.monotonic_func(),
                 "query_expression_hash": request.expression_hash,
                 "query_expression_safe": request.query_text,
                 "intent": request.intent,
@@ -404,9 +432,12 @@ class FetchContext:
             {
                 "status": status,
                 "raw_candidates": raw_candidates,
-                "http_error_category": error_category,
+                "http_error_category": self.health(str(attempt['source_family'])).last_failure_category or error_category if status != 'success' else None,
                 "coverage_semantics": "OBSERVED_RESULTS" if status == "success" else "UNKNOWN_COVERAGE",
                 "finished_at": datetime.now(timezone.utc).isoformat(),
+                "duration_seconds": max(0.0, self.monotonic_func() - float(attempt['started_monotonic'])),
+                "failure_scope": self.health(str(attempt['source_family'])).last_failure_scope if status != 'success' else None,
+                "runtime_reason_code": self.health(str(attempt['source_family'])).runtime_reason_code if status != 'success' else None,
             }
         )
         if status == "success" and raw_candidates == 0:
@@ -604,6 +635,19 @@ def fetch_text(
     )
     for warning in source_warnings:
         context.add_warning(warning, source_name)
+    health = context.health(source_name)
+    health.cache_hits += int(response.from_cache)
+    if len(health.request_diagnostics) < 64:
+        warning = response.warning
+        health.request_diagnostics.append({
+            'attempt_id': context.query_attempts[-1]['attempt_id'] if context.query_attempts and context.query_attempts[-1]['source_family'] == source_name else None,
+            'http_status': response.status_code or getattr(warning, 'status_code', None),
+            'content_type': response.content_type or getattr(warning, 'content_type', None),
+            'effective_url': response.effective_url or getattr(warning, 'effective_url', None) or url,
+            'redirect_chain': response.redirect_chain,
+            'body_preview': getattr(warning, 'response_body_preview', None),
+            'from_cache': response.from_cache,
+        })
     category = _response_failure_category(response) if not response.ok else None
     if response.warning and response.warning.retry_after is not None and response.warning.retry_after > context.max_retry_after_seconds:
         context.deferred_sources.add(source_name)
@@ -638,6 +682,19 @@ def fetch_json(
     )
     for warning in source_warnings:
         context.add_warning(warning, source_name)
+    health = context.health(source_name)
+    health.cache_hits += int(response.from_cache)
+    if len(health.request_diagnostics) < 64:
+        warning = response.warning
+        health.request_diagnostics.append({
+            'attempt_id': context.query_attempts[-1]['attempt_id'] if context.query_attempts and context.query_attempts[-1]['source_family'] == source_name else None,
+            'http_status': response.status_code or getattr(warning, 'status_code', None),
+            'content_type': response.content_type or getattr(warning, 'content_type', None),
+            'effective_url': response.effective_url or getattr(warning, 'effective_url', None) or url,
+            'redirect_chain': response.redirect_chain,
+            'body_preview': getattr(warning, 'response_body_preview', None),
+            'from_cache': response.from_cache,
+        })
     category = _response_failure_category(response) if not response.ok else None
     if response.warning and response.warning.retry_after is not None and response.warning.retry_after > context.max_retry_after_seconds:
         context.deferred_sources.add(source_name)
@@ -652,8 +709,12 @@ def _response_failure_category(response: Any) -> str:
         str(value or "")
         for value in (getattr(warning, "reason", ""), getattr(warning, "error", ""))
     ).lower()
+    if 'time budget' in text:
+        return 'time_budget'
     if status_code == 429:
         return "rate_limit"
+    if status_code == 400:
+        return "invalid_request"
     if status_code == 406:
         return "not_acceptable"
     if 'invalid json' in text or 'content-type' in text:
