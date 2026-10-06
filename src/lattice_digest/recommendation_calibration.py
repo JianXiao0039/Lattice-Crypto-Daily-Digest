@@ -25,6 +25,9 @@ class RecommendationCalibration:
     primary_action_allowed: bool
     reading_priority: str
     suggested_action: str
+    freshness_urgency: int
+    verification_urgency: int
+    recommended_action: str
 
 
 @dataclass(frozen=True)
@@ -68,7 +71,10 @@ def calibrate_recommendation(
     ccf_rank: str = "unknown",
 ) -> RecommendationCalibration:
     text = _record_text(record)
-    axes = _matched_axes(text)
+    from lattice_digest.evidence_contract import classify_scope, source_scope_score, Scope
+    scope, _ = classify_scope(record)
+    critical = record.security_impact_severity == 'CRITICAL' and source_scope_score(record)[1] == 100
+    axes = _matched_axes(text) if scope in {Scope.DIRECT_LATTICE_CRYPTO, Scope.DIRECT_LATTICE_HARDNESS_THEORY} else []
     breakdown = _score_breakdown(record, axes, venue_confidence, ccf_rank)
     risk_flags = _risk_flags(
         record,
@@ -77,19 +83,15 @@ def calibrate_recommendation(
         todo_verify_flags=todo_verify_flags or [],
         venue_status=venue_status,
     )
-    raw_research_value = sum(breakdown.values())
+    raw_research_value = sum(v for k,v in breakdown.items() if k not in {"venue_confidence", "source_health"})
     research_value = _clamp(raw_research_value, 0, 100)
-    if record.security_impact_severity == "CRITICAL":
+    if critical:
         research_value = 100
     primary_allowed = primary_today_new_eligible and freshness_bucket == "primary_today_new"
     public_score = _public_score(research_value, primary_allowed, freshness_bucket, risk_flags)
-    if primary_allowed and _has_strong_axis(axes) and public_score >= 45 and not _has_hard_verify_flag(risk_flags):
-        public_score = max(public_score, 85)
-    elif primary_allowed and _has_medium_axis(axes) and not _has_hard_verify_flag(risk_flags):
-        public_score = max(public_score, 65)
     level = _level(public_score, primary_allowed, freshness_bucket, risk_flags, axes)
     action = _suggested_action(level, primary_allowed, research_value, freshness_bucket)
-    if record.security_impact_severity == "CRITICAL":
+    if critical:
         risk_flags.extend(["critical_security_claim_todo_verify", "extraordinary_security_claim"])
         level = TODO_VERIFY
         action = "READ_AND_VERIFY_IMMEDIATELY"
@@ -109,21 +111,15 @@ def calibrate_recommendation(
         primary_action_allowed=primary_allowed and action in {"Read today", "READ_AND_VERIFY_IMMEDIATELY"},
         reading_priority=_reading_priority(level),
         suggested_action=action,
+        freshness_urgency=100 if primary_allowed else 0,
+        verification_urgency=100 if critical else 70 if _has_hard_verify_flag(risk_flags) else 30 if risk_flags else 0,
+        recommended_action=action,
     )
 
 
 def _record_text(record: PaperRecord) -> str:
-    # Inferred aliases are excluded: recommendation evidence must remain source-grounded.
-    parts: list[str] = [
-        record.title,
-        record.abstract,
-        record.conclusion,
-        record.venue or "",
-        record.source,
-        " ".join(record.source_evidence_terms),
-        " ".join(record.categories),
-    ]
-    return " ".join(part for part in parts if part).lower()
+    from lattice_digest.evidence_contract import positive_source_text
+    return positive_source_text(record)
 
 
 def _matched_axes(text: str) -> list[RelevanceAxis]:
@@ -146,7 +142,10 @@ def _matched_axes(text: str) -> list[RelevanceAxis]:
             "hawk",
         )
     )
+    lattice_target = any(_contains_term(text,t) for t in ("lwe","rlwe","mlwe","sis","module-sis","ntru","ml-kem","kyber","ml-dsa","dilithium","lattice","lattices","bkz"))
     for axis in AXES:
+        if axis.tag in {"Lattice signatures", "Lattice cryptanalysis", "PQC implementation/security"} and not lattice_target:
+            continue
         if axis.tag == "AI4LC" and not has_crypto_context:
             continue
         if axis.tag == "Lattice signatures" and "signature" in text and not has_crypto_context:
@@ -336,7 +335,7 @@ def _suggested_action(level: str, primary_allowed: bool, research_value: int, fr
         if research_value >= 75:
             return "Save for background"
         return "Skim for related work"
-    if level == "Strong":
+    if level == "Strong" or primary_allowed and research_value >= 40:
         return "Read today"
     if level == "Medium":
         return "Read this week"
@@ -395,12 +394,8 @@ def _evidence_basis(record: PaperRecord, axes: list[RelevanceAxis]) -> list[str]
     basis = ["title"]
     if record.abstract:
         basis.append("abstract")
-    if record.reason:
-        basis.append("classifier_reason")
-    if record.taxonomy_tags:
-        basis.append("inferred_topic_tags")
-    if record.keywords_matched:
-        basis.append("source_evidence_terms")
+    if record.source_concept_ids:
+        basis.append("source_grounded_concepts")
     if record.critical_signal_relations:
         basis.append("source_grounded_reduction_relations")
     if record.source_url:
@@ -416,6 +411,9 @@ def _clamp(value: int, lower: int, upper: int) -> int:
 
 def calibration_to_update(calibration: RecommendationCalibration) -> dict[str, Any]:
     return {
+        "freshness_urgency": calibration.freshness_urgency,
+        "verification_urgency": calibration.verification_urgency,
+        "recommended_action": calibration.recommended_action,
         "recommendation_level": calibration.recommendation_level,
         "recommendation_score": calibration.recommendation_score,
         "recommendation_reason": calibration.recommendation_reason,

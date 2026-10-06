@@ -10,6 +10,9 @@ from typing import Any
 
 from lattice_digest.digest_sections import (
     AI_LATTICE,
+    GENERAL_CRYPTO_PRIVACY,
+    IMPLEMENTATION_SYSTEMS,
+    OTHER_WATCHLIST,
     HIGH_PRIORITY,
     IDEA_BANK_CANDIDATES,
     LATTICE_REDUCTION_ATTACKS,
@@ -47,7 +50,7 @@ PRIMARY_FRESHNESS_BUCKET = "primary_today_new"
 PRIVATE_WEEKLY_PREFIX = "_weekly_"
 TOPIC_GROUP_ORDER = (
     "AI4LC",
-    "lattice cryptanalysis / BKZ / G6K / sparse LWE",
+    "lattice reduction / hardness theory / source-grounded attacks",
     "LWE / RLWE / MLWE",
     "SIS / Module-SIS",
     "ML-KEM / ML-DSA / Falcon / HAWK",
@@ -161,6 +164,7 @@ def _paper_record_from_dict(record: dict[str, Any]):
         title=str(record.get("title") or "untitled"),
         authors=[str(author) for author in record.get("authors", [])] if isinstance(record.get("authors"), list) else [],
         abstract=str(record.get("abstract") or ""),
+        conclusion=str(record.get("conclusion") or ""),
         source=str(record.get("source") or "unknown"),
         source_url=str(record.get("source_url") or record.get("url") or ""),
         paper_id=record.get("paper_id"),
@@ -183,24 +187,19 @@ def _paper_record_from_dict(record: dict[str, Any]):
 
 
 def _research_sections(record: dict[str, Any]) -> list[str]:
-    sections = record.get("research_sections")
-    if isinstance(sections, list) and sections:
-        topical = _stable_sections([str(section) for section in sections])
-        if topical:
-            return topical
-    return assign_research_sections(_paper_record_from_dict(record))
+    from lattice_digest.evidence_contract import bind_source_evidence
+    paper=bind_source_evidence(_paper_record_from_dict(record))
+    # Keep historical background rows visible, with their validated D scope.
+    sections=assign_research_sections(paper)
+    if paper.relevance_label=='D':
+        sections=[s for s in sections if s in {GENERAL_CRYPTO_PRIVACY,IMPLEMENTATION_SYSTEMS,OTHER_WATCHLIST}]
+    return sections or [OTHER_WATCHLIST]
 
 
 def _report_buckets(record: dict[str, Any]) -> list[str]:
-    buckets = record.get("report_buckets")
-    if isinstance(buckets, list) and buckets:
-        return _stable_report_buckets([str(bucket) for bucket in buckets])
-    legacy_sections = record.get("research_sections")
-    if isinstance(legacy_sections, list) and legacy_sections:
-        legacy = _stable_report_buckets([str(section) for section in legacy_sections])
-        if legacy:
-            return legacy
-    return assign_report_buckets(_paper_record_from_dict(record))
+    from lattice_digest.evidence_contract import bind_source_evidence
+    paper=bind_source_evidence(_paper_record_from_dict(record))
+    return assign_report_buckets(paper) if paper.relevance_label!='D' else []
 
 
 def _merge_record(base: dict[str, Any], incoming: dict[str, Any]) -> dict[str, Any]:
@@ -491,6 +490,9 @@ def _route_weekly_records(payload: dict[str, Any]) -> dict[str, list[dict[str, A
     routed = {"primary_new": [], "backfill": [], "verify_first": []}
     for record in _all_weekly_records(payload):
         risks = _record_risk_flags(record, source_statuses)
+        from lattice_digest.evidence_contract import source_scope_score, Scope
+        if source_scope_score(record)[0]==Scope.OUT_OF_SCOPE:
+            risks=[*risks,'TODO_VERIFY: upstream relevance conflicts with validated OUT_OF_SCOPE']
         routed_record = dict(record)
         routed_record[PRIVATE_WEEKLY_PREFIX + "risk_flags"] = risks
         if _hard_verify_required(routed_record, risks):
@@ -506,14 +508,10 @@ def _route_weekly_records(payload: dict[str, Any]) -> dict[str, list[dict[str, A
 
 
 def _topic_group(record: dict[str, Any]) -> str:
-    parts = [
-        str(record.get("title") or ""),
-        str(record.get("abstract") or record.get("abstract_en") or ""),
-        *(_string_values(record, "user_relevance_tags")),
-        *(_string_values(record, "taxonomy_tags")),
-        *(_string_values(record, "research_sections")),
-    ]
-    text = " ".join(parts).lower()
+    from lattice_digest.evidence_contract import positive_source_text, source_scope_score, Scope
+    if source_scope_score(record)[0] in {Scope.OUT_OF_SCOPE,Scope.LATTICE_METHOD_IN_ADJACENT_CRYPTO,Scope.ADJACENT_PQC}:
+        return TOPIC_GROUP_ORDER[9]
+    text = positive_source_text(record)
     if any(token in text for token in ("ai4lc", "ai-assisted lattice", "neural cryptanalysis", "transformer lwe")):
         return TOPIC_GROUP_ORDER[0]
     if any(token in text for token in ("cryptanalysis", "bkz", "g6k", "lattice reduction", "sparse lwe", "lll")):
@@ -532,6 +530,9 @@ def _topic_group(record: dict[str, Any]) -> str:
         return TOPIC_GROUP_ORDER[7]
     if any(token in text for token in ("fhe", "ckks", "bfv", "bgv", "tfhe", "homomorphic encryption")):
         return TOPIC_GROUP_ORDER[8]
+    from lattice_digest.evidence_contract import classify_scope, Scope
+    if classify_scope(record)[0] == Scope.DIRECT_LATTICE_HARDNESS_THEORY:
+        return TOPIC_GROUP_ORDER[1]
     return TOPIC_GROUP_ORDER[9]
 
 
@@ -616,7 +617,8 @@ def _reading_queue(
                 queues["skim"].append(record)
             else:
                 queues["save for background"].append(record)
-            tags = " ".join(_string_values(record, "user_relevance_tags")).lower()
+            from lattice_digest.evidence_contract import source_topics
+            tags = " ".join(source_topics(record)).lower()
             url = str(record.get("source_url") or record.get("url") or "")
             research_score = _score(record, "research_value_score", _score(record, "relevance_score"))
             if url and (tags or research_score >= 60):
@@ -664,11 +666,8 @@ def _report_bucket_map(records: list[dict[str, Any]]) -> dict[str, list[dict[str
 
 
 def _candidate_reason(record: dict[str, Any], section: str) -> str:
-    paper = _paper_record_from_dict(record)
-    paper.relevance_label = str(record.get("relevance_label") or "D")
-    paper.relevance_score = int(record.get("relevance_score") or 0)
-    paper.keywords_matched = [str(item) for item in record.get("keywords_matched", [])] if isinstance(record.get("keywords_matched"), list) else []
-    paper.taxonomy_tags = [str(item) for item in record.get("taxonomy_tags", [])] if isinstance(record.get("taxonomy_tags"), list) else []
+    from lattice_digest.evidence_contract import bind_source_evidence
+    paper = bind_source_evidence(_paper_record_from_dict(record))
     return candidate_reason(paper, section)
 
 
@@ -718,9 +717,12 @@ def build_weekly_synthesis(
     total_records = sum(len(_records(payload)) for _, payload in loaded_payloads)
     from lattice_digest.daily_inputs import summarize_daily_inputs
     input_quality = summarize_daily_inputs(loaded_payloads, missing_days)
+    from lattice_digest.evidence_contract import classification_summary
+    classification = classification_summary(records)
     label_counts = Counter(str(record.get("relevance_label") or "D") for record in records)
     generated = generated_at or datetime.now(timezone.utc)
     return {
+        **classification,
         "schema_version": 1,
         "week_id": _week_id(to_date),
         "from_date": from_date.isoformat(),
@@ -775,7 +777,9 @@ def _compact_record(record: dict[str, Any], placement: str) -> str:
         or record.get("reason_for_priority")
         or build_recommendation_rationale(record).recommendation_reason
     ).strip()
-    tags = _string_values(record, "user_relevance_tags") or _string_values(record, "taxonomy_tags")
+    from lattice_digest.evidence_contract import source_topics, render_research_relations
+    tags = source_topics(record)
+    reason = render_research_relations(record)
     phd = str(record.get("phd_application_relevance") or "not specified")
     action = _display_action(record, placement, hard_verify)
     venue = str(record.get("venue") or "unknown")
@@ -793,7 +797,7 @@ def _compact_record(record: dict[str, Any], placement: str) -> str:
     lines = [
         f"### [{placement_text}] {record.get('title') or 'untitled'}",
         "",
-        f"- Recommendation: **{level}** | action score: **{action_score}** | research value: **{research_score}**",
+        f"- Upstream/provenance recommendation: **{level}** | action score: **{action_score}** | upstream research value: **{research_score}**",
         f"- Suggested action: **{action}**",
         f"- Why it matters: {reason or 'TODO_VERIFY: concrete relevance reason unavailable.'}",
         f"- User relevance: {', '.join(tags) if tags else 'TODO_VERIFY'}",
@@ -836,8 +840,8 @@ def _record_line(
         *_string_values(record, "recommendation_risk_flags"),
     ]
     lines = [
-        f"- {title}｜{label} / {score}｜placement: {placement_text}｜sources: {sources}｜seen: {dates}｜{url}\n"
-        f"  - Recommendation: {recommendation_level} / {recommendation_score}; research_value_score={research_score}; "
+        f"- {title}｜upstream/provenance {label} / {score}｜placement: {placement_text}｜sources: {sources}｜seen: {dates}｜{url}\n"
+        f"  - Upstream/provenance recommendation: {recommendation_level} / {recommendation_score}; upstream research_value_score={research_score}; "
         f"suggested_action={record.get('suggested_action') or 'unknown'}\n"
         f"  - {anchor_evidence_text(record)}\n"
         f"  - False-positive risk: {false_positive_risk_text(record)}\n"
@@ -875,6 +879,7 @@ def render_markdown(payload: dict[str, Any]) -> str:
         "",
         f"- Date range: {payload['from_date']} .. {payload['to_date']}",
         f"- Coverage: {len(coverage['loaded_days'])}/{coverage['expected_days']} days; missing={len(missing_days)}",
+        f"- Classification quality: {payload.get('classification_quality_state', 'UNKNOWN')}; provenance labels={payload.get('provenance_label_counts', payload.get('label_counts', {}))}; validated labels={payload.get('validated_label_counts', {})}; conflicts={payload.get('classification_conflict_count', 'unknown')}",
         f"- Fully valid Daily: {len(coverage.get('fully_valid_days', []))}/{coverage['expected_days']}; authority={coverage.get('authority_state', 'UNKNOWN')}",
         f"- Daily semantic defects: failed={coverage.get('semantic_failed_days', [])}; unknown={coverage.get('semantic_unknown_days', [])}",
         "",
@@ -890,7 +895,7 @@ def render_markdown(payload: dict[str, Any]) -> str:
             "- 今日动作: "
             + ("优先阅读下方 primary-new 队列。" if primary_count else "无安全 primary-new；先核验风险项，再选择背景阅读。")
         ),
-        "- Safety rule: recommendation_score is freshness/risk-gated; research_value_score is intrinsic value.",
+        "- Upstream recommendation scores/actions are provenance, pending evidence-bound recalibration; classification conflicts are independent of coverage authority.",
         "- Backfill may be valuable but is never presented as primary-new. TODO_VERIFY is verify-first, never read-now.",
         "",
         "## 本周最值得读 / Top Papers This Week",

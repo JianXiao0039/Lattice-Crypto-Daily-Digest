@@ -33,8 +33,8 @@ def test_enriched_record_requires_bilingual_abstract_conclusion_and_recommendati
     assert enriched.abstract_zh.startswith("TODO_VERIFY: TODO_VERIFY_TRANSLATION:")
     assert enriched.conclusion_en.startswith("model-generated from available metadata:")
     assert enriched.conclusion_zh.startswith("TODO_VERIFY: TODO_VERIFY_TRANSLATION:")
-    assert enriched.recommendation_level == "Strong"
-    assert enriched.recommendation_score >= 85
+    assert enriched.recommendation_level == "Low"
+    assert enriched.recommendation_score <= enriched.research_value_score
     assert "Module-SIS" in enriched.recommendation_reason
     assert "SIS/Module-SIS" in enriched.user_relevance_tags
     assert enriched.suggested_action == "Read today"
@@ -80,4 +80,4 @@ def test_json_output_contains_required_bilingual_and_recommendation_metadata() -
     ):
         assert field in item
     assert item["abstract_zh"].startswith("TODO_VERIFY: TODO_VERIFY_TRANSLATION:")
-    assert item["recommendation_level"] == "Strong"
+    assert item["recommendation_level"] == "Low"

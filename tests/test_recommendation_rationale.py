@@ -55,7 +55,7 @@ def test_keyword_only_match_does_not_become_complete_rationale() -> None:
         }
     )
 
-    assert rationale.confidence == "repository_note_supported"
+    assert rationale.confidence == "metadata_supported"
     assert "不能可靠判断具体方法" in rationale.method_summary
     assert "不能可靠判断论文声称的新贡献" in rationale.contribution_summary
     assert "关键词命中不能替代摘要" in rationale.caveat or "TODO_VERIFY" in rationale.caveat

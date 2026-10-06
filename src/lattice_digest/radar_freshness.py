@@ -286,24 +286,8 @@ def recommendation_level(score: int, freshness_bucket: str) -> str:
 
 
 def recommendation_reason(record: PaperRecord | Mapping[str, Any]) -> str:
-    text = " ".join(
-        str(_field(record, name) or "")
-        for name in ("title", "abstract", "reason", "taxonomy_tags", "keywords_matched")
-    ).lower()
-    topics = [
-        ("AI-assisted lattice cryptanalysis", ("ai-assisted", "neural", "transformer", "coordinate")),
-        ("lattice cryptography", ("lattice", "lwe", "rlwe", "mlwe", "sis", "ntru")),
-        ("Module-SIS", ("module-sis", "msis", "commitment", "chameleon")),
-        ("ML-KEM / ML-DSA / FN-DSA / HAWK", ("ml-kem", "kyber", "ml-dsa", "dilithium", "fn-dsa", "falcon", "hawk")),
-        ("PQC implementation", ("implementation", "side-channel", "fault", "constant-time")),
-        ("cryptanalysis", ("cryptanalysis", "bkz", "attack", "svp", "cvp", "hybrid")),
-        ("systems/security deployment", ("tls", "deployment", "migration", "standardization")),
-        ("ZK-friendly PQ primitives", ("zero-knowledge", "zk", "proof")),
-    ]
-    matched = [label for label, terms in topics if any(term in text for term in terms)]
-    if not matched:
-        return "TODO_VERIFY: insufficient reliable topic evidence for a specific recommendation reason."
-    return "Useful for " + "; ".join(matched[:3]) + "."
+    from lattice_digest.evidence_contract import render_research_relations
+    return render_research_relations(record, language='en')
 
 
 def _generated_zh_summary(text: str, fallback: str) -> str:

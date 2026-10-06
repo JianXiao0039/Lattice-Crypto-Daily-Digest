@@ -74,7 +74,7 @@ def derive_authority(records: list[Any], source_health: list[dict[str, Any]] | N
     }
 
 
-def semantic_qa(payload: dict[str, Any], markdown: str | None, *, source_configs: list[dict[str, Any]] | None = None, candidate: bool = False) -> dict[str, Any]:
+def semantic_qa(payload: dict[str, Any], markdown: str | None, *, source_configs: list[dict[str, Any]] | None = None, candidate: bool = False, check_classification: bool = True) -> dict[str, Any]:
     records = payload.get('records')
     meta = payload.get('metadata') if isinstance(payload.get('metadata'), dict) else {}
     health = payload.get('source_health') or meta.get('source_health') or []
@@ -114,6 +114,9 @@ def semantic_qa(payload: dict[str, Any], markdown: str | None, *, source_configs
     for record in records if isinstance(records, list) else []:
         if not isinstance(record, dict):
             continue
+        from lattice_digest.evidence_contract import evidence_quality_issues
+        if check_classification:
+            issues.extend(evidence_quality_issues(record))
         if record.get('primary_today_new_eligible') is True and record.get('cross_day_event') in {'UNCHANGED_CROSS_DAY_DUPLICATE', 'GENUINE_NEW_VERSION', 'GENUINE_CONTENT_REVISION', 'METADATA_ONLY_UPDATE', 'IDENTITY_UNCERTAIN'}:
             issues.append('cross_day_false_primary')
     status = 'FAIL' if issues else ('UNKNOWN' if unknown else 'PASS')

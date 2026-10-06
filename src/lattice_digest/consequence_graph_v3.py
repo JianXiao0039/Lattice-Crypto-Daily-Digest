@@ -9,6 +9,7 @@ from pydantic import BaseModel, ConfigDict, Field, model_validator
 
 
 class RelationType(StrEnum):
+    MENTIONS = "MENTIONS"
     SOLVES = "SOLVES"
     REDUCES_TO = "REDUCES_TO"
     ATTACKS = "ATTACKS"
@@ -170,7 +171,7 @@ def extract_record_edges(
             )
         )
 
-    if _all(normalized, "quaternion", ("bkz", "lll", "lattice reduction")):
+    if _all(normalized, "quaternion", ("bkz", "lll", "lattice reduction"), ("mlip", "module lip", "module lattice isomorphism")):
         edges.extend(
             _source_edges(
                 paper_node,
@@ -188,7 +189,7 @@ def extract_record_edges(
                 source_url,
                 [(RelationType.PROVES_HARDNESS, "HARD.STRUCTURED_CVP")],
                 qualifier="hardness claim preserved at the structured-CVP scope",
-                claim_status=ClaimStatus.PROVED_UNDER_CONDITIONS,
+                claim_status=ClaimStatus.PAPER_FACT,
             )
         )
     if _all(normalized, ("threshold", "distributed"), ("zero knowledge", "commit and prove", "exact relation"), ("hint mlwe", "module lwe", "lattice")):
@@ -230,14 +231,14 @@ def extract_record_edges(
     if _all(normalized, ("algebraic lattice reduction", "module lattice reduction"), ("ntru", "module lattice", "mlip", "submodule")):
         relations = [(RelationType.IMPROVES, "ATTACK.LATTICE_REDUCTION")]
         if _any(normalized, "ntru"):
-            relations.append((RelationType.ATTACKS, "FND.NTRU"))
+            relations.append((RelationType.ATTACKS if _any(normalized, 'ntru cryptanalysis', 'attack on ntru', 'attacks on ntru') else RelationType.MENTIONS, "FND.NTRU"))
         edges.extend(
             _source_edges(
                 paper_node,
                 fields,
                 source_url,
                 relations,
-                qualifier="Algebraic/module reduction relevance is limited to the explicit lattice structure or scheme target.",
+                qualifier="Algebraic/module reduction relevance is limited to the explicit lattice structure or scheme target; a discussed cryptanalytic relation does not establish a concrete attack result.",
             )
         )
     if _all(normalized, ("blind signature", "adaptor signature", "ring signature", "anonymous authentication"), ("lwe", "sis", "lattice", "ntru")):
@@ -250,7 +251,7 @@ def extract_record_edges(
                 qualifier="privacy-signature relevance requires the explicit lattice co-anchor",
             )
         )
-    if _all(normalized, ("authenticated key exchange", " ake "), ("lwe", "lattice", "ml kem", "kyber")):
+    if _all(normalized, ("authenticated key exchange", "ake"), ("lwe", "rlwe", "mlwe", "lattice", "lattices", "ml kem", "kyber")):
         edges.extend(
             _source_edges(
                 paper_node,
@@ -260,6 +261,10 @@ def extract_record_edges(
                 qualifier="AKE relevance is limited to the explicit lattice/PQC construction",
             )
         )
+        if _any(normalized, 'from lwe', 'based on lwe', 'lwe based lattice assumptions'):
+            edges.extend(_source_edges(paper_node, fields, source_url,
+                [(RelationType.USES_ASSUMPTION, 'FND.LWE')],
+                qualifier='Source explicitly states the LWE assumption for this construction.'))
 
     dcp = _any(normalized, "dihedral coset problem", " edcp ")
     # A generic polynomial-time quantum algorithm near a DCP citation is not a
@@ -367,17 +372,8 @@ def _concept_anchor(concept_id: str) -> str:
 
 
 def _direct_relation(concept_id: str) -> RelationType:
-    if concept_id.startswith("ATTACK."):
-        return RelationType.IMPROVES
-    if concept_id.startswith("IMPL."):
-        return RelationType.IMPLEMENTS
-    if concept_id.startswith("PRIM."):
-        return RelationType.TARGETS_SCHEME
-    if concept_id.startswith("PROOF."):
-        return RelationType.INSTANTIATES
-    if concept_id.startswith("RED.") or concept_id.startswith("HARD."):
-        return RelationType.PROVES_REDUCTION
-    return RelationType.USES_ASSUMPTION
+    # A concept occurrence establishes a mention, not a contribution or proof.
+    return RelationType.MENTIONS
 
 
 def _normal(value: str) -> str:
@@ -386,7 +382,9 @@ def _normal(value: str) -> str:
 
 
 def _any(text: str, *options: str) -> bool:
-    return any(_normal(option).strip() in text for option in options)
+    return any(_normal(option) in text or (
+        _normal(option).strip().endswith(('signature','lattice','trapdoor')) and
+        (' ' + _normal(option).strip() + 's ') in text) for option in options)
 
 
 def _all(text: str, *groups: str | tuple[str, ...]) -> bool:
@@ -397,7 +395,7 @@ def _all(text: str, *groups: str | tuple[str, ...]) -> bool:
 
 
 def _first_span(fields: dict[str, str], term: str) -> tuple[str, str]:
-    wanted = _normal(term).strip()
+    wanted = _normal(term)
     for name, value in fields.items():
         normalized = _normal(value)
         if wanted and wanted in normalized:

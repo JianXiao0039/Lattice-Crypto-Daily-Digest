@@ -53,6 +53,19 @@ class PaperRecord(BaseModel):
     cross_day_event: str = ""
     prior_promotion_dates: list[str] = Field(default_factory=list)
     categories: list[str] = Field(default_factory=list)
+    evidence_policy_version: str = ""
+    evidence_items: list[dict[str, Any]] = Field(default_factory=list)
+    source_taxonomy_tags: list[str] = Field(default_factory=list)
+    source_concept_ids: list[str] = Field(default_factory=list)
+    ontology_neighbor_tags: list[str] = Field(default_factory=list)
+    user_research_hypotheses: list[dict[str, Any]] = Field(default_factory=list)
+    research_relations: list[dict[str, Any]] = Field(default_factory=list)
+    source_limitations: list[str] = Field(default_factory=list)
+    relevance_scope: str = ""
+    freshness_urgency: int = 0
+    verification_urgency: int = 0
+    recommended_action: str = ""
+    source_health_provenance: dict[str, dict[str, Any]] = Field(default_factory=dict)
     taxonomy_tags: list[str] = Field(default_factory=list)
     keywords_matched: list[str] = Field(default_factory=list)
     source_evidence_terms: list[str] = Field(default_factory=list)

@@ -65,7 +65,7 @@ concepts:
     canonical_name: Short Integer Solution
     domain: foundations_hardness
     aliases: [SIS, Short Integer Solution, Ring-SIS, Module-SIS, MSIS]
-    source_grounded_terms: [Short Integer Solution, Ring-SIS, Module-SIS, MSIS]
+    source_grounded_terms: [SIS, Short Integer Solution, Ring-SIS, Module-SIS, MSIS]
     inferred_tags: [sis_family, short_relation]
     parents: []
     children: [FND.MSIS]

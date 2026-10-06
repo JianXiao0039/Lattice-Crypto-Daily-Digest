@@ -421,18 +421,8 @@ def _stable_unique(values: list[str], order: tuple[str, ...] = ALL_SECTION_ORDER
 
 
 def _text(record: PaperRecord) -> str:
-    return " ".join(
-        [
-            record.title,
-            record.abstract,
-            record.source,
-            record.venue or "",
-            " ".join(record.categories),
-            " ".join(record.keywords_matched),
-            " ".join(record.taxonomy_tags),
-            record.reason,
-        ]
-    ).lower()
+    from lattice_digest.evidence_contract import positive_source_text
+    return positive_source_text(record)
 
 
 def _has(text: str, terms: tuple[str, ...]) -> bool:
@@ -604,6 +594,9 @@ def assign_report_buckets(record: PaperRecord) -> list[str]:
 
 
 def candidate_reason(record: PaperRecord, section: str) -> str:
+    return 'RESEARCH_HYPOTHESIS_NOT_PAPER_CLAIM：以下为候选研究迁移启发；尚未由论文建立：' + _candidate_reason_text(record, section)
+
+def _candidate_reason_text(record: PaperRecord, section: str) -> str:
     sections = set(assign_research_sections(record))
     if section == IDEA_BANK_CANDIDATES:
         if AI_LATTICE in sections:
@@ -639,7 +632,7 @@ def candidate_reason(record: PaperRecord, section: str) -> str:
         if LATTICE_ADVANCED_PRIMITIVES in sections:
             return "满足较高相关性，且可规划 lattice advanced primitives 的构造、证明或 artifact。"
         return "满足较高相关性，适合进入 paper plan 候选池，但需人工核验贡献边界。"
-    return "由标题、摘要、关键词或 taxonomy 的确定性匹配分入该研究板块。"
+    return "由原始来源标题、摘要或结论的确定性匹配分入该研究板块；生成标签不作为证据。"
 
 
 def sectioned_records(records: list[PaperRecord]) -> dict[str, list[PaperRecord]]:

@@ -18,7 +18,8 @@ def test_ranker_labels_core_lattice_cryptanalysis_as_a() -> None:
 
     assert ranked.relevance_label == "A"
     assert "lwe" in {term.lower() for term in ranked.keywords_matched}
-    assert "lattice_reduction_cryptanalysis" in ranked.taxonomy_tags
+    assert "lattice_reduction_cryptanalysis" in ranked.inferred_topic_tags
+    assert "lattice_reduction_cryptanalysis" not in ranked.source_taxonomy_tags
     assert ranked.reading_priority == 1
 
 
@@ -171,7 +172,8 @@ def test_ai_assisted_lattice_cryptanalysis_with_bkz_context_enters_b_or_c() -> N
 
     ranked = classify_record(record, configs["taxonomy"], configs["keywords"], configs["negative"])
 
-    assert ranked.relevance_label in {"B", "C"}, ranked.reason
+    assert ranked.relevance_label == "A", ranked.reason
+    assert ranked.relevance_scope == "DIRECT_LATTICE_CRYPTO"
 
 
 def test_unreliable_source_or_url_is_filtered() -> None:

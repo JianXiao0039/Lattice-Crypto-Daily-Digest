@@ -159,14 +159,10 @@ def aggregate_records(daily_payloads: list[tuple[date, dict[str, Any]]]) -> list
 
 
 def direction_for_record(record: dict[str, Any]) -> str:
-    text = " ".join(
-        [
-            str(record.get("title") or ""),
-            str(record.get("abstract") or ""),
-            " ".join(str(item) for item in record.get("keywords_matched", []) if isinstance(record.get("keywords_matched"), list)),
-            " ".join(str(item) for item in record.get("taxonomy_tags", []) if isinstance(record.get("taxonomy_tags"), list)),
-        ]
-    ).lower()
+    from lattice_digest.evidence_contract import positive_source_text, source_scope_score, Scope
+    if source_scope_score(record)[0] in {Scope.OUT_OF_SCOPE,Scope.LATTICE_METHOD_IN_ADJACENT_CRYPTO,Scope.ADJACENT_PQC}:
+        return 'other PQC / adjacent crypto'
+    text = positive_source_text(record)
     for direction, terms, _, _ in DIRECTION_RULES:
         if any(_contains_term(text, term) for term in terms):
             return direction
@@ -247,6 +243,9 @@ def build_source_health_summary(daily_payloads: list[tuple[date, dict[str, Any]]
 
 
 def _reading_bucket(record: dict[str, Any]) -> str:
+    from lattice_digest.evidence_contract import source_scope_score, Scope
+    if has_source_content(record) and source_scope_score(record)[0]==Scope.OUT_OF_SCOPE:
+        return ReadingAction.IGNORE.value
     return reading_action(record).value
 
 
@@ -276,7 +275,10 @@ def _rationale_payload(record: dict[str, Any]) -> dict[str, Any]:
 
 
 def build_core_paper(record: dict[str, Any]) -> dict[str, Any]:
+    from lattice_digest.evidence_contract import source_scope_score, score_to_label
+    scope,score=source_scope_score(record)
     return {
+        'validated_label':score_to_label(score), 'validated_score':score, 'validated_scope':str(scope),
         "title": record.get("title") or "untitled",
         "source": record.get("source") or "unknown",
         "source_url": record.get("source_url") or record.get("url") or "",
@@ -384,10 +386,13 @@ def build_monthly_synthesis(
         loaded.append((day, assess_daily_input(path, day, data_dir, used_legacy)))
         input_daily_files.append(path.as_posix())
     records = aggregate_records(loaded)
+    from lattice_digest.evidence_contract import classification_summary
+    classification = classification_summary(records)
     class_counts = Counter(str(record.get("relevance_label") or "D") for record in records)
     direction_counts = Counter(direction_for_record(record) for record in records)
     source_health = build_source_health_summary(loaded)
-    core_records = [record for record in records if str(record.get("relevance_label") or "D") in {"A", "B"}]
+    from lattice_digest.evidence_contract import source_scope_score, score_to_label
+    core_records = [record for record in records if score_to_label(source_scope_score(record)[1]) in {"A", "B"}]
     core_papers = [build_core_paper(record) for record in sorted(core_records, key=_display_sort_key)[:12]]
     title_only = [
         str(record.get("title") or "untitled")
@@ -401,6 +406,7 @@ def build_monthly_synthesis(
     ]
     generated = generated_at or datetime.now(timezone.utc)
     return {
+        **classification,
         "schema_version": SCHEMA_VERSION,
         "month": month,
         "generated_at": generated.isoformat(),
@@ -441,7 +447,8 @@ def _core_paper_markdown(paper: dict[str, Any], *, bilingual: bool = False) -> l
         f"### {paper['title']}",
         "",
         f"- Source: {paper['source']}",
-        f"- Rank/class/score: {paper['relevance_label']} / {paper['relevance_score']}；reading_priority_score {paper['reading_priority_score']}",
+        f"- Rank/class/score (upstream/provenance): {paper['relevance_label']} / {paper['relevance_score']}；upstream reading_priority_score {paper['reading_priority_score']}",
+        f"- Validated source classification: {paper.get('validated_label','UNKNOWN')} / {paper.get('validated_score','UNKNOWN')}；scope {paper.get('validated_scope','UNKNOWN')}",
         f"- Direction: {paper['direction']}",
         f"- Problem: {rationale['problem']}",
         f"- Method / construction / attack / implementation: {rationale['method']}",
@@ -472,7 +479,7 @@ def render_markdown(payload: dict[str, Any]) -> str:
         f"- Input authority: {payload.get('input_quality', {}).get('authority_state', 'UNKNOWN')}; fully valid Daily={len(payload.get('input_quality', {}).get('fully_valid_days', []))}",
         f"- Daily semantic failures: {payload.get('input_quality', {}).get('semantic_failed_days', [])}; unknown: {payload.get('input_quality', {}).get('semantic_unknown_days', [])}",
         '- Translation: TRANSLATION_BACKEND_SELECTION_REQUIRED; BILINGUAL_RELEASE_NOT_YET_AVAILABLE',
-        f"- A/B/C class counts: {payload['class_counts']}",
+        f"- Upstream/provenance A/B/C class counts: {payload['class_counts']}; validated={payload.get('validated_label_counts', {})}; conflicts={payload.get('classification_conflict_count', 'unknown')}; classification quality={payload.get('classification_quality_state', 'UNKNOWN')}",
         f"- top directions: {', '.join(f'{name} ({count})' for name, count in top_directions) if top_directions else 'none'}",
         f"- source-health status: {'source-starved days present' if health['source_starved'] else 'usable with recorded caveats'}",
         f"- source-starved month: {str(health['source_starved']).lower()}",
@@ -510,7 +517,7 @@ def render_markdown(payload: dict[str, Any]) -> str:
             continue
         for item in items[:12]:
             lines.append(
-                f"- {item['title']}｜{item['relevance_label']} / {item['relevance_score']}｜"
+                f"- {item['title']}｜upstream/provenance {item['relevance_label']} / {item['relevance_score']}｜"
                 f"reading {item['reading_priority_score']}｜{item['direction']}｜{item['reason']}"
             )
         lines.append("")

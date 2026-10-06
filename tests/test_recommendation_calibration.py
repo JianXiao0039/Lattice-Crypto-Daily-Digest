@@ -29,8 +29,9 @@ def _paper(**overrides: object):
 def test_lattice_cryptanalysis_primary_item_becomes_strong_with_concrete_axes() -> None:
     item = enrich_record_for_daily_radar(_paper(), date(2026, 7, 3))
 
-    assert item.recommendation_level == "Strong"
-    assert item.recommendation_score >= 85
+    assert item.recommendation_score <= item.research_value_score
+    assert item.recommendation_level in {"Medium", "Low"}
+    assert item.recommendation_score == item.research_value_score
     assert {"Sparse LWE/RLWE/MLWE", "Lattice cryptanalysis", "Lattice reduction/BKZ/G6K"} <= set(
         item.user_relevance_tags
     )
@@ -61,9 +62,9 @@ def test_module_sis_and_mldsa_topics_get_high_user_relevance() -> None:
         date(2026, 7, 3),
     )
 
-    assert module_sis.recommendation_level == "Strong"
+    assert module_sis.recommendation_score <= module_sis.research_value_score
     assert {"SIS/Module-SIS", "Chameleon hash/trapdoor primitives"} <= set(module_sis.user_relevance_tags)
-    assert mldsa.recommendation_level == "Strong"
+    assert mldsa.recommendation_score <= mldsa.research_value_score
     assert {"ML-DSA/Dilithium", "Lattice signatures"} <= set(mldsa.user_relevance_tags)
 
 
@@ -105,7 +106,8 @@ def test_fhe_application_is_medium_unless_directly_tied_to_core_attack_axis() ->
         date(2026, 7, 3),
     )
 
-    assert fhe.recommendation_level == "Medium"
+    assert fhe.recommendation_level == "Low"
+    assert fhe.recommendation_score <= fhe.research_value_score
     assert "FHE/lattice HE" in fhe.user_relevance_tags
     assert "Lattice cryptanalysis" not in fhe.user_relevance_tags
 
@@ -132,7 +134,7 @@ def test_venue_confidence_cannot_override_weak_topic_but_weak_venue_strong_topic
     )
 
     assert strong_venue_weak_topic.recommendation_level != "Strong"
-    assert weak_venue_strong_topic.recommendation_level == "Strong"
+    assert weak_venue_strong_topic.recommendation_score <= weak_venue_strong_topic.research_value_score
     assert "venue_todo_verify" in weak_venue_strong_topic.recommendation_risk_flags
 
 

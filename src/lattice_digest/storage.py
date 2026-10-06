@@ -30,6 +30,8 @@ def build_daily_payload(
     *,
     source_configs: list[dict] | None = None,
 ) -> dict:
+    from lattice_digest.evidence_contract import propagate_source_health
+    records = propagate_source_health(records, source_health or [])
     enriched_records = []
     for record in records:
         record = enrich_record_for_daily_radar(record, digest_date)
@@ -83,6 +85,8 @@ def build_daily_payload(
         "source_health": source_health or [],
         "warnings": warnings or [],
     }
+    from lattice_digest.evidence_contract import quality_gate_report
+    payload['metadata']['evidence_quality_gates'] = quality_gate_report(enriched_records)
     return payload
 
 
@@ -119,6 +123,8 @@ def _publish_daily_pair_locked(records, output_root, digest_date, filtered_count
     md_path = daily_digest_path(digest_date, output_root / 'digests')
     if not force and (json_path.exists() or md_path.exists()):
         raise FileExistsError('canonical pair already exists; explicit force required')
+    from lattice_digest.evidence_contract import propagate_source_health
+    records = propagate_source_health(records, source_health or [])
     payload = build_daily_payload(records, output_root / 'data', digest_date, source_health, warnings, since_window, metadata, source_configs=source_configs)
     generation = uuid4().hex
     payload['metadata']['generation_id'] = generation

@@ -199,11 +199,11 @@ def build_recommendation_rationale(record: Mapping[str, Any] | Any) -> Recommend
     """
 
     title = _field(record, "title", "paper_title")
-    abstract = _field(record, "abstract", "summary", "abstract_text")
+    abstract = _field(record, "abstract", "abstract_text")
     conclusion = _field(record, "conclusion", "conclusion_text")
-    notes = _field(record, "repository_notes", "notes", "reason_for_priority", "why_it_matters")
+    notes = ""  # generated and repository notes are not source evidence
     source = _field(record, "source", "venue")
-    keywords = _list_field(record, "keywords_matched", "keywords", "taxonomy_tags", "research_tags", "tags")
+    keywords = []  # only the original source fields establish scope
 
     source_fields = _source_fields(
         title=title,
@@ -246,7 +246,8 @@ def build_recommendation_rationale(record: Mapping[str, Any] | Any) -> Recommend
         method = "证据不足，不能概括方法。"
         contribution = "证据不足，不能概括贡献。"
 
-    radar_relevance = _radar_relevance(title, abstract, notes, keywords, relevant_terms)
+    from lattice_digest.evidence_contract import render_research_relations
+    radar_relevance = render_research_relations(record)
     recommendation_reason = _recommendation_reason(
         title=title,
         confidence=confidence,
@@ -283,10 +284,10 @@ def build_bilingual_rationale(record: Mapping[str, Any] | Any, *, top_paper: boo
 
     base = build_recommendation_rationale(record)
     title = _field(record, "title", "paper_title")
-    abstract = _field(record, "abstract", "summary", "abstract_text")
+    abstract = _field(record, "abstract", "abstract_text")
     conclusion = _field(record, "conclusion", "conclusion_text")
-    notes = _field(record, "repository_notes", "notes", "reason_for_priority", "why_it_matters")
-    keywords = _list_field(record, "keywords_matched", "keywords", "taxonomy_tags", "research_tags", "tags")
+    notes = ""  # generated and repository notes are not source evidence
+    keywords = []  # only the original source fields establish scope
     relevant_terms = _matched_terms(" ".join([title, abstract, conclusion, notes, " ".join(keywords)]), LATTICE_TERMS)
     en_terms = _english_terms(relevant_terms)
 
@@ -298,7 +299,8 @@ def build_bilingual_rationale(record: Mapping[str, Any] | Any, *, top_paper: boo
 
     en_work = _en_work_summary(base, title=title, terms=en_terms)
     en_novelty = _en_core_novelty(base, abstract=abstract, conclusion=conclusion)
-    en_relevance = _en_radar_relevance(base, terms=en_terms)
+    from lattice_digest.evidence_contract import render_research_relations
+    en_relevance = render_research_relations(record, language="en")
     en_recommendation = _en_recommendation(base)
     en_todo = _en_todo_verify(base)
 

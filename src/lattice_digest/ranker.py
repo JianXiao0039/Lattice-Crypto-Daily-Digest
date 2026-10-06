@@ -522,13 +522,9 @@ def has_any(text: str, keywords: Iterable[str]) -> bool:
 
 
 def infer_label(score: int) -> tuple[str, str]:
-    if score >= 80:
-        return "A", "必读"
-    if score >= 60:
-        return "B", "值得跟踪"
-    if score >= 40:
-        return "C", "可选关注"
-    return "D", "过滤"
+    from lattice_digest.evidence_contract import score_to_label
+    label=score_to_label(score)
+    return label, {"A":"必读", "B":"值得跟踪", "C":"可选关注", "D":"过滤"}[label]
 
 
 def rank_paper(
@@ -804,13 +800,18 @@ def rank_record(record: object) -> RankingResult:
     - source_url
     """
 
-    return rank_paper(
+    result = rank_paper(
         title=getattr(record, "title", ""),
         abstract=getattr(record, "abstract", ""),
         source=getattr(record, "source", ""),
         venue=getattr(record, "venue", ""),
         url=getattr(record, "source_url", "") or getattr(record, "url", ""),
     )
+    from lattice_digest.evidence_contract import source_scope_score, score_to_label
+    _, result.score = source_scope_score(record)
+    result.label = score_to_label(result.score)
+    result.reading_priority = {"A":"必读", "B":"值得跟踪", "C":"可选关注", "D":"过滤"}[result.label]
+    return result
 
 
 def _iter_taxonomy_items(taxonomy_config: Mapping[str, object]) -> Iterable[tuple[str, list[str]]]:
@@ -927,7 +928,7 @@ def classify_record(
     )
 
     ranked.inferred_topic_tags = sorted(set(actual_tags + aliases), key=str.lower)
-    ranked.taxonomy_tags = list(ranked.inferred_topic_tags)
+    ranked.taxonomy_tags = actual_tags  # legacy codes only; aliases stay inferred
     ranked.keywords_matched = all_keywords
     ranked.source_evidence_terms = list(all_keywords)
     ranked.negative_keywords_matched = sorted(
@@ -946,7 +947,8 @@ def classify_record(
             "检测到 source-grounded 的关键格密码安全后果链：多项式时间量子算法、"
             "方向明确的格问题到 DCP 归约，以及 LWE/SVP 后果；影响为 CRITICAL，证据仍为 TODO_VERIFY。"
         )
-    return ranked
+    from lattice_digest.evidence_contract import bind_source_evidence
+    return bind_source_evidence(ranked)
 
 
 def rank_records(

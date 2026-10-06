@@ -1,0 +1,173 @@
+[
+  {
+    "provenance": {
+      "artifact_path": "data/2026/daily/2026-09-22.json",
+      "artifact_sha256": "12bae6196c00e8f9ca00a842560342439d3174853e66a339e8caad7a790264c9",
+      "kind": "frozen_source_fields_from_local_artifact"
+    },
+    "source_record": {
+      "title": "ANSA-IBS: Identity-Based Signatures from Annular NTRU Trapdoors and Bimodal Fiat-Shamir with Aborts",
+      "abstract": "We give a lattice identity-based signature scheme from annular NTRU trapdoors and Fiat--Shamir with aborts (FSwA). Countered hashing maps each identity to its first invertible DLP/NTRU syndrome $a$. Extraction returns a short witness to $s_0+s_1h=a\\bmod q$, and signing normalizes this relation to a fixed-target two-response equation with public commitment recovery. Gärtner's iterative rejection method fits naturally into this signing layer: processing the challenge monomials separately reduces the Gaussian mask width and expected signing attempts, yielding shorter signatures. We report three parameter sets whose signing layer is calibrated against NIST security categories 2, 3, and 5, with fixed signature sizes of $8486$, $11309$, and $12727$ bytes, respectively.",
+      "source": "iacr_eprint",
+      "source_url": "https://eprint.iacr.org/2026/2134",
+      "arxiv_id": null,
+      "eprint_id": "2026/2134",
+      "publication_date": "2026-09-21",
+      "update_date": null
+    },
+    "upstream_label": "A",
+    "upstream_score": 100
+  },
+  {
+    "provenance": {
+      "artifact_path": "data/2026/daily/2026-09-22.json",
+      "artifact_sha256": "12bae6196c00e8f9ca00a842560342439d3174853e66a339e8caad7a790264c9",
+      "kind": "frozen_source_fields_from_local_artifact"
+    },
+    "source_record": {
+      "title": "MAMBA-Frost: A Lattice KEM from Learning With Quantization",
+      "abstract": "The Learning With Errors (LWE) problem provides a conservative and well-established security foundation for lattice-based cryptography, while Learning With Rounding (LWR) improves bandwidth efficiency through deterministic rounding. However, the rounding noise in LWR is inherently correlated with the hidden linear term, preventing tight and sample-preserving reductions to standard LWE for polynomial moduli. Prior work on the Learning With Quantization (LWQ) problem established a tight security reduction from LWE, where standard additive noise is intrinsically replaced by quantization error. We specialize this framework by explicitly instantiating the quantization lattice as a scaled integer lattice. Under this geometric choice, specifically utilizing aligned power-of-two moduli, we derive the exact finite-support error distribution and construct an explicit bijection between transmitted split samples and normal-form LWE samples. These ingredients yield \\(\\mathsf{MAMBA\\text{-}Frost}\\), a plain LWQ-based key encapsulation mechanism that seamlessly pairs unstructured LWE security with quantization-based compression. Because its effective error stems entirely from public dithered quantization, \\(\\mathsf{MAMBA\\text{-}Frost}\\) operates strictly with hardware-friendly power-of-two arithmetic. Furthermore, the construction employs an \\(E_8\\)-coded message embedding to optimize the correctness margin without altering the underlying LWQ hardness argument. We instantiate \\(\\mathsf{Frost}\\) at NIST security levels 1, 3, and 5 and provide a complete software implementation. Its power-of-two design realizes the core arithmetic with shifts and masks, keeping the implementation simple and amenable to constant-time engineering. At level 1, \\(\\mathsf{Frost\\text{-}128}\\) reduces the combined public-key and ciphertext size by about \\(40\\%\\) compared with \\(\\mathsf{FrodoKEM\\text{-}640}\\) and by about \\(8\\%\\) compared with \\(\\mathsf{SCloud}^{+}\\text{-}128\\). On an AVX2 platform, \\(\\mathsf{Frost\\text{-}128}\\) achieves speedups of \\(2.3\\times\\), \\(1.8\\times\\), and \\(1.5\\times\\) for key generation, encapsulation, and decapsulation over \\(\\mathsf{FrodoKEM\\text{-}640}\\), and \\(2.1\\times\\), \\(1.5\\times\\), and \\(1.3\\times\\) over \\(\\mathsf{SCloud}^{+}\\text{-}128\\).",
+      "source": "iacr_eprint",
+      "source_url": "https://eprint.iacr.org/2026/2136",
+      "arxiv_id": null,
+      "eprint_id": "2026/2136",
+      "publication_date": "2026-09-21",
+      "update_date": null
+    },
+    "upstream_label": "A",
+    "upstream_score": 100
+  },
+  {
+    "provenance": {
+      "artifact_path": "data/2026/daily/2026-09-22.json",
+      "artifact_sha256": "12bae6196c00e8f9ca00a842560342439d3174853e66a339e8caad7a790264c9",
+      "kind": "frozen_source_fields_from_local_artifact"
+    },
+    "source_record": {
+      "title": "Too Small to Hide: Single-Trace Key Recovery from ML-KEM Key Generation",
+      "abstract": "Key generation in ML-KEM (CRYSTALS-Kyber) samples a short secret from a centered binomial distribution (CBD) and immediately transforms it with the number-theoretic transform (NTT). Each execution draws fresh randomness, so an attacker obtains a single trace and cannot average. We show that one power trace of the optimized pqm4 implementation on an Arm Cortex-M4 suffices, and that the two operations leak complementary information. The CBD sampler stores each coefficient as a signed $16$-bit two's-complement word, which reveals its sign almost without error but too little about its magnitude to yield long error-free hint sets. The missing magnitude leaks in the subsequent NTT, where coefficients are multiplied by public twiddle factors. Used as hints in a primal lattice attack, the combined leakage reduces the estimated BKZ block size for ML-KEM-768 from $624$ to $129$, corresponding to $2^{182.2}$ and $2^{37.7}$ in the core-SVP model. A control experiment shows that the same NTT code leaks the Hamming weight of a near-uniform operand as strongly as that of the secret, yet reveals almost nothing about its value. What makes a coefficient vulnerable is how few values it can take, not how small it is. That points to a countermeasure inside the CBD sampler. Each sample $v$ is stored as a random representative $\\widetilde v = v + rq$ of its residue class, with $r$ nonzero, so the NTT and all later code run unchanged. This $q$-randomization drives the sign leakage to the noise floor, reduces the NTT magnitude leakage by $4.5\\times$, and raises the block size from $129$ back to $611$, about four bits of estimated security lost instead of more than $140$. The sampler grows by $937$ bytes of firmware.",
+      "source": "iacr_eprint",
+      "source_url": "https://eprint.iacr.org/2026/2137",
+      "arxiv_id": null,
+      "eprint_id": "2026/2137",
+      "publication_date": "2026-09-21",
+      "update_date": null
+    },
+    "upstream_label": "A",
+    "upstream_score": 100
+  },
+  {
+    "provenance": {
+      "artifact_path": "data/2026/daily/2026-09-22.json",
+      "artifact_sha256": "12bae6196c00e8f9ca00a842560342439d3174853e66a339e8caad7a790264c9",
+      "kind": "frozen_source_fields_from_local_artifact"
+    },
+    "source_record": {
+      "title": "Cryptanalysis of LDVR: Polynomial-Time Adaptive Attacks against Threshold Schnorr Signatures",
+      "abstract": "We present the first polynomial-time attacks against certain parameter choices of the low-dimensional vector representation (LDVR) problem, introduced by Crites, Katz, Komlo, Tessaro, and Zhu (CRYPTO '25) to prove the adaptive security of FROST in the Algebraic Group Model. Building on work by Crites and Stewart (CRYPTO '25), they also show that every attack against LDVR directly yields an adaptive attack—i.e., one leveraging adaptive corruptions—against any threshold Schnorr signature that exposes to the attacker the values $g^{\\mathrm{sk}_i}$ for the secret-key shares $\\mathrm{sk}_i$ held by the signers, where $g$ is a generator of the underlying group. This class of protocols includes FROST (Komlo and Goldberg, SAC '20), Sparkle (Crites, Komlo, and Maller, CRYPTO '23), Lindell's three-round protocol (CiC '24), along with other masking-free protocols. Consequently, our results give the first polynomial-time adaptive attacks against a class of practical threshold signatures. Our attacks require a large, but still polynomial, number of signers: asymptotically, we require $n = \\Theta(\\log^2 p)$ signers and corrupt $t_c = \\Theta(\\log p)$ of them. For the prime-order subgroup of Curve25519, concrete and optimized instantiations of our attack require $n=5020$ signers and corrupt $204$ of them. This exceeds the signer counts commonly encountered in practice, but falls within the scenarios considered by NIST's call for threshold signatures. At the theoretical level, our results also yield a non-artificial separation between static and adaptive security based on a real-world multi-party protocol. Our results arise from a new reduction from LDVR to structured subset-sum problems determined by the evaluation points of the polynomial used to secret-share the signing key. We further show that allowing these evaluation points to be chosen adversarially can lead to substantially more efficient attacks.",
+      "source": "iacr_eprint",
+      "source_url": "https://eprint.iacr.org/2026/2126",
+      "arxiv_id": null,
+      "eprint_id": "2026/2126",
+      "publication_date": "2026-09-20",
+      "update_date": null
+    },
+    "upstream_label": "B",
+    "upstream_score": 80
+  },
+  {
+    "provenance": {
+      "artifact_path": "data/2026/daily/2026-09-23.json",
+      "artifact_sha256": "09e9a13b33971e46d3b71628b2e127a990ee978ae68711b604a597f4cd7e8834",
+      "kind": "frozen_source_fields_from_local_artifact"
+    },
+    "source_record": {
+      "title": "New algorithms for quaternion ideals in SQIsign",
+      "abstract": "Many isogeny-based schemes rely on the Deuring correspondance and thus require computations with quaternion ideals. In this paper, we generalize the recent results of Leroux on the inert representation of quaternion ideals, yielding a normalized representation together with a set of simple and efficient algorithms for quaternion ideals in the context of the Deuring correspondence when the prime characteristic $p$ is equal to $3 \\bmod 4$. One of the main benefit of our new algorithms is that the size of the integers involved in the computations is both easy to bound, and smaller than previous work. In particular, when applied to the latest version of SQIsign, our algorithms yield a concrete integer bound of $O(p^4)$ in the worst case, proven under an experimentally verified assumption on the size of the integers required to perform the lattice reduction part of the response sampling. This bound improves upon all known previous bound by a factor at least $O(p^2)$. Our new algorithms are used in the latest update of SQIsign's implementation submitted to the third round of the NIST call for additional post-quantum signatures. In particular, their low integer bounds facilitated the removal of a dependency on the GMP library in favor of a custom library of fixed-size integers without performance overhead. We stress that our algorithms are not limited to SQIsign, but apply to any isogeny-based cryptographic protocol that relies on the Deuring correspondence such as the PRISM signature scheme for instance.",
+      "source": "iacr_eprint",
+      "source_url": "https://eprint.iacr.org/2026/2153",
+      "arxiv_id": null,
+      "eprint_id": "2026/2153",
+      "publication_date": "2026-09-22",
+      "update_date": null
+    },
+    "upstream_label": "B",
+    "upstream_score": 80
+  },
+  {
+    "provenance": {
+      "artifact_path": "data/2026/daily/2026-09-28.json",
+      "artifact_sha256": "0383fe261570d9aab839d3c56a2c0c9ef137ba043bea4d0878c3327fcfd06c80",
+      "kind": "frozen_source_fields_from_local_artifact"
+    },
+    "source_record": {
+      "title": "Adelic reduction of module lattices",
+      "abstract": "We give a strict generalization of the LLL algorithm over number fields, based on the reduction theory of $\\mathrm{GL}(n)$ over the adele ring of a number field. Our algorithm is free of heuristics, with rigorous bounds on output quality and complexity. As a consequence, we obtain a hierarchy of reductions from module-(H)SVP to ideal-HSVP, an example of which has runtime and approximation factors subexponential in the field degree. More importantly, we uncover a close connection between structured lattice reduction and a Diophantine approximation over number fields.",
+      "source": "iacr_eprint",
+      "source_url": "https://eprint.iacr.org/2026/2228",
+      "arxiv_id": null,
+      "eprint_id": "2026/2228",
+      "publication_date": "2026-09-26",
+      "update_date": null
+    },
+    "upstream_label": "B",
+    "upstream_score": 80
+  },
+  {
+    "provenance": {
+      "artifact_path": "data/2026/daily/2026-10-01.json",
+      "artifact_sha256": "34c69dbfc27fa3ad7ed1e0568279bdc7c8d3a9506b557482ad49e1befec370bd",
+      "kind": "frozen_source_fields_from_local_artifact"
+    },
+    "source_record": {
+      "title": "A Provable Subexponential-Time Algorithm for LWE from \\(n+o(n)\\) Samples via Wagner-Style Gaussian Sampling",
+      "abstract": "We give a randomized subexponential-time algorithm for decision Learning with Errors (LWE) in two complementary parameter regimes. For polynomial prime modulus \\(q=n^{\\kappa+o(1)}\\) with any fixed \\(\\kappa>1/2\\), the algorithm handles independent discrete Gaussian errors drawn from \\(D_{\\mathbb Z,s_e}\\), with Gaussian parameter \\(s_e\\) satisfying \\(\\ln(2+s_e)=(\\ln n)^{a+o(1)}\\) for any fixed \\(0\\le a 0\\), can be handled with a quasipolynomial prime modulus \\(q=\\exp\\!\\left((\\ln n)^{1+\\eta+o(1)}\\right)\\) for any fixed \\(\\eta>0\\). In both regimes, for an arbitrary secret distribution, the algorithm succeeds with probability \\(1-o(1)\\) using \\(m=n+\\Theta(n/\\ln\\ln n)\\) original samples, with expected time and space \\(2^{\\Theta(n/\\ln\\ln n)}\\). Our starting point is the Wagner-style Gaussian sampler of Ducas, Engelberts, and Loyer (CRYPTO 2025). We instantiate its auxiliary extensions with random \\(P\\)-ary lattices whose improved smoothing bound supports the accuracy required for LWE without increasing the leading list size exponent. At the smaller Gaussian width enabled by this geometry, the basis-dependent condition of the exact sampler used in prior work is no longer available. We therefore use the statistically approximate shifted discrete Gaussian sampler of Aggarwal, Dadush, and Stephens-Davidowitz (FOCS 2015) and control its error for adaptively chosen shifts. Finally, a martingale analysis applies the Aharonov--Regev Fourier distinguisher (JACM 2005) directly to the dependent output, avoiding the loss incurred by comparison with an independent product distribution. Our analysis applies to unstructured LWE with independent uniform public vectors. In particular, it does not directly apply to ML-KEM, whose security is based on the Module-LWE problem: the algebraic dependencies arising from its module structure are not covered by our analysis.",
+      "source": "iacr_eprint",
+      "source_url": "https://eprint.iacr.org/2026/2261",
+      "arxiv_id": null,
+      "eprint_id": "2026/2261",
+      "publication_date": "2026-09-29",
+      "update_date": null
+    },
+    "upstream_label": "A",
+    "upstream_score": 100
+  },
+  {
+    "provenance": {
+      "artifact_path": "data/2026/daily/2026-10-01.json",
+      "artifact_sha256": "34c69dbfc27fa3ad7ed1e0568279bdc7c8d3a9506b557482ad49e1befec370bd",
+      "kind": "frozen_source_fields_from_local_artifact"
+    },
+    "source_record": {
+      "title": "Exact SVP on Haar-Random Lattices at the Heuristic Sieving Exponents",
+      "abstract": "We give a Monte Carlo algorithm for exact Euclidean SVP on Haar-random lattices with arithmetic time $(3/2)^{n/2+o(n)}$ and space $(4/3)^{n/2+o(n)}$, up to polynomial factors in the logarithmic condition number of the input basis. The leading exponents match those of heuristic lattice sieving. For a set of lattices of Haar measure $1-o(1)$, the algorithm succeeds with probability $1-o(1)$ on every input basis. Our algorithm regenerates each sieve list by running a Markov chain on the nonzero lattice points in a smaller ball. The parent list supplies signed increments. Each step reports all admissible proposals and assigns each the same probability, with the remaining probability assigned to staying put. The resulting chain is symmetric and has uniform stationary distribution. Trajectories using independent transition randomness produce endpoints jointly close to independent uniform samples once the chain mixes. Matrix Chernoff bounds transfer a Laplacian gap from the full angular graph to the graph defined by the parent list. The main proof task is to establish the required graph estimates on Haar-random lattices. We do so by adapting Rogers's moment method to centered trace moments and lattice-point counts. Spherical filtering reports the complete proposal sets and the final short differences within the claimed bounds.",
+      "source": "iacr_eprint",
+      "source_url": "https://eprint.iacr.org/2026/2271",
+      "arxiv_id": null,
+      "eprint_id": "2026/2271",
+      "publication_date": "2026-09-30",
+      "update_date": null
+    },
+    "upstream_label": "B",
+    "upstream_score": 80
+  },
+  {
+    "provenance": {
+      "artifact_path": "data/2026/daily/2026-10-06.json",
+      "artifact_sha256": "082e2737f63b6c7dc00bee951576a0b20d9c1e8a5abe558ef7104b20ca82f8d9",
+      "kind": "frozen_source_fields_from_local_artifact"
+    },
+    "source_record": {
+      "title": "Trapdoor Projective Sampling and Identity-Based Anonymous Broadcast",
+      "abstract": "In anonymous broadcast encryption, a ciphertext hides both the message and the set of recipients. In the general case, a lower bound of Kiayias and Samari forces the ciphertext to grow linearly with the number of recipients, a bound already met by the trivial per-recipient solution. The bounded universe is the setting where anonymous broadcast becomes concise, even asymptotically optimal and as efficient as the underlying public-key encryption. Far from a mere restriction, it is the building block for anamorphic communication against a dictator, where one must reach many (but boundedly many) recipients covertly, as put forth in the DPPY scheme at Eurocrypt '25. DPPY is, however, secret-key anamorphic encryption, where the broadcast layer itself must be hidden. Even a public-key variant does not suffice against a strong adversary, since a per-recipient public key lets a dictator ask for the matching secret key. This motivates hiding identities directly, with no recipient public key published, leading to identity-based anonymous broadcast in the bounded model, the focus of this paper. Technically, projective sampling (Ling, Phan, Stehlé and Steinfeld, LPSS, CRYPTO ’14), the tool underlying concise anonymous broadcast encryption, offers no key extraction: private keys cannot be produced from a projected key fixed in advance. We introduce trapdoor projective sampling that reverses the order of key generation in projective sampling: projected keys are fixed first as hashes of identities and compatible private keys are then preimage-sampled with a trapdoor. Adding a trapdoor is always a challenging objective, and we achieve it by showing that the LPSS projection space can be made far narrower - from m×(m−n) down to m×2n - without breaking the k-LWE security argument, and it is exactly at this width that the projection matrix can be generated with a trapdoor. We formalise the notion of trapdoor projective sampling with new security requirements, instantiate it from k-LWE, and obtain an identity-based anonymous broadcast whose ciphertext is as in LPSS, DPPY schemes. We also extend it to an unbounded identity universe under static corruption, with target sets kept bounded and adaptive.",
+      "source": "iacr_eprint",
+      "source_url": "https://eprint.iacr.org/2026/2334",
+      "arxiv_id": null,
+      "eprint_id": "2026/2334",
+      "publication_date": "2026-10-04",
+      "update_date": null
+    },
+    "upstream_label": "A",
+    "upstream_score": 90
+  }
+]

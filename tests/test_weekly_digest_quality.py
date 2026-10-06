@@ -286,7 +286,7 @@ def test_topic_distribution_uses_user_aligned_axis() -> None:
     )
 
     assert "- AI4LC: 1" in markdown
-    assert "- lattice cryptanalysis / BKZ / G6K / sparse LWE:" in markdown
+    assert "- lattice reduction / hardness theory / source-grounded attacks:" in markdown
 
 
 def test_venue_ccf_summary_is_conservative() -> None:

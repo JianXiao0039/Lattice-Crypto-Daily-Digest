@@ -124,8 +124,10 @@ def test_output_root_writes_scratch_artifacts_without_overwriting_authoritative_
     assert item["abstract_zh"].startswith("TODO_VERIFY: TODO_VERIFY_TRANSLATION:")
     assert item["conclusion_en"].startswith("model-generated from available metadata:")
     assert item["conclusion_zh"].startswith("TODO_VERIFY: TODO_VERIFY_TRANSLATION:")
-    assert item["recommendation_level"] == "Strong"
-    assert item["recommendation_score"] >= 85
+    assert item["recommendation_level"] == "Medium"
+    assert item["recommendation_score"] <= item["research_value_score"]
+    assert item["source_health"] == "green"
+    assert item["source_health_provenance"]["arxiv"]["status"] == "green"
     assert "LWE/RLWE/MLWE" in item["recommendation_reason"]
     assert item["user_relevance_tags"]
     assert item["suggested_action"] == "Read today"

@@ -45,7 +45,7 @@ def test_primary_item_renders_recommendation_before_audit_details() -> None:
 
     assert "Placement：primary today/new" in primary_section
     assert "#### Recommendation / Action" in primary_section
-    assert "Recommendation：Strong" in primary_section
+    assert "Recommendation：Medium" in primary_section
     assert "Suggested action：今日精读" in primary_section
     assert "Why it matters：" in primary_section
     assert primary_section.index("#### Recommendation / Action") < primary_section.index("#### Audit Details")

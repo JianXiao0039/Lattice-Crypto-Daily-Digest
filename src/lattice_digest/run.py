@@ -607,6 +607,8 @@ def main(argv: list[str] | None = None) -> int:
     metadata["retrieval_v3"]["evidence_metrics"] = evidence_metrics(ranked_before_coverage)
     _update_source_health_after_pipeline(context, ranked, reliable, deduped, ordered)
     source_health = context.source_health_summary()
+    from lattice_digest.evidence_contract import propagate_source_health
+    ordered = propagate_source_health(ordered, source_health)
     degraded_sources = [
         str(item.get("source"))
         for item in source_health

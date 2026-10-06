@@ -45,37 +45,13 @@ def _list_field(record: Any, *names: str) -> list[str]:
 
 
 def record_text(record: Any) -> str:
-    parts: list[str] = []
-    for key in (
-        "title",
-        "abstract",
-        "summary",
-        "reason",
-        "reason_for_priority",
-        "why_it_matters",
-        "source",
-        "venue",
-    ):
-        value = _field(record, key)
-        if value:
-            parts.append(str(value))
-    parts.extend(_list_field(record, "taxonomy_tags"))
-    parts.extend(_list_field(record, "keywords_matched"))
-    parts.extend(_list_field(record, "research_tags", "tags"))
-    parts.extend(_list_field(record, "research_sections"))
-    ranking = _field(record, "ranking_explanation")
-    if isinstance(ranking, dict):
-        for key in ("matched_taxonomy", "positive_signals", "negative_signals", "notes"):
-            parts.extend(_list_field(ranking, key))
-    metadata = _semantic_metadata(record)
-    if metadata:
-        parts.append(str(metadata.get("title") or ""))
-        parts.append(str(metadata.get("abstract") or ""))
-        parts.append(str(metadata.get("venue") or ""))
-        external = metadata.get("externalIds")
-        if isinstance(external, dict):
-            parts.extend(str(value) for value in external.values() if value)
-    return " ".join(parts).lower()
+    """Source extraction only. Prose-quality consumers must use prose_text."""
+    from lattice_digest.evidence_contract import positive_source_text
+    return positive_source_text(record)
+
+def prose_text(record: Any) -> str:
+    return " ".join(str(_field(record, key) or "") for key in (
+        "reason", "reason_for_priority", "why_it_matters", "advisor_questions", "research_hooks"))
 
 
 def lattice_pqc_anchor_evidence(record: Any) -> list[str]:

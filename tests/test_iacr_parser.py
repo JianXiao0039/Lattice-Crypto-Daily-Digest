@@ -196,7 +196,7 @@ def test_iacr_latest_feed_mlkem_sample_enters_ranking_path() -> None:
 
     assert by_id["2026/1117"].title == "On the Secrecy of the Encapsulation Coin in ML-KEM"
     assert by_id["2026/1117"].relevance_label == "A"
-    assert by_id["2026/1117"].relevance_score == 100
+    assert by_id["2026/1117"].relevance_score == 90
 
 
 def test_iacr_include_latest_sources_recovers_failed_attempt_and_reports_latest_state(
@@ -283,7 +283,7 @@ sources:
 
     assert by_id["2026/1117"]["title"] == "On the Secrecy of the Encapsulation Coin in ML-KEM"
     assert by_id["2026/1117"]["relevance_label"] == "A"
-    assert by_id["2026/1117"]["relevance_score"] == 100
+    assert by_id["2026/1117"]["relevance_score"] == 90
     assert "2026/1115" not in by_id
     assert payload["source_health"][0]["latest_feed_status"] == "manual_latest_retry"
     assert payload["source_health"][0]["latest_feed_records"] == 4

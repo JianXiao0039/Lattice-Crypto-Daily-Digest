@@ -184,7 +184,9 @@ def _matching_span(text: str, phrase: str) -> str:
     if not normalized_phrase:
         return ""
     normalized_text = _normal(text)
-    pattern = r"(?<![a-z0-9])" + re.escape(normalized_phrase).replace(r"\ ", r"\s+") + r"(?![a-z0-9])"
+    # Grammatical pluralization retains the same source concept, not a neighbor.
+    plural = r"s?" if normalized_phrase.endswith(('signature', 'lattice', 'trapdoor')) else ''
+    pattern = r"(?<![a-z0-9])" + re.escape(normalized_phrase).replace(r"\ ", r"\s+") + plural + r"(?![a-z0-9])"
     match = re.search(pattern, normalized_text, flags=re.IGNORECASE)
     return match.group(0) if match else ""
 
@@ -199,42 +201,45 @@ def _has_crypto_context(text: str) -> bool:
     return any(anchor in normalized for anchor in anchors)
 
 
-def _policy_allows_source_match(
-    concept: OntologyConcept,
-    term: str,
-    fields: dict[str, str],
-    crypto_context: bool,
-) -> bool:
-    all_text = " ".join(fields.values())
-    policy = concept.evidence_policy
-    if policy == "SOURCE_TERM_OR_TYPED_EDGE":
-        return True
+def _policy_allows_source_match(concept, term, fields, crypto_context):
+    """Evaluate policy from source coanchors only, never ontology neighbors."""
+    text = " ".join(fields.values())
+    explicit_target = any(_contains_phrase(text, t) for t in (
+        "LWE", "Learning With Errors", "RLWE", "MLWE", "Module-LWE", "SIS", "Module-SIS", "NTRU",
+        "ML-KEM", "Kyber", "ML-DSA", "Dilithium", "Falcon signature", "Hawk signature",
+        "lattice-based", "lattice cryptography", "lattice signature", "lattice trapdoor",
+        "FHE", "CKKS", "BFV", "BGV", "TFHE", "lattice ZK", "lattice proofs"))
+    structural = any(_contains_phrase(text, t) for t in (
+        "module lattice", "module lattices", "ideal lattice", "ideal lattices", "structured lattice",
+        "lattice reduction", "lattice problems", "lattice problem", "SVP", "CVP", "MLIP", "Module-LIP",
+        "lattice signatures", "from lattices", "over lattices", "lattice enumeration", "LLL-reduced basis", "lattice basis"))
+    lattice = explicit_target or structural
+    policy=concept.evidence_policy
+    if policy == "SOURCE_TERM_OR_TYPED_EDGE": return True
     if policy == "TYPED_REDUCTION_PATH_REQUIRED":
-        return True
-    if policy in {
-        "SOURCE_TERM_WITH_COANCHOR_FOR_ACRONYM",
-        "SOURCE_TERM_WITH_COANCHOR_FOR_AMBIGUOUS_ALIAS",
-    }:
-        return len(_normal(term)) > 8 or crypto_context
+        return lattice and bool(re.search(r"\b(?:reduc\w*|implies|yields)\b", text, re.I))
+    if policy == "SOURCE_TERM_WITH_COANCHOR_FOR_ACRONYM":
+        if concept.concept_id == 'FND.SIS' and _normal(term) == 'sis':
+            if any(_contains_phrase(text,t) for t in ('epidemiology','epidemiological','susceptible infected','susceptible infectious','student information system','surgical information system')):
+                return False
+            return structural or any(_contains_phrase(text,t) for t in ('lattice','short integer solution','Module-SIS','NTRU'))
+        return len(_normal(term)) > 8 or lattice
+    if policy == "SOURCE_TERM_WITH_COANCHOR_FOR_AMBIGUOUS_ALIAS":
+        return lattice or _contains_phrase(text, "signature") or _contains_phrase(text, "signatures")
     if policy == "TARGET_COANCHOR_REQUIRED_FOR_GENERIC_METHOD":
-        return crypto_context
-    if policy in {
-        "LATTICE_COANCHOR_REQUIRED",
-        "LATTICE_ASSUMPTION_EDGE_REQUIRED",
-        "LATTICE_SCHEME_COANCHOR_REQUIRED",
-        "LATTICE_SIGNATURE_COANCHOR_REQUIRED",
-        "LATTICE_ATTACK_COANCHOR_REQUIRED",
-    }:
-        return crypto_context
+        return explicit_target if concept.concept_id == "ATTACK.PHYSICAL" else lattice
+    if policy == "LATTICE_COANCHOR_REQUIRED": return lattice
+    if policy == "LATTICE_ASSUMPTION_EDGE_REQUIRED":
+        return explicit_target or any(_contains_phrase(text,t) for t in (
+            "from lattices", "over lattices", "lattice ZK", "lattice zero knowledge", "exact lattice relation"))
+    if policy == "LATTICE_SCHEME_COANCHOR_REQUIRED": return explicit_target
+    if policy == "LATTICE_SIGNATURE_COANCHOR_REQUIRED":
+        return lattice and any(_contains_phrase(text,t) for t in ("signature", "signatures", "Fiat-Shamir"))
+    if policy == "LATTICE_ATTACK_COANCHOR_REQUIRED": return lattice
     if policy == "CRYPTOGRAPHIC_CONTRIBUTION_REQUIRED":
-        contribution = _normal(all_text)
-        return crypto_context and any(
-            token in contribution
-            for token in (
-                "security", "scheme", "protocol", "algorithm", "bootstrap", "implementation", "attack",
-                "construction", "improve", "performance",
-            )
-        )
+        return lattice and any(_contains_phrase(text,t) for t in (
+            "security", "scheme", "protocol", "algorithm", "bootstrapping", "implementation", "attack",
+            "construction", "improve", "performance", "encryption", "confidentiality", "noise growth", "verification"))
     if policy == "OFFICIAL_SOURCE_OR_SCHEME_COANCHOR_REQUIRED":
-        return crypto_context
+        return explicit_target or any(_contains_phrase(text,t) for t in ("NIST PQC", "IETF PQC", "CFRG PQC", "LAMPS PQC"))
     return False

@@ -37,6 +37,7 @@ def _record(item: dict, **overrides):
         "abstract": item.get("abstract", ""),
         "conclusion": item.get("conclusion", ""),
         "source": "offline_canary",
+        "provenance_strength": "offline_fixture",
         "source_url": f"offline://{item['id']}",
         "publication_date": item.get("publication_date", "2026-08-11"),
         "venue": item.get("venue", "Preprint"),
@@ -243,8 +244,8 @@ def test_critical_risk_flags_keep_preliminary_and_no_standard_break() -> None:
 def test_critical_evidence_basis_separates_inference() -> None:
     item = _fixtures()["SIMON_DCP_2026_CANARY_MUST_NOT_BE_MISSED"]
     _, enriched = _rank_and_enrich(item)
-    assert "source_evidence_terms" in enriched.recommendation_evidence_basis
-    assert "inferred_topic_tags" in enriched.recommendation_evidence_basis
+    assert "source_grounded_concepts" in enriched.recommendation_evidence_basis
+    assert "inferred_topic_tags" not in enriched.recommendation_evidence_basis
     assert "source_grounded_reduction_relations" in enriched.recommendation_evidence_basis
 
 

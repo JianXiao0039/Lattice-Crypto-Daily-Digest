@@ -14,9 +14,9 @@ from lattice_digest.enrichment_v3 import EnrichmentResult, SelectiveEnrichmentCo
 from lattice_digest.identity_v3 import IdentityResolution, resolve_identity_and_merge
 from lattice_digest.models import PaperRecord, copy_record
 from lattice_digest.ontology_v3 import OntologyRegistry, load_ontology_v3
+from lattice_digest.evidence_contract import analyze_source, bind_source_evidence, positive_source_fields, score_to_label
 
 
-CORE_PREFIXES = ("FND.", "HARD.", "ATTACK.", "PRIM.", "PROOF.", "FHE.", "IMPL.", "AI4LC.", "STD.")
 
 
 @dataclass(frozen=True)
@@ -45,20 +45,16 @@ def apply_semantic_consequence_analysis_v3(
     output: list[PaperRecord] = []
     for source_record in records:
         record = copy_record(source_record)
-        analysis = registry.analyze_fields(
-            title=record.title,
-            abstract=record.abstract,
-            keywords=[*record.categories, *record.keywords_matched],
-            conclusion=record.conclusion,
-        )
+        analysis = analyze_source(record, registry)
+        source_fields = positive_source_fields(record)
         paper_node = "paper:" + hashlib.sha256(
             (record.paper_id or record.source_url or record.normalized_title or record.title).encode("utf-8")
         ).hexdigest()[:24]
         edges = extract_record_edges(
             paper_node=paper_node,
-            title=record.title,
-            abstract=record.abstract,
-            conclusion=record.conclusion,
+            title=source_fields["title"],
+            abstract=source_fields["abstract"],
+            conclusion=source_fields["conclusion"],
             source_url=record.source_url,
             source_concept_ids=analysis.source_concept_ids,
         )
@@ -73,56 +69,8 @@ def apply_semantic_consequence_analysis_v3(
             dict.fromkeys([*existing_inference, *(f"inferred:{tag}" for tag in analysis.inferred_tags)])
         )
         record.consequence_edges = [edge.model_dump(mode="json") for edge in edges]
-        source_concepts = set(analysis.source_concept_ids)
-        core_concepts = {concept_id for concept_id in source_concepts if concept_id.startswith(CORE_PREFIXES)}
-        normalized_evidence = f" {record.title} {record.abstract} {record.conclusion} ".lower()
-        explicit_lattice_reduction = (
-            any(concept_id.startswith("RED.") for concept_id in source_concepts)
-            and "lattice problem" in normalized_evidence
-            and any(term in normalized_evidence for term in (" reduce", "reduction"))
-        )
-        if explicit_lattice_reduction:
-            core_concepts.update(concept_id for concept_id in source_concepts if concept_id.startswith("RED."))
-        typed_relation_evidence = {
-            edge.target_node
-            for edge in edges
-            if edge.evidence_state in SOURCE_GROUNDED_STATES
-        }
-        typed_core_targets = {
-            target for target in typed_relation_evidence if target.startswith(CORE_PREFIXES)
-        }
-        hard_negative_without_core = bool(analysis.hard_negative_matches) and not core_concepts
-        if hard_negative_without_core:
-            record.relevance_label = "D"
-            record.relevance_score = min(record.relevance_score, 20)
-            record.reason = "V3 hard negative without a source-grounded cryptographic consequence: " + ", ".join(
-                analysis.hard_negative_matches
-            )
-        elif core_concepts or typed_core_targets:
-            title_evidence = any(match.source_field == "title" for match in analysis.source_evidence)
-            abstract_evidence = any(match.source_field == "abstract" for match in analysis.source_evidence)
-            if record.relevance_label == "D":
-                record.relevance_label = "B" if not title_evidence and abstract_evidence else "A"
-            v3_floor = 70 if abstract_evidence and not title_evidence else 80
-            if any(concept.startswith(("ATTACK.", "PRIM.", "PROOF.", "FHE.")) for concept in core_concepts):
-                v3_floor = max(v3_floor, 80)
-            record.relevance_score = max(record.relevance_score, v3_floor)
-            record.reading_priority = min(record.reading_priority, 1 if record.relevance_score >= 80 else 2)
-            record.reason = _append_reason(
-                record.reason,
-                "V3 source-grounded concepts/typed targets: " + ", ".join(sorted(core_concepts | typed_core_targets)),
-            )
-        elif record.relevance_label != "D":
-            # Legacy keyword scores are not sufficient V3 evidence. Retaining
-            # them would reintroduce generic signatures, side channels,
-            # quantum algorithms, and homomorphism false positives.
-            record.relevance_label = "D"
-            record.relevance_score = min(record.relevance_score, 20)
-            record.reading_priority = 99
-            record.reason = _append_reason(
-                record.reason,
-                "V3 rejected legacy-only relevance: no source-grounded ontology concept or typed lattice consequence.",
-            )
+        record = bind_source_evidence(record, analysis, record.consequence_edges)
+        record.reason = "Evidence-bound source scope: " + record.relevance_scope + "; source concepts: " + ", ".join(record.source_concept_ids)
 
         critical_edges = [
             edge

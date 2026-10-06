@@ -384,16 +384,8 @@ PRIORITY_LABELS: tuple[tuple[int, str], ...] = (
 
 
 def _combined_text(record: PaperRecord) -> str:
-    return " ".join(
-        [
-            record.title,
-            record.abstract,
-            record.venue or "",
-            " ".join(record.categories),
-            " ".join(record.taxonomy_tags),
-            " ".join(record.keywords_matched),
-        ]
-    ).lower()
+    from lattice_digest.evidence_contract import positive_source_text
+    return positive_source_text(record)
 
 
 def _matches(record: PaperRecord, terms: tuple[str, ...]) -> bool:
@@ -406,8 +398,8 @@ def _matches_text(text: str, terms: tuple[str, ...]) -> bool:
 
 
 def research_tags(record: PaperRecord) -> list[str]:
-    tags = [tag for tag, terms in TOPIC_TERMS.items() if _matches(record, terms)]
-    return tags or list(record.taxonomy_tags[:3]) or list(record.keywords_matched[:3])
+    from lattice_digest.evidence_contract import source_topics
+    return source_topics(record)
 
 
 def suggested_action(record: PaperRecord) -> str:
@@ -748,59 +740,21 @@ def _priority_tie_rank(record: PaperRecord) -> int:
 
 
 def why_it_matters(record: PaperRecord) -> str:
-    tags = set(research_tags(record))
-    reasons: list[str] = []
-    if tags & {"MLWE", "LWE", "RLWE", "ML-KEM"}:
-        reasons.append("它直接服务 LWE/MLWE 与 ML-KEM 安全主线，可用于参数估计、攻击面梳理或方案比较。")
-    if tags & {"SIS", "Module-SIS", "ML-DSA", "Commitments", "Falcon"}:
-        reasons.append("它可能支撑 Module-SIS 原语、承诺、签名或短平快小论文选题。")
-    if tags & {"Lattice Reduction", "Cryptanalysis"}:
-        reasons.append("它可作为 BKZ、primal/dual/hybrid attack 的 baseline、标签或代价模型来源。")
-    if "AI4Lattice" in tags:
-        reasons.append("它与 AI-assisted lattice cryptanalysis 相关，但需要区分 toy regime 与真实攻击子程序价值。")
-    if "PQC Implementation" in tags:
-        reasons.append("它可能服务 ML-KEM/ML-DSA 实现、安全工程、侧信道/故障或可复现实验叙事。")
-    if "FHE" in tags:
-        reasons.append("它扩展了格密码主线中的 FHE、CKKS/BFV/BGV/TFHE 或 bootstrapping 背景。")
-    if reasons:
-        return "".join(reasons)
-    return record.reason or "目前更适合作为格密码/PQC 研究叙事中的背景线索，需读摘要确认真实关联。"
+    from lattice_digest.evidence_contract import render_research_relations
+    return render_research_relations(record)
 
 
 def research_hooks_for_record(record: PaperRecord) -> list[str]:
-    tags = set(research_tags(record))
-    hooks: list[str] = []
-    if tags & {"Module-SIS", "SIS", "Commitments", "ML-DSA"}:
-        hooks.append("检查能否改写成 Module-SIS commitment/chameleon hash 小原语，并给出更干净的参数化。")
-    if tags & {"LWE", "MLWE", "ML-KEM"}:
-        hooks.append("抽取参数、攻击假设和安全 margin，整理成可复现的 MLWE/ML-KEM estimation notebook。")
-    if tags & {"Lattice Reduction", "Cryptanalysis"}:
-        hooks.append("把其中的攻击代价模型作为 Swin-guided coordinate selection 或 hybrid ranking 的 baseline。")
-    if "AI4Lattice" in tags:
-        hooks.append("一周内复现实验 toy benchmark，验证学习信号能否接入 BKZ/primal/dual 的经典攻击接口。")
-    if not hooks:
-        hooks.append("保留为 related work 素材，用于加强 PQC/lattice motivation 段落。")
-    return hooks[:3]
+    topics=research_tags(record)
+    return ["RESEARCH_HYPOTHESIS_NOT_PAPER_CLAIM：围绕来源明确研究的 " + "、".join(topics[:4]) + "，先核对模型、参数及证明，再设计复现或迁移实验；迁移尚未由论文建立。"] if topics else []
 
 
 def advisor_questions_for_record(record: PaperRecord) -> list[str]:
-    tags = set(research_tags(record))
-    questions: list[str] = []
-    if tags & {"Module-SIS", "SIS", "Commitments"}:
-        questions.append("这篇工作的假设或结构能否转成 Module-SIS commitment / chameleon hash 方向，并形成足够的新意？")
-    if tags & {"LWE", "MLWE", "ML-KEM"}:
-        questions.append("它的 LWE/MLWE 参数区间是否足够接近 ML-KEM，值得纳入我的主线吗？")
-    if tags & {"Lattice Reduction", "Cryptanalysis"}:
-        questions.append("其中的 scoring 或 cost model 能否接入 primal、dual 或 hybrid attack 做可复现实验？")
-    if "AI4Lattice" in tags:
-        questions.append("这个 ML 结果只是 toy-regime phenomenon，还是能抽象成有价值的格密码分析子程序？")
-    if not questions:
-        questions.append("这篇是否只适合 related work，还是能支撑 PhD 申请研究主线中的一个清晰分支？")
-    return questions[:3]
+    return ["RESEARCH_HYPOTHESIS_NOT_PAPER_CLAIM：来源中的 " + "、".join(research_tags(record)[:4]) + " 在哪些条件下可迁移到我的研究？需哪些额外证明或实验？"] if research_tags(record) else []
 
 
 def record_intelligence(record: PaperRecord) -> dict[str, object]:
-    tags = record.user_relevance_tags if has_calibrated_recommendation(record) and record.user_relevance_tags else research_tags(record)
+    tags = research_tags(record)
     score = reading_priority_score(record)
     return {
         "tags": tags,
@@ -1339,7 +1293,7 @@ def _append_pqc_section(lines: list[str], records: list[PaperRecord]) -> None:
     for index, record in enumerate(selected, start=1):
         lines.append(_paper_header(record, index))
         lines.extend(_basic_paper_lines(record))
-        lines.append("- 与主线关系：检查是否服务 MLWE/Module-SIS 小原语、ML-KEM/ML-DSA 安全实现、FHE 或 PQC 部署叙事。")
+        lines.append("- 与主线关系：" + why_it_matters(record))
         lines.append("- 风险判断：若只是泛 PQC 或泛系统论文，保守放入背景引用，不作为今日必读。")
         lines.append("")
 
@@ -1383,7 +1337,7 @@ def _append_idea_and_questions(lines: list[str], records: list[PaperRecord]) -> 
             contribution = "适合导师讨论或短论文定位的紧凑原语方向。"
         elif tags & {"Lattice Reduction", "Cryptanalysis"}:
             title = "可复现格攻击估计 baseline"
-            experiment = "复现论文 cost model，并与 lattice-estimator 或 BKZ baseline 比较。"
+            experiment = "先确认来源是否给出可复现的约简界或代价模型；与经典格攻击基线的迁移关系尚待验证。"
             contribution = "为后续 MLWE/Module-SIS/AI4Lattice 工作提供透明参数估计 artifact。"
         else:
             title = "格密码/PQC related-work bridge"
@@ -1393,7 +1347,7 @@ def _append_idea_and_questions(lines: list[str], records: list[PaperRecord]) -> 
             [
                 f"### idea {index}: {title}",
                 f"- 来源论文：{record.title}",
-                f"- 为什么可行：{why_it_matters(record)}",
+                f"- 研究假设 / RESEARCH_HYPOTHESIS_NOT_PAPER_CLAIM：{why_it_matters(record)}",
                 f"- 最小可行实验：{experiment}",
                 f"- 预期贡献：{contribution}",
                 "- 主要风险：metadata 可能高估相关性；投入前必须确认假设、维度、参数和可复现性。",
@@ -1547,7 +1501,7 @@ def generate_markdown(
         return _render_incomplete_zero(digest_date, decision, source_health, metadata, warnings, since_window)
     records, freshness_routed_records = apply_daily_freshness_policy(all_records, digest_date)
     sorted_records = _sort_by_reading_priority(records)
-    high_priority = [record for record in sorted_records if reading_priority_score(record) >= 70]
+    high_priority = [record for record in sorted_records if record.suggested_action in {'Read today', 'READ_AND_VERIFY_IMMEDIATELY'} or reading_priority_score(record) >= 70]
     topic_counts = Counter(tag for record in all_records for tag in research_tags(record))
     main_topics = [topic for topic, _ in topic_counts.most_common(3)]
     source_names = sorted({record.source for record in all_records})
