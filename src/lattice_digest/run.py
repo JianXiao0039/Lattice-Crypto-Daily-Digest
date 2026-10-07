@@ -34,6 +34,8 @@ from lattice_digest.promotion_history import load_promotion_history, apply_promo
 from lattice_digest.authority import derive_authority
 from lattice_digest.storage import publish_daily_pair
 from lattice_digest.text import parse_duration_to_hours
+from lattice_digest.runtime_paths import RuntimePaths, env_file
+from lattice_digest.recovery_window import exact_window, recovery_metadata
 
 
 def parse_args(argv: list[str] | None = None) -> argparse.Namespace:
@@ -49,6 +51,10 @@ def parse_args(argv: list[str] | None = None) -> argparse.Namespace:
     parser.add_argument("--output", default="markdown,json", help="Comma-separated outputs: markdown,json.")
     parser.add_argument("--send", default="none", help="Delivery backend. Currently only 'none' is implemented.")
     parser.add_argument("--dry-run", action="store_true", help="Run without network writes or output artifact writes.")
+    parser.add_argument("--preflight", action="store_true", help="Resolve paths, provenance and window without discovery or writes.")
+    parser.add_argument("--coverage-start", default=None, help="Exact historical start with timezone offset.")
+    parser.add_argument("--coverage-end", default=None, help="Exact historical end with timezone offset.")
+    parser.add_argument("--original-missing-reason", default=None)
     parser.add_argument("--config-dir", type=Path, default=None, help="Override config directory.")
     parser.add_argument(
         "--output-root",
@@ -86,6 +92,17 @@ def parse_args(argv: list[str] | None = None) -> argparse.Namespace:
     args = parser.parse_args(argv)
     if args.date is not None and args.target_date is not None:
         parser.error("--date cannot be combined with legacy --target-date")
+    if bool(args.coverage_start) != bool(args.coverage_end):
+        parser.error("--coverage-start and --coverage-end must be supplied together")
+    if args.coverage_start:
+        if args.date is not None:
+            parser.error("exact coverage cannot be combined with --date")
+        try:
+            exact_window(args.coverage_start, args.coverage_end, args.target_date,
+                         run_mode=args.run_mode,
+                         since_hours=parse_duration_to_hours(args.since) if args.since else None)
+        except (ValueError, TypeError) as exc:
+            parser.error(str(exc))
     return args
 
 
@@ -232,12 +249,13 @@ def _parse_target_date(value: str | None, now_local: datetime) -> date:
         raise SystemExit(f"invalid --target-date {value!r}; expected YYYY-MM-DD") from exc
 
 
-def _coverage_window(target_date: date, hours: int, target_date_was_explicit: bool) -> tuple[datetime, datetime]:
+def _coverage_window(target_date: date, hours: int, target_date_was_explicit: bool,
+                     now: datetime | None = None) -> tuple[datetime, datetime]:
     if target_date_was_explicit:
         local_end = datetime.combine(target_date + timedelta(days=1), time.min, ZoneInfo("Asia/Singapore"))
         coverage_end = local_end.astimezone(timezone.utc)
     else:
-        coverage_end = datetime.now(timezone.utc)
+        coverage_end = (now or datetime.now(timezone.utc)).astimezone(timezone.utc)
     return coverage_end - timedelta(hours=hours), coverage_end
 
 
@@ -455,9 +473,9 @@ def _print_source_health(source_health: list[dict[str, object]]) -> None:
         )
 
 
-def _load_dotenv(root: Path) -> None:
-    env_path = root / ".env"
-    if not env_path.exists():
+def _load_dotenv(root: Path, *, public: bool = False) -> None:
+    env_path = env_file(root, public=public or os.getenv('LATTICE_DIGEST_PUBLIC_AUTOMATION') == '1')
+    if env_path is None or not env_path.exists():
         return
     for raw_line in env_path.read_text(encoding="utf-8").splitlines():
         line = raw_line.strip()
@@ -470,35 +488,40 @@ def _load_dotenv(root: Path) -> None:
             os.environ[key] = value
 
 
-def main(argv: list[str] | None = None) -> int:
+def main(argv: list[str] | None = None, *, preflight_proof: dict | None = None) -> int:
     args = parse_args(argv)
     root = project_root()
-    output_root = args.output_root.expanduser().resolve() if args.output_root is not None else root
+    paths = RuntimePaths.resolve(code_root=root, canonical_root=args.output_root)
+    output_root = paths.canonical_root
     if args.candidate_ledger and args.output_root is None:
         raise SystemExit("--candidate-ledger requires an explicit external --output-root")
-    _load_dotenv(root)
-    configs = load_config_bundle(args.config_dir)
+    if os.getenv('LATTICE_DIGEST_PUBLIC_AUTOMATION') == '1' and args.config_dir is not None and args.config_dir.resolve() != paths.config_root:
+        raise SystemExit('public configuration must come from published code/config')
     run_datetime = datetime.now(ZoneInfo("Asia/Singapore"))
     from lattice_digest.runtime_provenance import runtime_provenance, public_runtime_allowed, schedule_telemetry
     code_provenance = runtime_provenance(root)
     public_automation = (args.collector == 'github_actions' or os.getenv('LATTICE_DIGEST_PUBLIC_AUTOMATION') == '1'
+                         or bool(args.coverage_start)
                          or (output_root == root and args.run_mode == 'daily'
-                             and code_provenance['runtime_code_state'] == 'UNPUBLISHED_RUNTIME_CODE'))
-    if not args.dry_run and not public_runtime_allowed(code_provenance, public_automation=public_automation):
-        print('PUBLIC_AUTOMATION_RUNTIME_CODE_BLOCKED: ' + json.dumps(code_provenance, ensure_ascii=False))
-        return 2
+                             and code_provenance['runtime_code_state'] in {'UNPUBLISHED_RUNTIME_CODE', 'UNPUBLISHED_RUNTIME_COMMIT', 'DIRTY_RUNTIME_DEPENDENCY'}))
+    allowed = public_runtime_allowed(code_provenance, public_automation=public_automation)
     exact_date = args.date
     since_window = "24h" if exact_date is not None else (args.since or "36h")
     hours = parse_duration_to_hours(since_window)
     digest_date = exact_date or _parse_target_date(args.target_date, run_datetime)
-    if exact_date is not None:
+    if args.coverage_start:
+        coverage_start, coverage_end = exact_window(args.coverage_start, args.coverage_end, args.target_date,
+                                                   run_mode=args.run_mode,
+                                                   since_hours=hours if args.since else None)
+        since_window = f"{(coverage_end - coverage_start).total_seconds() / 3600:g}h"
+    elif exact_date is not None:
         coverage_start, coverage_end = _exact_date_coverage_window(digest_date)
     else:
-        coverage_start, coverage_end = _coverage_window(digest_date, hours, args.target_date is not None)
+        coverage_start, coverage_end = _coverage_window(digest_date, hours, args.target_date is not None, run_datetime)
     since = coverage_start
     collector = args.collector or "local_codex"
     quality_status = args.quality_status or ("provisional" if collector == "github_actions" else "authoritative")
-    run_mode = "dry_run" if args.dry_run else args.run_mode
+    run_mode = args.run_mode if args.coverage_start else ("dry_run" if args.dry_run else args.run_mode)
     existing_metadata = _load_existing_metadata(output_root, digest_date)
     supersedes = _supersedes_metadata(existing_metadata, quality_status)
     metadata = _build_run_metadata(
@@ -514,6 +537,24 @@ def main(argv: list[str] | None = None) -> int:
     )
     metadata.update(code_provenance)
     metadata.update(schedule_telemetry(run_datetime))
+    metadata['runtime_paths'] = paths.as_dict()
+    if args.coverage_start:
+        metadata.update(recovery_metadata(digest_date, coverage_start, coverage_end, run_datetime, args.original_missing_reason))
+        if args.preflight:
+            metadata['actual_recovery_run_time'] = 'UNKNOWN'
+            metadata['recovery_executed_at'] = 'UNKNOWN'
+            metadata['preflight_started_at'] = run_datetime.isoformat()
+    if args.preflight:
+        print(json.dumps({**(preflight_proof or {}), 'preflight': True, 'discovery': 'NOT_STARTED', 'writes': 0,
+                          'public_runtime_allowed': allowed, 'metadata': metadata,
+                          'canonical_target_exists': daily_data_path(digest_date, paths.data_root).exists()
+                              or daily_digest_path(digest_date, paths.digest_root).exists()}, ensure_ascii=False, indent=2))
+        return 0 if allowed else 2
+    if public_automation and not allowed:
+        print('PUBLIC_AUTOMATION_RUNTIME_CODE_BLOCKED: ' + json.dumps(code_provenance, ensure_ascii=False))
+        return 2
+    _load_dotenv(root, public=public_automation)
+    configs = load_config_bundle(args.config_dir)
     request_config = configs["sources"].get("request", {})
     context = FetchContext(
         root=output_root,
@@ -653,6 +694,8 @@ def main(argv: list[str] | None = None) -> int:
     # Actual finish is journaled after durable publication. It cannot truthfully
     # be embedded in an artifact before that artifact has finished being written.
     metadata.update(schedule_telemetry(run_datetime))
+    if args.coverage_start:
+        metadata['trigger_kind'] = 'BACKFILL'
     metadata['source_query_runtime'] = list(context.query_attempts)
     outputs = {item.strip().lower() for item in args.output.split(",") if item.strip()}
 

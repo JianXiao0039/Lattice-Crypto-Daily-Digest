@@ -174,7 +174,11 @@ def init_repo(root):
     git('init','-b','main'); git('config','user.name','test'); git('config','user.email','test@example.test')
     (root/'src').mkdir(); (root/'src/runtime.py').write_text('version=1\n')
     (root/'docs').mkdir(); (root/'docs/note.md').write_text('baseline')
-    git('add','--','src/runtime.py','docs/note.md'); git('commit','-m','baseline')
+    (root/'config').mkdir()
+    (root/'config/runtime_dependencies.json').write_text(json.dumps({'schema_version':1,'profiles':{'DAILY':{
+        'roots':['src/runtime.py'],'reviewed_non_python':[],
+        'paths':['src/runtime.py','config/runtime_dependencies.json']}}}))
+    git('add','--','src/runtime.py','docs/note.md','config/runtime_dependencies.json'); git('commit','-m','baseline')
     git('update-ref','refs/remotes/origin/main','HEAD')
     return git
 
@@ -186,18 +190,19 @@ def test_runtime_states_are_only_about_production_dependencies(tmp_path):
     (root/'docs/note.md').write_text('dirty docs')
     (root/'scripts').mkdir()
     (root/'scripts/adhoc_research_audit.py').write_text('not a runtime entrypoint')
-    assert runtime_provenance(root)['runtime_code_state']=='PUBLISHED_RUNTIME_WITH_UNRELATED_DIRTY_FILES'
+    assert runtime_provenance(root)['runtime_code_state']=='PUBLISHED_RUNTIME_WITH_UNRELATED_DIRTY_WORKTREE'
     assert runtime_provenance(root)['runtime_code_manifest_sha256']==initial['runtime_code_manifest_sha256']
     git('add','--','docs/note.md');git('commit','-m','docs only')
-    # The untracked audit script remains unrelated dirty even after a docs commit.
-    assert runtime_provenance(root)['runtime_code_state']=='PUBLISHED_RUNTIME_WITH_UNRELATED_DIRTY_FILES'
+    # Any unpublished HEAD blocks public automation, including a documentation-only commit.
+    assert runtime_provenance(root)['runtime_code_state']=='UNPUBLISHED_RUNTIME_COMMIT'
+    git('update-ref','refs/remotes/origin/main','HEAD')
     (root/'src/runtime.py').write_text('version=2\n')
     dirty=runtime_provenance(root)
-    assert dirty['runtime_code_state']=='UNPUBLISHED_RUNTIME_CODE' and dirty['runtime_dirty_production_paths']==['src/runtime.py']
+    assert dirty['runtime_code_state']=='DIRTY_RUNTIME_DEPENDENCY' and dirty['runtime_dirty_runtime_paths']==['src/runtime.py']
     assert dirty['runtime_code_manifest_sha256']!=initial['runtime_code_manifest_sha256']
     git('add','--','src/runtime.py');git('commit','-m','unpublished runtime')
     unpublished=runtime_provenance(root)
-    assert unpublished['runtime_code_state']=='UNPUBLISHED_RUNTIME_CODE' and unpublished['runtime_dirty_production_paths']==[]
+    assert unpublished['runtime_code_state']=='UNPUBLISHED_RUNTIME_COMMIT' and unpublished['runtime_dirty_runtime_paths']==[]
     assert unpublished['runtime_unpublished_production_paths']==['src/runtime.py']
     assert not public_runtime_allowed(unpublished,public_automation=True)
 

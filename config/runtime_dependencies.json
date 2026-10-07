@@ -1,0 +1,300 @@
+{
+  "schema_version": 1,
+  "profiles": {
+    "DAILY": {
+      "roots": [
+        "src/lattice_digest/public_daily.py"
+      ],
+      "function_scopes": {
+        "src/lattice_digest/workflow.py": [
+          "doctor_report",
+          "_doctor_release_hygiene",
+          "_latest"
+        ]
+      },
+      "branch_values": {},
+      "reviewed_non_python": [
+        "CHANGELOG.md",
+        "config/keywords.yaml",
+        "config/negative_keywords.yaml",
+        "config/query_portfolio_v3.yaml",
+        "config/retrieval_ontology_v3.yaml",
+        "config/sources.yaml",
+        "config/taxonomy.yaml",
+        "docs/releases/v0.4.1.md",
+        "pyproject.toml"
+      ],
+      "paths": [
+        "CHANGELOG.md",
+        "config/keywords.yaml",
+        "config/negative_keywords.yaml",
+        "config/query_portfolio_v3.yaml",
+        "config/retrieval_ontology_v3.yaml",
+        "config/runtime_dependencies.json",
+        "config/sources.yaml",
+        "config/taxonomy.yaml",
+        "docs/releases/v0.4.1.md",
+        "pyproject.toml",
+        "scripts/check_release_hygiene.py",
+        "src/lattice_digest/__init__.py",
+        "src/lattice_digest/artifact_paths.py",
+        "src/lattice_digest/authority.py",
+        "src/lattice_digest/candidate_ledger.py",
+        "src/lattice_digest/config.py",
+        "src/lattice_digest/consequence_graph_v3.py",
+        "src/lattice_digest/critical_security.py",
+        "src/lattice_digest/critical_translation.py",
+        "src/lattice_digest/dedup.py",
+        "src/lattice_digest/digest.py",
+        "src/lattice_digest/digest_sections.py",
+        "src/lattice_digest/enrichment_v3.py",
+        "src/lattice_digest/evidence_contract.py",
+        "src/lattice_digest/failure_scope.py",
+        "src/lattice_digest/filters.py",
+        "src/lattice_digest/http.py",
+        "src/lattice_digest/identity_v3.py",
+        "src/lattice_digest/models.py",
+        "src/lattice_digest/observability_v3.py",
+        "src/lattice_digest/ontology_v3.py",
+        "src/lattice_digest/pqc_radar.py",
+        "src/lattice_digest/promotion_history.py",
+        "src/lattice_digest/public_contract.py",
+        "src/lattice_digest/public_daily.py",
+        "src/lattice_digest/query_portfolio_v3.py",
+        "src/lattice_digest/radar_freshness.py",
+        "src/lattice_digest/ranker.py",
+        "src/lattice_digest/ranking_explainability.py",
+        "src/lattice_digest/recommendation_calibration.py",
+        "src/lattice_digest/recommendation_rationale.py",
+        "src/lattice_digest/recovery_window.py",
+        "src/lattice_digest/report_quality.py",
+        "src/lattice_digest/retrieval_metrics_v3.py",
+        "src/lattice_digest/retrieval_v3.py",
+        "src/lattice_digest/run.py",
+        "src/lattice_digest/runtime_dependencies.py",
+        "src/lattice_digest/runtime_paths.py",
+        "src/lattice_digest/runtime_provenance.py",
+        "src/lattice_digest/source_health_ledger.py",
+        "src/lattice_digest/source_queries.py",
+        "src/lattice_digest/source_roles.py",
+        "src/lattice_digest/sources/__init__.py",
+        "src/lattice_digest/sources/arxiv.py",
+        "src/lattice_digest/sources/base.py",
+        "src/lattice_digest/sources/crossref.py",
+        "src/lattice_digest/sources/dblp.py",
+        "src/lattice_digest/sources/iacr.py",
+        "src/lattice_digest/sources/openalex.py",
+        "src/lattice_digest/sources/semantic_scholar.py",
+        "src/lattice_digest/sources/web_pages.py",
+        "src/lattice_digest/storage.py",
+        "src/lattice_digest/text.py",
+        "src/lattice_digest/venue_registry.py",
+        "src/lattice_digest/workflow.py"
+      ]
+    },
+    "WEEKLY": {
+      "roots": [
+        "src/lattice_digest/public_weekly.py"
+      ],
+      "function_scopes": {},
+      "branch_values": {},
+      "reviewed_non_python": [
+        "config/retrieval_ontology_v3.yaml",
+        "config/sources.yaml",
+        "pyproject.toml"
+      ],
+      "paths": [
+        "config/retrieval_ontology_v3.yaml",
+        "config/runtime_dependencies.json",
+        "config/sources.yaml",
+        "pyproject.toml",
+        "src/lattice_digest/__init__.py",
+        "src/lattice_digest/artifact_paths.py",
+        "src/lattice_digest/authority.py",
+        "src/lattice_digest/config.py",
+        "src/lattice_digest/consequence_graph_v3.py",
+        "src/lattice_digest/critical_security.py",
+        "src/lattice_digest/daily_inputs.py",
+        "src/lattice_digest/digest_sections.py",
+        "src/lattice_digest/evidence_contract.py",
+        "src/lattice_digest/models.py",
+        "src/lattice_digest/ontology_v3.py",
+        "src/lattice_digest/public_contract.py",
+        "src/lattice_digest/public_weekly.py",
+        "src/lattice_digest/recommendation_rationale.py",
+        "src/lattice_digest/report_quality.py",
+        "src/lattice_digest/runtime_dependencies.py",
+        "src/lattice_digest/runtime_paths.py",
+        "src/lattice_digest/runtime_provenance.py",
+        "src/lattice_digest/source_roles.py",
+        "src/lattice_digest/text.py",
+        "src/lattice_digest/weekly_synthesis.py"
+      ]
+    },
+    "MONTHLY": {
+      "roots": [
+        "src/lattice_digest/public_monthly.py"
+      ],
+      "function_scopes": {},
+      "branch_values": {
+        "src/lattice_digest/public_monthly.py": {
+          "args.exports": false
+        },
+        "src/lattice_digest/monthly_downstream.py": {
+          "obsidian": false
+        }
+      },
+      "reviewed_non_python": [
+        "config/retrieval_ontology_v3.yaml",
+        "config/sources.yaml",
+        "pyproject.toml"
+      ],
+      "paths": [
+        "config/retrieval_ontology_v3.yaml",
+        "config/runtime_dependencies.json",
+        "config/sources.yaml",
+        "pyproject.toml",
+        "src/lattice_digest/__init__.py",
+        "src/lattice_digest/artifact_paths.py",
+        "src/lattice_digest/authority.py",
+        "src/lattice_digest/config.py",
+        "src/lattice_digest/consequence_graph_v3.py",
+        "src/lattice_digest/critical_security.py",
+        "src/lattice_digest/daily_inputs.py",
+        "src/lattice_digest/digest_sections.py",
+        "src/lattice_digest/evidence_contract.py",
+        "src/lattice_digest/models.py",
+        "src/lattice_digest/monthly_synthesis.py",
+        "src/lattice_digest/ontology_v3.py",
+        "src/lattice_digest/public_contract.py",
+        "src/lattice_digest/public_monthly.py",
+        "src/lattice_digest/reading_actions.py",
+        "src/lattice_digest/recommendation_rationale.py",
+        "src/lattice_digest/report_quality.py",
+        "src/lattice_digest/runtime_dependencies.py",
+        "src/lattice_digest/runtime_paths.py",
+        "src/lattice_digest/runtime_provenance.py",
+        "src/lattice_digest/source_roles.py",
+        "src/lattice_digest/text.py",
+        "src/lattice_digest/weekly_synthesis.py"
+      ]
+    },
+    "MONTHLY_EXPORTS": {
+      "roots": [
+        "src/lattice_digest/public_monthly.py"
+      ],
+      "function_scopes": {},
+      "branch_values": {
+        "src/lattice_digest/public_monthly.py": {
+          "args.exports": true
+        },
+        "src/lattice_digest/monthly_downstream.py": {
+          "obsidian": false
+        }
+      },
+      "reviewed_non_python": [
+        "config/retrieval_ontology_v3.yaml",
+        "config/sources.yaml",
+        "pyproject.toml"
+      ],
+      "paths": [
+        "config/retrieval_ontology_v3.yaml",
+        "config/runtime_dependencies.json",
+        "config/sources.yaml",
+        "pyproject.toml",
+        "src/lattice_digest/__init__.py",
+        "src/lattice_digest/artifact_paths.py",
+        "src/lattice_digest/audit.py",
+        "src/lattice_digest/authority.py",
+        "src/lattice_digest/config.py",
+        "src/lattice_digest/consequence_graph_v3.py",
+        "src/lattice_digest/critical_security.py",
+        "src/lattice_digest/daily_inputs.py",
+        "src/lattice_digest/digest_sections.py",
+        "src/lattice_digest/evidence_contract.py",
+        "src/lattice_digest/export_library.py",
+        "src/lattice_digest/ideas.py",
+        "src/lattice_digest/library_taxonomy.py",
+        "src/lattice_digest/models.py",
+        "src/lattice_digest/monthly_downstream.py",
+        "src/lattice_digest/monthly_synthesis.py",
+        "src/lattice_digest/ontology_v3.py",
+        "src/lattice_digest/public_contract.py",
+        "src/lattice_digest/public_monthly.py",
+        "src/lattice_digest/reading_actions.py",
+        "src/lattice_digest/reading_queue.py",
+        "src/lattice_digest/recommendation_rationale.py",
+        "src/lattice_digest/report_quality.py",
+        "src/lattice_digest/research_artifact_export.py",
+        "src/lattice_digest/research_progress.py",
+        "src/lattice_digest/runtime_dependencies.py",
+        "src/lattice_digest/runtime_paths.py",
+        "src/lattice_digest/runtime_provenance.py",
+        "src/lattice_digest/source_roles.py",
+        "src/lattice_digest/text.py",
+        "src/lattice_digest/weekly_synthesis.py",
+        "src/lattice_digest/zotero_compat.py"
+      ]
+    },
+    "MONTHLY_OBSIDIAN": {
+      "roots": [
+        "src/lattice_digest/public_monthly.py"
+      ],
+      "function_scopes": {},
+      "branch_values": {
+        "src/lattice_digest/public_monthly.py": {
+          "args.exports": true
+        },
+        "src/lattice_digest/monthly_downstream.py": {
+          "obsidian": true
+        }
+      },
+      "reviewed_non_python": [
+        "config/retrieval_ontology_v3.yaml",
+        "config/sources.yaml",
+        "pyproject.toml"
+      ],
+      "paths": [
+        "config/retrieval_ontology_v3.yaml",
+        "config/runtime_dependencies.json",
+        "config/sources.yaml",
+        "pyproject.toml",
+        "scripts/export_obsidian_notes.py",
+        "src/lattice_digest/__init__.py",
+        "src/lattice_digest/artifact_paths.py",
+        "src/lattice_digest/audit.py",
+        "src/lattice_digest/authority.py",
+        "src/lattice_digest/config.py",
+        "src/lattice_digest/consequence_graph_v3.py",
+        "src/lattice_digest/critical_security.py",
+        "src/lattice_digest/daily_inputs.py",
+        "src/lattice_digest/digest_sections.py",
+        "src/lattice_digest/evidence_contract.py",
+        "src/lattice_digest/export_library.py",
+        "src/lattice_digest/ideas.py",
+        "src/lattice_digest/library_taxonomy.py",
+        "src/lattice_digest/models.py",
+        "src/lattice_digest/monthly_downstream.py",
+        "src/lattice_digest/monthly_obsidian.py",
+        "src/lattice_digest/monthly_synthesis.py",
+        "src/lattice_digest/obsidian_scaffold.py",
+        "src/lattice_digest/ontology_v3.py",
+        "src/lattice_digest/public_contract.py",
+        "src/lattice_digest/public_monthly.py",
+        "src/lattice_digest/reading_actions.py",
+        "src/lattice_digest/reading_queue.py",
+        "src/lattice_digest/recommendation_rationale.py",
+        "src/lattice_digest/report_quality.py",
+        "src/lattice_digest/research_artifact_export.py",
+        "src/lattice_digest/research_progress.py",
+        "src/lattice_digest/runtime_dependencies.py",
+        "src/lattice_digest/runtime_paths.py",
+        "src/lattice_digest/runtime_provenance.py",
+        "src/lattice_digest/source_roles.py",
+        "src/lattice_digest/text.py",
+        "src/lattice_digest/weekly_synthesis.py",
+        "src/lattice_digest/zotero_compat.py"
+      ]
+    }
+  }
+}

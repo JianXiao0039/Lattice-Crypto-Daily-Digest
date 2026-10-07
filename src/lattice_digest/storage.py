@@ -101,6 +101,29 @@ def write_json(records, output_dir, digest_date, source_health=None, warnings=No
 
 
 def publish_daily_pair(records, output_root, digest_date, filtered_count=0, source_health=None, warnings=None, since_window='36h', metadata=None, *, force=False, source_configs=None):
+    if metadata and metadata.get('recovery_requested_window'):
+        from lattice_digest.config import project_root
+        from lattice_digest.recovery_window import validate_recovery_metadata
+        from lattice_digest.runtime_provenance import runtime_provenance, public_runtime_allowed
+        validate_recovery_metadata(metadata, digest_date)
+        current = runtime_provenance(project_root(), 'DAILY', verify_remote=True)
+        if not public_runtime_allowed(current, public_automation=True):
+            raise ValueError('exact recovery requires published runtime provenance')
+        if (metadata.get('runtime_git_head') != current['runtime_git_head']
+                or metadata.get('runtime_code_manifest_sha256') != current['runtime_code_manifest_sha256']):
+            raise ValueError('exact recovery runtime provenance changed since collection')
+        metadata = {**metadata, 'exact_window_qa': {'status': 'PASS'},
+                    'runtime_qa': {'status': 'PASS', 'state': current['runtime_code_state']}}
+        json_target = daily_data_path(digest_date, output_root / 'data')
+        md_target = daily_digest_path(digest_date, output_root / 'digests')
+        if not force and (json_target.exists() or md_target.exists()):
+            raise FileExistsError('canonical pair already exists; explicit force required')
+        # Materialize and QA a disposable pair before creating any canonical target directory.
+        # Cross-day evidence remains the single canonical history, never the empty scratch tree.
+        with tempfile.TemporaryDirectory(prefix='lattice-exact-recovery-') as scratch:
+            _publish_daily_pair_locked(records, Path(scratch), digest_date, filtered_count,
+                                       source_health, warnings, since_window, metadata,
+                                       source_configs=source_configs, history_root=output_root)
     path = daily_data_path(digest_date, output_root / 'data')
     path.parent.mkdir(parents=True, exist_ok=True)
     lock = path.with_name('.' + path.stem + '.publication.lock')
@@ -112,7 +135,7 @@ def publish_daily_pair(records, output_root, digest_date, filtered_count=0, sour
         lock.unlink()
 
 
-def _publish_daily_pair_locked(records, output_root, digest_date, filtered_count=0, source_health=None, warnings=None, since_window='36h', metadata=None, *, force=False, source_configs=None):
+def _publish_daily_pair_locked(records, output_root, digest_date, filtered_count=0, source_health=None, warnings=None, since_window='36h', metadata=None, *, force=False, source_configs=None, history_root=None):
     """Validate first, then replace with rollback on ordinary I/O failure.
 
     This is NOT crash-atomic across two paths. Generation and content hashes
@@ -134,7 +157,7 @@ def _publish_daily_pair_locked(records, output_root, digest_date, filtered_count
     structural = isinstance(payload['records'], list) and md.startswith('# ') and payload['metadata']['target_date'] == digest_date.isoformat()
     payload['metadata']['structural_qa'] = {'status': 'PASS' if structural else 'FAIL'}
     qa = semantic_qa(payload, md, candidate=True, source_configs=source_configs)
-    prior, history = load_promotion_history(output_root / 'data', digest_date)
+    prior, history = load_promotion_history((history_root or output_root) / 'data', digest_date)
     cross_errors = []
     for row in payload['records']:
         event, _ = classify_event(row, prior)

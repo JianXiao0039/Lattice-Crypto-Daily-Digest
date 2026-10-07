@@ -1103,13 +1103,14 @@ def _window_from_args(args: argparse.Namespace) -> tuple[date, date]:
 
 
 def parse_args(argv: list[str] | None = None) -> argparse.Namespace:
+    from lattice_digest.runtime_paths import legacy_cli_root
     parser = argparse.ArgumentParser(description="Generate weekly research synthesis from daily digest JSON files.")
     parser.add_argument("--days", type=int, default=7)
     parser.add_argument("--from-date", default=None)
     parser.add_argument("--to-date", default=None)
-    parser.add_argument("--data-dir", type=Path, default=Path("data"))
-    parser.add_argument("--json-output-dir", type=Path, default=Path("data"))
-    parser.add_argument("--digest-output-dir", type=Path, default=Path("digests"))
+    parser.add_argument("--data-dir", type=Path, default=legacy_cli_root("data"))
+    parser.add_argument("--json-output-dir", type=Path, default=legacy_cli_root("data"))
+    parser.add_argument("--digest-output-dir", type=Path, default=legacy_cli_root("digests"))
     parser.add_argument("--dry-run", action="store_true")
     return parser.parse_args(argv)
 

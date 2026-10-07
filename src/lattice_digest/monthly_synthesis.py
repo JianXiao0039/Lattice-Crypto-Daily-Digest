@@ -555,11 +555,12 @@ def write_monthly_outputs(payload: dict[str, Any], json_output_dir: Path, digest
 
 
 def main(argv: list[str] | None = None) -> int:
+    from lattice_digest.runtime_paths import legacy_cli_root
     parser = argparse.ArgumentParser(description="Generate a manual monthly lattice paper radar synthesis.")
     parser.add_argument("--month", required=True, help="Target month in YYYY-MM format.")
-    parser.add_argument("--data-dir", type=Path, default=Path("data"))
-    parser.add_argument("--json-output-dir", type=Path, default=Path("data"))
-    parser.add_argument("--digest-output-dir", type=Path, default=Path("digests"))
+    parser.add_argument("--data-dir", type=Path, default=legacy_cli_root("data"))
+    parser.add_argument("--json-output-dir", type=Path, default=legacy_cli_root("data"))
+    parser.add_argument("--digest-output-dir", type=Path, default=legacy_cli_root("digests"))
     parser.add_argument("--dry-run", action="store_true", help="Build payload and print summary without writing files.")
     args = parser.parse_args(argv)
 

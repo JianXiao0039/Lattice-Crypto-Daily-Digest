@@ -24,14 +24,13 @@ def main(argv: list[str] | None = None) -> int:
         output_dir=args.output_dir,
         update_queue=args.update_queue and not args.dry_run,
         dry_run=args.dry_run,
-        refresh_generated=args.latest and not args.dry_run,
     )
     entries = result["plan"]["entries"]
     print(
         "Obsidian notes export: selected={selected}, written={written}, refreshed={refreshed}, skipped_existing={skipped}".format(
             selected=len(entries),
             written=len(result["written"]),
-            refreshed=len(result["refreshed"]),
+            refreshed=0,
             skipped=len(result["skipped_existing"]),
         )
     )
