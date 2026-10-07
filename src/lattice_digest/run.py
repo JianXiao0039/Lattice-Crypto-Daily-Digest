@@ -553,6 +553,11 @@ def main(argv: list[str] | None = None, *, preflight_proof: dict | None = None) 
     if public_automation and not allowed:
         print('PUBLIC_AUTOMATION_RUNTIME_CODE_BLOCKED: ' + json.dumps(code_provenance, ensure_ascii=False))
         return 2
+    if args.coverage_start and not args.force and (
+            daily_data_path(digest_date, paths.data_root).exists()
+            or daily_digest_path(digest_date, paths.digest_root).exists()):
+        print('Exact recovery target already exists; explicit repair/--force authorization required.')
+        return 2
     _load_dotenv(root, public=public_automation)
     configs = load_config_bundle(args.config_dir)
     request_config = configs["sources"].get("request", {})
@@ -730,13 +735,13 @@ def main(argv: list[str] | None = None, *, preflight_proof: dict | None = None) 
         return 0
 
     written: list[Path] = []
-    if quality_status == "authoritative_backfill" and supersedes:
+    if quality_status == "authoritative_backfill" and supersedes and (not args.coverage_start or args.force):
         written.extend(_archive_existing_provisional(output_root, digest_date, existing_metadata))
     if outputs & {"json", "markdown", "md"}:
         try:
             written.extend(publish_daily_pair(ordered, output_root, digest_date, dropped_count,
                                              source_health, context.warnings, since_window, metadata,
-                                             force=args.force or bool(supersedes), source_configs=source_configs))
+                                             force=args.force or (bool(supersedes) and not args.coverage_start), source_configs=source_configs))
         except (ValueError, OSError) as exc:
             print(f"Daily canonical promotion failed: {exc}")
             return 2

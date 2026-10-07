@@ -276,3 +276,28 @@ def test_exact_recovery_scratch_qa_precedes_canonical_directories_and_preserves_
     with pytest.raises(ValueError,match='scratch QA rejection'):
         storage.publish_daily_pair([],tmp_path,date(2026,10,7),metadata=metadata)
     assert not list(tmp_path.iterdir())
+
+
+@pytest.mark.parametrize('kind', ['provisional_json', 'authoritative_json', 'markdown_only'])
+def test_exact_existing_target_stops_before_discovery_and_never_auto_supersedes(tmp_path, monkeypatch, kind):
+    from lattice_digest import run
+    from lattice_digest.artifact_paths import daily_data_path, daily_digest_path
+    target = date(2025,1,7)
+    path = (daily_digest_path(target,tmp_path/'digests') if kind=='markdown_only' else
+            daily_data_path(target,tmp_path/'data'))
+    path.parent.mkdir(parents=True)
+    original = ('existing synthetic Markdown fixture' if kind=='markdown_only' else json.dumps({
+        'metadata':{'quality_status':'provisional' if kind.startswith('provisional') else 'authoritative',
+                    'collector':'github_actions','target_date':'2025-01-07'},'records':[]}))
+    path.write_text(original,encoding='utf-8')
+    monkeypatch.setattr(run,'project_root',lambda:tmp_path)
+    monkeypatch.setattr('lattice_digest.runtime_provenance.runtime_provenance',
+                        lambda root:{'runtime_code_state':'PUBLISHED_CLEAN_RUNTIME'})
+    monkeypatch.setattr(run,'load_config_bundle',lambda *args:pytest.fail('existing exact target must stop before discovery configuration'))
+    monkeypatch.setattr(run,'_collect_records',lambda *args:pytest.fail('discovery must not start'))
+    assert run.main(['--run-mode','backfill','--target-date','2025-01-07',
+                     '--quality-status','authoritative_backfill',
+                     '--coverage-start','2025-01-05T21:04:26.631541+08:00',
+                     '--coverage-end','2025-01-07T09:04:26.631541+08:00']) == 2
+    assert path.read_text(encoding='utf-8') == original
+    assert [entry for entry in tmp_path.rglob('*') if entry.is_file()] == [path]
