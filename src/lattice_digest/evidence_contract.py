@@ -241,7 +241,9 @@ def evidence_quality_issues(record: Any) -> list[str]:
         if score_to_label(score)!=field(record,'relevance_label'):issues.append('RELEVANCE_SCORE_LABEL_INCONSISTENT')
     except ValueError:issues.append('RELEVANCE_SCORE_LABEL_INCONSISTENT')
     if field(record,'evidence_policy_version')!=POLICY_VERSION:return issues
-    scope,_=classify_scope(record)
+    # Independently re-extract the same source-grounded typed relations used by
+    # binding. Never trust stored consequence_edges or generated rationale.
+    scope,_=source_scope_score(record)
     cap={Scope.DIRECT_LATTICE_CRYPTO:100,Scope.DIRECT_LATTICE_HARDNESS_THEORY:100,
          Scope.LATTICE_METHOD_IN_ADJACENT_CRYPTO:59,Scope.ADJACENT_PQC:59,
          Scope.INDIRECT_RESEARCH_HYPOTHESIS:59,Scope.OUT_OF_SCOPE:39}[scope]

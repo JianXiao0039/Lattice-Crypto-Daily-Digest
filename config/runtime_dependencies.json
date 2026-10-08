@@ -60,6 +60,7 @@
         "src/lattice_digest/promotion_history.py",
         "src/lattice_digest/public_contract.py",
         "src/lattice_digest/public_daily.py",
+        "src/lattice_digest/publication_diagnostics.py",
         "src/lattice_digest/query_portfolio_v3.py",
         "src/lattice_digest/radar_freshness.py",
         "src/lattice_digest/ranker.py",

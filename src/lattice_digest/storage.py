@@ -123,7 +123,7 @@ def publish_daily_pair(records, output_root, digest_date, filtered_count=0, sour
         with tempfile.TemporaryDirectory(prefix='lattice-exact-recovery-') as scratch:
             _publish_daily_pair_locked(records, Path(scratch), digest_date, filtered_count,
                                        source_health, warnings, since_window, metadata,
-                                       source_configs=source_configs, history_root=output_root)
+                                       source_configs=source_configs, history_root=output_root, diagnostic_root=output_root)
     path = daily_data_path(digest_date, output_root / 'data')
     path.parent.mkdir(parents=True, exist_ok=True)
     lock = path.with_name('.' + path.stem + '.publication.lock')
@@ -135,7 +135,7 @@ def publish_daily_pair(records, output_root, digest_date, filtered_count=0, sour
         lock.unlink()
 
 
-def _publish_daily_pair_locked(records, output_root, digest_date, filtered_count=0, source_health=None, warnings=None, since_window='36h', metadata=None, *, force=False, source_configs=None, history_root=None):
+def _publish_daily_pair_locked(records, output_root, digest_date, filtered_count=0, source_health=None, warnings=None, since_window='36h', metadata=None, *, force=False, source_configs=None, history_root=None, diagnostic_root=None):
     """Validate first, then replace with rollback on ordinary I/O failure.
 
     This is NOT crash-atomic across two paths. Generation and content hashes
@@ -159,18 +159,17 @@ def _publish_daily_pair_locked(records, output_root, digest_date, filtered_count
     qa = semantic_qa(payload, md, candidate=True, source_configs=source_configs)
     prior, history = load_promotion_history((history_root or output_root) / 'data', digest_date)
     cross_errors = []
-    for row in payload['records']:
+    cross_details = []
+    for index, row in enumerate(payload['records']):
         event, _ = classify_event(row, prior)
         if row.get('primary_today_new_eligible') and event != 'NEW_DISTINCT_PAPER':
             cross_errors.append('cross_day_false_primary')
+            cross_details.append({'issue_code': 'cross_day_false_primary', 'record_index': index, 'event': event})
     payload['metadata']['cross_day_qa'] = {'status': 'FAIL' if cross_errors else 'PASS', 'issues': cross_errors, 'history': history}
     payload['metadata']['semantic_qa'] = {k: v for k, v in qa.items() if k != 'derived_authority'}
     if not structural or qa['status'] != 'PASS' or cross_errors:
-        error_path = md_path.with_name(md_path.stem + '-error.md')
-        error_path.parent.mkdir(parents=True, exist_ok=True)
-        with error_path.open('a', encoding='utf-8') as stream:
-            stream.write('\n\nCandidate publication rejected; previous canonical pair preserved.\n' + json.dumps({'structural': structural, 'semantic': qa, 'cross_day': cross_errors}, ensure_ascii=False, indent=2))
-        raise ValueError('Daily publication QA failed')
+        from lattice_digest.publication_diagnostics import reject_daily_candidate
+        reject_daily_candidate(diagnostic_root or output_root, payload, md, structural, qa, cross_details)
     payload['metadata']['publication_state'] = 'QA_PASSED'
     contents = [json.dumps(payload, ensure_ascii=False, indent=2).encode('utf-8'), md.encode('utf-8')]
     paths = [json_path, md_path]

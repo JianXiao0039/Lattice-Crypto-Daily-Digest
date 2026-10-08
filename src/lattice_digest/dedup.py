@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 from collections.abc import Iterable
+import hashlib
 
 from lattice_digest.models import PaperRecord, copy_record
 from lattice_digest.text import normalize_title
@@ -39,6 +40,19 @@ def merge_records(existing: PaperRecord, incoming: PaperRecord) -> PaperRecord:
         merged.reason = incoming.reason
     if incoming.source not in merged.source.split(", "):
         merged.source = f"{merged.source}, {incoming.source}"
+    # A post-analysis merge can replace the abstract. Evidence from the previous
+    # abstract is then stale. Rebind with the existing source-only policy, rather
+    # than combining derived evidence or trusting the incoming score.
+    from lattice_digest.evidence_contract import POLICY_VERSION, bind_source_evidence, positive_source_fields, analyze_source
+    if merged.evidence_policy_version == POLICY_VERSION:
+        from lattice_digest.consequence_graph_v3 import extract_record_edges
+        analysis = analyze_source(merged)
+        paper_node = 'paper:' + hashlib.sha256(
+            (merged.paper_id or merged.source_url or merged.normalized_title or merged.title).encode('utf-8')).hexdigest()[:24]
+        edges = extract_record_edges(
+            paper_node=paper_node, **positive_source_fields(merged),
+            source_url=merged.source_url, source_concept_ids=analysis.source_concept_ids)
+        merged = bind_source_evidence(merged, analysis, [edge.model_dump(mode='json') for edge in edges])
     return merged
 
 

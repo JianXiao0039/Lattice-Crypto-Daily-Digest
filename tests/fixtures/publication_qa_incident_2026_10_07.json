@@ -1,0 +1,46 @@
+{
+  "schema_version": 1,
+  "provenance": "REAL_PROVIDER_RECORDS_RECONSTRUCTED_FROM_PRESERVED_2026_10_08_INCIDENT_RESPONSES",
+  "historical_snapshot_complete": false,
+  "coverage_start": "2026-10-05T21:04:26.631541+08:00",
+  "coverage_end": "2026-10-07T09:04:26.631541+08:00",
+  "original_incident_manifest_sha256": "961a0668d76b1f2461af36467a97575fccfeab5e6c8ceccf99c152c3e77c8f6d",
+  "records": [
+    {
+      "title": "Improved Classical and Quantum Algorithms for the Shortest Vector Problem via Bounded Distance Decoding",
+      "abstract": "The most important computational problem on lattices is the Shortest Vector Problem (SVP). In this paper, we present new algorithms that improve the state-of-the-art for provable classical/quantum algorithms for SVP. We present the following results. $\\bullet$ A new algorithm for SVP that provides a smooth tradeoff between time complexity and memory requirement. For any positive integer $4\\leq q\\leq \\sqrt{n}$, our algorithm takes $q^{13n+o(n)}$ time and requires $poly(n)\\cdot q^{16n/q^2}$ memory. This tradeoff which ranges from enumeration ($q=\\sqrt{n}$) to sieving ($q$ constant), is a consequence of a new time-memory tradeoff for Discrete Gaussian sampling above the smoothing parameter. $\\bullet$ A quantum algorithm for SVP that runs in time $2^{0.950n+o(n)}$ and requires $2^{0.5n+o(n)}$ classical memory and poly(n) qubits. In Quantum Random Access Memory (QRAM) model this algorithm takes only $2^{0.835n+o(n)}$ time and requires a QRAM of size $2^{0.293n+o(n)}$, poly(n) qubits and $2^{0.5n}$ classical space. This improves over the previously fastest classical (which is also the fastest quantum) algorithm due to [ADRS15] that has a time and space complexity $2^{n+o(n)}$. $\\bullet$ A classical algorithm for SVP that runs in time $2^{1.669n+o(n)}$ time and $2^{0.5n+o(n)}$ space. This improves over an algorithm of [CCL18] that has the same space complexity. The time complexity of our classical and quantum algorithms are obtained using a known upper bound on a quantity related to the lattice kissing number which is $2^{0.402n}$. We conjecture that for most lattices this quantity is a $2^{o(n)}$. Assuming that this is the case, our classical algorithm runs in time $2^{1.292n+o(n)}$, our quantum algorithm runs in time $2^{0.750n+o(n)}$ and our quantum algorithm in QRAM model runs in time $2^{0.667n+o(n)}$.",
+      "source": "arxiv",
+      "source_url": "http://arxiv.org/abs/2002.07955v6",
+      "publication_date": "2020-02-19",
+      "publication_timestamp": "2020-02-19T01:38:34Z",
+      "paper_id": "arxiv:2002.07955",
+      "arxiv_id": "2002.07955",
+      "doi": null,
+      "eprint_id": null
+    },
+    {
+      "title": "Improved Classical and Quantum Algorithms for the Shortest Vector Problem via Bounded Distance Decoding",
+      "abstract": "Abstract. The most important computational problem on lattices is the shortest vector problem ([Formula: see text]). In this paper, we present new algorithms that improve the state-of-the-art for provable classical/quantum algorithms for [Formula: see text]. We present the following results: (1) A new algorithm for [Formula: see text] that provides a smooth tradeoff between time complexity and memory requirement. For any positive integer [Formula: see text], our algorithm takes [Formula: see text] time and requires [Formula: see text] memory. This tradeoff, which ranges from enumeration ([Formula: see text]) to sieving ([Formula: see text] constant), is a consequence of a new time-memory tradeoff for discrete Gaussian sampling above the smoothing parameter. (2) A quantum algorithm for [Formula: see text] that runs in time [Formula: see text] and requires [Formula: see text] classical memory and [Formula: see text] qubits. In a quantum random access memory (QRAM) model, this algorithm takes only [Formula: see text] time and requires a QRAM of size [Formula: see text], [Formula: see text] qubits and [Formula: see text] classical space. This improves over the previously fastest classical (which is also the fastest quantum) algorithm due to [D. Aggarwal et al., Solving the shortest vector problem in 2 n time using discrete Gaussian sampling: Extended abstract, in Proceedings of the Forty-Seventh Annual ACM on Symposium on Theory of Computing (STOC), 2015, pp. 733–742] that has a time and space complexity [Formula: see text]. (3) A classical algorithm for [Formula: see text] that runs in time [Formula: see text] time and [Formula: see text] space. This improves over an algorithm of [Y. Chen, K. Chung, and C. Lai, Quantum Inf. Comput., 18 (2018), pp. 285–306] that has the same space complexity. The time complexity of our classical and quantum algorithms are obtained using a known upper bound on a quantity related to the lattice kissing number, which is [Formula: see text]. We conjecture that for most lattices this quantity is a [Formula: see text]. Assuming that this is the case, our classical algorithm runs in time [Formula: see text], our quantum algorithm runs in time [Formula: see text], and our quantum algorithm in a QRAM model runs in time [Formula: see text]. As a direct application of our result, using the reduction in [L. Ducas, Des. Codes. Cryptogr., 92 (2024), pp. 909–916], we obtain a provable quantum algorithm for the lattice isomorphism problem in the case of the trivial lattice [Formula: see text] ([Formula: see text] LIP ) that runs in time [Formula: see text]. Our algorithm requires a QRAM of size [Formula: see text], [Formula: see text] qubits and [Formula: see text] classical space.",
+      "source": "openalex",
+      "source_url": "https://doi.org/10.1137/22m1486959",
+      "publication_date": "2025-03-03",
+      "publication_timestamp": null,
+      "paper_id": "https://openalex.org/W4408089387",
+      "arxiv_id": null,
+      "doi": "https://doi.org/10.1137/22m1486959",
+      "eprint_id": null
+    },
+    {
+      "title": "Logarithmic-Size (Linkable) Ring Signatures from Lattice Isomorphism Problems",
+      "abstract": "",
+      "source": "openalex",
+      "source_url": "https://doi.org/10.1007/978-3-031-51583-5_13",
+      "publication_date": "2024-01-01",
+      "publication_timestamp": null,
+      "paper_id": "https://openalex.org/W4390578406",
+      "arxiv_id": null,
+      "doi": "https://doi.org/10.1007/978-3-031-51583-5_13",
+      "eprint_id": null
+    }
+  ]
+}
