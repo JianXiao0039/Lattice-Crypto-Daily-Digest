@@ -1,0 +1,255 @@
+{
+  "python": "D:/CyberSecurity/Python315/python.exe",
+  "clean_published_baseline": {
+    "head": "0f387ef1ad388a1db47b9d062480929dd7d239d5",
+    "passed": 1135,
+    "failed": 0,
+    "seconds": 324.32,
+    "log": "D:\\Code\\CodexProjects\\lattice-digest-p0-evidence-20261009\\git-baseline-pytest.log"
+  },
+  "final_complete_suite": {
+    "command": "D:/CyberSecurity/Python315/python.exe -m pytest --basetemp=D:/Code/CodexProjects/lattice-digest-p0-evidence-20261009/full-candidate-temp6",
+    "passed": 1203,
+    "failed": 0,
+    "seconds": 323.08,
+    "existing_tests_retained": 1135,
+    "added_tests": 68,
+    "log": "D:\\Code\\CodexProjects\\lattice-digest-p0-evidence-20261009\\full-candidate-local-verified.log"
+  },
+  "focused_final": {
+    "passed": 87,
+    "failed": 0,
+    "log": "D:\\Code\\CodexProjects\\lattice-digest-p0-evidence-20261009\\focused-fifteenth.log"
+  },
+  "earlier_full_results": [
+    {
+      "passed": 1155,
+      "failed": 16,
+      "resolution": "Actual defects fixed; event/observability assertions and source-evidence fixture text updated; all tests retained."
+    },
+    {
+      "passed": 1182,
+      "failed": 0,
+      "followup": "Further source-role and related-work guards added."
+    },
+    {
+      "passed": 1186,
+      "failed": 0,
+      "followup": "Generic proof assumption guard added after FO source review."
+    },
+    {
+      "passed": 1190,
+      "failed": 0,
+      "followup": "Noncryptographic domain and no-evidence generic PQC gates added."
+    },
+    {
+      "passed": 1201,
+      "failed": 0,
+      "followup": "Standalone v2 publication rejection reproduced and canonical-event QA compatibility repaired."
+    }
+  ],
+  "baseline_exclusions_explanation": "The initial in-place baseline was contaminated by concurrent source edits and is not used as baseline. An archive-only copy lacked .git and had one environment failure. A separate clean Git clone then passed all 1135 original tests. Logs are retained, not erased.",
+  "all_stage_logs": [
+    {
+      "path": "D:\\Code\\CodexProjects\\lattice-digest-p0-evidence-20261009\\baseline-pytest.log",
+      "sha256": "0e2030a32777a7821f8ad46b2e9303acbf5a1222fbf09fecfc1bc0654d608fee"
+    },
+    {
+      "path": "D:\\Code\\CodexProjects\\lattice-digest-p0-evidence-20261009\\benchmark-v2-acceptance.log",
+      "sha256": "3d6a20af96ca61fb60aa77ac1504c7c596c818863343972cd6d3af8e551e12e5"
+    },
+    {
+      "path": "D:\\Code\\CodexProjects\\lattice-digest-p0-evidence-20261009\\benchmark-v2-false-negatives.log",
+      "sha256": "23daa5b60331c78540b78d22ef94a2605035b52ecb84b5a85fdea7c8aeb64374"
+    },
+    {
+      "path": "D:\\Code\\CodexProjects\\lattice-digest-p0-evidence-20261009\\benchmark-v2-final-gates.log",
+      "sha256": "ad818ee77211fb3d5a516b4c1f7f8cead9dce43befe6de97de672aa91bdb71d0"
+    },
+    {
+      "path": "D:\\Code\\CodexProjects\\lattice-digest-p0-evidence-20261009\\benchmark-v2-verified.log",
+      "sha256": "3d6a20af96ca61fb60aa77ac1504c7c596c818863343972cd6d3af8e551e12e5"
+    },
+    {
+      "path": "D:\\Code\\CodexProjects\\lattice-digest-p0-evidence-20261009\\focused-eighth.log",
+      "sha256": "cd6aefe5277a860e9e16f076b14bc359f9c18088b4adfd23d6c67308fa782c0a"
+    },
+    {
+      "path": "D:\\Code\\CodexProjects\\lattice-digest-p0-evidence-20261009\\focused-eleventh.log",
+      "sha256": "17f8626278ba7deb28d42492256554499a5f0426b1c70afe7a994d547a4455f2"
+    },
+    {
+      "path": "D:\\Code\\CodexProjects\\lattice-digest-p0-evidence-20261009\\focused-fifteenth.log",
+      "sha256": "395138a05b769b809ac2f8e28b8de9b514f5f4e9be3e4f64a63232a984d1b0f4"
+    },
+    {
+      "path": "D:\\Code\\CodexProjects\\lattice-digest-p0-evidence-20261009\\focused-fifth.log",
+      "sha256": "d3facb20a163123a5561f21fa780e5ee8fb8912ff2a6e498ba124c7338250da2"
+    },
+    {
+      "path": "D:\\Code\\CodexProjects\\lattice-digest-p0-evidence-20261009\\focused-first.log",
+      "sha256": "b6f8a467420be61856ece0d47169d25aee78cb6ba6fc584894909f7d8c1d112e"
+    },
+    {
+      "path": "D:\\Code\\CodexProjects\\lattice-digest-p0-evidence-20261009\\focused-fourteenth.log",
+      "sha256": "70bcbc16c8e8bc2a9d6820c9eb690c06b0b4b8f07e2e335d0b4171eb8e27f68b"
+    },
+    {
+      "path": "D:\\Code\\CodexProjects\\lattice-digest-p0-evidence-20261009\\focused-fourth.log",
+      "sha256": "9a370a2d11b21b20778b2182e0d238472d33b5d3436d65146a98b9b6064f570a"
+    },
+    {
+      "path": "D:\\Code\\CodexProjects\\lattice-digest-p0-evidence-20261009\\focused-ninth.log",
+      "sha256": "7b5aebbd1529a8125437acf2b40579543562e8a7c23bc6019db9bd2586be2624"
+    },
+    {
+      "path": "D:\\Code\\CodexProjects\\lattice-digest-p0-evidence-20261009\\focused-second.log",
+      "sha256": "6d00c042d3e664b793bbed1c23d5982f8c5d4e53dcb8014ec166b232ea19109c"
+    },
+    {
+      "path": "D:\\Code\\CodexProjects\\lattice-digest-p0-evidence-20261009\\focused-seventh.log",
+      "sha256": "20dbcd52bc16f66c523d6222cb717a5e32b22c9c5107878b92c566766ef80af8"
+    },
+    {
+      "path": "D:\\Code\\CodexProjects\\lattice-digest-p0-evidence-20261009\\focused-sixth.log",
+      "sha256": "540cc8b269b30b71928002ced58d7397c7fb43b880002ce3196a8ff84b906155"
+    },
+    {
+      "path": "D:\\Code\\CodexProjects\\lattice-digest-p0-evidence-20261009\\focused-tenth.log",
+      "sha256": "2fae368f8bcb1a1bcf773f1d1be82d31c6fbdee5ce8f3df78a56463be8080af7"
+    },
+    {
+      "path": "D:\\Code\\CodexProjects\\lattice-digest-p0-evidence-20261009\\focused-third.log",
+      "sha256": "8eb97eafb14a8b997b7df499f1587e04f4bca4ac8f61382e818302fde7b724c5"
+    },
+    {
+      "path": "D:\\Code\\CodexProjects\\lattice-digest-p0-evidence-20261009\\focused-thirteenth.log",
+      "sha256": "61816e4ec085b38243d38dfbddb329c4f9bbd7dc1dbf10d378f755403fdeab20"
+    },
+    {
+      "path": "D:\\Code\\CodexProjects\\lattice-digest-p0-evidence-20261009\\focused-twelfth.log",
+      "sha256": "d924eae601044eb4c6ecaf509b51eb8b124d6e5fc2077ccfc50c96cc5d9af573"
+    },
+    {
+      "path": "D:\\Code\\CodexProjects\\lattice-digest-p0-evidence-20261009\\frozen-baseline-pytest.log",
+      "sha256": "b2a4a63e56ed162a24942aed7e8b9f2c390fa6c6e96cd8a4ec578f27253e8294"
+    },
+    {
+      "path": "D:\\Code\\CodexProjects\\lattice-digest-p0-evidence-20261009\\full-candidate-acceptance.log",
+      "sha256": "c66da75e195fb46b675249ea0e5707674502a3efaf8d3efa17a3bf4e13443b29"
+    },
+    {
+      "path": "D:\\Code\\CodexProjects\\lattice-digest-p0-evidence-20261009\\full-candidate-final-gates.log",
+      "sha256": "6366063327f6f64425315feaeaf6232d45e67a4516783a946407f1f4aace698b"
+    },
+    {
+      "path": "D:\\Code\\CodexProjects\\lattice-digest-p0-evidence-20261009\\full-candidate-final.log",
+      "sha256": "06df53a99f75b2d261f9c30458f1b3ef1fbc3c46b093cb603117b8a1d672fadc"
+    },
+    {
+      "path": "D:\\Code\\CodexProjects\\lattice-digest-p0-evidence-20261009\\full-candidate-first.log",
+      "sha256": "2d111cb57ad6b6e423cf398bfc9d3383473bb9fdeb333f027ce086f0e4b6344c"
+    },
+    {
+      "path": "D:\\Code\\CodexProjects\\lattice-digest-p0-evidence-20261009\\full-candidate-local-verified.log",
+      "sha256": "cf25677508f4b730a0de10e89605faafc56f7646b7ad08827713097f01b8f9a2"
+    },
+    {
+      "path": "D:\\Code\\CodexProjects\\lattice-digest-p0-evidence-20261009\\full-candidate-second.log",
+      "sha256": "c8e31ea34708cc563585ac6d4a60dd90c9cd7361ef8676339b2bf4c09288069f"
+    },
+    {
+      "path": "D:\\Code\\CodexProjects\\lattice-digest-p0-evidence-20261009\\git-baseline-pytest.log",
+      "sha256": "1523db61971d17f9bc00616c749cb5c4226e8f62f481ef7a6a0d1d52b571b377"
+    },
+    {
+      "path": "D:\\Code\\CodexProjects\\lattice-digest-p0-evidence-20261009\\period-acceptance.log",
+      "sha256": "9a5e7fa15058985272b3e03ca31386548df0c4b23439ec284762df7a382a016c"
+    },
+    {
+      "path": "D:\\Code\\CodexProjects\\lattice-digest-p0-evidence-20261009\\period-local-verified.log",
+      "sha256": "f561d40307fe408b1570bff1e9fd6bb9969799f8037a9c65c3bb9e8419ed0159"
+    },
+    {
+      "path": "D:\\Code\\CodexProjects\\lattice-digest-p0-evidence-20261009\\period-real-validation.log",
+      "sha256": "788c83faf65380e46a36e6a4d4fc9134047e2dd39a4e6811f225f8aeb69ac90d"
+    },
+    {
+      "path": "D:\\Code\\CodexProjects\\lattice-digest-p0-evidence-20261009\\replay-acceptance.log",
+      "sha256": "cb3df398903c7304b7670721b4e8292ea3ce65e050372cad738f507a10c0169a"
+    },
+    {
+      "path": "D:\\Code\\CodexProjects\\lattice-digest-p0-evidence-20261009\\replay-fifth.log",
+      "sha256": "7fc0f5298ffa44288bfe8a13130684a60a73a511043a3418f4ff59d0873d8355"
+    },
+    {
+      "path": "D:\\Code\\CodexProjects\\lattice-digest-p0-evidence-20261009\\replay-final-gates.log",
+      "sha256": "fedd259839bbed1169cdb0cef7008f43fb5892369c74289a6307ab3b4345b4b0"
+    },
+    {
+      "path": "D:\\Code\\CodexProjects\\lattice-digest-p0-evidence-20261009\\replay-final.log",
+      "sha256": "41516af0ba8de63f835e515c2dc6da8f7fd021d467ac9f0f8662c6495263b599"
+    },
+    {
+      "path": "D:\\Code\\CodexProjects\\lattice-digest-p0-evidence-20261009\\replay-local-verified.log",
+      "sha256": "fedd259839bbed1169cdb0cef7008f43fb5892369c74289a6307ab3b4345b4b0"
+    },
+    {
+      "path": "D:\\Code\\CodexProjects\\lattice-digest-p0-evidence-20261009\\replay-r1.log",
+      "sha256": "214766ac207c8ee5dc4bbb2dd99ad798cf2dd5edd485dc57d213a89545422cb1"
+    },
+    {
+      "path": "D:\\Code\\CodexProjects\\lattice-digest-p0-evidence-20261009\\replay-r2.log",
+      "sha256": "3880b8c8c40a35839a79e455567f36fd75ae252467028c5b48c679755060c348"
+    },
+    {
+      "path": "D:\\Code\\CodexProjects\\lattice-digest-p0-evidence-20261009\\replay-r3.log",
+      "sha256": "a176188e6f15435e8c88d96e88e782fd3a880857d1ac73771d867910080501cc"
+    },
+    {
+      "path": "D:\\Code\\CodexProjects\\lattice-digest-p0-evidence-20261009\\replay-r4.log",
+      "sha256": "6f9832a183367df8d5465a71e34ad8624a368ebf0f2a20abdab820204418d268"
+    },
+    {
+      "path": "D:\\Code\\CodexProjects\\lattice-digest-p0-evidence-20261009\\replay-sixth.log",
+      "sha256": "b24412edf1927d0057b5221efb95d660e46cbee41db777fa5fcfc249bdd172b9"
+    },
+    {
+      "path": "D:\\Code\\CodexProjects\\lattice-digest-p0-evidence-20261009\\replay-verified.log",
+      "sha256": "41516af0ba8de63f835e515c2dc6da8f7fd021d467ac9f0f8662c6495263b599"
+    }
+  ],
+  "live_source_crawl": "NOT_PERFORMED_FOR_REPLAY",
+  "new_dependencies": "NONE",
+  "publication": "NOT_AUTHORIZED_IN_THIS_PHASE",
+  "benchmark_final": {
+    "schema_version": "2.0",
+    "metric_scope": "configured_source_snapshot_benchmark_not_open_web_recall",
+    "benchmark_id": "RECENT_PAPER_BENCHMARK_V2",
+    "record_count": 200,
+    "real_record_count": 160,
+    "synthetic_record_count": 40,
+    "relevance_precision": 0.9361702127659575,
+    "final_relevance_recall": 0.9924812030075187,
+    "observability_recall": 0.9924812030075187,
+    "title_weak_indirect_recall": 0.9895833333333334,
+    "recent_precision": 1.0,
+    "precision_at_k": 1.0,
+    "recall_at_k": 0.3007518796992481,
+    "critical_recall": 1.0,
+    "false_critical_count": 0,
+    "strict_36h_false_primary_count": 0,
+    "historical_false_primary_count": 0,
+    "metadata_update_false_primary_count": 0,
+    "missed_registry_regression_count": 0,
+    "fabricated_source_hit_count": 0,
+    "fabricated_ccf_count": 0,
+    "unsupported_pqc_break_escalation_count": 0,
+    "unsafe_fuzzy_auto_merge_count": 0,
+    "merge_proposal_count": 0,
+    "metadata_conflict_count": 0,
+    "inferred_tag_reused_as_source_evidence_count": 0,
+    "false_positive_count": 9,
+    "false_negative_count": 1
+  }
+}

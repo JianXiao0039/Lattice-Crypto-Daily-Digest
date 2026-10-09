@@ -32,6 +32,11 @@ class PaperRecord(BaseModel):
     venue_confidence: str = "low"
     publication_date: str | None = None
     publication_timestamp: str | None = None
+    preprint_first_posted_at: str | None = None
+    source_version_timestamp: str | None = None
+    proceedings_year: int | None = None
+    publisher_online_date: str | None = None
+    metadata_indexed_date: str | None = None
     publication_date_kind: str = "AUTHORITATIVE_PUBLICATION_DATE"
     announcement_date: str | None = None
     announcement_date_kind: str = "AUTHORITATIVE_ANNOUNCEMENT_DATE"
@@ -62,6 +67,17 @@ class PaperRecord(BaseModel):
     research_relations: list[dict[str, Any]] = Field(default_factory=list)
     source_limitations: list[str] = Field(default_factory=list)
     relevance_scope: str = ""
+    scientific_scope: str = ""
+    source_relation_roles: list[dict[str, Any]] = Field(default_factory=list)
+    lattice_relevance_qualified: bool = False
+    scope_reason: str = ""
+    publication_event_id: str = ""
+    publication_event_type: str = ""
+    publication_event_date: str = ""
+    publication_event_reason: str = ""
+    critical_verification_events: list[dict[str, Any]] = Field(default_factory=list)
+    publication_event_blockers: list[str] = Field(default_factory=list)
+    research_idea_proposals: list[dict[str, Any]] = Field(default_factory=list)
     freshness_urgency: int = 0
     verification_urgency: int = 0
     recommended_action: str = ""

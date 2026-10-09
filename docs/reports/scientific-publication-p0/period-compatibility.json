@@ -1,0 +1,255 @@
+{
+  "weekly": {
+    "event_counts": {
+      "primary_publication_events": 4,
+      "revision_events": 0,
+      "new_critical_verify_events": 1,
+      "background_updates": 4,
+      "historical_library_observations": 340
+    },
+    "coverage": {
+      "authority_state": "AUTHORITATIVE_DEGRADED",
+      "fully_valid_days": [],
+      "continuity_status": {
+        "state": "INPUTS_PRESENT",
+        "missing_dates": [],
+        "gap_causes": {},
+        "mode": "READ_ONLY_LOADED_INPUTS"
+      },
+      "structurally_valid_days": [
+        "2026-10-07",
+        "2026-10-08",
+        "2026-10-09"
+      ],
+      "semantically_valid_days": [
+        "2026-10-07",
+        "2026-10-08",
+        "2026-10-09"
+      ],
+      "semantic_failed_days": [],
+      "semantic_unknown_days": [],
+      "source_degraded_days": [
+        "2026-10-07",
+        "2026-10-08",
+        "2026-10-09"
+      ],
+      "legacy_fallback_days": [],
+      "missing_days": [],
+      "daily_input_quality": [
+        {
+          "date": "2026-10-07",
+          "structural_valid": true,
+          "semantic_valid": true,
+          "semantic_status": "PASS",
+          "source_degraded": true,
+          "legacy_fallback": false,
+          "authority_state": "PARTIAL_VERIFY_FIRST",
+          "defects": [],
+          "fully_valid": false
+        },
+        {
+          "date": "2026-10-08",
+          "structural_valid": true,
+          "semantic_valid": true,
+          "semantic_status": "PASS",
+          "source_degraded": true,
+          "legacy_fallback": false,
+          "authority_state": "INCOMPLETE_DO_NOT_INTERPRET_AS_NO_NEWS",
+          "defects": [],
+          "fully_valid": false
+        },
+        {
+          "date": "2026-10-09",
+          "structural_valid": true,
+          "semantic_valid": true,
+          "semantic_status": "PASS",
+          "source_degraded": true,
+          "legacy_fallback": false,
+          "authority_state": "AUTHORITATIVE_DEGRADED",
+          "defects": [],
+          "fully_valid": false
+        }
+      ],
+      "expected_days": 3,
+      "loaded_days": [
+        "2026-10-07",
+        "2026-10-08",
+        "2026-10-09"
+      ],
+      "total_records": 5,
+      "total_event_occurrences": 5,
+      "record_population": "CANONICAL_PUBLICATION_EVENTS",
+      "total_observations": 845,
+      "unique_records": 5,
+      "label_counts": {
+        "A": 5
+      }
+    },
+    "ideas": 0,
+    "paper_plans": 0
+  },
+  "monthly": {
+    "event_counts": {
+      "primary_publication_events": 4,
+      "revision_events": 0,
+      "new_critical_verify_events": 1,
+      "background_updates": 4,
+      "historical_library_observations": 340
+    },
+    "unique_identities": 5,
+    "quality": {
+      "authority_state": "INCOMPLETE_DO_NOT_INTERPRET_AS_NO_NEWS",
+      "fully_valid_days": [],
+      "continuity_status": {
+        "state": "INCOMPLETE",
+        "missing_dates": [
+          "2026-10-01",
+          "2026-10-02",
+          "2026-10-03",
+          "2026-10-04",
+          "2026-10-05",
+          "2026-10-06",
+          "2026-10-10",
+          "2026-10-11",
+          "2026-10-12",
+          "2026-10-13",
+          "2026-10-14",
+          "2026-10-15",
+          "2026-10-16",
+          "2026-10-17",
+          "2026-10-18",
+          "2026-10-19",
+          "2026-10-20",
+          "2026-10-21",
+          "2026-10-22",
+          "2026-10-23",
+          "2026-10-24",
+          "2026-10-25",
+          "2026-10-26",
+          "2026-10-27",
+          "2026-10-28",
+          "2026-10-29",
+          "2026-10-30",
+          "2026-10-31"
+        ],
+        "gap_causes": {
+          "2026-10-01": "UNKNOWN",
+          "2026-10-02": "UNKNOWN",
+          "2026-10-03": "UNKNOWN",
+          "2026-10-04": "UNKNOWN",
+          "2026-10-05": "UNKNOWN",
+          "2026-10-06": "UNKNOWN",
+          "2026-10-10": "UNKNOWN",
+          "2026-10-11": "UNKNOWN",
+          "2026-10-12": "UNKNOWN",
+          "2026-10-13": "UNKNOWN",
+          "2026-10-14": "UNKNOWN",
+          "2026-10-15": "UNKNOWN",
+          "2026-10-16": "UNKNOWN",
+          "2026-10-17": "UNKNOWN",
+          "2026-10-18": "UNKNOWN",
+          "2026-10-19": "UNKNOWN",
+          "2026-10-20": "UNKNOWN",
+          "2026-10-21": "UNKNOWN",
+          "2026-10-22": "UNKNOWN",
+          "2026-10-23": "UNKNOWN",
+          "2026-10-24": "UNKNOWN",
+          "2026-10-25": "UNKNOWN",
+          "2026-10-26": "UNKNOWN",
+          "2026-10-27": "UNKNOWN",
+          "2026-10-28": "UNKNOWN",
+          "2026-10-29": "UNKNOWN",
+          "2026-10-30": "UNKNOWN",
+          "2026-10-31": "UNKNOWN"
+        },
+        "mode": "READ_ONLY_LOADED_INPUTS"
+      },
+      "structurally_valid_days": [
+        "2026-10-07",
+        "2026-10-08",
+        "2026-10-09"
+      ],
+      "semantically_valid_days": [
+        "2026-10-07",
+        "2026-10-08",
+        "2026-10-09"
+      ],
+      "semantic_failed_days": [],
+      "semantic_unknown_days": [],
+      "source_degraded_days": [
+        "2026-10-07",
+        "2026-10-08",
+        "2026-10-09"
+      ],
+      "legacy_fallback_days": [],
+      "missing_days": [
+        "2026-10-01",
+        "2026-10-02",
+        "2026-10-03",
+        "2026-10-04",
+        "2026-10-05",
+        "2026-10-06",
+        "2026-10-10",
+        "2026-10-11",
+        "2026-10-12",
+        "2026-10-13",
+        "2026-10-14",
+        "2026-10-15",
+        "2026-10-16",
+        "2026-10-17",
+        "2026-10-18",
+        "2026-10-19",
+        "2026-10-20",
+        "2026-10-21",
+        "2026-10-22",
+        "2026-10-23",
+        "2026-10-24",
+        "2026-10-25",
+        "2026-10-26",
+        "2026-10-27",
+        "2026-10-28",
+        "2026-10-29",
+        "2026-10-30",
+        "2026-10-31"
+      ],
+      "daily_input_quality": [
+        {
+          "date": "2026-10-07",
+          "structural_valid": true,
+          "semantic_valid": true,
+          "semantic_status": "PASS",
+          "source_degraded": true,
+          "legacy_fallback": false,
+          "authority_state": "PARTIAL_VERIFY_FIRST",
+          "defects": [],
+          "fully_valid": false
+        },
+        {
+          "date": "2026-10-08",
+          "structural_valid": true,
+          "semantic_valid": true,
+          "semantic_status": "PASS",
+          "source_degraded": true,
+          "legacy_fallback": false,
+          "authority_state": "INCOMPLETE_DO_NOT_INTERPRET_AS_NO_NEWS",
+          "defects": [],
+          "fully_valid": false
+        },
+        {
+          "date": "2026-10-09",
+          "structural_valid": true,
+          "semantic_valid": true,
+          "semantic_status": "PASS",
+          "source_degraded": true,
+          "legacy_fallback": false,
+          "authority_state": "AUTHORITATIVE_DEGRADED",
+          "defects": [],
+          "fully_valid": false
+        }
+      ]
+    },
+    "missing_count": 28
+  },
+  "provenance": "OFFLINE_CANDIDATE_FIXTURES_NOT_PUBLISHED",
+  "artifacts_root": "D:\\Code\\CodexProjects\\lattice-digest-p0-period-local-verified-20261009"
+}

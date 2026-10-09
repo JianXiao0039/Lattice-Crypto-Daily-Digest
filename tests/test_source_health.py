@@ -113,5 +113,5 @@ sources:
         assert "simulated source failure" in payload["source_health"][0]["errors"][0]
 
         markdown = markdown_files[0].read_text(encoding="utf-8")
-        assert "## 8. 数据源健康与空报告处理" in markdown
+        assert "## 6. 来源健康与覆盖限制" in markdown
         assert "broken_source" in markdown

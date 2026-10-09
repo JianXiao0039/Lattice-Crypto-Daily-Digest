@@ -81,7 +81,7 @@ def load_promotion_history(data_dir: Path, target: date, *, days: int = HISTORY_
                 raise ValueError('invalid or over-budget history records')
             evidence['loaded'].append({'date': day.isoformat(), 'sha256': hashlib.sha256(path.read_bytes()).hexdigest()})
             for r in records:
-                if isinstance(r, dict) and r.get('primary_today_new_eligible') is True:
+                if isinstance(r, dict):
                     rows.append({**r, '_promotion_date': day.isoformat()})
         except (OSError, ValueError, TypeError, AttributeError) as exc:
             evidence['unusable'].append({'date': day.isoformat(), 'reason': str(exc)})
@@ -133,7 +133,7 @@ def apply_promotion_history(records: list[PaperRecord], prior: list[dict[str, An
         update: dict[str, Any] = {'cross_day_event': event, 'prior_promotion_dates': dates}
         if event != 'NEW_DISTINCT_PAPER':
             update.update(primary_today_new_eligible=False, primary_action_allowed=False)
-            update['freshness_bucket'] = 'recent_content_revision' if event in {'GENUINE_NEW_VERSION', 'GENUINE_CONTENT_REVISION'} else ('date_uncertain_todo_verify' if event == 'IDENTITY_UNCERTAIN' else 'cross_day_duplicate')
+            update['freshness_bucket'] = (record.freshness_bucket if event in {'GENUINE_NEW_VERSION', 'GENUINE_CONTENT_REVISION'} else ('date_uncertain_todo_verify' if event == 'IDENTITY_UNCERTAIN' else 'cross_day_duplicate'))
             update['freshness_reason'] = event + '; prior promotions=' + ','.join(dates)
         result.append(record.model_copy(update=update))
     return result

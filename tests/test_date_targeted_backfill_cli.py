@@ -65,7 +65,7 @@ def test_date_targeted_run_filters_records_and_writes_exact_date(tmp_path: Path,
     config_dir = _write_config(tmp_path)
     inside = make_paper_record(
         title="Inside target date",
-        abstract="LWE lattice cryptography",
+        abstract="We study LWE lattice cryptography.",
         source="fake_source",
         source_url="https://example.test/inside",
         publication_date="2026-06-06",
@@ -74,7 +74,7 @@ def test_date_targeted_run_filters_records_and_writes_exact_date(tmp_path: Path,
     )
     outside = make_paper_record(
         title="Outside target date",
-        abstract="LWE lattice cryptography",
+        abstract="We study LWE lattice cryptography.",
         source="fake_source",
         source_url="https://example.test/outside",
         publication_date="2026-06-07",
@@ -108,7 +108,13 @@ def test_date_targeted_run_filters_records_and_writes_exact_date(tmp_path: Path,
     json_path = daily_data_path("2026-06-06", tmp_path / "data")
     markdown_path = daily_digest_path("2026-06-06", tmp_path / "digests")
     payload = json.loads(json_path.read_text(encoding="utf-8"))
-    assert [record["title"] for record in payload["records"]] == ["Inside target date"]
+    assert {record["title"] for record in payload["records"]} == {"Inside target date", "Outside target date"}
+    events = payload["publication_event_ledger"]["collections"]["primary_publication_events"]
+    assert len(events) == 1
+    assert payload["records"][events[0]["row_index"]]["title"] == "Inside target date"
+    outside_row = next(r for r in payload["records"] if r["title"] == "Outside target date")
+    assert outside_row["publication_event_type"] == "historical_library_observations"
+    assert "DATE_UNCERTAIN" in outside_row["publication_event_reason"]
     assert payload["metadata"]["target_date"] == "2026-06-06"
     assert payload["metadata"]["since_window"] == "24h"
     assert payload["metadata"]["coverage_start"] == "2026-06-05T16:00:00+00:00"

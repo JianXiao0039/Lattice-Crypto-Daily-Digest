@@ -32,9 +32,16 @@ def build_daily_payload(
 ) -> dict:
     from lattice_digest.evidence_contract import propagate_source_health
     records = propagate_source_health(records, source_health or [])
+    from lattice_digest.publication_events import attach_events, POLICY_VERSION as EVENT_POLICY
+    from lattice_digest.promotion_history import load_promotion_history
+    event_metadata={**(metadata or {}), 'target_date':digest_date.isoformat()}
+    prior = event_metadata.pop('_publication_prior', None)
+    if prior is None:
+        prior,_=load_promotion_history(output_dir,digest_date)
+    records=[enrich_record_for_daily_radar(record,digest_date) for record in records]
+    records,ledger=attach_events(records,event_metadata,prior)
     enriched_records = []
     for record in records:
-        record = enrich_record_for_daily_radar(record, digest_date)
         item = record_to_dict(record)
         intelligence = record_intelligence(record)
         item.update(
@@ -58,6 +65,12 @@ def build_daily_payload(
                 "report_buckets": assign_report_buckets(record),
             }
         )
+        # A retrieved paper is not automatically a research proposal.
+        item['research_hooks'] = []
+        item['advisor_questions'] = []
+        item['research_idea_status'] = 'NO_ACTIONABLE_RESEARCH_IDEA_FROM_CURRENT_EVIDENCE'
+        item['research_sections'] = [s for s in item['research_sections'] if s not in {'Idea Bank Candidates','Paper Plan Candidates'}]
+        item['report_buckets'] = [s for s in item['report_buckets'] if s not in {'Idea Bank Candidates','Paper Plan Candidates'}]
         enriched_records.append(item)
     payload_metadata = {
         "target_date": digest_date.isoformat(),
@@ -76,10 +89,19 @@ def build_daily_payload(
     payload_metadata["total_records"] = len(records)
     payload_metadata["source_health"] = source_health or []
     payload_metadata["warnings"] = warnings or []
+    payload_metadata.pop('_publication_prior',None)
+    payload_metadata['publication_policy_version']=EVENT_POLICY
+    payload_metadata['selection_counts']=ledger['counts']
     payload_metadata.update(derive_authority(enriched_records, source_health, source_configs=source_configs))
+    payload_metadata['selection_counts']=ledger['counts']
     payload_metadata.setdefault('semantic_qa', {'status': 'UNKNOWN'})
     payload_metadata.setdefault('structural_qa', {'status': 'NOT_RUN'})
     payload = {
+        "publication_event_ledger":ledger,
+        "publication_history_evidence":[{k:p.get(k) for k in (
+            'doi','arxiv_id','eprint_id','source_url','paper_id','source_urls','abstract','publication_timestamp',
+            'publication_date','update_timestamp','update_date','update_date_kind','publication_event_id',
+            'critical_verification_events')} for p in prior],
         "metadata": payload_metadata,
         "records": enriched_records,
         "source_health": source_health or [],
@@ -148,10 +170,11 @@ def _publish_daily_pair_locked(records, output_root, digest_date, filtered_count
         raise FileExistsError('canonical pair already exists; explicit force required')
     from lattice_digest.evidence_contract import propagate_source_health
     records = propagate_source_health(records, source_health or [])
-    payload = build_daily_payload(records, output_root / 'data', digest_date, source_health, warnings, since_window, metadata, source_configs=source_configs)
+    prior,_ = load_promotion_history((history_root or output_root) / 'data', digest_date)
+    payload = build_daily_payload(records, output_root / 'data', digest_date, source_health, warnings, since_window, {**(metadata or {}), '_publication_prior':prior}, source_configs=source_configs)
     generation = uuid4().hex
     payload['metadata']['generation_id'] = generation
-    md = generate_markdown(records, digest_date, filtered_count, source_health, warnings, since_window, payload['metadata'], source_configs=source_configs)
+    md = generate_markdown(records, digest_date, filtered_count, source_health, warnings, since_window, {**payload['metadata'], '_publication_payload':payload}, source_configs=source_configs)
     md += f'\n<!-- generation:{generation} -->\n'
     payload['metadata']['markdown_sha256'] = hashlib.sha256(md.encode('utf-8')).hexdigest()
     structural = isinstance(payload['records'], list) and md.startswith('# ') and payload['metadata']['target_date'] == digest_date.isoformat()
@@ -160,9 +183,15 @@ def _publish_daily_pair_locked(records, output_root, digest_date, filtered_count
     prior, history = load_promotion_history((history_root or output_root) / 'data', digest_date)
     cross_errors = []
     cross_details = []
+    # Never silently repair an explicitly forged primary flag supplied by a caller.
+    for index,record in enumerate(records):
+        event,_ = classify_event(record.model_dump(),prior)
+        if record.primary_today_new_eligible and event != 'NEW_DISTINCT_PAPER' and payload['records'][index].get('publication_event_type')!='primary_publication_events':
+            cross_errors.append('cross_day_false_primary')
+            cross_details.append({'issue_code':'cross_day_false_primary','record_index':index,'event':event})
     for index, row in enumerate(payload['records']):
         event, _ = classify_event(row, prior)
-        if row.get('primary_today_new_eligible') and event != 'NEW_DISTINCT_PAPER':
+        if row.get('primary_today_new_eligible') and event != 'NEW_DISTINCT_PAPER' and row.get('publication_event_type')!='primary_publication_events':
             cross_errors.append('cross_day_false_primary')
             cross_details.append({'issue_code': 'cross_day_false_primary', 'record_index': index, 'event': event})
     payload['metadata']['cross_day_qa'] = {'status': 'FAIL' if cross_errors else 'PASS', 'issues': cross_errors, 'history': history}
@@ -237,7 +266,7 @@ def write_sqlite(records: list[PaperRecord], db_path: Path) -> Path:
             )
             """
         )
-        conn.execute("DELETE FROM papers")
+        # Preserve the historical library; only upsert identities observed today.
         for record in records:
             keys = dedup_keys(record)
             paper_key = keys[0] if keys else record.source_url

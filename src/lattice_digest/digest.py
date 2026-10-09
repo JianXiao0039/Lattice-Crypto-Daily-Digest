@@ -1493,6 +1493,16 @@ def generate_markdown(
     *,
     source_configs: list[dict] | None = None,
 ) -> str:
+    from lattice_digest.publication_events import POLICY_VERSION as EVENT_POLICY
+    if metadata and metadata.get('publication_policy_version') == EVENT_POLICY:
+        from lattice_digest.scientific_daily import render_scientific_daily
+        payload = metadata.get('_publication_payload')
+        if payload is None:
+            from lattice_digest.storage import build_daily_payload
+            from lattice_digest.config import project_root
+            payload = build_daily_payload(records, project_root() / 'data', digest_date,
+                source_health, warnings, since_window, metadata, source_configs=source_configs)
+        return render_scientific_daily(payload)
     all_records = [record for record in records if record.relevance_label in {"A", "B", "C"}]
     from lattice_digest.authority import derive_authority
     decision = derive_authority(all_records, source_health, source_configs=source_configs)

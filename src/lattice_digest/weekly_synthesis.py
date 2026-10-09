@@ -1,5 +1,7 @@
 from __future__ import annotations
 
+from lattice_digest.publication_events import period_views, normalize_period_inputs, period_event_rows
+
 import argparse
 import json
 import re
@@ -199,7 +201,10 @@ def _research_sections(record: dict[str, Any]) -> list[str]:
 def _report_buckets(record: dict[str, Any]) -> list[str]:
     from lattice_digest.evidence_contract import bind_source_evidence
     paper=bind_source_evidence(_paper_record_from_dict(record))
-    return assign_report_buckets(paper) if paper.relevance_label!='D' else []
+    buckets=assign_report_buckets(paper) if paper.relevance_label!='D' else []
+    if record.get('publication_event_type'):
+        buckets=[b for b in buckets if b not in {IDEA_BANK_CANDIDATES,PAPER_PLAN_CANDIDATES}]
+    return buckets
 
 
 def _merge_record(base: dict[str, Any], incoming: dict[str, Any]) -> dict[str, Any]:
@@ -343,7 +348,7 @@ def _prepare_record(record: dict[str, Any], day: date) -> dict[str, Any]:
     item["research_sections"] = _research_sections(item)
     item["report_buckets"] = _report_buckets(item)
     item["dedup_key"] = dedup_key(item)
-    item['publication_events'] = [item['dedup_key']] if record.get('primary_today_new_eligible') is True else []
+    item['publication_events'] = [record['publication_event_id']] if record.get('publication_event_type') in {'primary_publication_events','revision_events','new_critical_verify_events'} else [item['dedup_key']] if record.get('primary_today_new_eligible') is True else []
     item[PRIVATE_WEEKLY_PREFIX + "occurrences"] = [
         {
             "date": day.isoformat(),
@@ -361,7 +366,8 @@ def _prepare_record(record: dict[str, Any], day: date) -> dict[str, Any]:
 def aggregate_records(daily_payloads: list[tuple[date, dict[str, Any]]]) -> list[dict[str, Any]]:
     by_key: dict[str, dict[str, Any]] = {}
     for day, payload in daily_payloads:
-        for record in _records(payload):
+        from lattice_digest.publication_events import period_event_rows
+        for record in period_event_rows(payload):
             item = _prepare_record(record, day)
             key = item["dedup_key"]
             by_key[key] = _merge_record(by_key[key], item) if key in by_key else item
@@ -628,7 +634,7 @@ def _reading_queue(
             phd = str(record.get("phd_application_relevance") or "").lower()
             if phd and not any(token in phd for token in ("low", "not directly", "none")):
                 queues["PhD/PI email candidate"].append(record)
-            if any(token in tags for token in ("module-sis", "chameleon", "ai4lc", "zk", "bkz", "g6k", "sparse lwe")):
+            if not record.get("publication_event_type") and any(token in tags for token in ("module-sis", "chameleon", "ai4lc", "zk", "bkz", "g6k", "sparse lwe")):
                 queues["project idea candidate"].append(record)
     for values in queues.values():
         values.sort(key=_backfill_sort_key)
@@ -711,10 +717,14 @@ def build_weekly_synthesis(
 ) -> dict[str, Any]:
     selected_days = _date_range(from_date, to_date)
     loaded_payloads, missing_days = load_daily_json(data_dir, selected_days)
+    loaded_payloads = normalize_period_inputs(loaded_payloads)
     records = aggregate_records(loaded_payloads)
     sections = _section_map(records)
     report_buckets = _report_bucket_map(records)
-    total_records = sum(len(_records(payload)) for _, payload in loaded_payloads)
+    event_occurrences = sum(len(period_event_rows(payload)) for _, payload in loaded_payloads)
+    event_views=period_views(loaded_payloads)
+    has_event_contract=any(p.get('publication_event_ledger') or p.get('_period_event_ledger') for _,p in loaded_payloads)
+    total_records = sum(event_views['counts'][k] for k in ('primary_publication_events','revision_events','new_critical_verify_events')) if has_event_contract else event_occurrences
     from lattice_digest.daily_inputs import summarize_daily_inputs
     input_quality = summarize_daily_inputs(loaded_payloads, missing_days)
     from lattice_digest.evidence_contract import classification_summary
@@ -723,6 +733,7 @@ def build_weekly_synthesis(
     generated = generated_at or datetime.now(timezone.utc)
     return {
         **classification,
+        "publication_event_views": period_views(loaded_payloads),
         "schema_version": 1,
         "week_id": _week_id(to_date),
         "from_date": from_date.isoformat(),
@@ -734,6 +745,9 @@ def build_weekly_synthesis(
             "loaded_days": [day.isoformat() for day, _ in loaded_payloads],
             "missing_days": missing_days,
             "total_records": total_records,
+            "total_event_occurrences":event_occurrences,
+            "record_population":"CANONICAL_PUBLICATION_EVENTS" if has_event_contract else "LEGACY_ARCHIVE_COMPATIBILITY",
+            "total_observations":sum(len(_records(p)) for _,p in loaded_payloads),
             "unique_records": len(records),
             "label_counts": dict(sorted(label_counts.items(), key=lambda item: LABEL_ORDER.get(item[0], 9))),
         },

@@ -57,4 +57,4 @@ def test_all_red_date_targeted_run_still_writes_source_health_artifact(tmp_path:
 
     markdown = markdown_path.read_text(encoding="utf-8")
     assert "broken_source" in markdown
-    assert "数据源健康与空报告处理" in markdown
+    assert "来源健康与覆盖限制" in markdown

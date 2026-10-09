@@ -1,0 +1,489 @@
+[
+  {
+    "source_record": {
+      "title": "Too Small to Hide: Single-Trace Key Recovery from ML-KEM Key Generation",
+      "abstract": "Key generation in ML-KEM (CRYSTALS-Kyber) samples a short secret from a centered binomial distribution (CBD) and immediately transforms it with the number-theoretic transform (NTT). Each execution draws fresh randomness, so an attacker obtains a single trace and cannot average. We show that one power trace of the optimized pqm4 implementation on an Arm Cortex-M4 suffices, and that the two operations leak complementary information. The CBD sampler stores each coefficient as a signed $16$-bit two's-complement word, which reveals its sign almost without error but too little about its magnitude to yield long error-free hint sets. The missing magnitude leaks in the subsequent NTT, where coefficients are multiplied by public twiddle factors. Used as hints in a primal lattice attack, the combined leakage reduces the estimated BKZ block size for ML-KEM-768 from $624$ to $129$, corresponding to $2^{182.2}$ and $2^{37.7}$ in the core-SVP model. A control experiment shows that the same NTT code leaks the Hamming weight of a near-uniform operand as strongly as that of the secret, yet reveals almost nothing about its value. What makes a coefficient vulnerable is how few values it can take, not how small it is. That points to a countermeasure inside the CBD sampler. Each sample $v$ is stored as a random representative $\\widetilde v = v + rq$ of its residue class, with $r$ nonzero, so the NTT and all later code run unchanged. This $q$-randomization drives the sign leakage to the noise floor, reduces the NTT magnitude leakage by $4.5\\times$, and raises the block size from $129$ back to $611$, about four bits of estimated security lost instead of more than $140$. The sampler grows by $937$ bytes of firmware.",
+      "source": "iacr_eprint",
+      "source_url": "https://eprint.iacr.org/2026/2137",
+      "arxiv_id": null,
+      "eprint_id": "2026/2137",
+      "publication_date": "2026-09-21",
+      "update_date": null
+    },
+    "provenance": {
+      "artifact_path": "data/2026/daily/2026-09-22.json",
+      "artifact_sha256": "12bae6196c00e8f9ca00a842560342439d3174853e66a339e8caad7a790264c9",
+      "kind": "frozen_source_fields_from_local_artifact"
+    },
+    "expected_qualified": true,
+    "review_reason": "Physical leakage of ML-KEM key generation; no extrapolation beyond source attack model.",
+    "review_status": "CODEX_SOURCE_REVIEW_NOT_HUMAN_GOLD",
+    "claim_verification": "NOT_PROOF_VERIFIED"
+  },
+  {
+    "source_record": {
+      "title": "A Provable Subexponential-Time Algorithm for LWE from \\(n+o(n)\\) Samples via Wagner-Style Gaussian Sampling",
+      "abstract": "We give a randomized subexponential-time algorithm for decision Learning with Errors (LWE) in two complementary parameter regimes. For polynomial prime modulus \\(q=n^{\\kappa+o(1)}\\) with any fixed \\(\\kappa>1/2\\), the algorithm handles independent discrete Gaussian errors drawn from \\(D_{\\mathbb Z,s_e}\\), with Gaussian parameter \\(s_e\\) satisfying \\(\\ln(2+s_e)=(\\ln n)^{a+o(1)}\\) for any fixed \\(0\\le a 0\\), can be handled with a quasipolynomial prime modulus \\(q=\\exp\\!\\left((\\ln n)^{1+\\eta+o(1)}\\right)\\) for any fixed \\(\\eta>0\\). In both regimes, for an arbitrary secret distribution, the algorithm succeeds with probability \\(1-o(1)\\) using \\(m=n+\\Theta(n/\\ln\\ln n)\\) original samples, with expected time and space \\(2^{\\Theta(n/\\ln\\ln n)}\\). Our starting point is the Wagner-style Gaussian sampler of Ducas, Engelberts, and Loyer (CRYPTO 2025). We instantiate its auxiliary extensions with random \\(P\\)-ary lattices whose improved smoothing bound supports the accuracy required for LWE without increasing the leading list size exponent. At the smaller Gaussian width enabled by this geometry, the basis-dependent condition of the exact sampler used in prior work is no longer available. We therefore use the statistically approximate shifted discrete Gaussian sampler of Aggarwal, Dadush, and Stephens-Davidowitz (FOCS 2015) and control its error for adaptively chosen shifts. Finally, a martingale analysis applies the Aharonov--Regev Fourier distinguisher (JACM 2005) directly to the dependent output, avoiding the loss incurred by comparison with an independent product distribution. Our analysis applies to unstructured LWE with independent uniform public vectors. In particular, it does not directly apply to ML-KEM, whose security is based on the Module-LWE problem: the algebraic dependencies arising from its module structure are not covered by our analysis.",
+      "source": "iacr_eprint",
+      "source_url": "https://eprint.iacr.org/2026/2261",
+      "arxiv_id": null,
+      "eprint_id": "2026/2261",
+      "publication_date": "2026-09-29",
+      "update_date": null
+    },
+    "provenance": {
+      "artifact_path": "data/2026/daily/2026-10-01.json",
+      "artifact_sha256": "34c69dbfc27fa3ad7ed1e0568279bdc7c8d3a9506b557482ad49e1befec370bd",
+      "kind": "frozen_source_fields_from_local_artifact"
+    },
+    "expected_qualified": true,
+    "review_reason": "Direct LWE algorithm; does not directly apply to ML-KEM.",
+    "review_status": "CODEX_SOURCE_REVIEW_NOT_HUMAN_GOLD",
+    "claim_verification": "NOT_PROOF_VERIFIED"
+  },
+  {
+    "source_record": {
+      "title": "Adelic reduction of module lattices",
+      "abstract": "We give a strict generalization of the LLL algorithm over number fields, based on the reduction theory of $\\mathrm{GL}(n)$ over the adele ring of a number field. Our algorithm is free of heuristics, with rigorous bounds on output quality and complexity. As a consequence, we obtain a hierarchy of reductions from module-(H)SVP to ideal-HSVP, an example of which has runtime and approximation factors subexponential in the field degree. More importantly, we uncover a close connection between structured lattice reduction and a Diophantine approximation over number fields.",
+      "source": "iacr_eprint",
+      "source_url": "https://eprint.iacr.org/2026/2228",
+      "arxiv_id": null,
+      "eprint_id": "2026/2228",
+      "publication_date": "2026-09-26",
+      "update_date": null
+    },
+    "provenance": {
+      "artifact_path": "data/2026/daily/2026-09-28.json",
+      "artifact_sha256": "0383fe261570d9aab839d3c56a2c0c9ef137ba043bea4d0878c3327fcfd06c80",
+      "kind": "frozen_source_fields_from_local_artifact"
+    },
+    "expected_qualified": true,
+    "review_reason": "Foundational structured reduction; no direct ML-KEM/Module-SIS attack.",
+    "review_status": "CODEX_SOURCE_REVIEW_NOT_HUMAN_GOLD",
+    "claim_verification": "NOT_PROOF_VERIFIED"
+  },
+  {
+    "source_record": {
+      "title": "Trapdoor Projective Sampling and Identity-Based Anonymous Broadcast",
+      "abstract": "In anonymous broadcast encryption, a ciphertext hides both the message and the set of recipients. In the general case, a lower bound of Kiayias and Samari forces the ciphertext to grow linearly with the number of recipients, a bound already met by the trivial per-recipient solution. The bounded universe is the setting where anonymous broadcast becomes concise, even asymptotically optimal and as efficient as the underlying public-key encryption. Far from a mere restriction, it is the building block for anamorphic communication against a dictator, where one must reach many (but boundedly many) recipients covertly, as put forth in the DPPY scheme at Eurocrypt '25. DPPY is, however, secret-key anamorphic encryption, where the broadcast layer itself must be hidden. Even a public-key variant does not suffice against a strong adversary, since a per-recipient public key lets a dictator ask for the matching secret key. This motivates hiding identities directly, with no recipient public key published, leading to identity-based anonymous broadcast in the bounded model, the focus of this paper. Technically, projective sampling (Ling, Phan, Stehlé and Steinfeld, LPSS, CRYPTO ’14), the tool underlying concise anonymous broadcast encryption, offers no key extraction: private keys cannot be produced from a projected key fixed in advance. We introduce trapdoor projective sampling that reverses the order of key generation in projective sampling: projected keys are fixed first as hashes of identities and compatible private keys are then preimage-sampled with a trapdoor. Adding a trapdoor is always a challenging objective, and we achieve it by showing that the LPSS projection space can be made far narrower - from m×(m−n) down to m×2n - without breaking the k-LWE security argument, and it is exactly at this width that the projection matrix can be generated with a trapdoor. We formalise the notion of trapdoor projective sampling with new security requirements, instantiate it from k-LWE, and obtain an identity-based anonymous broadcast whose ciphertext is as in LPSS, DPPY schemes. We also extend it to an unbounded identity universe under static corruption, with target sets kept bounded and adaptive.",
+      "source": "iacr_eprint",
+      "source_url": "https://eprint.iacr.org/2026/2334",
+      "arxiv_id": null,
+      "eprint_id": "2026/2334",
+      "publication_date": "2026-10-04",
+      "update_date": null
+    },
+    "provenance": {
+      "artifact_path": "data/2026/daily/2026-10-06.json",
+      "artifact_sha256": "082e2737f63b6c7dc00bee951576a0b20d9c1e8a5abe558ef7104b20ca82f8d9",
+      "kind": "frozen_source_fields_from_local_artifact"
+    },
+    "expected_qualified": true,
+    "review_reason": "Direct k-LWE/trapdoor construction.",
+    "review_status": "CODEX_SOURCE_REVIEW_NOT_HUMAN_GOLD",
+    "claim_verification": "NOT_PROOF_VERIFIED"
+  },
+  {
+    "source_record": {
+      "title": "The Hint Weight of ML-DSA Signatures Is Key-Dependent: An Empirical Study across the Three FIPS 204 Parameter Sets",
+      "abstract": "Every ML-DSA (FIPS 204) signature carries a public hint vector h. We find that the Hamming weight of each hint polynomial h_k depends on the signing key: to first order it measures the Euclidean norm of (t0)_k, the low-order part of t that key generation leaves out of the public key. A closed-form model predicts the per-key mean weight with Pearson r between 0.95 and 0.98; once the norm is accounted for, we detect no key-dependent signal above sampling noise. We measure the effect on the reference C implementation, with 200 keys and 2,000 signatures per key for each parameter set. A one-way ANOVA rejects key-independence of the total hint weight for ML-DSA-44, ML-DSA-65 and ML-DSA-87 (F = 30.1, 10.3, 11.1). The effect is weak: the key explains 0.5% to 1.5% of the variance of the total weight. A single signature identifies its key among 200 with 1.1 to 1.3 times chance accuracy from the total weight, and 1.5 to 1.8 times from the per-polynomial weight vector. A one-sided test at significance 0.001 separates two typical keys with probability one half after about 1,300 to 3,700 signatures per key. The hint weight does not endanger the signing key. The Dilithium designers do not treat t0 as secret, and t0 is known to be recoverable from signatures. The hint weight is, however, a weak statistical fingerprint: with enough signatures, it can be used to test whether they come from a common key, without the public key. Bounded-weight signing, a backward-compatible filter whose effect on the security argument we did not analyze, removes 86-91% of the between-key spread of the total weight but leaves the per-polynomial channel largely intact.",
+      "authors": [
+        "Dominik Blain"
+      ],
+      "source": "arxiv",
+      "source_url": "http://arxiv.org/abs/2610.10992v1",
+      "arxiv_id": "2610.10992",
+      "eprint_id": null,
+      "doi": null,
+      "publication_date": "2026-10-07",
+      "publication_timestamp": "2026-10-07T23:26:48Z",
+      "update_date": "2026-10-07",
+      "update_timestamp": "2026-10-07T23:26:48Z"
+    },
+    "provenance": {
+      "artifact": "D:\\Code\\CodexProjects\\lattice-digest-p0-evidence-20261009\\2026-10-09.json",
+      "sha256": "82411048d25433a941acc931d736029105f828f0fbef7a005c6d3b6efe3c7739"
+    },
+    "expected_qualified": true,
+    "review_reason": "Statistical key fingerprint; source explicitly says signing key is not endangered.",
+    "review_status": "CODEX_SOURCE_REVIEW_NOT_HUMAN_GOLD",
+    "claim_verification": "NOT_PROOF_VERIFIED"
+  },
+  {
+    "source_record": {
+      "title": "Revisiting Lattice-based Blind Signatures Again",
+      "abstract": "We show an attack on a lattice-based blind signature proposed in Crypto'20. Formally it is a linear hash function based framework with a lattice-based instantiation. We first notice a bug in their security proof of blindness, which is overlooked these years. Then, we develop an attack under the honest key and the honest-but-curious signer setting against the blindness notion of the schemes by exploiting the coorelations between the leaves of the tree. We also discuss how to repair the scheme.",
+      "authors": [
+        "Yi-Fu Lai",
+        "Yu Yu"
+      ],
+      "source": "iacr_eprint",
+      "source_url": "https://eprint.iacr.org/2026/2402",
+      "arxiv_id": null,
+      "eprint_id": "2026/2402",
+      "doi": null,
+      "publication_date": "2026-10-07",
+      "publication_timestamp": "Wed, 07 Oct 2026 18:13:27 +0000",
+      "update_date": null,
+      "update_timestamp": null
+    },
+    "provenance": {
+      "artifact": "D:\\Code\\CodexProjects\\lattice-digest-p0-evidence-20261009\\2026-10-09.json",
+      "sha256": "82411048d25433a941acc931d736029105f828f0fbef7a005c6d3b6efe3c7739"
+    },
+    "expected_qualified": true,
+    "review_reason": "Source attacks blindness, not generic signing-key recovery.",
+    "review_status": "CODEX_SOURCE_REVIEW_NOT_HUMAN_GOLD",
+    "claim_verification": "NOT_PROOF_VERIFIED"
+  },
+  {
+    "source_record": {
+      "title": "Accelerating HQC for Post-Quantum TLS 1.3 on x86 IoT Gateways",
+      "abstract": "Post-quantum TLS at an IoT gateway must protect many device connections without large increases in handshake delay, CPU cost, or network traffic. HQC provides code-based diversity beyond ML-KEM, but its computation and ciphertext sizes can increase these costs. We optimize HQC for x86 processors with AVX2, AVX-512, and the Galois Field New Instructions (GFNI), and integrate the resulting implementations into TLS 1.3. We extend branch-free Toom-Cook/Karatsuba multiplication to AVX-512, accelerate Reed-Solomon decoding with GFNI, improve Reed-Muller decoding, accelerate SHA3-512 and fixed-weight sampling, and port Frobenius additive FFT (FAFFT) multiplication to AVX-512 + GFNI for HQC-5. On an Intel Core i5-1135G7 processor, our AVX2 implementation reduces decapsulation by 11.1-21.5% over the fastest prior AVX2 results. Our AVX-512 implementation reduces key generation by 24.9-29.5%, encapsulation by 10.4-11.1%, and decapsulation by 20.6-26.1% relative to Cabral et al. across the three HQC parameter sets. We evaluate the effects of these implementations on TLS 1.3 handshake latency and server and client CPU costs, as well as the effects of round-trip time (RTT) and bandwidth. In local loopback TLS measurements, our AVX-512 HQC-5 implementation reduces handshake latency from 3.22 ms to 2.92 ms compared with Cabral et al. On a constrained path with 1 Mbit/s bandwidth and an added RTT of 50 ms, the HQC-5 handshake takes 243 ms, compared with 87 ms for ML-KEM-1024. This indicates that HQC public-key and ciphertext sizes, rather than implementation speed, determine the remaining handshake cost on constrained links.",
+      "authors": [
+        "Jihoon Jang",
+        "Hyunju Park",
+        "Jebin Kim",
+        "Seokhie Hong",
+        "Suhri Kim"
+      ],
+      "source": "arxiv",
+      "source_url": "http://arxiv.org/abs/2610.11107v1",
+      "arxiv_id": "2610.11107",
+      "eprint_id": null,
+      "doi": null,
+      "publication_date": "2026-10-08",
+      "publication_timestamp": "2026-10-08T02:27:37Z",
+      "update_date": "2026-10-08",
+      "update_timestamp": "2026-10-08T02:27:37Z"
+    },
+    "provenance": {
+      "artifact": "D:\\Code\\CodexProjects\\lattice-digest-p0-evidence-20261009\\2026-10-09.json",
+      "sha256": "82411048d25433a941acc931d736029105f828f0fbef7a005c6d3b6efe3c7739"
+    },
+    "expected_qualified": false,
+    "review_reason": "HQC is the target; ML-KEM is comparison baseline.",
+    "review_status": "CODEX_SOURCE_REVIEW_NOT_HUMAN_GOLD",
+    "claim_verification": "NOT_PROOF_VERIFIED"
+  },
+  {
+    "source_record": {
+      "title": "Quantum Sieving for Code-Based Cryptanalysis and Its Limitations for ISD",
+      "abstract": "Sieving using near-neighbor search techniques is a well-known method in lattice-based cryptanalysis, yielding the current best runtime for the shortest vector problem in both the classical [BDGL16] and quantum [BCSS23] setting. Recently, sieving has also become an important tool in code-based cryptanalysis. Specifically, using a sieving subroutine, [GJN23, DEEK24] presented a variant of the information-set decoding (ISD) framework, which is commonly used for attacking cryptographically relevant instances of the decoding problem. The resulting sieving-based ISD framework yields complexities close to the best-performing classical algorithms for the decoding problem such as [BJMM12, BM18]. It is therefore natural to ask how well quantum versions perform. In this work, we introduce the first quantum algorithms for code sieving by designing quantum variants of the aforementioned sieving subroutine. In particular, using quantum-walk techniques, we provide a speed-up over the best known classical algorithm from [DEEK24] and over a variant using Grover's algorithm [Gro96]. Our quantum-walk algorithm exploits the structure of the underlying search problem by adding a layer of locality-sensitive filtering, inspired by the quantum-walk algorithm for lattice sieving from [CL21]. We complement our asymptotic analysis of the quantum algorithms with numerical results, and observe that our quantum speed-ups for code sieving behave similarly as those observed in lattice sieving. In addition, we show that a natural quantum analog of the sieving-based ISD framework does not provide any speed-up over the first presented quantum ISD algorithm [Ber10]. Our analysis highlights that the framework should be adapted in order to outperform the state-of-the-art of quantum ISD algorithms [KT17, Kir18].",
+      "authors": [
+        "Lynn Engelberts",
+        "Simona Etinski",
+        "Johanna Loyer"
+      ],
+      "source": "arxiv",
+      "source_url": "http://arxiv.org/abs/2408.16458v2",
+      "arxiv_id": "2408.16458",
+      "eprint_id": null,
+      "doi": null,
+      "publication_date": "2024-08-29",
+      "publication_timestamp": "2024-08-29T11:47:33Z",
+      "update_date": "2024-12-24",
+      "update_timestamp": "2024-12-24T12:20:51Z"
+    },
+    "provenance": {
+      "artifact": "D:\\Code\\CodexProjects\\lattice-digest-p0-evidence-20261009\\2026-10-09.json",
+      "sha256": "82411048d25433a941acc931d736029105f828f0fbef7a005c6d3b6efe3c7739"
+    },
+    "expected_qualified": false,
+    "review_reason": "Quantum code sieving/ISD is the contribution; lattice sieving is inspiration.",
+    "review_status": "CODEX_SOURCE_REVIEW_NOT_HUMAN_GOLD",
+    "claim_verification": "NOT_PROOF_VERIFIED"
+  },
+  {
+    "source_record": {
+      "title": "The Hidden Subgroup Problem for Universal Algebras",
+      "abstract": "The Hidden Subgroup Problem (HSP) is a computational problem which includes as special cases integer factorization, the discrete logarithm problem, graph isomorphism, and the shortest vector problem. The celebrated polynomial-time quantum algorithms for factorization and the discrete logarithm are restricted versions of a generic polynomial-time quantum solution to the HSP for abelian groups, but despite focused research no polynomial-time solution for general groups has yet been found. We propose a generalization of the HSP to include arbitrary algebraic structures and analyze this new problem on powers of 2-element algebras. We prove a complete classification of every such power as quantum tractable (i.e. polynomial-time), classically tractable, quantum intractable, or classically intractable. In particular, we identify a class of algebras for which the generalized HSP exhibits super-polynomial speedup on a quantum computer compared to a classical one.",
+      "authors": [
+        "Matthew Moore",
+        "Taylor Walenczyk"
+      ],
+      "source": "arxiv, openalex",
+      "source_url": "http://arxiv.org/abs/2001.11298v2",
+      "arxiv_id": "2001.11298",
+      "eprint_id": null,
+      "doi": "10.1145/3373718.3394764",
+      "publication_date": "2020-01-30",
+      "publication_timestamp": "2020-01-30T13:09:35Z",
+      "update_date": "2020-05-01",
+      "update_timestamp": "2020-05-01T20:14:21Z"
+    },
+    "provenance": {
+      "artifact": "D:\\Code\\CodexProjects\\lattice-digest-p0-evidence-20261009\\2026-10-09.json",
+      "sha256": "82411048d25433a941acc931d736029105f828f0fbef7a005c6d3b6efe3c7739"
+    },
+    "expected_qualified": false,
+    "review_reason": "Generic SVP reference; no independent lattice theorem established.",
+    "review_status": "CODEX_SOURCE_REVIEW_NOT_HUMAN_GOLD",
+    "claim_verification": "NOT_PROOF_VERIFIED"
+  },
+  {
+    "source_record": {
+      "title": "DP-Guided Schedule Selection for $\\mathbb{F}_2[x]$ Multiplication across ISAs",
+      "abstract": "Efficient multiplication over $\\mathbb{F}_2[x]$ is a core primitive in classical and post-quantum cryptographic software. As ARM and RISC-V become increasingly relevant for open-source cryptographic libraries such as OpenSSL and liboqs, arithmetic kernels must be retuned across a wider range of Instruction Set Architectures (ISAs). High-performance arithmetic libraries recursively apply Karatsuba- and Toom-style decomposition rules, each splitting the operands into smaller subproblems and recombining the resulting products. The resulting decomposition schedule is the recursive tree of rule choices from the top-level multiplication down to the base kernels. However, hand-tuned schedules can miss better decompositions at large operand sizes, while ISA-specific primitive costs complicate cross-platform retuning. In this paper, we formulate recursive $\\mathbb{F}_2[x]$ multiplication as a schedule-selection problem. The recursive rule space has optimal substructure, allowing dynamic programming (DP) over a compact ISA profile that accounts for base multiplication, XORs, memory traffic, and recursive overhead. The resulting schedules are materialized as dispatch tables or fixed-size kernels. Across x86-64, ARM64, RISC-V64, and RP2040, DP costs track runtime trends across input sizes, and the full rule set achieves $1.04$–$1.18\\times$ geomean speedup over gf2x. HQC and BIKE integrations on the three 64-bit platforms yield $1.06$–$1.21\\times$ and $1.01$–$1.70\\times$ end-to-end speedups, respectively, against their platform baselines. We also evaluate Classic McEliece on these platforms. With prepared profiles, HQC/BIKE schedule selection takes 0.075–0.762 seconds, avoiding candidate compilation and benchmarking during search. The scheme provides a systematic alternative to hand tuning and measurement-driven per-size empirical search, reducing the effort required to port and retune carry-less multiplication kernels.",
+      "authors": [
+        "Junyu Zhou",
+        "Xiao Lan",
+        "Jing Wang",
+        "Hao Ren",
+        "Weiran Liu",
+        "Si Gao"
+      ],
+      "source": "iacr_eprint",
+      "source_url": "https://eprint.iacr.org/2026/2371",
+      "arxiv_id": null,
+      "eprint_id": "2026/2371",
+      "doi": null,
+      "publication_date": "2026-10-06",
+      "publication_timestamp": "Tue, 06 Oct 2026 04:33:46 +0000",
+      "update_date": null,
+      "update_timestamp": null
+    },
+    "provenance": {
+      "artifact": "D:\\Code\\CodexProjects\\lattice-digest-p0-evidence-20261009\\2026-10-09.json",
+      "sha256": "82411048d25433a941acc931d736029105f828f0fbef7a005c6d3b6efe3c7739"
+    },
+    "expected_qualified": false,
+    "review_reason": "GF2 polynomial arithmetic for HQC/BIKE/McEliece; no lattice-specific contribution.",
+    "review_status": "CODEX_SOURCE_REVIEW_NOT_HUMAN_GOLD",
+    "claim_verification": "NOT_PROOF_VERIFIED"
+  },
+  {
+    "source_record": {
+      "title": "New algorithms for quaternion ideals in SQIsign",
+      "abstract": "Many isogeny-based schemes rely on the Deuring correspondance and thus require computations with quaternion ideals. In this paper, we generalize the recent results of Leroux on the inert representation of quaternion ideals, yielding a normalized representation together with a set of simple and efficient algorithms for quaternion ideals in the context of the Deuring correspondence when the prime characteristic $p$ is equal to $3 \\bmod 4$. One of the main benefit of our new algorithms is that the size of the integers involved in the computations is both easy to bound, and smaller than previous work. In particular, when applied to the latest version of SQIsign, our algorithms yield a concrete integer bound of $O(p^4)$ in the worst case, proven under an experimentally verified assumption on the size of the integers required to perform the lattice reduction part of the response sampling. This bound improves upon all known previous bound by a factor at least $O(p^2)$. Our new algorithms are used in the latest update of SQIsign's implementation submitted to the third round of the NIST call for additional post-quantum signatures. In particular, their low integer bounds facilitated the removal of a dependency on the GMP library in favor of a custom library of fixed-size integers without performance overhead. We stress that our algorithms are not limited to SQIsign, but apply to any isogeny-based cryptographic protocol that relies on the Deuring correspondence such as the PRISM signature scheme for instance.",
+      "source": "iacr_eprint",
+      "source_url": "https://eprint.iacr.org/2026/2153",
+      "arxiv_id": null,
+      "eprint_id": "2026/2153",
+      "publication_date": "2026-09-22",
+      "update_date": null
+    },
+    "provenance": {
+      "artifact_path": "data/2026/daily/2026-09-23.json",
+      "artifact_sha256": "09e9a13b33971e46d3b71628b2e127a990ee978ae68711b604a597f4cd7e8834",
+      "kind": "frozen_source_fields_from_local_artifact"
+    },
+    "expected_qualified": false,
+    "review_reason": "Isogeny/quaternion construction; lattice reduction is a subroutine.",
+    "review_status": "CODEX_SOURCE_REVIEW_NOT_HUMAN_GOLD",
+    "claim_verification": "NOT_PROOF_VERIFIED"
+  },
+  {
+    "source_record": {
+      "title": "Cryptanalysis of LDVR: Polynomial-Time Adaptive Attacks against Threshold Schnorr Signatures",
+      "abstract": "We present the first polynomial-time attacks against certain parameter choices of the low-dimensional vector representation (LDVR) problem, introduced by Crites, Katz, Komlo, Tessaro, and Zhu (CRYPTO '25) to prove the adaptive security of FROST in the Algebraic Group Model. Building on work by Crites and Stewart (CRYPTO '25), they also show that every attack against LDVR directly yields an adaptive attack—i.e., one leveraging adaptive corruptions—against any threshold Schnorr signature that exposes to the attacker the values $g^{\\mathrm{sk}_i}$ for the secret-key shares $\\mathrm{sk}_i$ held by the signers, where $g$ is a generator of the underlying group. This class of protocols includes FROST (Komlo and Goldberg, SAC '20), Sparkle (Crites, Komlo, and Maller, CRYPTO '23), Lindell's three-round protocol (CiC '24), along with other masking-free protocols. Consequently, our results give the first polynomial-time adaptive attacks against a class of practical threshold signatures. Our attacks require a large, but still polynomial, number of signers: asymptotically, we require $n = \\Theta(\\log^2 p)$ signers and corrupt $t_c = \\Theta(\\log p)$ of them. For the prime-order subgroup of Curve25519, concrete and optimized instantiations of our attack require $n=5020$ signers and corrupt $204$ of them. This exceeds the signer counts commonly encountered in practice, but falls within the scenarios considered by NIST's call for threshold signatures. At the theoretical level, our results also yield a non-artificial separation between static and adaptive security based on a real-world multi-party protocol. Our results arise from a new reduction from LDVR to structured subset-sum problems determined by the evaluation points of the polynomial used to secret-share the signing key. We further show that allowing these evaluation points to be chosen adversarially can lead to substantially more efficient attacks.",
+      "source": "iacr_eprint",
+      "source_url": "https://eprint.iacr.org/2026/2126",
+      "arxiv_id": null,
+      "eprint_id": "2026/2126",
+      "publication_date": "2026-09-20",
+      "update_date": null
+    },
+    "provenance": {
+      "artifact_path": "data/2026/daily/2026-09-22.json",
+      "artifact_sha256": "12bae6196c00e8f9ca00a842560342439d3174853e66a339e8caad7a790264c9",
+      "kind": "frozen_source_fields_from_local_artifact"
+    },
+    "expected_qualified": false,
+    "review_reason": "Threshold Schnorr/LDVR; no qualifying lattice target.",
+    "review_status": "CODEX_SOURCE_REVIEW_NOT_HUMAN_GOLD",
+    "claim_verification": "NOT_PROOF_VERIFIED"
+  },
+  {
+    "source_record": {
+      "title": "HPQ-AKE: A Provably Secure Sign-Less Hybrid Authenticated Key Exchange Protocol for Bandwidth-Constrained IoT and Edge Networks",
+      "abstract": "Securing bandwidth-constrained Internet of Things (IoT) and edge networks during post-quantum migration creates an authentication trade-off: ML-KEM provides post-quantum key establishment, whereas post-quantum signatures increase certificate-chain size, verification cost, and handshake latency. We present HPQ-AKE, a sign-less hybrid authenticated key exchange for RSA-enabled IoT gateways and edge/cloud services that replaces transcript signatures with dual KEMs. HPQ-AKE combines ML-KEM-768 for post-quantum session secrecy and forward secrecy with RSA-OAEP for implicit mutual authentication, preserving existing RSA-enabled infrastructure during migration. We analyze HPQ-AKE in an extended Bellare-Rogaway model, separating classical authentication in the Random Oracle Model from session-key secrecy in the Quantum Random Oracle Model. Under the Module-LWE and RSA assumptions, it establishes AKE security, forward secrecy, and conditional KCI resistance under the long-term-key-only exposure assumptions. Evaluation combines x86 micro-benchmarking, analytical latency modeling, and 10,000-iteration Monte Carlo simulation. HPQ-AKE reduces modeled handshake transmission from 13,009 to 5,668 Bytes, a 56.4% reduction relative to a Hybrid TLS 1.3 Full handshake, while requiring 7.11 ms of total local computation on the measured x86 testbed. Under a simulated 50 kbps satellite-like link with 600 ms RTT and stochastic jitter, median latency is 1,914 ms, 31.4% below the 2,791 ms baseline. At 20 ms RTT, modeled break-even thresholds are 0.31 Mbps against the pre-cached baseline and 4.08 Mbps against the full baseline; both decrease as RTT increases. These x86-based results motivate evaluation on gateway-class IoT and edge platforms; performance on ARM gateways and unaccelerated microcontrollers remains unvalidated.",
+      "authors": [
+        "Khiem Pham-Tuan",
+        "Minh Quang Le",
+        "Khuong Nguyen-An"
+      ],
+      "source": "arxiv",
+      "source_url": "http://arxiv.org/abs/2610.12024v1",
+      "arxiv_id": "2610.12024",
+      "eprint_id": null,
+      "doi": null,
+      "publication_date": "2026-10-08",
+      "publication_timestamp": "2026-10-08T14:21:41Z",
+      "update_date": "2026-10-08",
+      "update_timestamp": "2026-10-08T14:21:41Z"
+    },
+    "provenance": {
+      "artifact": "D:\\Code\\CodexProjects\\lattice-digest-p0-evidence-20261009\\2026-10-09.json",
+      "sha256": "82411048d25433a941acc931d736029105f828f0fbef7a005c6d3b6efe3c7739"
+    },
+    "expected_qualified": false,
+    "review_reason": "Hybrid AKE with ML-KEM component and Module-LWE assumption; no lattice-specific technical novelty established.",
+    "review_status": "CODEX_SOURCE_REVIEW_NOT_HUMAN_GOLD",
+    "claim_verification": "NOT_PROOF_VERIFIED"
+  },
+  {
+    "source_record": {
+      "title": "On the Instantiability of the Fujisaki–Okamoto Transform for Trapdoor Functions",
+      "abstract": "The Fujisaki--Okamoto (FO) transform (Journal of Cryptology, 2013) is the standard route from weakly secure public-key encryption to chosen-ciphertext security, and it underlies many practical post-quantum key-encapsulation schemes, including ML-KEM. Security proofs for FO are set in the (quantum) random oracle models. FO uses two hash functions: the derandomization hash~$H$, which turns the base scheme into a deterministic trapdoor function (TDF) by Encrypt-with-Hash, and the key-derivation hash~$G$. We ask whether it is possible to instantiate the hash functions in the FO transform while retaining its security guarantees. While prior work mainly focused on the $H$ step, our focus is the $G$ step, and we take an underlying injective TDF as given. We first show that the message-only implicit-rejection variant \\smash{$\\UmIR$}, a key-encapsulation mechanism formulation of FO that follows ML-KEM's choices of rejection and key derivation, is \\emph{uninstantiable} in general. Namely, assuming standard LWE and subexponentially secure indistinguishability obfuscation and puncturable PRFs, for every efficient hash function family~$G$ with superlogarithmic output length there is a one-way, perfectly correct injective trapdoor function for which the resulting KEM is not IND-CCA2 secure. We next give sufficient conditions on~$G$ to instantiate the TDF-based \\emph{hybrid-encryption} formulation of FO, rather than the KEM version. To this end, we introduce \\emph{distributional injective extractability} (\\DINJEXT{}), a new hash function property defined relative to a partially injective ``wrapping function.'' Under this assumption relative to the FO-derived wrapping function, combined with an achievable form of universal computational extractor security (Bellare, Hoang, and Keelveedhi, CRYPTO 2013) on $G$ and suitable assumptions on the base schemes, we obtain standard-model IND-CCA2 security. As evidence that \\DINJEXT{} is achievable, we show that a random oracle satisfies it for every partially injective wrapping function, and that a quantum random oracle satisfies a formulation of it for the FO wrapping function, in both cases even relative to an oblivious sampling oracle. We leave a standard-model construction open.",
+      "source": "iacr_eprint",
+      "source_url": "https://eprint.iacr.org/2026/2365",
+      "arxiv_id": null,
+      "eprint_id": "2026/2365",
+      "doi": null,
+      "publication_date": "2026-10-05"
+    },
+    "expected_qualified": false,
+    "review_status": "CODEX_SOURCE_REVIEW_NOT_HUMAN_GOLD",
+    "provenance": {
+      "artifact_path": "D:\\Code\\CodexProjects\\lattice-digest-p0-evidence-20261009\\2026-10-07.json",
+      "artifact_sha256": "c40e704118f9c26ca62ff01fbad67b2d3bc4ced20cbd302726af52dcfa71509a"
+    },
+    "source_review_reason": "Primary object is general TDF/FO instantiability. LWE is an assumption of the counterexample and ML-KEM rejection/key-derivation choices motivate the generic variant; no scheme-specific lattice contribution is established by this abstract.",
+    "proof_verification_status": "NOT_VERIFIED"
+  },
+  {
+    "source_record": {
+      "title": "Algorithms on Ideal over Complex Multiplication order",
+      "abstract": "We show in this paper that the Gentry-Szydlo algorithm for cyclotomic orders, previously revisited by Lenstra-Silverberg, can be extended to complex-multiplication (CM) orders, and even to a more general structure. This algorithm allows to test equality over the polarized ideal class group, and finds a generator of the polarized ideal in polynomial time. Also, the algorithm allows to solve the norm equation over CM orders and the recent reduction of principal ideals to the real suborder can also be performed in polynomial time. Furthermore, we can also compute in polynomial time a unit of an order of any number field given a (not very precise) approximation of it. Our description of the Gentry-Szydlo algorithm is different from the original and Lenstra- Silverberg's variant and we hope the simplifications made will allow a deeper understanding. Finally, we show that the well-known speed-up for enumeration and sieve algorithms for ideal lattices over power of two cyclotomics can be generalized to any number field with many roots of unity.",
+      "source": "arxiv",
+      "source_url": "http://arxiv.org/abs/1602.09037v1"
+    },
+    "expected_qualified": true,
+    "review_status": "CODEX_SOURCE_REVIEW_NOT_HUMAN_GOLD",
+    "source_review_reason": "Original abstract explicitly generalizes ideal-lattice enumeration/sieve speedups to number fields: foundational lattice algorithms, not a claimed LWE attack.",
+    "provenance": {
+      "artifact_path": "D:\\Code\\CodexProjects\\lattice-digest-p0-candidate-20261009\\tests\\fixtures\\recent_paper_benchmark_v2.json",
+      "source_abstract_sha256": "27f8dfae1eb3b91b9922ab9e87d76e8986f87f161d27eb659c0dbb0033f26748"
+    },
+    "proof_verification_status": "NOT_VERIFIED"
+  },
+  {
+    "source_record": {
+      "title": "Random Ensembles of Lattices from Generalized Reductions",
+      "abstract": "We propose a general framework to study constructions of Euclidean lattices from linear codes over finite fields. In particular, we prove general conditions for an ensemble constructed using linear codes to contain dense lattices (i.e., with packing density comparable to the Minkowski-Hlawka lower bound). Specializing to number field lattices, we obtain a number of interesting corollaries - for instance, the best known packing density of ideal lattices, and an elementary coding-theoretic construction of asymptotically dense Hurwitz lattices. All results are algorithmically effective, in the sense that, for any dimension, a finite family containing dense lattices is exhibited. For suitable constructions based on Craig's lattices, this family is significantly smaller, in terms of alphabet-size, than previous ones in the literature.",
+      "source": "arxiv",
+      "source_url": "http://arxiv.org/abs/1702.00608v3"
+    },
+    "expected_qualified": true,
+    "review_status": "CODEX_SOURCE_REVIEW_NOT_HUMAN_GOLD",
+    "source_review_reason": "Original abstract constructs Euclidean/number-field lattices with effective dense-lattice ensembles: foundational lattice theory, not a cryptanalytic break.",
+    "provenance": {
+      "artifact_path": "D:\\Code\\CodexProjects\\lattice-digest-p0-candidate-20261009\\tests\\fixtures\\recent_paper_benchmark_v2.json",
+      "source_abstract_sha256": "cf97fc78e85972a68d32c60ccdd03c8fafbca157616f158c0cdeaadef6ccad7a"
+    },
+    "proof_verification_status": "NOT_VERIFIED"
+  },
+  {
+    "source_record": {
+      "title": "BioZKFHE: Scalable Encrypted Biometric Identification via Verifiable Homomorphic Similarity Evaluation",
+      "abstract": "Large-scale biometric identification in outsourced settings requires two properties simultaneously: biometric templates and queries must remain protected during computation, and the encrypted similarity outputs produced by an untrusted compute node must be verifiably correct before any application result is released. Existing FHE-based biometric systems primarily address confidentiality, while practical verifiability introduces two bottlenecks in the underlying encrypted 1:N matching layer: rotation- and bandwidth-heavy similarity evaluation and the high cost of proving repeated homomorphic similarity traces. We present BioZKFHE, a framework for scalable encrypted biometric identification via verifiable homomorphic similarity evaluation that combines BGV homomorphic computation with committee-mediated proof opening/decryption and smart-contract verification of opened proof batches. To reduce encrypted storage and avoid rotation-heavy encrypted 1:N matching, we propose Single-Coefficient Multi-Value (SCMV) packing, which binds multiple quantized embedding values into each plaintext entry through base-T expansion. To make proof generation practical, we propose Parallelizable and Verifiable Similarity Computation (PVSC), which exploits the Double-CRT execution structure of BGV to decompose each blockwise similarity trace into parallel proof instances that are opened and checked before result release. Under standard lattice assumptions and explicit committee/verifier assumptions, we analyze recoverability, noise growth, confidentiality, encrypted-output integrity, and finalized-result integrity. Experiments on FaceNet and MobileFaceNet show near-lossless biometric utility, up to 67 percent encrypted-storage reduction, and about 22 to 44 seconds end-to-end proof-verified runtime for 10k to 40k templates.",
+      "source": "arxiv",
+      "source_url": "http://arxiv.org/abs/2607.22065v1"
+    },
+    "expected_qualified": true,
+    "review_status": "CODEX_SOURCE_REVIEW_NOT_HUMAN_GOLD",
+    "source_review_reason": "Original abstract contributes BGV Double-CRT packing/proof execution and analyzes noise growth: lattice FHE engineering, security proof remains unverified.",
+    "provenance": {
+      "artifact_path": "D:\\Code\\CodexProjects\\lattice-digest-p0-candidate-20261009\\tests\\fixtures\\recent_paper_benchmark_v2.json",
+      "source_abstract_sha256": "04f4fdc52a2052d055a9519ed06c4c9037612970fe75cd36ca04a67cf6e7eac8"
+    },
+    "proof_verification_status": "NOT_VERIFIED"
+  },
+  {
+    "source_record": {
+      "title": "HexaMorphHash HMH- Homomorphic Hashing for Secure and Efficient Cryptographic Operations in Data Integrity Verification",
+      "abstract": "In the realm of big data and cloud computing, distributed systems are tasked with proficiently managing, storing, and validating extensive datasets across numerous nodes, all while maintaining robust data integrity. Conventional hashing methods, though straightforward, encounter substan tial difficulties in dynamic settings due to the necessity for thorough rehashing when nodes are altered. Consistent hashing mitigates some of these challenges by reducing data redistribution; however, it still contends with limitations in load balancing and scalability under intensive update conditions. This paper introduces an innovative approach using a lattice based homomorphic hash function HexaMorphHash that facilitates constant time, incremental updates while preserving a constant digest size. By utilizing the complexity of the Short Integer Solutions SIS problem, our method secures strong protective measures, even against quantum threats. We further com pare our method with existing ones such as direct signatures for each update, comprehensive database signing, Merkle tree based techniques, AdHash, MuHash, ECMH, and homomorphic sig nature schemes highlighting notable advancements in computational efficiency, memory usage, and scalability. Our contributions present a viable solution for frequent update dissemination in expansive distributed systems, safeguarding both data integrity and system performance.",
+      "source": "arxiv",
+      "source_url": "http://arxiv.org/abs/2507.21096v1"
+    },
+    "expected_qualified": true,
+    "review_status": "CODEX_SOURCE_REVIEW_NOT_HUMAN_GOLD",
+    "source_review_reason": "Original abstract explicitly constructs a lattice-based homomorphic hash from SIS; correctness/security claims require independent review.",
+    "provenance": {
+      "artifact_path": "D:\\Code\\CodexProjects\\lattice-digest-p0-candidate-20261009\\tests\\fixtures\\recent_paper_benchmark_v2.json",
+      "source_abstract_sha256": "31d58046a88a4c10b00e1bcc90ae2f6932d7d68535f7819d395707837abc9ef0"
+    },
+    "proof_verification_status": "NOT_VERIFIED"
+  },
+  {
+    "source_record": {
+      "title": "Lattice-based public key encryption with equality test supporting flexible authorization in standard model",
+      "abstract": "Public key encryption with equality test (PKEET) supports to check whether two ciphertexts encrypted under different public keys contain the same message or not. PKEET has many interesting applications such as keyword search on encrypted data, encrypted data partitioning for efficient encrypted data management, personal health record systems, spam filtering in encrypted email systems and so on. However, the PKEET scheme lacks an authorization mechanism for a user to control the comparison of its ciphertexts with others. In 2015, Ma et al. introduce the notion of PKEET with flexible authorization (PKEET-FA) which strengthens privacy protection. Since 2015, there are several follow-up works on PKEET-FA. But, all are secure in the random-oracle model. Moreover, all are vulnerable to quantum attacks. In this paper, we provide three constructions of quantum-safe PKEET-FA secure in the standard model. Proposed constructions are secure based on the hardness assumptions of integer lattices and ideal lattices. Finally, we implement the PKEET-FA scheme over ideal lattices.",
+      "source": "arxiv",
+      "source_url": "http://arxiv.org/abs/2005.05308v1"
+    },
+    "expected_qualified": true,
+    "review_status": "CODEX_SOURCE_REVIEW_NOT_HUMAN_GOLD",
+    "source_review_reason": "Original title and abstract explicitly construct lattice PKEET from integer/ideal lattice hardness and implement it over ideal lattices; proofs unverified.",
+    "provenance": {
+      "artifact_path": "D:\\Code\\CodexProjects\\lattice-digest-p0-candidate-20261009\\tests\\fixtures\\recent_paper_benchmark_v2.json",
+      "source_abstract_sha256": "823e9b279eee6129c5026b173e68063d8010142409fbf2ed762a52d25e1c8bf8"
+    },
+    "proof_verification_status": "NOT_VERIFIED"
+  },
+  {
+    "source_record": {
+      "title": "Rotating anisotropic Bose gas with large number of vortices",
+      "abstract": "Rapidly rotating atomic gases provide a platform for studying phenomena akin to type-II superconductors and quantum Hall systems. Recently, these systems have attracted renewed interest due to technological advances in the trap anisotropy control, in-situ observation capabilities, and cooling and rotating complex atomic species such as dipolar gases. Understanding the vortex lattice formation and quantum melting is crucial for exploring quantum Hall physics in these systems. In this paper, we theoretically investigate the vortex lattices in anisotropic quantum gases. We formulate the rotating gas Hamiltonian in the Landau gauge, and consider the effects of additional perturbations such as the trap potential in the lowest Landau level (LLL). Focusing on the gases with short-range interactions, we obtain the many-body Hamiltonian projected to lowest Landau level. We consider the limit of full Bose-Einstein condensation and obtain the governing Gross-Pitaevskii equation to identify the possible vortex phases. We numerically solve the Gross-Pitaevskii equation using the imaginary time evolution, and demonstrate the possible vortex lattices as a function of anisotropy, rotation speed and interaction strength. We show that the number of states with a support in the LLL, which determines the number of vortices, follows a Thomas-Fermi type scaling albeit with slightly different coefficients from the usual condensates.",
+      "source": "arxiv",
+      "source_url": "http://arxiv.org/abs/2503.21982v1"
+    },
+    "expected_qualified": false,
+    "review_status": "CODEX_SOURCE_REVIEW_NOT_HUMAN_GOLD",
+    "source_review_reason": "Original source concerns Landau-level/Bose/Chern/ferroic physics or atomic imaging; no cryptographic or Euclidean-lattice algorithm object. LLL/ideal-lattice mention does not qualify.",
+    "provenance": {
+      "artifact_path": "D:\\Code\\CodexProjects\\lattice-digest-p0-candidate-20261009\\tests\\fixtures\\recent_paper_benchmark_v2.json",
+      "source_abstract_sha256": "e11aaf9ef09b4e676bab6c9cb29442e45ab8cb174009e6e51e24ac26c95cf67e"
+    },
+    "proof_verification_status": "NOT_VERIFIED"
+  },
+  {
+    "source_record": {
+      "title": "Characterization of fractional Chern insulator quasiparticles in twisted homobilayer MoTe$_2$",
+      "abstract": "We provide a detailed study of Abelian quasiparticles of valley polarized fractional Chern insulators (FCIs) residing in the top valence band of twisted bilayer MoTe$_2$ (tMoTe$_2$) at hole filling $ν_h=2/3$. We construct a tight-binding model of delocalized quasiparticles to capture the energy dispersion of a single quasiparticle. We then localize quasiparticles by short-range delta impurity potentials. Unlike the fractional quantum Hall (FQH) counterpart in the lowest Landau level (LLL), the density profile around the localized FCI quasiparticle in tMoTe$_2$ depends on the location of the impurity potential and loses the continuous rotation invariance. The FCI quasiparticle localized at moiré lattice center closely follows the anyon Wannier state of the tight-binding model of the mobile quasiparticle. Despite of the difference in density profiles, we find that the excess charge around the impurity potential for the $ν_h=2/3$ FCIs in tMoTe$_2$ is still similar to that of the $ν=2/3$ FQH state in the LLL if an effective magnetic length on the moiré lattice is chosen as the length unit, which allows a rough estimation of the spatial extent of the FCI quasiparticle. Far away from the impurity potential, this excess charge has the tendency to reach $e/3$, as expected for the Laughlin quasiparticle. The braiding phase of two FCI quasiparticles in tMoTe$_2$ also agrees with the theoretical prediction of fractional statistics. We characterize the interaction between two FCI quasiparticles and find a crossover from repulsive to attractive interaction as gate-to-sample distances decreases. Based on the nearly ideal quantum geometry of the top valence band of tMoTe$_2$, we propose a trial wave function for localized FCI quasiparticles, which reproduces the key feature of the density profile around a quasiparticle.",
+      "source": "arxiv",
+      "source_url": "http://arxiv.org/abs/2507.04056v3"
+    },
+    "expected_qualified": false,
+    "review_status": "CODEX_SOURCE_REVIEW_NOT_HUMAN_GOLD",
+    "source_review_reason": "Original source concerns Landau-level/Bose/Chern/ferroic physics or atomic imaging; no cryptographic or Euclidean-lattice algorithm object. LLL/ideal-lattice mention does not qualify.",
+    "provenance": {
+      "artifact_path": "D:\\Code\\CodexProjects\\lattice-digest-p0-candidate-20261009\\tests\\fixtures\\recent_paper_benchmark_v2.json",
+      "source_abstract_sha256": "da6d319eef64f6c36bbc5cf11b7b101a86c14dd76b5f962caead1baa5ca099ef"
+    },
+    "proof_verification_status": "NOT_VERIFIED"
+  },
+  {
+    "source_record": {
+      "title": "Vortex patterns of a two-dimensional Bose-Einstein condensate at the almost critical rotation speed",
+      "abstract": "We study vortex patterns of a two-dimensional Bose-Einstein condensate rotating close to the centrifugal limit, treating the two signs of the contact interaction with the method each requires: for repulsion, a GPU-accelerated variational minimization with exact projection onto the Lowest Landau Level (LLL); for attraction, imaginary-time evolution of the full real-space Gross-Pitaevskii (GP) equation. For repulsive interactions, our approach reproduces Abrikosov vortex lattices, achieving quantitative alignment with Thomas-Fermi theory and recovering the Abrikosov constant $e^{\\rm Ab}(1)\\approx1.1596$, in close analogy with the vortex ordering of type-II superconductors. In the attractive regime, the rotating ground state carries no vortex lattice at any rotation frequency: the cloud contracts and collapses as $G\\to -G_*$, where $G_*=\\|Q\\|_{L^2}^2\\simeq11.70$, essentially independently of rotation. The only stationary vortex states we find are giant vortices, trapped vortex (Townes) solitons whose charge-$m$ sector collapses as $G\\to -\\|Q_m\\|_{L^2}^2$ ($\\|Q_m\\|_{L^2}^2\\simeq11.70,\\,48.3,\\,89.8,\\,132.4$ for $m=0,1,2,3$), fixed by an equivariant Gagliardo-Nirenberg inequality and confirmed numerically up to the critical region. These findings provide a numerical benchmark for vortex formation and collapse in rotating two-dimensional quantum gases.",
+      "source": "arxiv",
+      "source_url": "http://arxiv.org/abs/2511.13212v2"
+    },
+    "expected_qualified": false,
+    "review_status": "CODEX_SOURCE_REVIEW_NOT_HUMAN_GOLD",
+    "source_review_reason": "Original source concerns Landau-level/Bose/Chern/ferroic physics or atomic imaging; no cryptographic or Euclidean-lattice algorithm object. LLL/ideal-lattice mention does not qualify.",
+    "provenance": {
+      "artifact_path": "D:\\Code\\CodexProjects\\lattice-digest-p0-candidate-20261009\\tests\\fixtures\\recent_paper_benchmark_v2.json",
+      "source_abstract_sha256": "b2e15a5ae3ca4edee307b7da11a896b873c8727570b4087e694cc9faf95f50b6"
+    },
+    "proof_verification_status": "NOT_VERIFIED"
+  },
+  {
+    "source_record": {
+      "title": "Unsupervised learning of ferroic variants from atomically resolved STEM images",
+      "abstract": "An approach for the analysis of atomically resolved scanning transmission electron microscopy data with multiple ferroic variants in the presence of imaging non-idealities and chemical variabilities based on a rotationally invariant variational autoencoder (rVAE) is presented. We show that an optimal local descriptor for the analysis is a sub-image centered at specific atomic units, since materials and microscope distortions preclude the use of an ideal lattice as a reference point. The applicability of unsupervised clustering and dimensionality reduction methods is explored and are shown to produce clusters dominated by chemical and microscope effects, with a large number of classes required to establish the presence of rotational variants. Comparatively, the rVAE allows extraction of the angle corresponding to the orientation of ferroic variants explicitly, enabling straightforward identification of the ferroic variants as regions with constant or smoothly changing latent variables and sharp orientational changes. This approach allows further exploration of the chemical variability by separating the rotational degrees of freedom via rVAE and searching for remaining variability in the system. The code used in the manuscript is available at https://github.com/saimani5/ferroelectric_domains_rVAE.",
+      "source": "arxiv",
+      "source_url": "http://arxiv.org/abs/2101.06892v2"
+    },
+    "expected_qualified": false,
+    "review_status": "CODEX_SOURCE_REVIEW_NOT_HUMAN_GOLD",
+    "source_review_reason": "Original source concerns Landau-level/Bose/Chern/ferroic physics or atomic imaging; no cryptographic or Euclidean-lattice algorithm object. LLL/ideal-lattice mention does not qualify.",
+    "provenance": {
+      "artifact_path": "D:\\Code\\CodexProjects\\lattice-digest-p0-candidate-20261009\\tests\\fixtures\\recent_paper_benchmark_v2.json",
+      "source_abstract_sha256": "b1c5d4779760eb6031e7f9fdfa38fe444b6a00832eed593c324a7287ec8cd454"
+    },
+    "proof_verification_status": "NOT_VERIFIED"
+  }
+]

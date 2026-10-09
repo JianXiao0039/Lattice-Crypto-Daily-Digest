@@ -1,0 +1,1217 @@
+[
+  {
+    "day": "2026-10-07",
+    "canonical_identity": "doi:10.1007/s00446-026-00519-w",
+    "title": "Scalable distributed agreement from LWE: Byzantine agreement, broadcast, and leader election",
+    "source_url": "https://doi.org/10.1007/s00446-026-00519-w",
+    "reason": "DATE_UNCERTAIN: future/absent authoritative event date; TODO_VERIFY",
+    "publication_date": "2026-12",
+    "publication_timestamp": null,
+    "publication_date_kind": "AUTHORITATIVE_PUBLICATION_DATE",
+    "preprint_first_posted_at": null,
+    "source_version_timestamp": null,
+    "proceedings_year": null,
+    "publisher_online_date": null,
+    "metadata_indexed_date": null,
+    "first_seen_at": null,
+    "update_timestamp": null,
+    "update_date": null,
+    "date_evidence": [
+      {
+        "source": "crossref",
+        "source_url": "https://doi.org/10.1007/s00446-026-00519-w",
+        "field": "publication_date",
+        "value": "2026-12",
+        "semantics": "AUTHORITATIVE_PUBLICATION_DATE"
+      }
+    ]
+  },
+  {
+    "day": "2026-10-07",
+    "canonical_identity": "doi:10.1007/s13389-026-00401-2",
+    "title": "Two-limb CRT Ring-LWE encryption with exact decryption and public re-randomization",
+    "source_url": "https://doi.org/10.1007/s13389-026-00401-2",
+    "reason": "DATE_UNCERTAIN: future/absent authoritative event date; TODO_VERIFY",
+    "publication_date": "2026-9",
+    "publication_timestamp": null,
+    "publication_date_kind": "AUTHORITATIVE_PUBLICATION_DATE",
+    "preprint_first_posted_at": null,
+    "source_version_timestamp": null,
+    "proceedings_year": null,
+    "publisher_online_date": null,
+    "metadata_indexed_date": null,
+    "first_seen_at": null,
+    "update_timestamp": null,
+    "update_date": null,
+    "date_evidence": [
+      {
+        "source": "crossref",
+        "source_url": "https://doi.org/10.1007/s13389-026-00401-2",
+        "field": "publication_date",
+        "value": "2026-9",
+        "semantics": "AUTHORITATIVE_PUBLICATION_DATE"
+      }
+    ]
+  },
+  {
+    "day": "2026-10-07",
+    "canonical_identity": "doi:10.1007/s10470-026-02661-8",
+    "title": "A compact design of R-LWE crypto processor using customizable parallel polynomial multiplication on FPGA",
+    "source_url": "https://doi.org/10.1007/s10470-026-02661-8",
+    "reason": "DATE_UNCERTAIN: future/absent authoritative event date; TODO_VERIFY",
+    "publication_date": "2026-10",
+    "publication_timestamp": null,
+    "publication_date_kind": "AUTHORITATIVE_PUBLICATION_DATE",
+    "preprint_first_posted_at": null,
+    "source_version_timestamp": null,
+    "proceedings_year": null,
+    "publisher_online_date": null,
+    "metadata_indexed_date": null,
+    "first_seen_at": null,
+    "update_timestamp": null,
+    "update_date": null,
+    "date_evidence": [
+      {
+        "source": "crossref",
+        "source_url": "https://doi.org/10.1007/s10470-026-02661-8",
+        "field": "publication_date",
+        "value": "2026-10",
+        "semantics": "AUTHORITATIVE_PUBLICATION_DATE"
+      }
+    ]
+  },
+  {
+    "day": "2026-10-07",
+    "canonical_identity": "doi:10.1016/j.sysarc.2026.104025",
+    "title": "A two-round password-based dynamic authenticated group key agreement protocol based on LWE",
+    "source_url": "https://doi.org/10.1016/j.sysarc.2026.104025",
+    "reason": "DATE_UNCERTAIN: future/absent authoritative event date; TODO_VERIFY",
+    "publication_date": "2026-12",
+    "publication_timestamp": null,
+    "publication_date_kind": "AUTHORITATIVE_PUBLICATION_DATE",
+    "preprint_first_posted_at": null,
+    "source_version_timestamp": null,
+    "proceedings_year": null,
+    "publisher_online_date": null,
+    "metadata_indexed_date": null,
+    "first_seen_at": null,
+    "update_timestamp": null,
+    "update_date": null,
+    "date_evidence": [
+      {
+        "source": "crossref",
+        "source_url": "https://doi.org/10.1016/j.sysarc.2026.104025",
+        "field": "publication_date",
+        "value": "2026-12",
+        "semantics": "AUTHORITATIVE_PUBLICATION_DATE"
+      }
+    ]
+  },
+  {
+    "day": "2026-10-07",
+    "canonical_identity": "doi:10.1109/icbase70763.2026.11619442",
+    "title": "Decentralized Biometric Authentication with Privacy-Preserving LWE Encryption",
+    "source_url": "https://doi.org/10.1109/icbase70763.2026.11619442",
+    "reason": "DATE_UNCERTAIN: future/absent authoritative event date; TODO_VERIFY",
+    "publication_date": "2026-6",
+    "publication_timestamp": null,
+    "publication_date_kind": "AUTHORITATIVE_PUBLICATION_DATE",
+    "preprint_first_posted_at": null,
+    "source_version_timestamp": null,
+    "proceedings_year": null,
+    "publisher_online_date": null,
+    "metadata_indexed_date": null,
+    "first_seen_at": null,
+    "update_timestamp": null,
+    "update_date": null,
+    "date_evidence": [
+      {
+        "source": "crossref",
+        "source_url": "https://doi.org/10.1109/icbase70763.2026.11619442",
+        "field": "publication_date",
+        "value": "2026-6",
+        "semantics": "AUTHORITATIVE_PUBLICATION_DATE"
+      }
+    ]
+  },
+  {
+    "day": "2026-10-07",
+    "canonical_identity": "doi:10.1109/isit62367.2026.11653664",
+    "title": "Towards Ciphertext-Efficient LWE: Learning With Sampling over Sublattices",
+    "source_url": "https://doi.org/10.1109/isit62367.2026.11653664",
+    "reason": "DATE_UNCERTAIN: future/absent authoritative event date; TODO_VERIFY",
+    "publication_date": "2026-6",
+    "publication_timestamp": null,
+    "publication_date_kind": "AUTHORITATIVE_PUBLICATION_DATE",
+    "preprint_first_posted_at": null,
+    "source_version_timestamp": null,
+    "proceedings_year": null,
+    "publisher_online_date": null,
+    "metadata_indexed_date": null,
+    "first_seen_at": null,
+    "update_timestamp": null,
+    "update_date": null,
+    "date_evidence": [
+      {
+        "source": "crossref",
+        "source_url": "https://doi.org/10.1109/isit62367.2026.11653664",
+        "field": "publication_date",
+        "value": "2026-6",
+        "semantics": "AUTHORITATIVE_PUBLICATION_DATE"
+      }
+    ]
+  },
+  {
+    "day": "2026-10-07",
+    "canonical_identity": "doi:10.1016/j.bcra.2026.100525",
+    "title": "Anonymous multi-hop off-chain payment scheme based on Ring-LWE",
+    "source_url": "https://doi.org/10.1016/j.bcra.2026.100525",
+    "reason": "DATE_UNCERTAIN: future/absent authoritative event date; TODO_VERIFY",
+    "publication_date": "2026-7",
+    "publication_timestamp": null,
+    "publication_date_kind": "AUTHORITATIVE_PUBLICATION_DATE",
+    "preprint_first_posted_at": null,
+    "source_version_timestamp": null,
+    "proceedings_year": null,
+    "publisher_online_date": null,
+    "metadata_indexed_date": null,
+    "first_seen_at": null,
+    "update_timestamp": null,
+    "update_date": null,
+    "date_evidence": [
+      {
+        "source": "crossref",
+        "source_url": "https://doi.org/10.1016/j.bcra.2026.100525",
+        "field": "publication_date",
+        "value": "2026-7",
+        "semantics": "AUTHORITATIVE_PUBLICATION_DATE"
+      }
+    ]
+  },
+  {
+    "day": "2026-10-07",
+    "canonical_identity": "doi:10.1109/icicit69063.2026.11634017",
+    "title": "LACE-IoT: Lightweight Post-Quantum Security via Session Amortization using Ring-LWE and QC-LDPC Hybrid Encryption",
+    "source_url": "https://doi.org/10.1109/icicit69063.2026.11634017",
+    "reason": "DATE_UNCERTAIN: future/absent authoritative event date; TODO_VERIFY",
+    "publication_date": "2026-7",
+    "publication_timestamp": null,
+    "publication_date_kind": "AUTHORITATIVE_PUBLICATION_DATE",
+    "preprint_first_posted_at": null,
+    "source_version_timestamp": null,
+    "proceedings_year": null,
+    "publisher_online_date": null,
+    "metadata_indexed_date": null,
+    "first_seen_at": null,
+    "update_timestamp": null,
+    "update_date": null,
+    "date_evidence": [
+      {
+        "source": "crossref",
+        "source_url": "https://doi.org/10.1109/icicit69063.2026.11634017",
+        "field": "publication_date",
+        "value": "2026-7",
+        "semantics": "AUTHORITATIVE_PUBLICATION_DATE"
+      }
+    ]
+  },
+  {
+    "day": "2026-10-07",
+    "canonical_identity": "doi:10.1109/cisat71030.2026.11682250",
+    "title": "Tighter Security Proof for IBE from MP-LWE Assumption in the Random Oracle Model",
+    "source_url": "https://doi.org/10.1109/cisat71030.2026.11682250",
+    "reason": "DATE_UNCERTAIN: future/absent authoritative event date; TODO_VERIFY",
+    "publication_date": "2026-7",
+    "publication_timestamp": null,
+    "publication_date_kind": "AUTHORITATIVE_PUBLICATION_DATE",
+    "preprint_first_posted_at": null,
+    "source_version_timestamp": null,
+    "proceedings_year": null,
+    "publisher_online_date": null,
+    "metadata_indexed_date": null,
+    "first_seen_at": null,
+    "update_timestamp": null,
+    "update_date": null,
+    "date_evidence": [
+      {
+        "source": "crossref",
+        "source_url": "https://doi.org/10.1109/cisat71030.2026.11682250",
+        "field": "publication_date",
+        "value": "2026-7",
+        "semantics": "AUTHORITATIVE_PUBLICATION_DATE"
+      }
+    ]
+  },
+  {
+    "day": "2026-10-07",
+    "canonical_identity": "doi:10.1016/j.ins.2026.123478",
+    "title": "A post-quantum hierarchical and adaptive LWE-based secret image sharing scheme with verifiable reconstruction",
+    "source_url": "https://doi.org/10.1016/j.ins.2026.123478",
+    "reason": "DATE_UNCERTAIN: future/absent authoritative event date; TODO_VERIFY",
+    "publication_date": "2026-8",
+    "publication_timestamp": null,
+    "publication_date_kind": "AUTHORITATIVE_PUBLICATION_DATE",
+    "preprint_first_posted_at": null,
+    "source_version_timestamp": null,
+    "proceedings_year": null,
+    "publisher_online_date": null,
+    "metadata_indexed_date": null,
+    "first_seen_at": null,
+    "update_timestamp": null,
+    "update_date": null,
+    "date_evidence": [
+      {
+        "source": "crossref",
+        "source_url": "https://doi.org/10.1016/j.ins.2026.123478",
+        "field": "publication_date",
+        "value": "2026-8",
+        "semantics": "AUTHORITATIVE_PUBLICATION_DATE"
+      }
+    ]
+  },
+  {
+    "day": "2026-10-07",
+    "canonical_identity": "doi:10.1007/978-3-032-36264-3_11",
+    "title": "(Fine-Grained) Unbounded Inner-Product Functional Encryption from LWE",
+    "source_url": "https://doi.org/10.1007/978-3-032-36264-3_11",
+    "reason": "DATE_UNCERTAIN: future/absent authoritative event date; TODO_VERIFY",
+    "publication_date": "2027",
+    "publication_timestamp": null,
+    "publication_date_kind": "AUTHORITATIVE_PUBLICATION_DATE",
+    "preprint_first_posted_at": null,
+    "source_version_timestamp": null,
+    "proceedings_year": null,
+    "publisher_online_date": null,
+    "metadata_indexed_date": null,
+    "first_seen_at": null,
+    "update_timestamp": null,
+    "update_date": null,
+    "date_evidence": [
+      {
+        "source": "crossref",
+        "source_url": "https://doi.org/10.1007/978-3-032-36264-3_11",
+        "field": "publication_date",
+        "value": "2027",
+        "semantics": "AUTHORITATIVE_PUBLICATION_DATE"
+      }
+    ]
+  },
+  {
+    "day": "2026-10-07",
+    "canonical_identity": "doi:10.1007/978-3-032-29430-2_6",
+    "title": "Additively Homomorphic Encryption with Key Rotation for Federated Learning from Module-LWE",
+    "source_url": "https://doi.org/10.1007/978-3-032-29430-2_6",
+    "reason": "DATE_UNCERTAIN: future/absent authoritative event date; TODO_VERIFY",
+    "publication_date": "2027",
+    "publication_timestamp": null,
+    "publication_date_kind": "AUTHORITATIVE_PUBLICATION_DATE",
+    "preprint_first_posted_at": null,
+    "source_version_timestamp": null,
+    "proceedings_year": null,
+    "publisher_online_date": null,
+    "metadata_indexed_date": null,
+    "first_seen_at": null,
+    "update_timestamp": null,
+    "update_date": null,
+    "date_evidence": [
+      {
+        "source": "crossref",
+        "source_url": "https://doi.org/10.1007/978-3-032-29430-2_6",
+        "field": "publication_date",
+        "value": "2027",
+        "semantics": "AUTHORITATIVE_PUBLICATION_DATE"
+      }
+    ]
+  },
+  {
+    "day": "2026-10-07",
+    "canonical_identity": "doi:10.1007/978-3-032-32764-2_23",
+    "title": "Decompressing LWE: Unlocking Field-Like Operations via Polynomial Matrices",
+    "source_url": "https://doi.org/10.1007/978-3-032-32764-2_23",
+    "reason": "DATE_UNCERTAIN: future/absent authoritative event date; TODO_VERIFY",
+    "publication_date": "2027",
+    "publication_timestamp": null,
+    "publication_date_kind": "AUTHORITATIVE_PUBLICATION_DATE",
+    "preprint_first_posted_at": null,
+    "source_version_timestamp": null,
+    "proceedings_year": null,
+    "publisher_online_date": null,
+    "metadata_indexed_date": null,
+    "first_seen_at": null,
+    "update_timestamp": null,
+    "update_date": null,
+    "date_evidence": [
+      {
+        "source": "crossref",
+        "source_url": "https://doi.org/10.1007/978-3-032-32764-2_23",
+        "field": "publication_date",
+        "value": "2027",
+        "semantics": "AUTHORITATIVE_PUBLICATION_DATE"
+      }
+    ]
+  },
+  {
+    "day": "2026-10-07",
+    "canonical_identity": "doi:10.1007/978-981-95-9514-3_13",
+    "title": "Security Analysis of LWE/RLWE-Based Diffie-Hellman-Like Post-quantum Authenticated Key Exchange Protocols in the eCK Model",
+    "source_url": "https://doi.org/10.1007/978-981-95-9514-3_13",
+    "reason": "DATE_UNCERTAIN: future/absent authoritative event date; TODO_VERIFY",
+    "publication_date": "2027",
+    "publication_timestamp": null,
+    "publication_date_kind": "AUTHORITATIVE_PUBLICATION_DATE",
+    "preprint_first_posted_at": null,
+    "source_version_timestamp": null,
+    "proceedings_year": null,
+    "publisher_online_date": null,
+    "metadata_indexed_date": null,
+    "first_seen_at": null,
+    "update_timestamp": null,
+    "update_date": null,
+    "date_evidence": [
+      {
+        "source": "crossref",
+        "source_url": "https://doi.org/10.1007/978-981-95-9514-3_13",
+        "field": "publication_date",
+        "value": "2027",
+        "semantics": "AUTHORITATIVE_PUBLICATION_DATE"
+      }
+    ]
+  },
+  {
+    "day": "2026-10-07",
+    "canonical_identity": "doi:10.1007/978-3-032-32560-0_3",
+    "title": "Towards More Efficient Registration-Based Encryption from LWE",
+    "source_url": "https://doi.org/10.1007/978-3-032-32560-0_3",
+    "reason": "DATE_UNCERTAIN: future/absent authoritative event date; TODO_VERIFY",
+    "publication_date": "2027",
+    "publication_timestamp": null,
+    "publication_date_kind": "AUTHORITATIVE_PUBLICATION_DATE",
+    "preprint_first_posted_at": null,
+    "source_version_timestamp": null,
+    "proceedings_year": null,
+    "publisher_online_date": null,
+    "metadata_indexed_date": null,
+    "first_seen_at": null,
+    "update_timestamp": null,
+    "update_date": null,
+    "date_evidence": [
+      {
+        "source": "crossref",
+        "source_url": "https://doi.org/10.1007/978-3-032-32560-0_3",
+        "field": "publication_date",
+        "value": "2027",
+        "semantics": "AUTHORITATIVE_PUBLICATION_DATE"
+      }
+    ]
+  },
+  {
+    "day": "2026-10-08",
+    "canonical_identity": "doi:10.1007/s00446-026-00519-w",
+    "title": "Scalable distributed agreement from LWE: Byzantine agreement, broadcast, and leader election",
+    "source_url": "https://doi.org/10.1007/s00446-026-00519-w",
+    "reason": "DATE_UNCERTAIN: future/absent authoritative event date; TODO_VERIFY",
+    "publication_date": "2026-12",
+    "publication_timestamp": null,
+    "publication_date_kind": "AUTHORITATIVE_PUBLICATION_DATE",
+    "preprint_first_posted_at": null,
+    "source_version_timestamp": null,
+    "proceedings_year": null,
+    "publisher_online_date": null,
+    "metadata_indexed_date": null,
+    "first_seen_at": null,
+    "update_timestamp": null,
+    "update_date": null,
+    "date_evidence": [
+      {
+        "source": "crossref",
+        "source_url": "https://doi.org/10.1007/s00446-026-00519-w",
+        "field": "publication_date",
+        "value": "2026-12",
+        "semantics": "AUTHORITATIVE_PUBLICATION_DATE"
+      }
+    ]
+  },
+  {
+    "day": "2026-10-08",
+    "canonical_identity": "doi:10.1007/s13389-026-00401-2",
+    "title": "Two-limb CRT Ring-LWE encryption with exact decryption and public re-randomization",
+    "source_url": "https://doi.org/10.1007/s13389-026-00401-2",
+    "reason": "DATE_UNCERTAIN: future/absent authoritative event date; TODO_VERIFY",
+    "publication_date": "2026-9",
+    "publication_timestamp": null,
+    "publication_date_kind": "AUTHORITATIVE_PUBLICATION_DATE",
+    "preprint_first_posted_at": null,
+    "source_version_timestamp": null,
+    "proceedings_year": null,
+    "publisher_online_date": null,
+    "metadata_indexed_date": null,
+    "first_seen_at": null,
+    "update_timestamp": null,
+    "update_date": null,
+    "date_evidence": [
+      {
+        "source": "crossref",
+        "source_url": "https://doi.org/10.1007/s13389-026-00401-2",
+        "field": "publication_date",
+        "value": "2026-9",
+        "semantics": "AUTHORITATIVE_PUBLICATION_DATE"
+      }
+    ]
+  },
+  {
+    "day": "2026-10-08",
+    "canonical_identity": "doi:10.1007/s10470-026-02661-8",
+    "title": "A compact design of R-LWE crypto processor using customizable parallel polynomial multiplication on FPGA",
+    "source_url": "https://doi.org/10.1007/s10470-026-02661-8",
+    "reason": "DATE_UNCERTAIN: future/absent authoritative event date; TODO_VERIFY",
+    "publication_date": "2026-10",
+    "publication_timestamp": null,
+    "publication_date_kind": "AUTHORITATIVE_PUBLICATION_DATE",
+    "preprint_first_posted_at": null,
+    "source_version_timestamp": null,
+    "proceedings_year": null,
+    "publisher_online_date": null,
+    "metadata_indexed_date": null,
+    "first_seen_at": null,
+    "update_timestamp": null,
+    "update_date": null,
+    "date_evidence": [
+      {
+        "source": "crossref",
+        "source_url": "https://doi.org/10.1007/s10470-026-02661-8",
+        "field": "publication_date",
+        "value": "2026-10",
+        "semantics": "AUTHORITATIVE_PUBLICATION_DATE"
+      }
+    ]
+  },
+  {
+    "day": "2026-10-08",
+    "canonical_identity": "doi:10.1016/j.sysarc.2026.104025",
+    "title": "A two-round password-based dynamic authenticated group key agreement protocol based on LWE",
+    "source_url": "https://doi.org/10.1016/j.sysarc.2026.104025",
+    "reason": "DATE_UNCERTAIN: future/absent authoritative event date; TODO_VERIFY",
+    "publication_date": "2026-12",
+    "publication_timestamp": null,
+    "publication_date_kind": "AUTHORITATIVE_PUBLICATION_DATE",
+    "preprint_first_posted_at": null,
+    "source_version_timestamp": null,
+    "proceedings_year": null,
+    "publisher_online_date": null,
+    "metadata_indexed_date": null,
+    "first_seen_at": null,
+    "update_timestamp": null,
+    "update_date": null,
+    "date_evidence": [
+      {
+        "source": "crossref",
+        "source_url": "https://doi.org/10.1016/j.sysarc.2026.104025",
+        "field": "publication_date",
+        "value": "2026-12",
+        "semantics": "AUTHORITATIVE_PUBLICATION_DATE"
+      }
+    ]
+  },
+  {
+    "day": "2026-10-08",
+    "canonical_identity": "doi:10.1109/icbase70763.2026.11619442",
+    "title": "Decentralized Biometric Authentication with Privacy-Preserving LWE Encryption",
+    "source_url": "https://doi.org/10.1109/icbase70763.2026.11619442",
+    "reason": "DATE_UNCERTAIN: future/absent authoritative event date; TODO_VERIFY",
+    "publication_date": "2026-6",
+    "publication_timestamp": null,
+    "publication_date_kind": "AUTHORITATIVE_PUBLICATION_DATE",
+    "preprint_first_posted_at": null,
+    "source_version_timestamp": null,
+    "proceedings_year": null,
+    "publisher_online_date": null,
+    "metadata_indexed_date": null,
+    "first_seen_at": null,
+    "update_timestamp": null,
+    "update_date": null,
+    "date_evidence": [
+      {
+        "source": "crossref",
+        "source_url": "https://doi.org/10.1109/icbase70763.2026.11619442",
+        "field": "publication_date",
+        "value": "2026-6",
+        "semantics": "AUTHORITATIVE_PUBLICATION_DATE"
+      }
+    ]
+  },
+  {
+    "day": "2026-10-08",
+    "canonical_identity": "doi:10.1109/isit62367.2026.11653664",
+    "title": "Towards Ciphertext-Efficient LWE: Learning With Sampling over Sublattices",
+    "source_url": "https://doi.org/10.1109/isit62367.2026.11653664",
+    "reason": "DATE_UNCERTAIN: future/absent authoritative event date; TODO_VERIFY",
+    "publication_date": "2026-6",
+    "publication_timestamp": null,
+    "publication_date_kind": "AUTHORITATIVE_PUBLICATION_DATE",
+    "preprint_first_posted_at": null,
+    "source_version_timestamp": null,
+    "proceedings_year": null,
+    "publisher_online_date": null,
+    "metadata_indexed_date": null,
+    "first_seen_at": null,
+    "update_timestamp": null,
+    "update_date": null,
+    "date_evidence": [
+      {
+        "source": "crossref",
+        "source_url": "https://doi.org/10.1109/isit62367.2026.11653664",
+        "field": "publication_date",
+        "value": "2026-6",
+        "semantics": "AUTHORITATIVE_PUBLICATION_DATE"
+      }
+    ]
+  },
+  {
+    "day": "2026-10-08",
+    "canonical_identity": "doi:10.1016/j.bcra.2026.100525",
+    "title": "Anonymous multi-hop off-chain payment scheme based on Ring-LWE",
+    "source_url": "https://doi.org/10.1016/j.bcra.2026.100525",
+    "reason": "DATE_UNCERTAIN: future/absent authoritative event date; TODO_VERIFY",
+    "publication_date": "2026-7",
+    "publication_timestamp": null,
+    "publication_date_kind": "AUTHORITATIVE_PUBLICATION_DATE",
+    "preprint_first_posted_at": null,
+    "source_version_timestamp": null,
+    "proceedings_year": null,
+    "publisher_online_date": null,
+    "metadata_indexed_date": null,
+    "first_seen_at": null,
+    "update_timestamp": null,
+    "update_date": null,
+    "date_evidence": [
+      {
+        "source": "crossref",
+        "source_url": "https://doi.org/10.1016/j.bcra.2026.100525",
+        "field": "publication_date",
+        "value": "2026-7",
+        "semantics": "AUTHORITATIVE_PUBLICATION_DATE"
+      }
+    ]
+  },
+  {
+    "day": "2026-10-08",
+    "canonical_identity": "doi:10.1109/icicit69063.2026.11634017",
+    "title": "LACE-IoT: Lightweight Post-Quantum Security via Session Amortization using Ring-LWE and QC-LDPC Hybrid Encryption",
+    "source_url": "https://doi.org/10.1109/icicit69063.2026.11634017",
+    "reason": "DATE_UNCERTAIN: future/absent authoritative event date; TODO_VERIFY",
+    "publication_date": "2026-7",
+    "publication_timestamp": null,
+    "publication_date_kind": "AUTHORITATIVE_PUBLICATION_DATE",
+    "preprint_first_posted_at": null,
+    "source_version_timestamp": null,
+    "proceedings_year": null,
+    "publisher_online_date": null,
+    "metadata_indexed_date": null,
+    "first_seen_at": null,
+    "update_timestamp": null,
+    "update_date": null,
+    "date_evidence": [
+      {
+        "source": "crossref",
+        "source_url": "https://doi.org/10.1109/icicit69063.2026.11634017",
+        "field": "publication_date",
+        "value": "2026-7",
+        "semantics": "AUTHORITATIVE_PUBLICATION_DATE"
+      }
+    ]
+  },
+  {
+    "day": "2026-10-08",
+    "canonical_identity": "doi:10.1109/cisat71030.2026.11682250",
+    "title": "Tighter Security Proof for IBE from MP-LWE Assumption in the Random Oracle Model",
+    "source_url": "https://doi.org/10.1109/cisat71030.2026.11682250",
+    "reason": "DATE_UNCERTAIN: future/absent authoritative event date; TODO_VERIFY",
+    "publication_date": "2026-7",
+    "publication_timestamp": null,
+    "publication_date_kind": "AUTHORITATIVE_PUBLICATION_DATE",
+    "preprint_first_posted_at": null,
+    "source_version_timestamp": null,
+    "proceedings_year": null,
+    "publisher_online_date": null,
+    "metadata_indexed_date": null,
+    "first_seen_at": null,
+    "update_timestamp": null,
+    "update_date": null,
+    "date_evidence": [
+      {
+        "source": "crossref",
+        "source_url": "https://doi.org/10.1109/cisat71030.2026.11682250",
+        "field": "publication_date",
+        "value": "2026-7",
+        "semantics": "AUTHORITATIVE_PUBLICATION_DATE"
+      }
+    ]
+  },
+  {
+    "day": "2026-10-08",
+    "canonical_identity": "doi:10.1016/j.ins.2026.123478",
+    "title": "A post-quantum hierarchical and adaptive LWE-based secret image sharing scheme with verifiable reconstruction",
+    "source_url": "https://doi.org/10.1016/j.ins.2026.123478",
+    "reason": "DATE_UNCERTAIN: future/absent authoritative event date; TODO_VERIFY",
+    "publication_date": "2026-8",
+    "publication_timestamp": null,
+    "publication_date_kind": "AUTHORITATIVE_PUBLICATION_DATE",
+    "preprint_first_posted_at": null,
+    "source_version_timestamp": null,
+    "proceedings_year": null,
+    "publisher_online_date": null,
+    "metadata_indexed_date": null,
+    "first_seen_at": null,
+    "update_timestamp": null,
+    "update_date": null,
+    "date_evidence": [
+      {
+        "source": "crossref",
+        "source_url": "https://doi.org/10.1016/j.ins.2026.123478",
+        "field": "publication_date",
+        "value": "2026-8",
+        "semantics": "AUTHORITATIVE_PUBLICATION_DATE"
+      }
+    ]
+  },
+  {
+    "day": "2026-10-08",
+    "canonical_identity": "doi:10.1007/978-3-032-36264-3_11",
+    "title": "(Fine-Grained) Unbounded Inner-Product Functional Encryption from LWE",
+    "source_url": "https://doi.org/10.1007/978-3-032-36264-3_11",
+    "reason": "DATE_UNCERTAIN: future/absent authoritative event date; TODO_VERIFY",
+    "publication_date": "2027",
+    "publication_timestamp": null,
+    "publication_date_kind": "AUTHORITATIVE_PUBLICATION_DATE",
+    "preprint_first_posted_at": null,
+    "source_version_timestamp": null,
+    "proceedings_year": null,
+    "publisher_online_date": null,
+    "metadata_indexed_date": null,
+    "first_seen_at": null,
+    "update_timestamp": null,
+    "update_date": null,
+    "date_evidence": [
+      {
+        "source": "crossref",
+        "source_url": "https://doi.org/10.1007/978-3-032-36264-3_11",
+        "field": "publication_date",
+        "value": "2027",
+        "semantics": "AUTHORITATIVE_PUBLICATION_DATE"
+      }
+    ]
+  },
+  {
+    "day": "2026-10-08",
+    "canonical_identity": "doi:10.1007/978-3-032-29430-2_6",
+    "title": "Additively Homomorphic Encryption with Key Rotation for Federated Learning from Module-LWE",
+    "source_url": "https://doi.org/10.1007/978-3-032-29430-2_6",
+    "reason": "DATE_UNCERTAIN: future/absent authoritative event date; TODO_VERIFY",
+    "publication_date": "2027",
+    "publication_timestamp": null,
+    "publication_date_kind": "AUTHORITATIVE_PUBLICATION_DATE",
+    "preprint_first_posted_at": null,
+    "source_version_timestamp": null,
+    "proceedings_year": null,
+    "publisher_online_date": null,
+    "metadata_indexed_date": null,
+    "first_seen_at": null,
+    "update_timestamp": null,
+    "update_date": null,
+    "date_evidence": [
+      {
+        "source": "crossref",
+        "source_url": "https://doi.org/10.1007/978-3-032-29430-2_6",
+        "field": "publication_date",
+        "value": "2027",
+        "semantics": "AUTHORITATIVE_PUBLICATION_DATE"
+      }
+    ]
+  },
+  {
+    "day": "2026-10-08",
+    "canonical_identity": "doi:10.1007/978-3-032-32764-2_23",
+    "title": "Decompressing LWE: Unlocking Field-Like Operations via Polynomial Matrices",
+    "source_url": "https://doi.org/10.1007/978-3-032-32764-2_23",
+    "reason": "DATE_UNCERTAIN: future/absent authoritative event date; TODO_VERIFY",
+    "publication_date": "2027",
+    "publication_timestamp": null,
+    "publication_date_kind": "AUTHORITATIVE_PUBLICATION_DATE",
+    "preprint_first_posted_at": null,
+    "source_version_timestamp": null,
+    "proceedings_year": null,
+    "publisher_online_date": null,
+    "metadata_indexed_date": null,
+    "first_seen_at": null,
+    "update_timestamp": null,
+    "update_date": null,
+    "date_evidence": [
+      {
+        "source": "crossref",
+        "source_url": "https://doi.org/10.1007/978-3-032-32764-2_23",
+        "field": "publication_date",
+        "value": "2027",
+        "semantics": "AUTHORITATIVE_PUBLICATION_DATE"
+      }
+    ]
+  },
+  {
+    "day": "2026-10-08",
+    "canonical_identity": "doi:10.1007/978-981-95-9514-3_13",
+    "title": "Security Analysis of LWE/RLWE-Based Diffie-Hellman-Like Post-quantum Authenticated Key Exchange Protocols in the eCK Model",
+    "source_url": "https://doi.org/10.1007/978-981-95-9514-3_13",
+    "reason": "DATE_UNCERTAIN: future/absent authoritative event date; TODO_VERIFY",
+    "publication_date": "2027",
+    "publication_timestamp": null,
+    "publication_date_kind": "AUTHORITATIVE_PUBLICATION_DATE",
+    "preprint_first_posted_at": null,
+    "source_version_timestamp": null,
+    "proceedings_year": null,
+    "publisher_online_date": null,
+    "metadata_indexed_date": null,
+    "first_seen_at": null,
+    "update_timestamp": null,
+    "update_date": null,
+    "date_evidence": [
+      {
+        "source": "crossref",
+        "source_url": "https://doi.org/10.1007/978-981-95-9514-3_13",
+        "field": "publication_date",
+        "value": "2027",
+        "semantics": "AUTHORITATIVE_PUBLICATION_DATE"
+      }
+    ]
+  },
+  {
+    "day": "2026-10-08",
+    "canonical_identity": "doi:10.1007/978-3-032-32560-0_3",
+    "title": "Towards More Efficient Registration-Based Encryption from LWE",
+    "source_url": "https://doi.org/10.1007/978-3-032-32560-0_3",
+    "reason": "DATE_UNCERTAIN: future/absent authoritative event date; TODO_VERIFY",
+    "publication_date": "2027",
+    "publication_timestamp": null,
+    "publication_date_kind": "AUTHORITATIVE_PUBLICATION_DATE",
+    "preprint_first_posted_at": null,
+    "source_version_timestamp": null,
+    "proceedings_year": null,
+    "publisher_online_date": null,
+    "metadata_indexed_date": null,
+    "first_seen_at": null,
+    "update_timestamp": null,
+    "update_date": null,
+    "date_evidence": [
+      {
+        "source": "crossref",
+        "source_url": "https://doi.org/10.1007/978-3-032-32560-0_3",
+        "field": "publication_date",
+        "value": "2027",
+        "semantics": "AUTHORITATIVE_PUBLICATION_DATE"
+      }
+    ]
+  },
+  {
+    "day": "2026-10-09",
+    "canonical_identity": "doi:10.1007/s00446-026-00519-w",
+    "title": "Scalable distributed agreement from LWE: Byzantine agreement, broadcast, and leader election",
+    "source_url": "https://doi.org/10.1007/s00446-026-00519-w",
+    "reason": "DATE_UNCERTAIN: future/absent authoritative event date; TODO_VERIFY",
+    "publication_date": "2026-12",
+    "publication_timestamp": null,
+    "publication_date_kind": "AUTHORITATIVE_PUBLICATION_DATE",
+    "preprint_first_posted_at": null,
+    "source_version_timestamp": null,
+    "proceedings_year": null,
+    "publisher_online_date": null,
+    "metadata_indexed_date": null,
+    "first_seen_at": null,
+    "update_timestamp": null,
+    "update_date": null,
+    "date_evidence": [
+      {
+        "source": "crossref",
+        "source_url": "https://doi.org/10.1007/s00446-026-00519-w",
+        "field": "publication_date",
+        "value": "2026-12",
+        "semantics": "AUTHORITATIVE_PUBLICATION_DATE"
+      }
+    ]
+  },
+  {
+    "day": "2026-10-09",
+    "canonical_identity": "doi:10.1007/s13389-026-00401-2",
+    "title": "Two-limb CRT Ring-LWE encryption with exact decryption and public re-randomization",
+    "source_url": "https://doi.org/10.1007/s13389-026-00401-2",
+    "reason": "DATE_UNCERTAIN: future/absent authoritative event date; TODO_VERIFY",
+    "publication_date": "2026-9",
+    "publication_timestamp": null,
+    "publication_date_kind": "AUTHORITATIVE_PUBLICATION_DATE",
+    "preprint_first_posted_at": null,
+    "source_version_timestamp": null,
+    "proceedings_year": null,
+    "publisher_online_date": null,
+    "metadata_indexed_date": null,
+    "first_seen_at": null,
+    "update_timestamp": null,
+    "update_date": null,
+    "date_evidence": [
+      {
+        "source": "crossref",
+        "source_url": "https://doi.org/10.1007/s13389-026-00401-2",
+        "field": "publication_date",
+        "value": "2026-9",
+        "semantics": "AUTHORITATIVE_PUBLICATION_DATE"
+      }
+    ]
+  },
+  {
+    "day": "2026-10-09",
+    "canonical_identity": "doi:10.1007/s10470-026-02661-8",
+    "title": "A compact design of R-LWE crypto processor using customizable parallel polynomial multiplication on FPGA",
+    "source_url": "https://doi.org/10.1007/s10470-026-02661-8",
+    "reason": "DATE_UNCERTAIN: future/absent authoritative event date; TODO_VERIFY",
+    "publication_date": "2026-10",
+    "publication_timestamp": null,
+    "publication_date_kind": "AUTHORITATIVE_PUBLICATION_DATE",
+    "preprint_first_posted_at": null,
+    "source_version_timestamp": null,
+    "proceedings_year": null,
+    "publisher_online_date": null,
+    "metadata_indexed_date": null,
+    "first_seen_at": null,
+    "update_timestamp": null,
+    "update_date": null,
+    "date_evidence": [
+      {
+        "source": "crossref",
+        "source_url": "https://doi.org/10.1007/s10470-026-02661-8",
+        "field": "publication_date",
+        "value": "2026-10",
+        "semantics": "AUTHORITATIVE_PUBLICATION_DATE"
+      }
+    ]
+  },
+  {
+    "day": "2026-10-09",
+    "canonical_identity": "doi:10.1016/j.sysarc.2026.104025",
+    "title": "A two-round password-based dynamic authenticated group key agreement protocol based on LWE",
+    "source_url": "https://doi.org/10.1016/j.sysarc.2026.104025",
+    "reason": "DATE_UNCERTAIN: future/absent authoritative event date; TODO_VERIFY",
+    "publication_date": "2026-12",
+    "publication_timestamp": null,
+    "publication_date_kind": "AUTHORITATIVE_PUBLICATION_DATE",
+    "preprint_first_posted_at": null,
+    "source_version_timestamp": null,
+    "proceedings_year": null,
+    "publisher_online_date": null,
+    "metadata_indexed_date": null,
+    "first_seen_at": null,
+    "update_timestamp": null,
+    "update_date": null,
+    "date_evidence": [
+      {
+        "source": "crossref",
+        "source_url": "https://doi.org/10.1016/j.sysarc.2026.104025",
+        "field": "publication_date",
+        "value": "2026-12",
+        "semantics": "AUTHORITATIVE_PUBLICATION_DATE"
+      }
+    ]
+  },
+  {
+    "day": "2026-10-09",
+    "canonical_identity": "doi:10.1109/icbase70763.2026.11619442",
+    "title": "Decentralized Biometric Authentication with Privacy-Preserving LWE Encryption",
+    "source_url": "https://doi.org/10.1109/icbase70763.2026.11619442",
+    "reason": "DATE_UNCERTAIN: future/absent authoritative event date; TODO_VERIFY",
+    "publication_date": "2026-6",
+    "publication_timestamp": null,
+    "publication_date_kind": "AUTHORITATIVE_PUBLICATION_DATE",
+    "preprint_first_posted_at": null,
+    "source_version_timestamp": null,
+    "proceedings_year": null,
+    "publisher_online_date": null,
+    "metadata_indexed_date": null,
+    "first_seen_at": null,
+    "update_timestamp": null,
+    "update_date": null,
+    "date_evidence": [
+      {
+        "source": "crossref",
+        "source_url": "https://doi.org/10.1109/icbase70763.2026.11619442",
+        "field": "publication_date",
+        "value": "2026-6",
+        "semantics": "AUTHORITATIVE_PUBLICATION_DATE"
+      }
+    ]
+  },
+  {
+    "day": "2026-10-09",
+    "canonical_identity": "doi:10.1109/isit62367.2026.11653664",
+    "title": "Towards Ciphertext-Efficient LWE: Learning With Sampling over Sublattices",
+    "source_url": "https://doi.org/10.1109/isit62367.2026.11653664",
+    "reason": "DATE_UNCERTAIN: future/absent authoritative event date; TODO_VERIFY",
+    "publication_date": "2026-6",
+    "publication_timestamp": null,
+    "publication_date_kind": "AUTHORITATIVE_PUBLICATION_DATE",
+    "preprint_first_posted_at": null,
+    "source_version_timestamp": null,
+    "proceedings_year": null,
+    "publisher_online_date": null,
+    "metadata_indexed_date": null,
+    "first_seen_at": null,
+    "update_timestamp": null,
+    "update_date": null,
+    "date_evidence": [
+      {
+        "source": "crossref",
+        "source_url": "https://doi.org/10.1109/isit62367.2026.11653664",
+        "field": "publication_date",
+        "value": "2026-6",
+        "semantics": "AUTHORITATIVE_PUBLICATION_DATE"
+      }
+    ]
+  },
+  {
+    "day": "2026-10-09",
+    "canonical_identity": "doi:10.1016/j.bcra.2026.100525",
+    "title": "Anonymous multi-hop off-chain payment scheme based on Ring-LWE",
+    "source_url": "https://doi.org/10.1016/j.bcra.2026.100525",
+    "reason": "DATE_UNCERTAIN: future/absent authoritative event date; TODO_VERIFY",
+    "publication_date": "2026-7",
+    "publication_timestamp": null,
+    "publication_date_kind": "AUTHORITATIVE_PUBLICATION_DATE",
+    "preprint_first_posted_at": null,
+    "source_version_timestamp": null,
+    "proceedings_year": null,
+    "publisher_online_date": null,
+    "metadata_indexed_date": null,
+    "first_seen_at": null,
+    "update_timestamp": null,
+    "update_date": null,
+    "date_evidence": [
+      {
+        "source": "crossref",
+        "source_url": "https://doi.org/10.1016/j.bcra.2026.100525",
+        "field": "publication_date",
+        "value": "2026-7",
+        "semantics": "AUTHORITATIVE_PUBLICATION_DATE"
+      }
+    ]
+  },
+  {
+    "day": "2026-10-09",
+    "canonical_identity": "doi:10.1109/icicit69063.2026.11634017",
+    "title": "LACE-IoT: Lightweight Post-Quantum Security via Session Amortization using Ring-LWE and QC-LDPC Hybrid Encryption",
+    "source_url": "https://doi.org/10.1109/icicit69063.2026.11634017",
+    "reason": "DATE_UNCERTAIN: future/absent authoritative event date; TODO_VERIFY",
+    "publication_date": "2026-7",
+    "publication_timestamp": null,
+    "publication_date_kind": "AUTHORITATIVE_PUBLICATION_DATE",
+    "preprint_first_posted_at": null,
+    "source_version_timestamp": null,
+    "proceedings_year": null,
+    "publisher_online_date": null,
+    "metadata_indexed_date": null,
+    "first_seen_at": null,
+    "update_timestamp": null,
+    "update_date": null,
+    "date_evidence": [
+      {
+        "source": "crossref",
+        "source_url": "https://doi.org/10.1109/icicit69063.2026.11634017",
+        "field": "publication_date",
+        "value": "2026-7",
+        "semantics": "AUTHORITATIVE_PUBLICATION_DATE"
+      }
+    ]
+  },
+  {
+    "day": "2026-10-09",
+    "canonical_identity": "doi:10.1109/cisat71030.2026.11682250",
+    "title": "Tighter Security Proof for IBE from MP-LWE Assumption in the Random Oracle Model",
+    "source_url": "https://doi.org/10.1109/cisat71030.2026.11682250",
+    "reason": "DATE_UNCERTAIN: future/absent authoritative event date; TODO_VERIFY",
+    "publication_date": "2026-7",
+    "publication_timestamp": null,
+    "publication_date_kind": "AUTHORITATIVE_PUBLICATION_DATE",
+    "preprint_first_posted_at": null,
+    "source_version_timestamp": null,
+    "proceedings_year": null,
+    "publisher_online_date": null,
+    "metadata_indexed_date": null,
+    "first_seen_at": null,
+    "update_timestamp": null,
+    "update_date": null,
+    "date_evidence": [
+      {
+        "source": "crossref",
+        "source_url": "https://doi.org/10.1109/cisat71030.2026.11682250",
+        "field": "publication_date",
+        "value": "2026-7",
+        "semantics": "AUTHORITATIVE_PUBLICATION_DATE"
+      }
+    ]
+  },
+  {
+    "day": "2026-10-09",
+    "canonical_identity": "doi:10.1016/j.ins.2026.123478",
+    "title": "A post-quantum hierarchical and adaptive LWE-based secret image sharing scheme with verifiable reconstruction",
+    "source_url": "https://doi.org/10.1016/j.ins.2026.123478",
+    "reason": "DATE_UNCERTAIN: future/absent authoritative event date; TODO_VERIFY",
+    "publication_date": "2026-8",
+    "publication_timestamp": null,
+    "publication_date_kind": "AUTHORITATIVE_PUBLICATION_DATE",
+    "preprint_first_posted_at": null,
+    "source_version_timestamp": null,
+    "proceedings_year": null,
+    "publisher_online_date": null,
+    "metadata_indexed_date": null,
+    "first_seen_at": null,
+    "update_timestamp": null,
+    "update_date": null,
+    "date_evidence": [
+      {
+        "source": "crossref",
+        "source_url": "https://doi.org/10.1016/j.ins.2026.123478",
+        "field": "publication_date",
+        "value": "2026-8",
+        "semantics": "AUTHORITATIVE_PUBLICATION_DATE"
+      }
+    ]
+  },
+  {
+    "day": "2026-10-09",
+    "canonical_identity": "doi:10.1007/978-3-032-36264-3_11",
+    "title": "(Fine-Grained) Unbounded Inner-Product Functional Encryption from LWE",
+    "source_url": "https://doi.org/10.1007/978-3-032-36264-3_11",
+    "reason": "DATE_UNCERTAIN: future/absent authoritative event date; TODO_VERIFY",
+    "publication_date": "2027",
+    "publication_timestamp": null,
+    "publication_date_kind": "AUTHORITATIVE_PUBLICATION_DATE",
+    "preprint_first_posted_at": null,
+    "source_version_timestamp": null,
+    "proceedings_year": null,
+    "publisher_online_date": null,
+    "metadata_indexed_date": null,
+    "first_seen_at": null,
+    "update_timestamp": null,
+    "update_date": null,
+    "date_evidence": [
+      {
+        "source": "crossref",
+        "source_url": "https://doi.org/10.1007/978-3-032-36264-3_11",
+        "field": "publication_date",
+        "value": "2027",
+        "semantics": "AUTHORITATIVE_PUBLICATION_DATE"
+      }
+    ]
+  },
+  {
+    "day": "2026-10-09",
+    "canonical_identity": "doi:10.1007/978-3-032-29430-2_6",
+    "title": "Additively Homomorphic Encryption with Key Rotation for Federated Learning from Module-LWE",
+    "source_url": "https://doi.org/10.1007/978-3-032-29430-2_6",
+    "reason": "DATE_UNCERTAIN: future/absent authoritative event date; TODO_VERIFY",
+    "publication_date": "2027",
+    "publication_timestamp": null,
+    "publication_date_kind": "AUTHORITATIVE_PUBLICATION_DATE",
+    "preprint_first_posted_at": null,
+    "source_version_timestamp": null,
+    "proceedings_year": null,
+    "publisher_online_date": null,
+    "metadata_indexed_date": null,
+    "first_seen_at": null,
+    "update_timestamp": null,
+    "update_date": null,
+    "date_evidence": [
+      {
+        "source": "crossref",
+        "source_url": "https://doi.org/10.1007/978-3-032-29430-2_6",
+        "field": "publication_date",
+        "value": "2027",
+        "semantics": "AUTHORITATIVE_PUBLICATION_DATE"
+      }
+    ]
+  },
+  {
+    "day": "2026-10-09",
+    "canonical_identity": "doi:10.1007/978-3-032-32764-2_23",
+    "title": "Decompressing LWE: Unlocking Field-Like Operations via Polynomial Matrices",
+    "source_url": "https://doi.org/10.1007/978-3-032-32764-2_23",
+    "reason": "DATE_UNCERTAIN: future/absent authoritative event date; TODO_VERIFY",
+    "publication_date": "2027",
+    "publication_timestamp": null,
+    "publication_date_kind": "AUTHORITATIVE_PUBLICATION_DATE",
+    "preprint_first_posted_at": null,
+    "source_version_timestamp": null,
+    "proceedings_year": null,
+    "publisher_online_date": null,
+    "metadata_indexed_date": null,
+    "first_seen_at": null,
+    "update_timestamp": null,
+    "update_date": null,
+    "date_evidence": [
+      {
+        "source": "crossref",
+        "source_url": "https://doi.org/10.1007/978-3-032-32764-2_23",
+        "field": "publication_date",
+        "value": "2027",
+        "semantics": "AUTHORITATIVE_PUBLICATION_DATE"
+      }
+    ]
+  },
+  {
+    "day": "2026-10-09",
+    "canonical_identity": "doi:10.1007/978-981-95-9514-3_13",
+    "title": "Security Analysis of LWE/RLWE-Based Diffie-Hellman-Like Post-quantum Authenticated Key Exchange Protocols in the eCK Model",
+    "source_url": "https://doi.org/10.1007/978-981-95-9514-3_13",
+    "reason": "DATE_UNCERTAIN: future/absent authoritative event date; TODO_VERIFY",
+    "publication_date": "2027",
+    "publication_timestamp": null,
+    "publication_date_kind": "AUTHORITATIVE_PUBLICATION_DATE",
+    "preprint_first_posted_at": null,
+    "source_version_timestamp": null,
+    "proceedings_year": null,
+    "publisher_online_date": null,
+    "metadata_indexed_date": null,
+    "first_seen_at": null,
+    "update_timestamp": null,
+    "update_date": null,
+    "date_evidence": [
+      {
+        "source": "crossref",
+        "source_url": "https://doi.org/10.1007/978-981-95-9514-3_13",
+        "field": "publication_date",
+        "value": "2027",
+        "semantics": "AUTHORITATIVE_PUBLICATION_DATE"
+      }
+    ]
+  },
+  {
+    "day": "2026-10-09",
+    "canonical_identity": "doi:10.1007/978-3-032-32560-0_3",
+    "title": "Towards More Efficient Registration-Based Encryption from LWE",
+    "source_url": "https://doi.org/10.1007/978-3-032-32560-0_3",
+    "reason": "DATE_UNCERTAIN: future/absent authoritative event date; TODO_VERIFY",
+    "publication_date": "2027",
+    "publication_timestamp": null,
+    "publication_date_kind": "AUTHORITATIVE_PUBLICATION_DATE",
+    "preprint_first_posted_at": null,
+    "source_version_timestamp": null,
+    "proceedings_year": null,
+    "publisher_online_date": null,
+    "metadata_indexed_date": null,
+    "first_seen_at": null,
+    "update_timestamp": null,
+    "update_date": null,
+    "date_evidence": [
+      {
+        "source": "crossref",
+        "source_url": "https://doi.org/10.1007/978-3-032-32560-0_3",
+        "field": "publication_date",
+        "value": "2027",
+        "semantics": "AUTHORITATIVE_PUBLICATION_DATE"
+      }
+    ]
+  }
+]

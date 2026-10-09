@@ -47,7 +47,7 @@ def _record(
     return {
         "title": title,
         "normalized_title": title.lower(),
-        "abstract": f"{title} studies lattice cryptography and post-quantum security.",
+        "abstract": f"{title}: We study LWE cryptanalysis and BKZ lattice reduction." + (" We propose AI-assisted lattice cryptanalysis." if user_tags and "AI4LC" in user_tags else ""),
         "abstract_en": f"{title} studies lattice cryptography.",
         "abstract_zh": abstract_zh,
         "conclusion_en": "[generated summary] Research value requires source verification.",

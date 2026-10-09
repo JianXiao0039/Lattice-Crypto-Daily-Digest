@@ -52,7 +52,9 @@ def derive_authority(records: list[Any], source_health: list[dict[str, Any]] | N
                 incomplete.append(name)
     coverage_complete = bool(required) and not incomplete
     rows = [r if isinstance(r, dict) else r.model_dump() for r in records if isinstance(r, dict) or hasattr(r, 'model_dump')]
-    selected = [r for r in rows if r.get('relevance_label') in {'A', 'B', 'C'}]
+    from lattice_digest.publication_events import CORE_EVENTS
+    event_contract=any(r.get('publication_event_type') for r in rows)
+    selected = [r for r in rows if r.get('publication_event_type') in CORE_EVENTS] if event_contract else [r for r in rows if r.get('relevance_label') in {'A', 'B', 'C'}]
     decisive = any(r.get('security_impact_severity') == 'CRITICAL' and (r.get('freshness_bucket') == 'CRITICAL_NEWLY_OBSERVED_VERIFY_FIRST' or r.get('evidence_confidence') not in {'HIGH', 'high', 'verified'} or r.get('cross_day_event') == 'IDENTITY_UNCERTAIN') for r in selected)
     if decisive:
         authority = PARTIAL
@@ -83,6 +85,10 @@ def semantic_qa(payload: dict[str, Any], markdown: str | None, *, source_configs
     unknown: list[str] = []
     if not isinstance(records, list) or any(not isinstance(r, dict) for r in records):
         issues.append('invalid_records')
+    from lattice_digest.publication_events import POLICY_VERSION as EVENT_POLICY, ledger_issues
+    if meta.get('publication_policy_version')==EVENT_POLICY:
+        issues.extend(ledger_issues(payload,markdown))
+        decision['selection_counts']=payload.get('publication_event_ledger',{}).get('counts',{})
     for key in ['authority_state', 'source_coverage', 'selection_counts', 'render_branch']:
         if key in meta and meta[key] != decision[key]:
             issues.append('authority_evidence_mismatch:' + key)

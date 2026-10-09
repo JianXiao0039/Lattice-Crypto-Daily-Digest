@@ -1,0 +1,32 @@
+{
+  "2026-10-07": {
+    ".json": {
+      "external_path": "D:\\Code\\CodexProjects\\lattice-digest-p0-replay-20261009-local-verified\\2026-10-07.json",
+      "sha256": "7a8a5a423d41f4b72b51eaf483ce83945b73b04ff0b4638f7012e4d5a83c47fe"
+    },
+    ".md": {
+      "external_path": "D:\\Code\\CodexProjects\\lattice-digest-p0-replay-20261009-local-verified\\2026-10-07.md",
+      "sha256": "1bf45f1251de88ee54cea43836aa280173e92d0416ebc03f95b5d2a579a5bcf3"
+    }
+  },
+  "2026-10-08": {
+    ".json": {
+      "external_path": "D:\\Code\\CodexProjects\\lattice-digest-p0-replay-20261009-local-verified\\2026-10-08.json",
+      "sha256": "fbcffe8c69ac08b92c2b8c7c88ce71c6f4ab6d4575d7999ed8ba40926a934e80"
+    },
+    ".md": {
+      "external_path": "D:\\Code\\CodexProjects\\lattice-digest-p0-replay-20261009-local-verified\\2026-10-08.md",
+      "sha256": "80023c61908da392ebfaa27a022f95099c64eb4d5eb34516d5504f432010ee1e"
+    }
+  },
+  "2026-10-09": {
+    ".json": {
+      "external_path": "D:\\Code\\CodexProjects\\lattice-digest-p0-replay-20261009-local-verified\\2026-10-09.json",
+      "sha256": "dd8af4d2d3b28afca32e7732ecf58d9562fecc9b9baadf11847dfe662c06179c"
+    },
+    ".md": {
+      "external_path": "D:\\Code\\CodexProjects\\lattice-digest-p0-replay-20261009-local-verified\\2026-10-09.md",
+      "sha256": "caaeff5395dd0af803fd82708227c638c199fd179d7d6551848552950eda8e9e"
+    }
+  }
+}

@@ -649,19 +649,30 @@ def main(argv: list[str] | None = None, *, preflight_proof: dict | None = None) 
     coverage_kept = list(ranked)
     reliable, dropped_count = _filter_reliable(ranked)
     deduped = deduplicate(reliable)
-    role_eligible, role_dropped = _filter_by_source_role(deduped, source_configs, context)
+    role_eligible, role_dropped = _filter_by_source_role(ranked_before_coverage, source_configs, context)
     if role_dropped:
         context.warnings.append(
             f"source-role policy dropped {len(role_dropped)} standalone low-evidence metadata records"
         )
-    ordered = _sort_records(role_eligible)
+    # Keep the full canonical L0 population in the machine ledger.
+    blocked_ids={r.paper_id or r.source_url for r in role_dropped}
+    ordered = _sort_records([
+        r.model_copy(update={'publication_event_blockers':list(dict.fromkeys([
+            *r.publication_event_blockers,'LOW_EVIDENCE_ENRICHMENT_ONLY_REJECTED']))})
+        if (r.paper_id or r.source_url) in blocked_ids else r for r in ranked_before_coverage])
     prior_promotions, history_evidence = load_promotion_history(output_root / "data", digest_date)
     ordered = apply_promotion_history(ordered, prior_promotions)
+    from lattice_digest.publication_events import attach_events, POLICY_VERSION as EVENT_POLICY
+    ordered,event_ledger=attach_events(ordered,metadata,prior_promotions)
+    metadata['publication_policy_version']=EVENT_POLICY
+    metadata['_publication_prior']=prior_promotions
     metadata["promotion_history"] = history_evidence
     metadata["retrieval_v3"]["source_diversity_unique_marginal_recall"] = source_diversity_metrics(ranked_before_coverage)
     metadata["retrieval_v3"]["query_marginal_yield"] = query_marginal_yield(ranked_before_coverage)
     metadata["retrieval_v3"]["evidence_metrics"] = evidence_metrics(ranked_before_coverage)
-    _update_source_health_after_pipeline(context, ranked, reliable, deduped, ordered)
+    from lattice_digest.publication_events import CORE_EVENTS
+    _update_source_health_after_pipeline(context, ranked, reliable, deduped,
+        [r for r in ordered if r.publication_event_type in CORE_EVENTS])
     source_health = context.source_health_summary()
     from lattice_digest.evidence_contract import propagate_source_health
     ordered = propagate_source_health(ordered, source_health)
@@ -672,6 +683,7 @@ def main(argv: list[str] | None = None, *, preflight_proof: dict | None = None) 
     ]
     metadata["completion_state"] = "degraded_complete" if degraded_sources else "complete"
     metadata.update(derive_authority(ordered, source_health, source_configs=source_configs))
+    metadata["selection_counts"] = event_ledger["counts"]
     metadata["degraded_sources"] = degraded_sources
     metadata["runtime_journal"] = str(context.runtime_journal_path)
     context.checkpoint(
@@ -748,7 +760,7 @@ def main(argv: list[str] | None = None, *, preflight_proof: dict | None = None) 
     written.append(write_sqlite(ordered, output_root / "papers.db"))
     context.checkpoint('RUN_FINISHED', schedule_telemetry(run_datetime, datetime.now(ZoneInfo('Asia/Singapore'))))
 
-    print(f"Generated {len(ordered)} digest records.")
+    print(f"Observed {len(ordered)} canonical identities; Daily publication events: {event_ledger['counts']['event_count']}.")
     for path in written:
         print(path)
     if context.warnings:

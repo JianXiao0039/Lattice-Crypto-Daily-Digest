@@ -12,7 +12,7 @@ from typing import Any
 
 from lattice_digest.ontology_v3 import load_ontology_v3, _contains_phrase
 
-POLICY_VERSION = 'evidence-bound-v2'
+POLICY_VERSION = 'evidence-bound-p0-v3'
 
 class EvidenceType(StrEnum):
     SOURCE_EXPLICIT = 'SOURCE_EXPLICIT'
@@ -27,6 +27,7 @@ class Scope(StrEnum):
     DIRECT_LATTICE_HARDNESS_THEORY = 'DIRECT_LATTICE_HARDNESS_THEORY'
     LATTICE_METHOD_IN_ADJACENT_CRYPTO = 'LATTICE_METHOD_IN_ADJACENT_CRYPTO'
     ADJACENT_PQC = 'ADJACENT_PQC'
+    GENERAL_CRYPTO_BACKGROUND = 'GENERAL_CRYPTO_BACKGROUND'
     INDIRECT_RESEARCH_HYPOTHESIS = 'INDIRECT_RESEARCH_HYPOTHESIS'
     OUT_OF_SCOPE = 'OUT_OF_SCOPE'
 
@@ -38,6 +39,8 @@ def source_fields(record: Any) -> dict[str, str]:
     result = {}
     for name in ('title', 'abstract', 'conclusion'):
         value = str(field(record, name) or '').strip()
+        if name == 'conclusion':
+            value = ''  # no source-location provenance; never classify from generated prose
         if value.lower().startswith(('todo_verify', 'generated', 'model-generated', '系统生成', '机器生成')):
             value = ''
         result[name] = value
@@ -82,10 +85,19 @@ def analyze_source(record: Any, ontology=None):
     return ontology.analyze_fields(**values) if ontology else _analyze(**values)
 
 def source_topics(record: Any) -> list[str]:
+    from lattice_digest.scientific_scope import evaluate_scope
+    decision=evaluate_scope(record)
+    if not decision['lattice_relevance_qualified']:return []
     analysis=analyze_source(record)
-    topics=[TOPICS[c] for c in analysis.source_concept_ids if c in TOPICS]
-    text=positive_source_text(record)
-    ids=set(analysis.source_concept_ids)
+    targets=[r['technical_target'].lower().replace('-',' ') for r in decision['source_relation_roles']
+             if r['role'] in {'PRIMARY_RESEARCH_OBJECT','ATTACK_TARGET','SECURITY_TARGET','LATTICE_HARDNESS_ASSUMPTION'} and r.get('qualifies_lattice_scope')]
+    qualifying=[r for r in decision['source_relation_roles'] if r['role'] in {'PRIMARY_RESEARCH_OBJECT','ATTACK_TARGET','SECURITY_TARGET','LATTICE_HARDNESS_ASSUMPTION'} and r.get('qualifies_lattice_scope')]
+    supported={m.concept_id for m in analysis.source_evidence if any(
+        t in m.source_term.lower().replace('-',' ') or m.source_term.lower().replace('-',' ') in t for t in targets) or any(
+        _contains_phrase(r['source_excerpt'],m.source_span) and m.source_field==r['source_field'] for r in qualifying)}
+    topics=[TOPICS[c] for c in analysis.source_concept_ids if c in TOPICS and c in supported]
+    text=' '.join(r['source_excerpt'] for r in qualifying).lower()
+    ids=set(analysis.source_concept_ids)&supported
     lattice_target=any(c.startswith(('FND.', 'PRIM.', 'HARD.')) for c in ids) or 'lattice' in text
     if any(c.startswith('FHE.') for c in ids): topics.append('FHE')
     if any(c.startswith('AI4LC.') for c in ids): topics.append('AI4Lattice')
@@ -109,35 +121,26 @@ def source_topics(record: Any) -> list[str]:
     return list(dict.fromkeys(topics))
 
 def classify_scope(record: Any, analysis=None, edges=()) -> tuple[str,int]:
-    analysis=analysis or analyze_source(record)
-    ids=set(analysis.source_concept_ids)
-    text=positive_source_text(record)
     from urllib.parse import urlparse
+    from lattice_digest.scientific_scope import evaluate_scope, ScientificScope
     url=urlparse(str(field(record,'source_url') or field(record,'url') or ''))
-    offline_fixture = url.scheme == 'offline' and field(record,'provenance_strength') == 'offline_fixture'
-    if not field(record,'source') or not url.netloc or not (url.scheme in {'http','https'} or offline_fixture):return Scope.OUT_OF_SCOPE,0
-    direct=any(c.startswith(('FND.LW','FND.RL','FND.MLW','FND.PLW','FND.SIS','FND.MSIS','FND.NTRU','FND.LIP','FND.MLIP','PRIM.','FHE.','PROOF.','AI4LC.','IMPL.')) for c in ids)
-    direct = direct or (_contains_phrase(text,'AI-assisted lattice attack') and _contains_phrase(text,'lattice cryptography'))
-    if analysis.hard_negative_matches and not direct:
+    offline_fixture=url.scheme=='offline' and field(record,'provenance_strength')=='offline_fixture'
+    if not field(record,'source') or not url.netloc or not (url.scheme in {'http','https'} or offline_fixture):
         return Scope.OUT_OF_SCOPE,0
-    if not direct and any(_contains_phrase(text,t) for t in ('lowest Landau level','layered Lieb lattice','remote sensing','integer images','Hubbard model','Bose gas','Bose-Einstein condensate')):
+    analysis=analysis or analyze_source(record)
+    if analysis.hard_negative_matches and not analysis.source_concept_ids:
         return Scope.OUT_OF_SCOPE,0
-    adjacent=any(_contains_phrase(text,t) for t in ('SQIsign','isogeny','isogeny-based','Schnorr','ECDSA','factoring','Coppersmith','RSA'))
-    structural=any(_contains_phrase(text,t) for t in STRUCTURAL_TERMS) or 'ATTACK.LATTICE_REDUCTION' in ids
-    if adjacent and not direct:
-        return (Scope.LATTICE_METHOD_IN_ADJACENT_CRYPTO,49) if structural else ((Scope.ADJACENT_PQC,45) if 'post-quantum' in text else (Scope.OUT_OF_SCOPE,0))
-    direct = direct or any(e.get('evidence_state') in {'SOURCE_ASSERTED','SOURCE_CITED','INDEPENDENTLY_VERIFIED'} and str(e.get('target_node','')).startswith(('PRIM.','PROOF.','FHE.')) for e in edges)
-    if direct:
-        return Scope.DIRECT_LATTICE_CRYPTO,90 if field(record,'abstract') else 80
-    typed=any(e.get('evidence_state') in {'SOURCE_ASSERTED','SOURCE_CITED','INDEPENDENTLY_VERIFIED'} and e.get('relation_type') != 'MENTIONS' and str(e.get('target_node','')).startswith(('FND.','HARD.')) for e in edges)
-    grounded_reduction = any(c.startswith(('RED.','ATTACK.PRIMAL_DUAL_HYBRID')) for c in ids) and 'lattice' in text
-    foundational = any(_contains_phrase(text,t) for t in ('SVP','CVP','shortest vector problem','closest vector problem','lattice reduction','lattice sieving','LLL','BKZ','enumeration','sieve algorithms','hardness'))
-    if typed or grounded_reduction or structural and foundational and ('lattice' in text or 'cryptograph' in text or 'cryptanalysis' in text) or any(c.startswith(('HARD.SVP','HARD.CVP','HARD.STRUCTURED_CVP','ATTACK.QUATERNION')) for c in ids):
-        if analysis.hard_negative_matches and not ids:return Scope.OUT_OF_SCOPE,0
-        return Scope.DIRECT_LATTICE_HARDNESS_THEORY,82 if field(record,'abstract') else 70
-    if any(c.startswith('STD.') for c in ids):return Scope.ADJACENT_PQC,55
-    if any(_contains_phrase(text,t) for t in ('post-quantum','PQC','quantum-safe')):return Scope.ADJACENT_PQC,45
-    return Scope.OUT_OF_SCOPE,0
+    decision=evaluate_scope(record)
+    scope=decision['scientific_scope']
+    compatible={ScientificScope.CORE:Scope.DIRECT_LATTICE_CRYPTO,
+                ScientificScope.IMPLEMENTATION:Scope.DIRECT_LATTICE_CRYPTO,
+                ScientificScope.FOUNDATION:Scope.DIRECT_LATTICE_HARDNESS_THEORY,
+                ScientificScope.ADJACENT:Scope.ADJACENT_PQC,
+                ScientificScope.GENERAL:Scope.GENERAL_CRYPTO_BACKGROUND,
+                ScientificScope.OUT:Scope.OUT_OF_SCOPE}[scope]
+    if compatible==Scope.ADJACENT_PQC and any(r['role']=='METHOD_SUBROUTINE' for r in decision['source_relation_roles']):
+        compatible=Scope.LATTICE_METHOD_IN_ADJACENT_CRYPTO
+    return compatible,decision['score']
 
 def source_scope_score(record, analysis=None, edges=()):
     """The final source classification, including independently extracted critical claims."""
@@ -162,6 +165,8 @@ def source_scope_score(record, analysis=None, edges=()):
 
 def bind_source_evidence(record, analysis=None, edges=()):
     analysis=analysis or analyze_source(record)
+    from lattice_digest.scientific_scope import evaluate_scope
+    scientific=evaluate_scope(record)
     scope,score=source_scope_score(record,analysis,edges)
     topics=source_topics(record)
     structural=scope==Scope.DIRECT_LATTICE_HARDNESS_THEORY
@@ -178,7 +183,11 @@ def bind_source_evidence(record, analysis=None, edges=()):
                      'evidence_type':EvidenceType.USER_RESEARCH_HYPOTHESIS,
                      'status':'RESEARCH_HYPOTHESIS_NOT_PAPER_CLAIM',
                      'text':'这可能为经典格攻击的约简基线提供间接研究启发，但论文自身没有建立该联系。'}]
-    return record.model_copy(update={'evidence_policy_version':POLICY_VERSION,'evidence_items':items,
+    return record.model_copy(update={'scientific_scope':scientific['scientific_scope'],
+        'source_relation_roles':scientific['source_relation_roles'],
+        'lattice_relevance_qualified':scientific['lattice_relevance_qualified'] and scope!=Scope.OUT_OF_SCOPE,
+        'scope_reason':scientific['scope_reason'],
+        'evidence_policy_version':POLICY_VERSION,'evidence_items':items,
         'consequence_edges':[dict(e, evidence_type=EvidenceType.SOURCE_RELATION if e.get('evidence_state') in {'SOURCE_ASSERTED','SOURCE_CITED','INDEPENDENTLY_VERIFIED'} else EvidenceType.MODEL_INFERENCE) for e in edges],
         'source_concept_ids':list(analysis.source_concept_ids),'source_evidence_terms':list(dict.fromkeys(m.source_term for m in analysis.source_evidence)),
         'source_taxonomy_tags':topics,'ontology_neighbor_tags':[t for t in analysis.inferred_tags if t.startswith('neighbor:')],
@@ -240,13 +249,21 @@ def evidence_quality_issues(record: Any) -> list[str]:
     try:
         if score_to_label(score)!=field(record,'relevance_label'):issues.append('RELEVANCE_SCORE_LABEL_INCONSISTENT')
     except ValueError:issues.append('RELEVANCE_SCORE_LABEL_INCONSISTENT')
+    scope,_=source_scope_score(record)
+    if field(record,'relevance_label') in {'A','B'} and scope not in {Scope.DIRECT_LATTICE_CRYPTO,Scope.DIRECT_LATTICE_HARDNESS_THEORY}:
+        issues.append('UNSUPPORTED_LATTICE_AB_CLASSIFICATION')
     if field(record,'evidence_policy_version')!=POLICY_VERSION:return issues
+    from lattice_digest.scientific_scope import evaluate_scope
+    scientific=evaluate_scope(record)
+    if (field(record,'source_relation_roles',[])!=scientific['source_relation_roles'] or
+        field(record,'scientific_scope')!=scientific['scientific_scope']):
+        issues.append('SOURCE_RELATION_ROLE_EVIDENCE_MISMATCH')
     # Independently re-extract the same source-grounded typed relations used by
     # binding. Never trust stored consequence_edges or generated rationale.
     scope,_=source_scope_score(record)
     cap={Scope.DIRECT_LATTICE_CRYPTO:100,Scope.DIRECT_LATTICE_HARDNESS_THEORY:100,
          Scope.LATTICE_METHOD_IN_ADJACENT_CRYPTO:59,Scope.ADJACENT_PQC:59,
-         Scope.INDIRECT_RESEARCH_HYPOTHESIS:59,Scope.OUT_OF_SCOPE:39}[scope]
+         Scope.INDIRECT_RESEARCH_HYPOTHESIS:59,Scope.GENERAL_CRYPTO_BACKGROUND:59,Scope.OUT_OF_SCOPE:39}[scope]
     if isinstance(score,int) and score>cap:issues.append('ONTOLOGY_COANCHOR_POLICY_VIOLATION')
     expected=analyze_source(record);ids=set(expected.source_concept_ids)
     if set(field(record,'source_evidence_terms',[])) != {m.source_term for m in expected.source_evidence}:

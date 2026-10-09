@@ -1,0 +1,38 @@
+[
+  {
+    "path": "D:\\Code\\CodexProjects\\lattice-crypto-daily-digest\\data\\2026\\daily\\2026-10-07.json",
+    "expected_sha256": "c40e704118f9c26ca62ff01fbad67b2d3bc4ced20cbd302726af52dcfa71509a",
+    "actual_sha256": "c40e704118f9c26ca62ff01fbad67b2d3bc4ced20cbd302726af52dcfa71509a",
+    "unchanged": true
+  },
+  {
+    "path": "D:\\Code\\CodexProjects\\lattice-crypto-daily-digest\\digests\\2026\\daily\\2026-10-07.md",
+    "expected_sha256": "2e9325bdd2816fd6734e2c82015f697fc1a3ecf2c2f2a29565999ec7be4408cc",
+    "actual_sha256": "2e9325bdd2816fd6734e2c82015f697fc1a3ecf2c2f2a29565999ec7be4408cc",
+    "unchanged": true
+  },
+  {
+    "path": "D:\\Code\\CodexProjects\\lattice-crypto-daily-digest\\data\\2026\\daily\\2026-10-08.json",
+    "expected_sha256": "2360e6b3e402185ed3be1f8c98aa42297488833284f5c217a7a1a63eb37f3386",
+    "actual_sha256": "2360e6b3e402185ed3be1f8c98aa42297488833284f5c217a7a1a63eb37f3386",
+    "unchanged": true
+  },
+  {
+    "path": "D:\\Code\\CodexProjects\\lattice-crypto-daily-digest\\digests\\2026\\daily\\2026-10-08.md",
+    "expected_sha256": "270cb325840c3807ddecd24414872eafcb0ba2b36a13c6b346209665c0ec538d",
+    "actual_sha256": "270cb325840c3807ddecd24414872eafcb0ba2b36a13c6b346209665c0ec538d",
+    "unchanged": true
+  },
+  {
+    "path": "D:\\Code\\CodexProjects\\lattice-crypto-daily-digest\\data\\2026\\daily\\2026-10-09.json",
+    "expected_sha256": "82411048d25433a941acc931d736029105f828f0fbef7a005c6d3b6efe3c7739",
+    "actual_sha256": "82411048d25433a941acc931d736029105f828f0fbef7a005c6d3b6efe3c7739",
+    "unchanged": true
+  },
+  {
+    "path": "D:\\Code\\CodexProjects\\lattice-crypto-daily-digest\\digests\\2026\\daily\\2026-10-09.md",
+    "expected_sha256": "9bfff8f937f99504fcd26a05f71161cf115a4263c07776dc1d56fb9ecbe10093",
+    "actual_sha256": "9bfff8f937f99504fcd26a05f71161cf115a4263c07776dc1d56fb9ecbe10093",
+    "unchanged": true
+  }
+]

@@ -1,0 +1,32 @@
+{
+  "development_repo": "D:/Code/CodexProjects/lattice-crypto-daily-digest",
+  "development_head": "d89e77da83bbbfdd6144522005dcbbc31a34d542",
+  "candidate_base": "0f387ef1ad388a1db47b9d062480929dd7d239d5",
+  "current_development_diff_sha256": "96475c0c7c51ec2144caa2f0ad79f2e8c1111919605f498126a40837af62a191",
+  "frozen_development_diff_file_sha256": "f822f5335a27c0e17e465d1c2ad635f7536e8c34f58bac3cbbc8eeb065d86181",
+  "development_diff_content_matches_frozen": true,
+  "overlapping_changed_paths": [],
+  "integration_action": "NO_APPLY_NO_OVERWRITE; future integration must reconcile these overlaps explicitly",
+  "runtime_head": "0f387ef1ad388a1db47b9d062480929dd7d239d5",
+  "observed_live_origin_main": "0f387ef1ad388a1db47b9d062480929dd7d239d5",
+  "development_status_content_matches_frozen": true,
+  "development_head_is_ancestor_of_published_base": null,
+  "committed_base_comparison": "NOT_AVAILABLE_WITHOUT_MUTATING_DEVELOPMENT_GIT_STATE",
+  "ancestry_check_status": "CROSS_REPO_COMMIT_OBJECT_UNAVAILABLE_IN_DEVELOPMENT; no fetch/mutation performed",
+  "committed_tree_difference_paths": [
+    "config/runtime_dependencies.json",
+    "docs/operations/daily_publication_qa_failure_contract_v1.md",
+    "src/lattice_digest/dedup.py",
+    "src/lattice_digest/evidence_contract.py",
+    "src/lattice_digest/publication_diagnostics.py",
+    "src/lattice_digest/storage.py",
+    "tests/fixtures/publication_qa_incident_2026_10_07.json",
+    "tests/test_publication_failure_diagnostics.py"
+  ],
+  "candidate_paths_with_committed_tree_differences": [
+    "config/runtime_dependencies.json",
+    "src/lattice_digest/evidence_contract.py",
+    "src/lattice_digest/storage.py"
+  ],
+  "base_governance": "Candidate uses verified published origin/main; development checkout remains unchanged and is not represented as that published base."
+}

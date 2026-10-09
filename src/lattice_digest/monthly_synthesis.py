@@ -1,5 +1,7 @@
 from __future__ import annotations
 
+from lattice_digest.publication_events import period_views, normalize_period_inputs
+
 import argparse
 import calendar
 import json
@@ -151,7 +153,8 @@ def _prepare_record(record: dict[str, Any], day: date) -> dict[str, Any]:
 def aggregate_records(daily_payloads: list[tuple[date, dict[str, Any]]]) -> list[dict[str, Any]]:
     by_key: dict[str, dict[str, Any]] = {}
     for day, payload in daily_payloads:
-        for record in _records(payload):
+        from lattice_digest.publication_events import period_event_rows
+        for record in period_event_rows(payload):
             item = _prepare_record(record, day)
             key = dedup_key(item)
             by_key[key] = _merge_record(by_key[key], item) if key in by_key else item
@@ -385,6 +388,7 @@ def build_monthly_synthesis(
             print(f"Warning: using legacy daily JSON fallback: {path}")
         loaded.append((day, assess_daily_input(path, day, data_dir, used_legacy)))
         input_daily_files.append(path.as_posix())
+    loaded = normalize_period_inputs(loaded)
     records = aggregate_records(loaded)
     from lattice_digest.evidence_contract import classification_summary
     classification = classification_summary(records)
@@ -407,6 +411,7 @@ def build_monthly_synthesis(
     generated = generated_at or datetime.now(timezone.utc)
     return {
         **classification,
+        "publication_event_views": period_views(loaded),
         "schema_version": SCHEMA_VERSION,
         "month": month,
         "generated_at": generated.isoformat(),
