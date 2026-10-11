@@ -308,11 +308,45 @@ def normalize_period_inputs(loaded):
 
 def period_views(loaded):
     collections={k:{} for k in COLLECTIONS}
+    evidence_inputs=[]
+    verified=set();derived=set();unassessed=set()
     for day,payload in loaded:
-        if payload.get('_daily_input_quality',{}).get('semantic_status') in {'FAIL','UNKNOWN'}:continue
-        for name,entries in payload.get('_period_event_ledger',payload.get('publication_event_ledger',{})).get('collections',{}).items():
+        status=payload.get('_daily_input_quality',{}).get('semantic_status')
+        current=payload.get('metadata',{}).get('publication_policy_version')==POLICY_VERSION
+        reconstructed=payload.get('_period_reconciliation')=='SOURCE_WINDOW_REPLAY_OF_PRE_P0_CONTROLLED_DAILY'
+        tier=('UNRESOLVED_DAILY_INPUT' if status in {'FAIL','UNKNOWN'} else
+              'DERIVED_HISTORICAL_EVENT_CANDIDATE' if reconstructed else
+              'VERIFIED_CURRENT_SCHEMA_EVENT' if current and status=='PASS' else
+              'UNASSESSED_CURRENT_SCHEMA_EVENT' if current else 'UNRESOLVED_LEGACY_ARCHIVE')
+        evidence_inputs.append({'date':day.isoformat(),'evidence_tier':tier,
+                                'semantic_status':status or 'UNASSESSED',
+                                'original_record_population':len(payload.get('records',[]))})
+        if status in {'FAIL','UNKNOWN'}:continue
+        ledger=payload.get('_period_event_ledger',payload.get('publication_event_ledger',{}))
+        for name,entries in ledger.get('collections',{}).items():
             if name in collections:
                 for entry in entries:collections[name][entry['event_id']]=entry
+            if name in CORE_EVENTS:
+                target=derived if reconstructed else verified if current and status=='PASS' else unassessed
+                target.update(entry['event_id'] for entry in entries)
     return {'collections':{k:list(v.values()) for k,v in collections.items()},
             'counts':{k:len(v) for k,v in collections.items()},
+            'evidence_provenance':{
+                'policy_version':'period-event-evidence-v1',
+                'verified_current_schema_event_count':len(verified),
+                'derived_historical_event_candidate_count':len(derived-verified),
+                'unassessed_event_count':len(unassessed-verified-derived),
+                'input_evidence_tiers':evidence_inputs,
+                'reconstruction_status':'DERIVED_VIEW_NOT_SOURCE_OBSERVED_CURRENT_SCHEMA_FACT',
+            },
             'trend_scope':'loaded canonical publication events only; partial source coverage does not establish a global field trend'}
+
+
+def period_evidence_caveat(views):
+    evidence=views.get('evidence_provenance')
+    if not evidence:
+        return '- 事件证据等级：旧报告未记录；不得将档案人口解释为已核验出版事件。'
+    return (f"- 事件证据等级：当前模式已核验事件 {evidence['verified_current_schema_event_count']}；"
+            f"旧日报重建候选 {evidence['derived_historical_event_candidate_count']}；"
+            f"未核验事件 {evidence['unassessed_event_count']}。"
+            '重建候选是来源窗口与历史记录的派生视图，不是新观察到的当前模式事实；输入齐全不等于来源覆盖完整。')

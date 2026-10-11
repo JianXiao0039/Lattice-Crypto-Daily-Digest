@@ -1,6 +1,6 @@
 from __future__ import annotations
 
-from lattice_digest.publication_events import period_views, normalize_period_inputs
+from lattice_digest.publication_events import period_views, normalize_period_inputs, period_evidence_caveat
 
 import argparse
 import calendar
@@ -483,6 +483,7 @@ def render_markdown(payload: dict[str, Any]) -> str:
         f"- total unique papers: {payload['total_unique_records']}",
         f"- Input authority: {payload.get('input_quality', {}).get('authority_state', 'UNKNOWN')}; fully valid Daily={len(payload.get('input_quality', {}).get('fully_valid_days', []))}",
         f"- Daily semantic failures: {payload.get('input_quality', {}).get('semantic_failed_days', [])}; unknown: {payload.get('input_quality', {}).get('semantic_unknown_days', [])}",
+        period_evidence_caveat(payload.get('publication_event_views',{})),
         '- Translation: TRANSLATION_BACKEND_SELECTION_REQUIRED; BILINGUAL_RELEASE_NOT_YET_AVAILABLE',
         f"- Upstream/provenance A/B/C class counts: {payload['class_counts']}; validated={payload.get('validated_label_counts', {})}; conflicts={payload.get('classification_conflict_count', 'unknown')}; classification quality={payload.get('classification_quality_state', 'UNKNOWN')}",
         f"- top directions: {', '.join(f'{name} ({count})' for name, count in top_directions) if top_directions else 'none'}",

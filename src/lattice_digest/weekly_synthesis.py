@@ -1,6 +1,6 @@
 from __future__ import annotations
 
-from lattice_digest.publication_events import period_views, normalize_period_inputs, period_event_rows
+from lattice_digest.publication_events import period_views, normalize_period_inputs, period_event_rows, period_evidence_caveat
 
 import argparse
 import json
@@ -896,6 +896,7 @@ def render_markdown(payload: dict[str, Any]) -> str:
         f"- Classification quality: {payload.get('classification_quality_state', 'UNKNOWN')}; provenance labels={payload.get('provenance_label_counts', payload.get('label_counts', {}))}; validated labels={payload.get('validated_label_counts', {})}; conflicts={payload.get('classification_conflict_count', 'unknown')}",
         f"- Fully valid Daily: {len(coverage.get('fully_valid_days', []))}/{coverage['expected_days']}; authority={coverage.get('authority_state', 'UNKNOWN')}",
         f"- Daily semantic defects: failed={coverage.get('semantic_failed_days', [])}; unknown={coverage.get('semantic_unknown_days', [])}",
+        period_evidence_caveat(payload.get('publication_event_views',{})),
         "",
         "## Executive Summary",
         "",
