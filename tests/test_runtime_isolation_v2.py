@@ -36,7 +36,12 @@ def published_repo(tmp_path):
     git('add', '--', *sorted(paths))
     git('commit', '-m', 'fixture published authority')
     git('update-ref', 'refs/remotes/origin/main', 'HEAD')
-    git('remote', 'add', 'origin', str(root))
+    # TEST AUTHORITY only. A bare remote permits fixture publication without
+    # mutating a checked-out branch or relaxing receive.denyCurrentBranch.
+    authority = tmp_path / 'test-authority.git'
+    subprocess.check_output(['git', 'clone', '--bare', str(root), str(authority)],
+                            stderr=subprocess.STDOUT)
+    git('remote', 'add', 'origin', str(authority))
     return root, git
 
 
@@ -45,7 +50,8 @@ def invoke(root, canonical, module, args):
                LATTICE_DIGEST_CANONICAL_ROOT=str(canonical), PYTHONDONTWRITEBYTECODE='1')
     env.pop('LATTICE_DIGEST_PUBLIC_AUTOMATION', None)
     env.pop('LATTICE_DIGEST_ENV_FILE', None)
-    return subprocess.run([sys.executable, '-m', module, *args], cwd=root, env=env,
+    return subprocess.run([os.environ.get('LATTICE_DIGEST_TEST_PUBLIC_PYTHON', sys.executable),
+                           '-m', module, *args], cwd=root, env=env,
                           capture_output=True, text=True, encoding='utf-8')
 
 
@@ -301,3 +307,211 @@ def test_exact_existing_target_stops_before_discovery_and_never_auto_supersedes(
                      '--coverage-end','2025-01-07T09:04:26.631541+08:00']) == 2
     assert path.read_text(encoding='utf-8') == original
     assert [entry for entry in tmp_path.rglob('*') if entry.is_file()] == [path]
+
+
+@pytest.fixture
+def nested_repo(published_repo, tmp_path):
+    published, _ = published_repo
+    canonical = tmp_path / 'canonical'
+    root = canonical / '.ops/runtime/published'
+    shutil.copytree(published, root)
+    def git(*args):
+        return subprocess.check_output(['git', *args], cwd=root, stderr=subprocess.DEVNULL)
+    return root, canonical, git
+
+
+@pytest.mark.parametrize('module,args', [
+    ('lattice_digest.public_daily', ['--preflight','--since','36h']),
+    ('lattice_digest.public_weekly', ['--preflight']),
+    ('lattice_digest.public_monthly', ['--preflight']),
+    ('lattice_digest.public_monthly', ['--preflight','--exports']),
+    ('lattice_digest.public_monthly', ['--preflight','--exports','--obsidian']),
+])
+def test_trusted_nested_runtime_with_dirty_outer_source_passes(nested_repo, module, args):
+    root, canonical, _ = nested_repo
+    outer = canonical / 'src/lattice_digest/workflow.py'
+    outer.parent.mkdir(parents=True)
+    outer.write_text("raise RuntimeError('dirty development must never execute')\n")
+    before = outer.read_bytes()
+    result = invoke(root, canonical, module, args)
+    assert result.returncode == 0, result.stdout + result.stderr
+    proof = json.loads(result.stdout)
+    assert proof['writes'] == 0
+    assert proof['runtime_provenance']['runtime_code_state'] == 'PUBLISHED_CLEAN_RUNTIME'
+    assert proof['runtime_provenance']['runtime_provenance_observation'] == 'LIVE_REMOTE'
+    assert all((root / name).is_file() for name in proof['observed_import_paths'])
+    assert outer.read_bytes() == before
+    assert not (canonical / 'papers.db').exists()
+
+
+@pytest.mark.parametrize('mutation', ['dirty_workflow','unpublished','missing_manifest','incorrect_manifest',
+    'manifest_omission','incorrect_canonical','runtime_db','runtime_data','arbitrary_ops'])
+def test_nested_boundary_adversarial_blocks(nested_repo, mutation):
+    root, canonical, git = nested_repo
+    if mutation == 'dirty_workflow':
+        with (root/'src/lattice_digest/workflow.py').open('a') as stream:
+            stream.write('\n# dirty runtime\n')
+    elif mutation == 'unpublished':
+        (root/'note.md').write_text('unpublished docs-only commit')
+        git('add','--','note.md'); git('commit','-m','unpublished')
+        # A stale/manipulated tracking ref must not authorize the commit.
+        git('update-ref','refs/remotes/origin/main','HEAD')
+    elif mutation == 'missing_manifest':
+        (root/MANIFEST_PATH).unlink()
+    elif mutation in ('incorrect_manifest','manifest_omission'):
+        manifest = json.loads((root/MANIFEST_PATH).read_text())
+        if mutation == 'incorrect_manifest':
+            manifest['schema_version'] = 999
+        else:
+            manifest['profiles']['DAILY']['paths'].remove('src/lattice_digest/workflow.py')
+        (root/MANIFEST_PATH).write_text(json.dumps(manifest))
+        git('add','--',MANIFEST_PATH); git('commit','-m','invalid fixture manifest')
+        git('push','origin','HEAD:refs/heads/main')  # Only the temporary local fixture remote.
+    elif mutation == 'incorrect_canonical':
+        canonical = canonical / 'wrong'
+        canonical.mkdir()
+    elif mutation == 'runtime_db':
+        (root/'papers.db').write_bytes(b'second universe')
+    elif mutation == 'runtime_data':
+        (root/'data').mkdir()
+    else:
+        other = canonical / '.ops/arbitrary'
+        shutil.copytree(root, other)
+        root = other
+    result = invoke(root, canonical, 'lattice_digest.public_daily', ['--preflight'])
+    assert result.returncode == 2, result.stdout + result.stderr
+    assert not (canonical/'data').exists()
+
+
+@pytest.mark.parametrize('entry', ['outer_src','arbitrary_ops','external','empty'])
+def test_nested_unexpected_pythonpath_blocks(nested_repo, tmp_path, entry):
+    root, canonical, _ = nested_repo
+    extra = {'outer_src':str(canonical/'src'), 'arbitrary_ops':str(canonical/'.ops/other'),
+             'external':str(tmp_path/'unknown'), 'empty':''}[entry]
+    env = dict(os.environ, PYTHONPATH=str(root/'src')+os.pathsep+extra,
+               LATTICE_DIGEST_CANONICAL_ROOT=str(canonical), PYTHONDONTWRITEBYTECODE='1')
+    result = subprocess.run([sys.executable,'-m','lattice_digest.public_daily','--preflight'],
+                            cwd=root,env=env,capture_output=True,text=True)
+    assert result.returncode == 2, result.stdout + result.stderr
+
+
+def test_outer_unknown_module_import_blocks(nested_repo):
+    root, canonical, _ = nested_repo
+    source = canonical/'outer.py'
+    source.write_text('value = 1\n')
+    script = (
+        'import importlib.util,sys; '
+        f'spec=importlib.util.spec_from_file_location("unknown_outer",{str(source)!r}); '
+        'module=importlib.util.module_from_spec(spec); sys.modules[spec.name]=module; '
+        'spec.loader.exec_module(module); '
+        'from lattice_digest.public_daily import main; sys.exit(main(["--preflight"]))')
+    env = dict(os.environ,PYTHONPATH=str(root/'src'),LATTICE_DIGEST_CANONICAL_ROOT=str(canonical),
+               PYTHONDONTWRITEBYTECODE='1')
+    result = subprocess.run([sys.executable,'-c',script],cwd=root,env=env,capture_output=True,text=True)
+    assert result.returncode == 2 and 'canonical development tree' in result.stdout
+
+
+def test_outer_lattice_module_import_blocks(nested_repo):
+    root, canonical, _ = nested_repo
+    source = canonical/'workflow.py'
+    source.write_text('value = 1\n')
+    script = (
+        'import importlib.util,sys; from lattice_digest.public_daily import main; '
+        f'spec=importlib.util.spec_from_file_location("lattice_digest.workflow",{str(source)!r}); '
+        'module=importlib.util.module_from_spec(spec); sys.modules[spec.name]=module; '
+        'spec.loader.exec_module(module); sys.exit(main(["--preflight"]))')
+    env = dict(os.environ,PYTHONPATH=str(root/'src'),LATTICE_DIGEST_CANONICAL_ROOT=str(canonical),
+               PYTHONDONTWRITEBYTECODE='1')
+    result = subprocess.run([sys.executable,'-c',script],cwd=root,env=env,capture_output=True,text=True)
+    assert result.returncode == 2 and 'canonical development tree' in result.stdout
+
+
+@pytest.mark.parametrize('target', ['runtime','canonical_data','dependency'])
+def test_windows_junction_escape_blocks(nested_repo, tmp_path, target):
+    root, canonical, _ = nested_repo
+    outside = tmp_path/'outside'
+    outside.mkdir()
+    if target == 'runtime':
+        saved = tmp_path/'saved_runtime'
+        shutil.move(root,saved)
+        link, destination = root, saved
+    elif target == 'canonical_data':
+        link, destination = canonical/'data', outside
+    else:
+        saved = outside/'lattice_digest'
+        shutil.move(root/'src/lattice_digest',saved)
+        link, destination = root/'src/lattice_digest', saved
+    if os.name == 'nt':
+        # Windows native junctions need no Developer Mode/admin symlink privilege.
+        result = subprocess.run(['cmd','/c','mklink','/J',str(link),str(destination)],capture_output=True)
+        assert result.returncode == 0, result.stderr
+    else:
+        link.symlink_to(destination,target_is_directory=True)
+    try:
+        result = invoke(root,canonical,'lattice_digest.public_daily',['--preflight'])
+        assert result.returncode == 2, result.stdout + result.stderr
+    finally:
+        if os.name == 'nt':
+            os.rmdir(link)  # Remove only the fixture junction, never its target.
+        else:
+            link.unlink()
+
+
+def test_windows_case_and_dot_normalization(nested_repo):
+    root, canonical, _ = nested_repo
+    env = dict(os.environ,PYTHONPATH=str(root/'src'),PYTHONDONTWRITEBYTECODE='1',
+               LATTICE_DIGEST_CANONICAL_ROOT=str(canonical/'.'/'child'/'..'))
+    (canonical/'child').mkdir()
+    if os.name == 'nt':
+        env['LATTICE_DIGEST_CANONICAL_ROOT'] = env['LATTICE_DIGEST_CANONICAL_ROOT'].swapcase()
+        env['PYTHONPATH'] = env['PYTHONPATH'].swapcase()
+    result = subprocess.run([sys.executable,'-m','lattice_digest.public_weekly','--preflight'],
+                            cwd=root,env=env,capture_output=True,text=True)
+    assert result.returncode == 0, result.stdout + result.stderr
+
+
+def test_git_discovery_cannot_inherit_outer_repository(published_repo):
+    root, _ = published_repo
+    child = root / 'ordinary-subdirectory'
+    child.mkdir()
+    info = runtime_provenance(child, 'DAILY', verify_remote=True)
+    assert info['runtime_code_state'] == 'UNKNOWN_RUNTIME_PROVENANCE'
+    assert 'independent Git checkout' in info['runtime_provenance_error']
+
+
+def test_unknown_live_authority_blocks(nested_repo):
+    root, canonical, git = nested_repo
+    git('remote', 'remove', 'origin')
+    result = invoke(root, canonical, 'lattice_digest.public_daily', ['--preflight'])
+    assert result.returncode == 2
+    assert 'UNKNOWN_RUNTIME_PROVENANCE' in result.stdout
+
+
+def test_manifest_worktree_hash_mismatch_blocks(nested_repo):
+    root, canonical, _ = nested_repo
+    with (root / MANIFEST_PATH).open('a') as stream:
+        stream.write('\n ')
+    result = invoke(root, canonical, 'lattice_digest.public_weekly', ['--preflight'])
+    assert result.returncode == 2
+    assert 'DIRTY_RUNTIME_DEPENDENCY' in result.stdout
+
+
+@pytest.mark.parametrize('location', ['untrusted_ops', 'trusted_unmanifested'])
+def test_untrusted_module_not_hidden_by_nonpackage_name(nested_repo, location):
+    root, canonical, _ = nested_repo
+    source = (canonical / '.ops/other' if location == 'untrusted_ops' else root) / 'extra.py'
+    source.parent.mkdir(parents=True, exist_ok=True)
+    source.write_text('value = 1\n')
+    script = (
+        'import importlib.util,sys; '
+        f'spec=importlib.util.spec_from_file_location("untrusted_extra",{str(source)!r}); '
+        'module=importlib.util.module_from_spec(spec); sys.modules[spec.name]=module; '
+        'spec.loader.exec_module(module); '
+        'from lattice_digest.public_daily import main; sys.exit(main(["--preflight"]))')
+    env = dict(os.environ, PYTHONPATH=str(root/'src'),
+               LATTICE_DIGEST_CANONICAL_ROOT=str(canonical), PYTHONDONTWRITEBYTECODE='1')
+    result = subprocess.run([sys.executable, '-c', script], cwd=root, env=env,
+                            capture_output=True, text=True)
+    assert result.returncode == 2
+    assert ('canonical development tree' if location == 'untrusted_ops'
+            else 'import omitted from command manifest') in result.stdout

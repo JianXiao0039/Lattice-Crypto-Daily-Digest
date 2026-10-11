@@ -24,6 +24,10 @@ def runtime_provenance(root: Path, command: str = 'DAILY', *, verify_remote: boo
     def git(*args):
         return subprocess.check_output(['git', *args], cwd=root, stderr=subprocess.DEVNULL, timeout=30)
     try:
+        # Git discovery must not silently inherit the outer development repo.
+        actual_root = Path(git('rev-parse', '--show-toplevel').decode().strip()).resolve()
+        if actual_root != root.resolve():
+            raise ValueError('runtime must have its own independent Git checkout')
         head = git('rev-parse', 'HEAD').decode().strip()
         origin = git('rev-parse', 'refs/remotes/origin/main').decode().strip()
         if verify_remote:

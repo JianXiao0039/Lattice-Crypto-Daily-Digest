@@ -1,14 +1,50 @@
 # Public runtime isolation and exact recovery
 
+## Controlled single-root runtime
+
+The only supported nested checkout is
+`<canonical_root>/.ops/runtime/published`. Its code root must be distinct from
+the canonical root. This path permission does not bypass live `origin/main`,
+published command dependency blobs, manifest closure, or import tracing.
+Every public command still verifies the live remote. Dirty outer development
+files do not participate in execution; dirty command dependencies or any
+unpublished runtime HEAD fail closed.
+
+Use an independent Git clone with a sparse worktree that excludes `/data/`,
+`/digests/`, `/papers.db`, `/state/`, `/exports/`, and `/audits/`. These historical
+tracked artifacts remain in Git history, but must not exist in the execution
+checkout. Public entries reject a runtime-local artifact universe. External
+clean runtimes remain supported with the same artifact separation requirement.
+
+Exclude `/.ops/` in the development repository's local `.git/info/exclude`;
+do not stage its nested repository or evidence. The ignore rule also keeps
+ordinary `rg` discovery out of this operations namespace. Explicit operations
+audits may inspect it.
+
+For each child process, set CWD to the published checkout, set `PYTHONPATH` to
+its `src` directory, set `LATTICE_DIGEST_CANONICAL_ROOT` to the outer project,
+and set `PYTHONDONTWRITEBYTECODE=1`. Production uses the explicitly selected
+Python 3.13 executable. Do not change machine-wide environment variables.
+Additional or empty PYTHONPATH entries, other canonical import paths, outer
+development imports, symlinks/junctions along checked paths, redirected
+canonical artifact paths, and arbitrary nested operations directories block.
+
+Deterministic full-generation tests use a separate scratch canonical root with
+its own exact nested published fixture checkout. Never redirect the production
+checkout to another operations root merely to bypass the canonical-root check.
+Live automation objects require management-API/UI read-back; copied TOML files
+and manual test runs do not prove migration or scheduled delivery.
+
 Public code runs from a published, clean checkout. Set one absolute artifact root:
 
 ```powershell
-Set-Location 'D:\Code\CodexProjects\lattice-crypto-daily-digest-runtime'
+Set-Location 'D:\Code\CodexProjects\lattice-crypto-daily-digest\.ops\runtime\published'
 $env:PYTHONPATH = (Join-Path (Get-Location) 'src')
 $env:LATTICE_DIGEST_CANONICAL_ROOT = 'D:\Code\CodexProjects\lattice-crypto-daily-digest'
-& 'D:\CyberSecurity\Python315\python.exe' -m lattice_digest.public_daily --preflight --since 36h
-& 'D:\CyberSecurity\Python315\python.exe' -m lattice_digest.public_weekly --preflight
-& 'D:\CyberSecurity\Python315\python.exe' -m lattice_digest.public_monthly --preflight
+$env:PYTHONDONTWRITEBYTECODE = '1'
+& 'D:\CyberSecurity\Python313\python.exe' -m lattice_digest.public_daily --preflight --since 36h
+& 'D:\CyberSecurity\Python313\python.exe' -m lattice_digest.public_weekly --preflight
+& 'D:\CyberSecurity\Python313\python.exe' -m lattice_digest.public_monthly --preflight
 ```
 
 `RuntimePaths` anchors imports/config to code and derives data, digests, audits,
