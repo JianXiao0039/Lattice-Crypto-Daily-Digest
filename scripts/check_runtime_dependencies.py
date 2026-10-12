@@ -13,15 +13,17 @@ def build_manifest(root: Path = ROOT) -> dict:
               'config/retrieval_ontology_v3.yaml']
     common += [name for name in ('requirements.txt', 'uv.lock', 'poetry.lock') if (root / name).is_file()]
     profiles = {}
-    for name in ('DAILY', 'WEEKLY', 'MONTHLY', 'MONTHLY_EXPORTS', 'MONTHLY_OBSIDIAN'):
+    for name in ('DAILY', 'WEEKLY', 'MONTHLY', 'MONTHLY_EXPORTS', 'MONTHLY_OBSIDIAN', 'REPORT_REPAIR'):
         command = name.split('_')[0].lower()
-        roots = [f'src/lattice_digest/public_{command}.py']
+        roots = ['src/lattice_digest/report_repair.py'] if name == 'REPORT_REPAIR' else [f'src/lattice_digest/public_{command}.py']
         scopes, branches = {}, {}
         non_python = list(common)
         if name == 'DAILY':
             scopes['src/lattice_digest/workflow.py'] = ['doctor_report', '_doctor_release_hygiene', '_latest']
             non_python += ['config/taxonomy.yaml', 'config/keywords.yaml', 'config/negative_keywords.yaml',
                            'config/query_portfolio_v3.yaml', 'CHANGELOG.md', 'docs/releases/v0.4.1.md']
+        if name == 'REPORT_REPAIR':
+            non_python += ['config/taxonomy.yaml', 'config/keywords.yaml', 'config/negative_keywords.yaml']
         if name.startswith('MONTHLY'):
             branches = {'src/lattice_digest/public_monthly.py': {'args.exports': name != 'MONTHLY'},
                         'src/lattice_digest/monthly_downstream.py': {'obsidian': name == 'MONTHLY_OBSIDIAN'}}
