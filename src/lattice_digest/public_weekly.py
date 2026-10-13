@@ -4,7 +4,7 @@ import argparse
 import json
 from datetime import datetime, timedelta
 from zoneinfo import ZoneInfo
-from lattice_digest.public_contract import public_preflight, finish_telemetry
+from lattice_digest.public_contract import public_preflight, finish_telemetry, record_entry_failure
 from lattice_digest.weekly_synthesis import build_weekly_synthesis, write_weekly_outputs
 from lattice_digest.runtime_provenance import schedule_telemetry
 
@@ -16,6 +16,7 @@ def main(argv: list[str] | None = None) -> int:
     parser.add_argument('--to-date')
     args = parser.parse_args(argv)
     started = datetime.now(ZoneInfo('Asia/Singapore'))
+    proof = {}; stage = 'PREFLIGHT'
     try:
         paths, proof = public_preflight('WEEKLY')
         end = (datetime.fromisoformat(args.to_date).date() if args.to_date else
@@ -27,6 +28,7 @@ def main(argv: list[str] | None = None) -> int:
         if args.preflight:
             print(json.dumps(proof, ensure_ascii=False, indent=2))
             return 0
+        stage = 'REPORT_GENERATION'
         payload = build_weekly_synthesis(paths.data_root, start, end)
         payload.setdefault('metadata', {}).update(proof['runtime_provenance'])
         payload['metadata'].update(schedule_telemetry(started))
@@ -36,6 +38,8 @@ def main(argv: list[str] | None = None) -> int:
         return 0
     except ValueError as exc:
         print(str(exc))
+        receipt = record_entry_failure('WEEKLY', exc, stage=stage, proof=proof, arguments=argv)
+        if receipt: print('Operational failure receipt: ' + receipt)
         return 2
 
 

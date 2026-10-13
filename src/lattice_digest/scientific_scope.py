@@ -45,7 +45,7 @@ COMPONENT = r'\b(?:iot|gateway|hybrid[ -](?:authenticated|ake)|authenticated[ -]
 COMPARE = r'\b(?:compar(?:e|es|ed|ing|ison)|baseline|beyond|diversity|versus|vs\.?|related work|background|unlike)\b'
 NON_CRYPTO_DOMAIN = r'\b(?:Landau[ -]levels?|Bose[ -](?:Einstein|gas)|Chern[ -]insulator|quantum[ -]Hall|Hubbard[ -]model|phonons?|ferroic|ferroelectric|electron[ -]microscopy|Steinberg[ -]algebras?|Leavitt[ -]path[ -]algebras?|Gibbsian[ -]particle|crystal[ -]lattice|lattice[ -]QCD|lattice[ -]Boltzmann|interatomic[ -]potentials?)\b'
 CRYPTO_CONTEXT = r'\b(?:cryptograph\w*|cryptanalysis|ml[ -]kem|ml[ -]dsa|fn[ -]dsa|kyber|dilithium|ntru|learning[ -]with[ -]errors|lattice[ -](?:signatures?|trapdoors?|encryption))\b'
-PHYSICAL = r'\b(?:side[ -]channel|leakage|hint weight|statistical fingerprint|fault|implementation|implement|masking|power|timing|cache|avx|fpga|cortex)\b'
+PHYSICAL = r'\b(?:side[ -]channel|leakage|hint weight|statistical fingerprint|fault|implementation|implement|masking|low[ -]power|power[ -](?:analysis|traces?|consumption|measurements?)|timing|cache|avx|fpga|cortex)\b'
 
 
 def _field(row: Any, key: str, default=''):

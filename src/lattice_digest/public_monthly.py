@@ -4,7 +4,7 @@ import argparse
 import json
 from datetime import datetime, timedelta
 from zoneinfo import ZoneInfo
-from lattice_digest.public_contract import public_preflight, finish_telemetry
+from lattice_digest.public_contract import public_preflight, finish_telemetry, record_entry_failure
 from lattice_digest.monthly_synthesis import build_monthly_synthesis, write_monthly_outputs
 from lattice_digest.runtime_provenance import schedule_telemetry
 
@@ -20,6 +20,7 @@ def main(argv: list[str] | None = None) -> int:
         parser.error('--obsidian requires --exports')
     started = datetime.now(ZoneInfo('Asia/Singapore'))
     profile = 'MONTHLY_OBSIDIAN' if args.obsidian else ('MONTHLY_EXPORTS' if args.exports else 'MONTHLY')
+    proof = {}; stage = 'PREFLIGHT'
     try:
         paths, proof = public_preflight(profile)
         month = args.month or (started.date().replace(day=1) - timedelta(days=1)).strftime('%Y-%m')
@@ -29,6 +30,7 @@ def main(argv: list[str] | None = None) -> int:
         if args.preflight:
             print(json.dumps(proof, ensure_ascii=False, indent=2))
             return 0
+        stage = 'REPORT_GENERATION'
         payload = build_monthly_synthesis(paths.data_root, month)
         payload.setdefault('metadata', {}).update(proof['runtime_provenance'])
         payload['metadata'].update(schedule_telemetry(started))
@@ -41,6 +43,8 @@ def main(argv: list[str] | None = None) -> int:
         return 0
     except ValueError as exc:
         print(str(exc))
+        receipt = record_entry_failure(profile, exc, stage=stage, proof=proof, arguments=argv)
+        if receipt: print('Operational failure receipt: ' + receipt)
         return 2
 
 

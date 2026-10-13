@@ -131,3 +131,62 @@ def finish_telemetry(paths: RuntimePaths, profile: str, started: datetime, prove
     target = paths.audit_root / 'runtime' / f"{started.strftime('%Y%m%dT%H%M%S%f')}-{profile}.json"
     target.parent.mkdir(parents=True, exist_ok=True)
     target.write_text(json.dumps(metadata, ensure_ascii=False, indent=2), encoding='utf-8')
+
+
+def record_entry_failure(profile: str, exc: Exception, *, stage: str, proof: dict | None = None,
+                         arguments: list[str] | None = None) -> str | None:
+    """Persist a redacted operational receipt even when preflight never started discovery."""
+    from lattice_digest.publication_diagnostics import redact
+    from uuid import uuid4
+    import traceback
+    value = os.environ.get('LATTICE_DIGEST_CANONICAL_ROOT', '')
+    if not value or not Path(value).is_absolute() or not Path(value).is_dir():
+        return None
+    root = Path(value).absolute()
+    try:
+        _reject_redirects(root)
+        directory = root / 'audits' / 'public-entry-failures' / uuid4().hex
+        _reject_redirects(directory)
+        directory.mkdir(parents=True, exist_ok=False)
+        proof = proof or {}
+        argv = sys.argv[1:] if arguments is None else arguments
+        requested = {}
+        for flag in ('--target-date', '--coverage-start', '--coverage-end', '--from-date', '--to-date', '--month', '--since'):
+            if flag in argv:
+                index = argv.index(flag)
+                if index + 1 < len(argv): requested[flag[2:].replace('-', '_')] = argv[index + 1]
+        now = datetime.now(ZoneInfo('Asia/Singapore'))
+        from datetime import timedelta
+        default_target = now.date().isoformat() if profile == 'DAILY' else (
+            (now.date() - timedelta(days=now.weekday() + 1)).strftime('%G-W%V') if profile == 'WEEKLY' else
+            (now.date().replace(day=1) - timedelta(days=1)).strftime('%Y-%m'))
+        runtime = proof.get('runtime_provenance', 'UNKNOWN_PREFLIGHT_FAILED')
+        message = str(exc)
+        codes = ['PUBLIC_ENTRY_OPERATIONAL_FAILURE']
+        if message.startswith('PUBLIC_AUTOMATION_RUNTIME_CODE_BLOCKED: '):
+            codes.append('PUBLIC_AUTOMATION_RUNTIME_CODE_BLOCKED')
+            try: runtime = json.loads(message.split(': ', 1)[1])
+            except (ValueError, TypeError): pass
+        details = redact({'schema_version': 1, 'status': 'REPORT_NOT_GENERATED_OPERATIONAL_FAILURE',
+            'command_profile': profile, 'execution_stage': stage,
+            'recorded_at': datetime.now(ZoneInfo('Asia/Singapore')).isoformat(),
+            'target': proof.get('period', requested.get('target_date', requested.get('month', default_target))),
+            'requested_period': requested,
+            'coverage': {'coverage_start': requested.get('coverage_start', 'UNKNOWN_DISCOVERY_NOT_STARTED'),
+                         'coverage_end': requested.get('coverage_end', 'UNKNOWN_DISCOVERY_NOT_STARTED')},
+            'runtime_authority': runtime,
+            'discovery': 'NOT_STARTED' if stage == 'PREFLIGHT' else 'UNKNOWN_INSPECT_RUNTIME_JOURNAL',
+            'source_attempts': 'N/A' if stage == 'PREFLIGHT' else 'UNKNOWN_INSPECT_RUNTIME_JOURNAL',
+            'discovery_counts': 'N/A', 'artifact_creation_state': 'NOT_CREATED' if stage == 'PREFLIGHT' else 'UNKNOWN_VERIFY_CANONICAL_PAIR',
+            'qa_issue_codes': codes,
+            'affected_fields': ['runtime', 'execution_stage'],
+            'error_type': type(exc).__name__, 'error': str(exc),
+            'bounded_traceback': traceback.format_exc(limit=8),
+            'recovery_eligibility': 'EXACT_WINDOW_AND_SOURCE_EVIDENCE_REVIEW_REQUIRED'})
+        target = directory / 'failure.json'
+        with target.open('x', encoding='utf-8') as stream:
+            json.dump(details, stream, ensure_ascii=False, indent=2)
+            stream.flush(); os.fsync(stream.fileno())
+        return str(target)
+    except (OSError, ValueError):
+        return None  # The original nonzero failure remains authoritative.

@@ -33,6 +33,70 @@ SOURCE_FIELDS = ('title','authors','abstract','conclusion','source','source_url'
     'update_date','update_timestamp','update_date_kind','source_version_timestamp','first_seen_at','first_seen_date')
 REPAIR_NOTE = '\n\n<!-- verified-report-repair -->\n- 历史报告修复：保留原始来源记录与观察时间；缺失的旧版出版事件证据仍为 UNKNOWN，不能视为新观察的当前模式事实。\n'
 
+# A missing-health marker describes absent evidence, never a provider attempt.
+LEGACY_HEALTH = [{'source': 'UNKNOWN_LEGACY_PROVIDER_HEALTH',
+    'health_status': 'unknown', 'runtime_state': 'NOT_RECORDED',
+    'evidence_state': 'UNRESOLVED_EVIDENCE', 'requests_attempted': 'N/A'}]
+
+
+def prepare_legacy_candidate(original: list, original_sha256: str, target: str) -> dict:
+    """Source-only derivation; observation dates and health are explicitly absent."""
+    from lattice_digest.evidence_contract import bind_source_evidence
+    fields = ('scientific_scope', 'source_relation_roles', 'lattice_relevance_qualified', 'scope_reason',
+        'evidence_policy_version', 'evidence_items', 'consequence_edges', 'source_concept_ids',
+        'source_evidence_terms', 'source_taxonomy_tags', 'ontology_neighbor_tags', 'research_relations',
+        'user_research_hypotheses', 'source_limitations', 'relevance_scope', 'relevance_score', 'relevance_label', 'reading_priority')
+    rows = []
+    for original_row in original:
+        p = PaperRecord(**{k:v for k,v in original_row.items() if k in PaperRecord.model_fields})
+        bound = bind_source_evidence(p).model_dump(mode='json')
+        row = dict(original_row)
+        row.update({k: bound[k] for k in fields})
+        row.update(primary_today_new_eligible=False, primary_action_allowed=False,
+            publication_event_type='', freshness_bucket='date_uncertain_todo_verify',
+            source_health='unknown', source_health_provenance={
+                str(original_row.get('source') or 'UNKNOWN'): {
+                    'health_status': 'unknown', 'runtime_state': 'NOT_RECORDED', 'evidence_state': 'UNRESOLVED_EVIDENCE'}})
+        rows.append(row)
+    meta = {'target_date': target, 'target_date_basis': 'CANONICAL_FILENAME',
+        'legacy_schema_restatement': 'SOURCE_PRESERVING_UNKNOWN_WINDOW',
+        'legacy_original_json_sha256': original_sha256,
+        'coverage_start': None, 'coverage_end': None, 'run_date': None, 'run_mode': None,
+        'quality_status': None, 'publication_policy_version': None,
+        'generation_id': uuid4().hex, 'repair_executed_at': datetime.now(timezone.utc).isoformat(),
+        'publication_event_semantics': 'UNRESOLVED_LEGACY_ARCHIVE_NOT_CURRENT_EVENT_FACT',
+        'scientific_claim_verification': 'UNRESOLVED_EVIDENCE'}
+    from lattice_digest.authority import derive_authority
+    meta.update(derive_authority(rows, LEGACY_HEALTH))
+    payload = {'records': rows, 'metadata': meta, 'source_health': [dict(item) for item in LEGACY_HEALTH],
+        'warnings': ['历史来源重述；未重新采集，缺失原时窗口与提供者健康。']}
+    markdown = render_daily(payload, target)
+    qa = semantic_qa(payload, markdown.decode('utf-8'), candidate=True)
+    if qa['status'] != 'PASS': raise ValueError('legacy candidate QA failed: ' + json.dumps(qa))
+    meta['semantic_qa'] = {k:v for k,v in qa.items() if k != 'derived_authority'}
+    meta['markdown_sha256'] = digest(render_daily(payload, target))
+    return payload
+
+
+def validate_legacy_wrapper(original: list, candidate: dict, target: str) -> None:
+    """Permit an audited restatement while retaining unknown historical facts."""
+    if any(not isinstance(row, dict) for row in original):
+        raise ValueError('invalid legacy source rows')
+    if _source_projection(original) != _source_projection(candidate.get('records', [])):
+        raise ValueError('legacy source records, identities or timestamps changed')
+    meta = candidate.get('metadata', {})
+    if meta.get('legacy_schema_restatement') != 'SOURCE_PRESERVING_UNKNOWN_WINDOW':
+        raise ValueError('legacy restatement marker missing')
+    if meta.get('target_date') != target or meta.get('target_date_basis') != 'CANONICAL_FILENAME':
+        raise ValueError('legacy target ownership missing')
+    if any(meta.get(key) is not None for key in ('coverage_start', 'coverage_end', 'run_date', 'publication_policy_version')):
+        raise ValueError('legacy missing window or observation cannot be invented')
+    if 'publication_event_ledger' in candidate or candidate.get('source_health') != LEGACY_HEALTH:
+        raise ValueError('legacy publication events or provider health cannot be invented')
+    for row in candidate['records']:
+        if row.get('primary_today_new_eligible') or row.get('primary_action_allowed') or row.get('publication_event_type'):
+            raise ValueError('legacy restatement cannot promote publication events')
+
 def digest(content: bytes) -> str:
     return hashlib.sha256(content).hexdigest()
 
@@ -58,6 +122,8 @@ def checked_path(path: Path, within: Path) -> Path:
 
 def render_daily(payload: dict, target: str) -> bytes:
     meta=payload['metadata']
+    if meta.get('legacy_schema_restatement') == 'SOURCE_PRESERVING_UNKNOWN_WINDOW':
+        return render_legacy_archive(payload, target)
     rows=[PaperRecord(**{k:v for k,v in row.items() if k in PaperRecord.model_fields}) for row in payload['records']]
     rendered=generate_markdown(rows,date.fromisoformat(target),int(meta.get('filtered_count',0)),
         payload.get('source_health',[]),payload.get('warnings',[]),meta.get('since_window','36h'),
@@ -67,11 +133,47 @@ def render_daily(payload: dict, target: str) -> bytes:
     # bytes, but publish a single Markdown newline convention for hash readers.
     return (rendered+REPAIR_NOTE).replace('\r\n','\n').replace('\r','\n').encode('utf-8')
 
+
+def render_legacy_archive(payload: dict, target: str) -> bytes:
+    """No floating/date-only freshness or generated old prose in a restatement."""
+    from lattice_digest.authority import INCOMPLETE_ZERO_TEXT
+    meta = payload['metadata']; rows = payload['records']
+    lines = [f'# 格密码论文日报：{target}（历史来源重述）', '', '## 今日结论', '',
+        '这是已保存来源的历史重述，没有执行该历史日期的重新观察。原始覆盖窗口、运行时间和提供者健康均未记录，保持 UNKNOWN。',
+        '历史记录数量不是当日新论文数量；本报告未验证任何当日首次出版或修订事件。',
+        f"覆盖权威：{meta['authority_state']}；出版事实核验：UNRESOLVED_EVIDENCE。",
+        INCOMPLETE_ZERO_TEXT if not rows else '当日新增事件数为 N/A；来源记录仅用于历史归档与后续核验。',
+        '', '## A 类：今日必读格密码论文', '', '未建立当日事件列表；下方仅为来源支持的历史记录。',
+        '', '## B 类：值得跟踪论文', '', '未建立当日事件列表。',
+        '', '## C 类：可选关注 / 背景启发', '', '背景分类保留在历史审计附录。',
+        '', '## D 类过滤说明', '', f"历史来源中 D 类记录 {sum(r.get('relevance_label') == 'D' for r in rows)} 条；不纳入阅读推荐。",
+        '', '## 今日统计', '', f'已保存历史观察记录：{len(rows)}；新增/修订事件：N/A；来源请求：N/A（未记录）。',
+        '', '## 明日跟踪建议', '', '先核验原论文与历史来源窗口；不能由本次重述断言原日报日期没有新研究。',
+        '', '## 今日一句话总结', '', '历史来源已保留，缺失覆盖与出版事件证据尚未补齐。',
+        '', '## 历史来源审计附录', '', 'TRANSLATION_BACKEND_SELECTION_REQUIRED / BILINGUAL_RELEASE_NOT_YET_AVAILABLE',
+        '中文标题和摘要未完成核验翻译；以下原文内容属于来源作者主张，不能视为独立验证的定理或密码攻击结论。',
+        '未记录健康的必需来源：' + ', '.join(meta['source_coverage']['incomplete_required_sources'])]
+    for index, row in enumerate(rows):
+        if row.get('relevance_label') == 'D': continue
+        lines += ['', f"### 历史记录 {index + 1}：{row.get('title', 'UNKNOWN')}", '',
+            f"- 来源：{row.get('source', 'UNKNOWN')}；URL：{row.get('source_url', 'UNKNOWN')}",
+            f"- paper ID：{row.get('paper_id') or 'UNKNOWN'}；arXiv：{row.get('arxiv_id') or 'UNKNOWN'}；ePrint：{row.get('eprint_id') or 'UNKNOWN'}；DOI：{row.get('doi') or 'UNKNOWN'}",
+            f"- 历史来源分类：{row.get('relevance_label')} / {row.get('relevance_score')}；范围：{row.get('scientific_scope') or 'UNKNOWN'}",
+            '- 阅读动作：verify_first；TODO_VERIFY 原论文主张、参数及证明，不升级为已验证安全结论。',
+            '- 作者：' + ', '.join(row.get('authors', [])),
+            f"- 来源保存的出版日期：{row.get('publication_date') or 'UNKNOWN'}；更新日期：{row.get('update_date') or 'UNKNOWN'}；原时观察：UNKNOWN。",
+            '', '原摘要（作者主张，未独立核验；不是已完成的中文翻译）：', '', str(row.get('abstract') or 'UNKNOWN')]
+    lines += ['', f"<!-- generation:{meta['generation_id']} -->", REPAIR_NOTE]
+    return '\n'.join(lines).replace('\r\n', '\n').replace('\r', '\n').encode('utf-8')
+
 def _source_projection(rows):
     return [{k:r[k] for k in SOURCE_FIELDS if k in r} for r in rows]
 
 def validate_candidate(root: Path, candidate_root: Path, kind: str, target: str, original: dict, candidate: dict, markdown: bytes) -> dict:
     if kind=='daily':
+        if isinstance(original, list):
+            validate_legacy_wrapper(original, candidate, target)
+            original = {'records': original, 'source_health': LEGACY_HEALTH, 'metadata': {}}
         if not isinstance(original,dict) or not isinstance(original.get('records'),list):
             raise ValueError('unreconciled legacy schema cannot be automatically repaired')
         if _source_projection(original['records']) != _source_projection(candidate.get('records',[])):
@@ -164,6 +266,8 @@ def repair_pair(root: Path, item: dict, evidence_root: Path, *, execute: bool=Fa
     try:
         with stream:
             original=json.loads(paths[0].read_bytes());candidate=json.loads(contents[0])
+            if isinstance(original, list) and candidate.get('metadata', {}).get('legacy_original_json_sha256') != expected[0]:
+                raise ValueError('legacy original byte hash missing or mismatched')
             if tuple(digest(p.read_bytes()) for p in paths)!=expected:raise ValueError('original pair hash mismatch')
             checks=validate_candidate(root,candidate_root,kind,target,original,candidate,contents[1])
             if not execute:return {'kind':kind,'target':target,'status':'QA_PASSED_NOT_PROMOTED','qa':checks}

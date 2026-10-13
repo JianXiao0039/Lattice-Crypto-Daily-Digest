@@ -3,13 +3,14 @@ from __future__ import annotations
 import json
 import os
 import sys
-from lattice_digest.public_contract import public_preflight
+from lattice_digest.public_contract import public_preflight, record_entry_failure
 from lattice_digest.workflow import doctor_report
 from lattice_digest import run
 
 
 def main(argv: list[str] | None = None) -> int:
     argv = sys.argv[1:] if argv is None else argv
+    proof = {}; stage = 'PREFLIGHT'
     try:
         paths, proof = public_preflight('DAILY')
         code, doctor = doctor_report(strict=True)
@@ -21,9 +22,12 @@ def main(argv: list[str] | None = None) -> int:
         if args.preflight:
             proof['doctor'] = doctor
         os.environ['LATTICE_DIGEST_PUBLIC_AUTOMATION'] = '1'
+        stage = 'PIPELINE_ENTERED'
         return run.main(argv, preflight_proof=proof)
     except ValueError as exc:
         print(str(exc))
+        receipt = record_entry_failure('DAILY', exc, stage=stage, proof=proof, arguments=argv)
+        if receipt: print('Operational failure receipt: ' + receipt)
         return 2
 
 

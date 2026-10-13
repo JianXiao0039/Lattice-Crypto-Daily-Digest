@@ -243,7 +243,7 @@ def classification_summary(records):
             'classification_conflict_count':len(conflicts),'classification_conflicts':conflicts,
             'classification_quality_state':'CONFLICTS_VERIFY_FIRST' if conflicts else 'VALIDATED_CONSISTENT'}
 
-def evidence_quality_issues(record: Any) -> list[str]:
+def evidence_quality_issues(record: Any, *, legacy_unknown_health: bool = False) -> list[str]:
     issues=[]
     score=field(record,'relevance_score',0)
     try:
@@ -281,7 +281,16 @@ def evidence_quality_issues(record: Any) -> list[str]:
         if relation.get('strength') in {'DIRECT','STRUCTURAL'} and (relation.get('topic') not in topics or relation.get('evidence_type') not in {'SOURCE_EXPLICIT','SOURCE_STRUCTURAL','SOURCE_RELATION'}):
             issues.append('UNSUPPORTED_DIRECT_RESEARCH_RELATION')
     provenance=field(record,'source_health_provenance',{})
-    if field(record,'relevance_label') in {'A','B','C'} and (not provenance or field(record,'source_health') not in {'green','yellow','red'} or any(p.get('health_status',p.get('status')) not in {'green','yellow','red'} for p in provenance.values())):
+    audited_unknown = (legacy_unknown_health and bool(provenance)
+        and field(record, 'source_health') == 'unknown'
+        and not field(record, 'primary_today_new_eligible', False)
+        and not field(record, 'primary_action_allowed', False)
+        and not field(record, 'publication_event_type', '')
+        and all(p.get('health_status') == 'unknown'
+                and p.get('runtime_state') == 'NOT_RECORDED'
+                and p.get('evidence_state') == 'UNRESOLVED_EVIDENCE'
+                for p in provenance.values()))
+    if field(record,'relevance_label') in {'A','B','C'} and not audited_unknown and (not provenance or field(record,'source_health') not in {'green','yellow','red'} or any(p.get('health_status',p.get('status')) not in {'green','yellow','red'} for p in provenance.values())):
         issues.append('SOURCE_HEALTH_PROVENANCE_MISSING_FOR_SELECTED')
     return sorted(set(issues))
 

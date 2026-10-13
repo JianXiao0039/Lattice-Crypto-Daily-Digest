@@ -122,7 +122,16 @@ def semantic_qa(payload: dict[str, Any], markdown: str | None, *, source_configs
             continue
         from lattice_digest.evidence_contract import evidence_quality_issues
         if check_classification:
-            issues.extend(evidence_quality_issues(record))
+            legacy_unknown_health = (
+                meta.get('legacy_schema_restatement') == 'SOURCE_PRESERVING_UNKNOWN_WINDOW'
+                and meta.get('target_date_basis') == 'CANONICAL_FILENAME'
+                and bool(re.fullmatch(r'[0-9a-f]{64}', str(meta.get('legacy_original_json_sha256', ''))))
+                and all(meta.get(k) is None for k in ('coverage_start', 'coverage_end', 'run_date', 'publication_policy_version'))
+                and 'publication_event_ledger' not in payload
+                and health == [{'source': 'UNKNOWN_LEGACY_PROVIDER_HEALTH', 'health_status': 'unknown',
+                    'runtime_state': 'NOT_RECORDED', 'evidence_state': 'UNRESOLVED_EVIDENCE', 'requests_attempted': 'N/A'}]
+            )
+            issues.extend(evidence_quality_issues(record, legacy_unknown_health=legacy_unknown_health))
         if record.get('primary_today_new_eligible') is True and record.get('cross_day_event') in {'UNCHANGED_CROSS_DAY_DUPLICATE', 'GENUINE_NEW_VERSION', 'GENUINE_CONTENT_REVISION', 'METADATA_ONLY_UPDATE', 'IDENTITY_UNCERTAIN'}:
             issues.append('cross_day_false_primary')
     status = 'FAIL' if issues else ('UNKNOWN' if unknown else 'PASS')
