@@ -100,6 +100,20 @@ def validate_legacy_wrapper(original: list, candidate: dict, target: str) -> Non
 def digest(content: bytes) -> str:
     return hashlib.sha256(content).hexdigest()
 
+def prepare_missing_candidate(target: str) -> dict:
+    """An explicit evidence gap, without invented discovery or window counts."""
+    date.fromisoformat(target)
+    payload = prepare_legacy_candidate([], digest(b'[]'), target)
+    meta = payload['metadata']
+    meta.pop('legacy_original_json_sha256')
+    meta.update(historical_missing_report='ORIGINAL_WINDOW_AND_OBSERVATIONS_UNKNOWN',
+                original_failed_discovery_counts='N/A', original_execution_status='UNKNOWN_NO_SUCCESS_PAIR',
+                source_snapshot_kind='NO_RECOVERABLE_ORIGINAL_PROVIDER_SNAPSHOT',
+                recovery_executed_at=datetime.now(timezone.utc).isoformat())
+    meta['markdown_sha256'] = digest(render_daily(payload, target))
+    return payload
+
+
 def pair_paths(root: Path, kind: str, target: str) -> tuple[Path, Path]:
     if kind == 'daily':
         day = date.fromisoformat(target)
@@ -142,7 +156,7 @@ def render_legacy_archive(payload: dict, target: str) -> bytes:
         '这是已保存来源的历史重述，没有执行该历史日期的重新观察。原始覆盖窗口、运行时间和提供者健康均未记录，保持 UNKNOWN。',
         '历史记录数量不是当日新论文数量；本报告未验证任何当日首次出版或修订事件。',
         f"覆盖权威：{meta['authority_state']}；出版事实核验：UNRESOLVED_EVIDENCE。",
-        INCOMPLETE_ZERO_TEXT if not rows else '当日新增事件数为 N/A；来源记录仅用于历史归档与后续核验。',
+        INCOMPLETE_ZERO_TEXT if meta.get('render_branch') == 'ZERO_SELECTED_INCOMPLETE' else '当日新增事件数为 N/A；来源记录仅用于历史归档与后续核验。',
         '', '## A 类：今日必读格密码论文', '', '未建立当日事件列表；下方仅为来源支持的历史记录。',
         '', '## B 类：值得跟踪论文', '', '未建立当日事件列表。',
         '', '## C 类：可选关注 / 背景启发', '', '背景分类保留在历史审计附录。',
@@ -153,6 +167,12 @@ def render_legacy_archive(payload: dict, target: str) -> bytes:
         '', '## 历史来源审计附录', '', 'TRANSLATION_BACKEND_SELECTION_REQUIRED / BILINGUAL_RELEASE_NOT_YET_AVAILABLE',
         '中文标题和摘要未完成核验翻译；以下原文内容属于来源作者主张，不能视为独立验证的定理或密码攻击结论。',
         '未记录健康的必需来源：' + ', '.join(meta['source_coverage']['incomplete_required_sources'])]
+    if meta.get('historical_missing_report'):
+        lines += ['', '## 历史缺口恢复说明', '',
+            '本文件仅恢复明确的不完整状态，未恢复原时采集覆盖或论文发现。原始执行状态 UNKNOWN；原始发现数量 N/A；原始覆盖窗口 UNKNOWN。',
+            '已保存原时观察：无可恢复证据；不能解释为该日发现零篇论文。未创建出版事件账本，未将后续观察提前为历史事实。',
+            '后续保存的文献线索另存于独立恢复记录；不作为该日首次观察或新增事件。',
+            f"恢复记录生成时间（实际）：{meta['recovery_executed_at']}"]
     for index, row in enumerate(rows):
         if row.get('relevance_label') == 'D': continue
         lines += ['', f"### 历史记录 {index + 1}：{row.get('title', 'UNKNOWN')}", '',
@@ -249,7 +269,84 @@ def _promote(paths: tuple[Path,Path], contents: tuple[bytes,bytes], expected: tu
     journal['state']='PROMOTED';receipt.write_text(json.dumps(journal,indent=2),encoding='utf-8')
     return journal
 
+def _create_missing(paths: tuple[Path,Path], contents: tuple[bytes,bytes], evidence: Path) -> dict:
+    """Create absent files without replacement; rollback only our unchanged links."""
+    if any(p.exists() for p in paths): raise ValueError('missing pair target already exists')
+    evidence.mkdir(parents=True, exist_ok=False)
+    journal={'state':'PREPARED','targets':[str(p) for p in paths], 'original_sha256':[None,None],
+             'candidate_sha256':list(map(digest,contents)),
+             'pair_atomicity':'NO_REPLACE_LINK_INSTALL; JOURNALED_PAIR; ORDINARY_ERROR_ROLLBACK'}
+    receipt=evidence/'receipt.json';receipt.write_text(json.dumps(journal,indent=2),encoding='utf-8')
+    temps=[];installed=[]
+    try:
+        for p,data in zip(paths,contents):
+            p.parent.mkdir(parents=True,exist_ok=True)
+            fd,name=tempfile.mkstemp(prefix='.missing-report-',dir=p.parent);temps.append(Path(name))
+            with os.fdopen(fd,'wb') as stream:stream.write(data);stream.flush();os.fsync(stream.fileno())
+        for index,(temp,p) in enumerate(zip(temps,paths)):
+            os.link(temp,p)
+            installed.append(index)
+        if tuple(digest(p.read_bytes()) for p in paths)!=tuple(map(digest,contents)):
+            raise ValueError('new pair changed before final verification')
+    except (OSError,ValueError):
+        retained=[]
+        for index in reversed(installed):
+            p=paths[index]
+            if p.exists() and p.samefile(temps[index]) and p.read_bytes()==contents[index]:p.unlink()
+            elif p.exists():retained.append(str(p))
+        journal['state']='ROLLBACK_BLOCKED_BY_CONCURRENT_CHANGE' if retained else 'ROLLED_BACK'
+        journal['retained_concurrent_changes']=retained
+        receipt.write_text(json.dumps(journal,indent=2),encoding='utf-8')
+        raise
+    finally:
+        for temp in temps:temp.unlink(missing_ok=True)
+    journal['state']='PROMOTED';receipt.write_text(json.dumps(journal,indent=2),encoding='utf-8')
+    return journal
+
+
+def create_missing_pair(root: Path, item: dict, evidence_root: Path, *, execute: bool=False) -> dict:
+    kind,target=item['kind'],item['target']
+    if kind!='daily':raise ValueError('unknown-window gap creation supports Daily only')
+    if date.fromisoformat(target)>datetime.now(ZoneInfo('Asia/Singapore')).date():raise ValueError('future Daily')
+    paths=pair_paths(root,kind,target)
+    for p in paths:checked_path(p,root)
+    candidate_root=checked_path(Path(item['candidate_root']),root/'.ops/scratch')
+    candidates=pair_paths(candidate_root,kind,target)
+    for p in candidates:checked_path(p,candidate_root)
+    checked_path(evidence_root,root/'.ops/evidence')
+    contents=tuple(p.read_bytes() for p in candidates)
+    if tuple(map(digest,contents))!=(item['candidate_json_sha256'],item['candidate_markdown_sha256']):raise ValueError('candidate hash mismatch')
+    payload=json.loads(contents[0]);meta=payload.get('metadata',{})
+    if (payload.get('records')!=[] or 'publication_event_ledger' in payload or payload.get('source_health')!=LEGACY_HEALTH
+        or meta.get('target_date')!=target or meta.get('target_date_basis')!='CANONICAL_FILENAME'
+        or meta.get('legacy_schema_restatement')!='SOURCE_PRESERVING_UNKNOWN_WINDOW'
+        or meta.get('historical_missing_report')!='ORIGINAL_WINDOW_AND_OBSERVATIONS_UNKNOWN'
+        or meta.get('original_failed_discovery_counts')!='N/A'
+        or meta.get('original_execution_status')!='UNKNOWN_NO_SUCCESS_PAIR'
+        or meta.get('source_snapshot_kind')!='NO_RECOVERABLE_ORIGINAL_PROVIDER_SNAPSHOT'
+        or any(meta.get(k) is not None for k in ('coverage_start','coverage_end','run_date','run_mode','publication_policy_version','quality_status','legacy_original_json_sha256','recovery_requested_window','original_requested_window'))):
+        raise ValueError('missing historical evidence cannot become invented observations or coverage')
+    recovered=datetime.fromisoformat(meta['recovery_executed_at'])
+    if recovered.tzinfo is None:raise ValueError('recovery observation time requires timezone')
+    if contents[1]!=render_daily(payload,target):raise ValueError('missing candidate is not authorized renderer output')
+    durable=verify_daily(candidate_root,target)
+    if durable['status']!='verified':raise ValueError('missing candidate durable QA failed')
+    paths[0].parent.mkdir(parents=True,exist_ok=True)
+    lock=paths[0].with_name('.'+paths[0].stem+'.report-repair.lock');_reject_redirects(lock)
+    stream=lock.open('x',encoding='utf-8')
+    try:
+        with stream:
+            if any(p.exists() for p in paths):raise ValueError('missing pair target already exists')
+            qa={'structural':'PASS','semantic':'PASS','durable':'PASS','cross_day':'NO_OBSERVATIONS_CREATED',
+                'authority_state':durable['authority_state']}
+            if not execute:return {'kind':kind,'target':target,'status':'QA_PASSED_NOT_PROMOTED','qa':qa}
+            result=_create_missing(paths,contents,evidence_root/(kind+'-'+target+'-'+uuid4().hex))
+            return {'kind':kind,'target':target,'status':'PROMOTED_INCOMPLETE_HISTORY','qa':qa,**result}
+    finally:lock.unlink(missing_ok=True)
+
+
 def repair_pair(root: Path, item: dict, evidence_root: Path, *, execute: bool=False) -> dict:
+    if item.get('operation')=='CREATE_INCOMPLETE_HISTORY':return create_missing_pair(root,item,evidence_root,execute=execute)
     kind,target=item['kind'],item['target'];paths=pair_paths(root,kind,target)
     for p in paths:checked_path(p,root)
     candidate_root=checked_path(Path(item['candidate_root']),root/'.ops/scratch')
@@ -293,7 +390,7 @@ def main(argv=None) -> int:
             results.append({'kind':item.get('kind'),'target':item.get('target'),'status':'BLOCKED','error':type(exc).__name__+': '+str(exc)})
     target=plan.with_name(plan.stem+('-execution' if args.execute else '-preflight')+'.json')
     target.write_text(json.dumps({'runtime':proof['runtime_provenance'],'results':results},ensure_ascii=False,indent=2),encoding='utf-8')
-    print(json.dumps({'items':len(results),'promoted':sum(r['status']=='PROMOTED' for r in results),'blocked':sum(r['status']=='BLOCKED' for r in results),'receipt':str(target)}))
+    print(json.dumps({'items':len(results),'promoted':sum(r['status'] in ('PROMOTED','PROMOTED_INCOMPLETE_HISTORY') for r in results),'blocked':sum(r['status']=='BLOCKED' for r in results),'receipt':str(target)}))
     return 1 if any(r['status']=='BLOCKED' for r in results) else 0
 
 if __name__=='__main__':raise SystemExit(main())
