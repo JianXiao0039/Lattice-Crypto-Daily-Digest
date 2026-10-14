@@ -18,7 +18,8 @@ THRESHOLDS: dict[str, dict[str, int]] = {
 def _stable_terms(values: list[str] | tuple[str, ...] | None) -> list[str]:
     if not values:
         return []
-    return sorted({str(value).strip() for value in values if str(value).strip()}, key=str.lower)
+    return sorted({str(value).strip() for value in values if str(value).strip()},
+                  key=lambda term: (term.lower(), term))
 
 
 def _contains_term(text: str, term: str) -> bool:

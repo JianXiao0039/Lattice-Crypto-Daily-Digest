@@ -12,7 +12,9 @@ from lattice_digest.artifact_paths import daily_data_path
 from lattice_digest.models import PaperRecord
 
 HISTORY_DAYS = 14
-MAX_HISTORY_BYTES = 16 * 1024 * 1024
+# Current evidence-rich Daily archives exceed 16 MiB. Keep a bounded read while
+# accepting those controlled reports so overlapping windows retain prior identity.
+MAX_HISTORY_BYTES = 32 * 1024 * 1024
 MAX_HISTORY_RECORDS = 10000
 EVENTS = {
     'UNCHANGED_CROSS_DAY_DUPLICATE', 'GENUINE_NEW_VERSION',

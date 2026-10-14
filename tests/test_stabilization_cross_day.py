@@ -46,6 +46,34 @@ def test_missing_preceding_daily_searches_bounded_history(tmp_path):
         load_promotion_history(tmp_path,date(2026,9,3),days=1000)
 
 
+def test_evidence_rich_archive_above_old_limit_preserves_overlapping_event_identity(tmp_path):
+    from lattice_digest.publication_events import build_event_ledger
+    prior = paper(publication_date='2026-09-02', update_date='2026-09-02').model_dump(mode='json')
+    path = daily_data_path('2026-09-02', tmp_path)
+    path.parent.mkdir(parents=True)
+    data = json.dumps({'metadata': {'quality_status': 'authoritative'}, 'records': [prior]}).encode()
+    path.write_bytes(data + b' ' * (17 * 1024 * 1024))
+    history, evidence = load_promotion_history(tmp_path, date(2026,9,3))
+    assert [item['date'] for item in evidence['loaded']] == ['2026-09-02']
+    assert not evidence['unusable']
+    assert classify_event(prior, history)[0] == 'UNCHANGED_CROSS_DAY_DUPLICATE'
+    metadata = {'target_date': '2026-09-03', 'coverage_start': '2026-09-01T21:00:00Z',
+                'coverage_end': '2026-09-03T09:00:00Z'}
+    assert build_event_ledger([prior], metadata, history)['counts']['primary_new'] == 0
+
+
+def test_history_still_rejects_archive_above_new_bounded_limit(tmp_path):
+    from lattice_digest.promotion_history import MAX_HISTORY_BYTES
+    path = daily_data_path('2026-09-02', tmp_path)
+    path.parent.mkdir(parents=True)
+    with path.open('wb') as stream:
+        stream.write(b'{}')
+        stream.truncate(MAX_HISTORY_BYTES + 1)
+    history, evidence = load_promotion_history(tmp_path, date(2026,9,3))
+    assert not history
+    assert evidence['unusable'] == [{'date': '2026-09-02', 'reason': 'history file exceeds byte budget'}]
+
+
 def test_real_september_canary():
     fixture = json.loads((Path(__file__).parent/'fixtures/stabilization_incidents.json').read_text(encoding='utf-8'))
     prior = fixture['2026-09-02']['records']
