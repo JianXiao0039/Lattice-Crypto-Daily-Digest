@@ -202,7 +202,13 @@ def validate_candidate(root: Path, candidate_root: Path, kind: str, target: str,
             raise ValueError('original provider health changed')
         old=original.get('metadata',{});meta=candidate.get('metadata',{})
         for key in ('coverage_start','coverage_end','publication_policy_version','quality_status','run_date','run_mode'):
-            if old.get(key)!=meta.get(key):raise ValueError('original coverage or policy changed: '+key)
+            if old.get(key)!=meta.get(key):
+                from lattice_digest.publication_events import LEGACY_POLICY_VERSION, POLICY_VERSION
+                migration=meta.get('classification_policy_migration',{})
+                permitted=(key=='publication_policy_version' and old.get(key)==LEGACY_POLICY_VERSION
+                    and meta.get(key)==POLICY_VERSION and migration.get('from')==LEGACY_POLICY_VERSION
+                    and migration.get('to')==POLICY_VERSION and migration.get('original_generation_id')==old.get('generation_id'))
+                if not permitted:raise ValueError('original coverage or policy changed: '+key)
         if meta.get('target_date')!=target:raise ValueError('candidate target date mismatch')
         if markdown!=render_daily(candidate,target):raise ValueError('candidate Markdown is not the authorized renderer output')
         qa=semantic_qa(candidate,markdown.decode('utf-8'))

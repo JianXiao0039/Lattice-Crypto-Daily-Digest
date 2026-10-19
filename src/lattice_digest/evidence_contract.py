@@ -84,9 +84,9 @@ def analyze_source(record: Any, ontology=None):
     values=positive_source_fields(record)
     return ontology.analyze_fields(**values) if ontology else _analyze(**values)
 
-def source_topics(record: Any) -> list[str]:
+def source_topics(record: Any, *, scope_evaluator=None) -> list[str]:
     from lattice_digest.scientific_scope import evaluate_scope
-    decision=evaluate_scope(record)
+    decision=(scope_evaluator or evaluate_scope)(record)
     if not decision['lattice_relevance_qualified']:return []
     analysis=analyze_source(record)
     targets=[r['technical_target'].lower().replace('-',' ') for r in decision['source_relation_roles']
@@ -115,12 +115,12 @@ def source_topics(record: Any) -> list[str]:
                             ('Anonymous Broadcast',('anonymous broadcast',)),
                             ('Commitments',('lattice commitment','sis commitment','chameleon hash')),
                             ('PQC Implementation',('implementation','side-channel','power trace','fault attack','constant-time'))]:
-            if topic=='PQC Implementation' and classify_scope(record,analysis)[0]!=Scope.DIRECT_LATTICE_CRYPTO:
+            if topic=='PQC Implementation' and classify_scope(record,analysis,scope_evaluator=scope_evaluator)[0]!=Scope.DIRECT_LATTICE_CRYPTO:
                 continue
             if any(_contains_phrase(text,t) for t in terms):topics.append(topic)
     return list(dict.fromkeys(topics))
 
-def classify_scope(record: Any, analysis=None, edges=()) -> tuple[str,int]:
+def classify_scope(record: Any, analysis=None, edges=(), *, scope_evaluator=None) -> tuple[str,int]:
     from urllib.parse import urlparse
     from lattice_digest.scientific_scope import evaluate_scope, ScientificScope
     url=urlparse(str(field(record,'source_url') or field(record,'url') or ''))
@@ -130,7 +130,7 @@ def classify_scope(record: Any, analysis=None, edges=()) -> tuple[str,int]:
     analysis=analysis or analyze_source(record)
     if analysis.hard_negative_matches and not analysis.source_concept_ids:
         return Scope.OUT_OF_SCOPE,0
-    decision=evaluate_scope(record)
+    decision=(scope_evaluator or evaluate_scope)(record)
     scope=decision['scientific_scope']
     compatible={ScientificScope.CORE:Scope.DIRECT_LATTICE_CRYPTO,
                 ScientificScope.IMPLEMENTATION:Scope.DIRECT_LATTICE_CRYPTO,
@@ -142,7 +142,7 @@ def classify_scope(record: Any, analysis=None, edges=()) -> tuple[str,int]:
         compatible=Scope.LATTICE_METHOD_IN_ADJACENT_CRYPTO
     return compatible,decision['score']
 
-def source_scope_score(record, analysis=None, edges=()):
+def source_scope_score(record, analysis=None, edges=(), *, scope_evaluator=None):
     """The final source classification, including independently extracted critical claims."""
     analysis=analysis or analyze_source(record)
     source_url=str(field(record,'source_url') or field(record,'url') or '')
@@ -153,7 +153,7 @@ def source_scope_score(record, analysis=None, edges=()):
         edges=[e.model_dump(mode='json') for e in extract_record_edges(
             paper_node='paper:source-validation', **positive_source_fields(record),
             source_url=source_url, source_concept_ids=analysis.source_concept_ids)]
-    scope,score=classify_scope(record,analysis,edges)
+    scope,score=classify_scope(record,analysis,edges,scope_evaluator=scope_evaluator)
     from lattice_digest.critical_security import analyze_critical_security_signal
     from types import SimpleNamespace
     original=SimpleNamespace(**positive_source_fields(record),TODO_VERIFY_flags=[],venue='')
@@ -243,24 +243,24 @@ def classification_summary(records):
             'classification_conflict_count':len(conflicts),'classification_conflicts':conflicts,
             'classification_quality_state':'CONFLICTS_VERIFY_FIRST' if conflicts else 'VALIDATED_CONSISTENT'}
 
-def evidence_quality_issues(record: Any, *, legacy_unknown_health: bool = False) -> list[str]:
+def evidence_quality_issues(record: Any, *, legacy_unknown_health: bool = False, scope_evaluator=None) -> list[str]:
     issues=[]
     score=field(record,'relevance_score',0)
     try:
         if score_to_label(score)!=field(record,'relevance_label'):issues.append('RELEVANCE_SCORE_LABEL_INCONSISTENT')
     except ValueError:issues.append('RELEVANCE_SCORE_LABEL_INCONSISTENT')
-    scope,_=source_scope_score(record)
+    scope,_=source_scope_score(record,scope_evaluator=scope_evaluator)
     if field(record,'relevance_label') in {'A','B'} and scope not in {Scope.DIRECT_LATTICE_CRYPTO,Scope.DIRECT_LATTICE_HARDNESS_THEORY}:
         issues.append('UNSUPPORTED_LATTICE_AB_CLASSIFICATION')
     if field(record,'evidence_policy_version')!=POLICY_VERSION:return issues
     from lattice_digest.scientific_scope import evaluate_scope
-    scientific=evaluate_scope(record)
+    scientific=(scope_evaluator or evaluate_scope)(record)
     if (field(record,'source_relation_roles',[])!=scientific['source_relation_roles'] or
         field(record,'scientific_scope')!=scientific['scientific_scope']):
         issues.append('SOURCE_RELATION_ROLE_EVIDENCE_MISMATCH')
     # Independently re-extract the same source-grounded typed relations used by
     # binding. Never trust stored consequence_edges or generated rationale.
-    scope,_=source_scope_score(record)
+    scope,_=source_scope_score(record,scope_evaluator=scope_evaluator)
     cap={Scope.DIRECT_LATTICE_CRYPTO:100,Scope.DIRECT_LATTICE_HARDNESS_THEORY:100,
          Scope.LATTICE_METHOD_IN_ADJACENT_CRYPTO:59,Scope.ADJACENT_PQC:59,
          Scope.INDIRECT_RESEARCH_HYPOTHESIS:59,Scope.GENERAL_CRYPTO_BACKGROUND:59,Scope.OUT_OF_SCOPE:39}[scope]
@@ -269,7 +269,7 @@ def evidence_quality_issues(record: Any, *, legacy_unknown_health: bool = False)
     if set(field(record,'source_evidence_terms',[])) != {m.source_term for m in expected.source_evidence}:
         issues.append('INFERENCE_TO_EVIDENCE_FEEDBACK')
     if set(field(record,'source_concept_ids',[]))!=ids:issues.append('INFERENCE_TO_EVIDENCE_FEEDBACK')
-    topics=set(source_topics(record))
+    topics=set(source_topics(record,scope_evaluator=scope_evaluator))
     if set(field(record,'source_taxonomy_tags',[]))!=topics:issues.append('INFERENCE_TO_EVIDENCE_FEEDBACK')
     for item in field(record,'evidence_items',[]):
         if item.get('evidence_type') not in {e.value for e in EvidenceType if e.value.startswith('SOURCE_')}:

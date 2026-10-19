@@ -6,6 +6,9 @@ import sys
 from lattice_digest.public_contract import public_preflight, record_entry_failure
 from lattice_digest.workflow import doctor_report
 from lattice_digest import run
+from lattice_digest.period_delivery import writer_lock
+from datetime import datetime
+from zoneinfo import ZoneInfo
 
 
 def main(argv: list[str] | None = None) -> int:
@@ -23,8 +26,12 @@ def main(argv: list[str] | None = None) -> int:
             proof['doctor'] = doctor
         os.environ['LATTICE_DIGEST_PUBLIC_AUTOMATION'] = '1'
         stage = 'PIPELINE_ENTERED'
-        return run.main(argv, preflight_proof=proof)
-    except ValueError as exc:
+        if args.preflight or args.dry_run:
+            return run.main(argv, preflight_proof=proof)
+        key=str(args.target_date or args.date or datetime.now(ZoneInfo('Asia/Singapore')).date())
+        with writer_lock(paths,'DAILY',key):
+            return run.main(argv, preflight_proof=proof)
+    except (OSError,ValueError) as exc:
         print(str(exc))
         receipt = record_entry_failure('DAILY', exc, stage=stage, proof=proof, arguments=argv)
         if receipt: print('Operational failure receipt: ' + receipt)

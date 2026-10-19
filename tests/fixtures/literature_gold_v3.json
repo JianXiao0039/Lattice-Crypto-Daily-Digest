@@ -1,0 +1,1291 @@
+{
+  "schema_version": "literature-gold-v3.1",
+  "source_contract": "Public official metadata and explicitly delimited original source abstracts only. No mailbox body, message IDs, contacts or credentials. Not all proofs verified.",
+  "user_corpus_count": 28,
+  "extra_anchor_count": 3,
+  "records": [
+    {
+      "index": 1,
+      "title": "Zero-Knowledge Proofs of Training for Deep Neural Networks",
+      "abstract": "A zero-knowledge proof of training (zkPoT) enables a party to prove that they have correctly trained a committed model based on a committed dataset without revealing any additional information about the model or the dataset. An ideal zkPoT should offer provable security and privacy guarantees, succinct proof size and verifier runtime, and practical prover efficiency. In this work, we present \\name, a zkPoT targeted for deep neural networks (DNNs) that achieves all these goals at once. Our construction enables a prover to iteratively train their model via (mini-batch) gradient descent, where the number of iterations need not be fixed in advance; at the end of each iteration, the prover generates a commitment to the trained model parameters attached with a succinct zkPoT, attesting to the correctness of the executed iterations. The proof size and verifier time are independent of the number of iterations. Our construction relies on two building blocks. First, we propose an optimized GKR-style (sumcheck-based) proof system for the gradient-descent algorithm with concretely efficient prover cost; this allows the prover to generate a proof for each iteration. We then show how to recursively compose these proofs across multiple iterations to attain succinctness. As of independent interest, we propose a generic framework for efficient recursive composition of GKR-style proofs, along with aggregatable polynomial commitments. Benchmarks indicate that \\name\\ can handle the training of complex models such as VGG-11 with 10~million parameters and batch size~$16$. The prover runtime is $15$~minutes per iteration, which is $\\mathbf{24 \\times}$ faster than generic recursive proofs, with prover memory overhead $\\mathbf{27\\times}$ lower. The proof size is $1.63$~megabytes, and the verifier runtime is only $130$~milliseconds, where both are independent of the number of iterations and the size of the dataset. Note: An extended version of the paper appearing in CCS'24. Compared to the initial version, this version of the paper reports the evaluation of the implementation of a tree-based recursion strategy. Additionally, this version clarifies the linear-time prover and reports revised R1CS size calculations.",
+      "source_url": "https://eprint.iacr.org/2024/162",
+      "authors": [
+        "Kasra Abbaszadeh",
+        "Christodoulos Pappas",
+        "Jonathan Katz",
+        "Dimitrios Papadopoulos"
+      ],
+      "stable_ids": {
+        "eprint": "2024/162",
+        "arxiv": null,
+        "doi": "10.1145/3658644.3670316"
+      },
+      "expected_category": "NON_LATTICE",
+      "expected_core": false,
+      "primary_source_verified": true,
+      "expected_kind": "RESEARCH_PAPER",
+      "chronology": {
+        "first_publication_time": null,
+        "earliest_verified_source_date": "2024-02-04",
+        "date_role": "received",
+        "precision": "DATE_ONLY",
+        "arxiv_submission_at": null,
+        "source_announcement_date": null,
+        "source_received_date": "2024-02-04",
+        "paper_revision_at": "2024-07-22",
+        "formal_venue": "ACM CCS 2024",
+        "formal_venue_date": null,
+        "gmail_received_at": null,
+        "public_collector_observed_at": null,
+        "historical_backfill_at": null,
+        "v3_retrieved_at": "2026-10-19T16:25:52.186810+08:00",
+        "qualification": "ePrint received is not approval/public-availability time; date-only approval cannot prove eligibility before a 09:00 cutoff. arXiv submission timestamp is preserved without inventing announcement time. Approval date is retained separately and is not asserted to be a separately observed announcement timestamp.",
+        "source_approved_date": null
+      },
+      "evidence_ref": "old-control-web.txt",
+      "source_caveats": {
+        "retractions_corrigenda_ai_disclosure": "NOT_FULLY_AUDITED; no absence-of-caveat claim made",
+        "known_verified_note": "Extended CCS24 version, changed tree recursion evaluation and R1CS counts."
+      }
+    },
+    {
+      "index": 2,
+      "title": "CKKS Bootstrapping in less than 10ms",
+      "abstract": "Bootstrapping enables deep homomorphic computation in CKKS by replenishing multiplicative levels. It remains one of the scheme's most expensive operations. HEAAN reports a bootstrapping latency of 6.97ms, substantially faster than other publicly documented alternatives. However, the algorithmic and implementation techniques underlying this result have not been disclosed, leaving it unclear how such performance is achieved. In this work, we present a fully specified CKKS bootstrapping construction that achieves performance comparable to that reported by HEAAN. Building on SHIP (presented in Eurocrypt 2025), we introduce several algorithmic innovations that reduce communication and computational overhead while enabling efficient parallel execution. Our implementation bootstraps a single complex-valued ciphertext in 8.2ms and achieves an amortized latency of 4.6ms per ciphertext for a batch of 64. These results demonstrate practical sub-10ms CKKS bootstrapping.",
+      "source_url": "https://eprint.iacr.org/2026/2119",
+      "authors": [
+        "Rending Ouyang",
+        "Jian Liu",
+        "Peimin Gao",
+        "Pan Xiao",
+        "Heng Zhang",
+        "Man Ho Au",
+        "Cong Zhang",
+        "Kui Ren",
+        "Chun Chen"
+      ],
+      "stable_ids": {
+        "eprint": "2026/2119",
+        "arxiv": null,
+        "doi": null
+      },
+      "expected_category": "LATTICE_IMPLEMENTATIONS",
+      "expected_core": true,
+      "primary_source_verified": true,
+      "expected_kind": "RESEARCH_PAPER",
+      "chronology": {
+        "first_publication_time": null,
+        "earliest_verified_source_date": "2026-09-20",
+        "date_role": "received",
+        "precision": "DATE_ONLY",
+        "arxiv_submission_at": null,
+        "source_announcement_date": null,
+        "source_received_date": "2026-09-20",
+        "paper_revision_at": null,
+        "formal_venue": null,
+        "formal_venue_date": null,
+        "gmail_received_at": null,
+        "public_collector_observed_at": null,
+        "historical_backfill_at": null,
+        "v3_retrieved_at": "2026-10-19T16:25:52.186810+08:00",
+        "qualification": "ePrint received is not approval/public-availability time; date-only approval cannot prove eligibility before a 09:00 cutoff. arXiv submission timestamp is preserved without inventing announcement time. Approval date is retained separately and is not asserted to be a separately observed announcement timestamp.",
+        "source_approved_date": "2026-09-22"
+      },
+      "evidence_ref": "official-known-web.txt",
+      "source_caveats": {
+        "retractions_corrigenda_ai_disclosure": "NOT_FULLY_AUDITED; no absence-of-caveat claim made",
+        "known_verified_note": null
+      }
+    },
+    {
+      "index": 3,
+      "title": "Cryptanalytic Extraction of Neural Networks Without Known Architecture Assumption",
+      "abstract": "Cryptanalytic model extraction aims to reconstruct a func- tionally equivalent model through black-box interactions with the victim model. Under the fundamental assumption that the network architecture is completely known, existing attacks achieve the goal by recovering the model parameters. In this paper, we explore whether this assumption can be removed practically. Focusing on ReLU fully connected networks, which are widely studied in this field, we propose a guess-and-determine framework that jointly recovers the network architecture (including net- work depth and hidden-layer dimensions) and the model parameters. This framework is based on a simple yet effective high-level idea: af- ter designing a parameter recovery attack under the known-architecture assumption, we can analyze the architecture-sensitive traces observed during parameter recovery to recover the network architecture. We iden- tify two such traces in differential extraction attacks: (i) azero suffixin the merged weight vectors produced by signature recovery, whose length reveals the hidden layer dimension; and (ii) anequality patternin the preimage-based sign recovery, which occurs only under the true hidden layer dimension. These two signals give rise to two routes for network architecture recovery. For the second-to-last layer, we further propose two methods, one for identifying it, and one for recovering its dimension. Practical end-to-end attacks are implemented on a wide range of ReLU neural networks, including both expansive and non-expansive networks. To the best of our knowledge, this is the first time the feasibility of achieving functionally equivalent extraction on deep neural networks, af- ter removing the known-architecture assumption, has been demonstrated in practice. arXiv:2609.14379v2 [cs.CR] 19 Sep 2026 Keywords:Cryptanalytic Extraction·Neural Networks·Network Ar- chitecture Recovery.",
+      "source_url": "https://eprint.iacr.org/2026/2095",
+      "authors": [
+        "Yantian Shen",
+        "Yi Chen",
+        "Anyu Wang",
+        "Hongbo Yu",
+        "Xiaoyun Wang"
+      ],
+      "stable_ids": {
+        "eprint": "2026/2095",
+        "arxiv": "2609.14379",
+        "doi": "10.48550/arXiv.2609.14379"
+      },
+      "expected_category": "NON_LATTICE",
+      "expected_core": false,
+      "primary_source_verified": true,
+      "expected_kind": "RESEARCH_PAPER",
+      "chronology": {
+        "first_publication_time": null,
+        "earliest_verified_source_date": "2026-09-13",
+        "date_role": "arxiv_submission",
+        "precision": "ARXIV_SUBMISSION_TIMESTAMP_AVAILABLE_ANNOUNCEMENT_UNKNOWN",
+        "arxiv_submission_at": "2026-09-13T08:28:34Z",
+        "source_announcement_date": null,
+        "source_received_date": null,
+        "paper_revision_at": "2026-09-19T13:48:41Z",
+        "formal_venue": null,
+        "formal_venue_date": null,
+        "gmail_received_at": null,
+        "public_collector_observed_at": null,
+        "historical_backfill_at": null,
+        "v3_retrieved_at": "2026-10-19T16:25:52.186810+08:00",
+        "qualification": "ePrint received is not approval/public-availability time; date-only approval cannot prove eligibility before a 09:00 cutoff. arXiv submission timestamp is preserved without inventing announcement time. Approval date is retained separately and is not asserted to be a separately observed announcement timestamp.",
+        "source_approved_date": "2026-09-22"
+      },
+      "evidence_ref": "arxiv-2609.14379-text.txt",
+      "source_caveats": {
+        "retractions_corrigenda_ai_disclosure": "NOT_FULLY_AUDITED; no absence-of-caveat claim made",
+        "known_verified_note": null
+      }
+    },
+    {
+      "index": 4,
+      "title": "Faster SVP in Polynomial Space",
+      "abstract": "Kannan’s algorithm, as analyzed by Hanrot and Stehlé in 2007, solves the exact Euclidean shortest vector problem in polynomial space and n n 2e +o(n) time. In the classical setting with polynomial space, we obtain the first improvement on this bound via a randomized algorithm that runs inn n 4e +o(n) time. The main idea is to represent a fixed shortest vector in many ways as a difference of samples, thereby enabling the low-space collision search of Lyu and Zhu (SODA 2023) to replace exhaustive enumeration in the original analysis. Keywords:Lattice·Shortest vector problem·Enumeration",
+      "source_url": "https://arxiv.org/abs/2609.21612",
+      "authors": [
+        "Yansong Feng",
+        "Yiming Gao",
+        "Jiaqi Liu"
+      ],
+      "stable_ids": {
+        "eprint": null,
+        "arxiv": "2609.21612",
+        "doi": "10.48550/arXiv.2609.21612"
+      },
+      "expected_category": "LATTICE_ALGORITHMS",
+      "expected_core": true,
+      "primary_source_verified": true,
+      "expected_kind": "RESEARCH_PAPER",
+      "chronology": {
+        "first_publication_time": null,
+        "earliest_verified_source_date": "2026-09-18",
+        "date_role": "arxiv_submission",
+        "precision": "ARXIV_SUBMISSION_TIMESTAMP_AVAILABLE_ANNOUNCEMENT_UNKNOWN",
+        "arxiv_submission_at": "2026-09-18T10:54:44Z",
+        "source_announcement_date": null,
+        "source_received_date": null,
+        "paper_revision_at": null,
+        "formal_venue": null,
+        "formal_venue_date": null,
+        "gmail_received_at": null,
+        "public_collector_observed_at": null,
+        "historical_backfill_at": null,
+        "v3_retrieved_at": "2026-10-19T16:25:52.186810+08:00",
+        "qualification": "ePrint received is not approval/public-availability time; date-only approval cannot prove eligibility before a 09:00 cutoff. arXiv submission timestamp is preserved without inventing announcement time. Approval date is retained separately and is not asserted to be a separately observed announcement timestamp.",
+        "source_approved_date": null
+      },
+      "evidence_ref": "arxiv-2609.21612-text.txt",
+      "source_caveats": {
+        "retractions_corrigenda_ai_disclosure": "NOT_FULLY_AUDITED; no absence-of-caveat claim made",
+        "known_verified_note": null
+      }
+    },
+    {
+      "index": 5,
+      "title": "Keep Track of Your Errors: Solving ILWE and Improving Attacks on ML-DSA",
+      "abstract": "With the widespread adoption of NIST's new signature standard ML-DSA imminent, understanding its vulnerability to side-channel attacks is increasingly important. Current approaches that are based on deriving (Concealed) Integer Learning with Errors (ILWE) samples from side information require hundreds of thousands of signatures even in noise-free conditions, limiting their practicality. In this work, we show that the number of signatures required in these attacks has been drastically overestimated. Keeping track of the error probability distribution when deriving ILWE samples allows for a soft-analytic approach to solving ILWE. Concretely, we show that distribution hints (Eurocrypt 2025) may be derived from ILWE samples and the corresponding belief propagation-based solver can recover the secret key efficiently. We then conceptually compare previous solvers to our soft-analytic approach. Furthermore, we provide an information-theoretic analysis and answer an open question---on how to filter out relations---posed in a different line of attacks against ML-DSA (Crypto 2025); thereby, we can propose improvements in the application of these solvers. We evaluate our approach across various ILWE and Concealed ILWE parameter sets. In addition, we analyze a recently discovered timing leakage in ML-DSA and show how to solve for the secret key with far fewer signatures. In a noise-free attack setting, our approach reduces the average number of signatures required by a factor of 62---from 139 million to 2.25 million---compared with linear regression, as originally proposed, with larger improvements under noise. Thus, we show that attacks that derive ILWE and Concealed ILWE instances require far fewer signatures than previously believed, and their impact has been underestimated.",
+      "source_url": "https://eprint.iacr.org/2026/2091",
+      "authors": [
+        "Mohamed ElGhamrawy",
+        "Thomas Eisenbarth",
+        "Julius Hermelink",
+        "Anja Rabich",
+        "Florian Sieck",
+        "Silvan Streit",
+        "Jonas Thietke",
+        "Zhiyuan Zhang"
+      ],
+      "stable_ids": {
+        "eprint": "2026/2091",
+        "arxiv": null,
+        "doi": null
+      },
+      "expected_category": "LATTICE_CRYPTANALYSIS",
+      "expected_core": true,
+      "primary_source_verified": true,
+      "expected_kind": "RESEARCH_PAPER",
+      "chronology": {
+        "first_publication_time": null,
+        "earliest_verified_source_date": "2026-09-18",
+        "date_role": "received",
+        "precision": "DATE_ONLY",
+        "arxiv_submission_at": null,
+        "source_announcement_date": null,
+        "source_received_date": "2026-09-18",
+        "paper_revision_at": null,
+        "formal_venue": null,
+        "formal_venue_date": null,
+        "gmail_received_at": null,
+        "public_collector_observed_at": null,
+        "historical_backfill_at": null,
+        "v3_retrieved_at": "2026-10-19T16:25:52.186810+08:00",
+        "qualification": "ePrint received is not approval/public-availability time; date-only approval cannot prove eligibility before a 09:00 cutoff. arXiv submission timestamp is preserved without inventing announcement time. Approval date is retained separately and is not asserted to be a separately observed announcement timestamp.",
+        "source_approved_date": "2026-09-22"
+      },
+      "evidence_ref": "official-final-web.txt",
+      "source_caveats": {
+        "retractions_corrigenda_ai_disclosure": "NOT_FULLY_AUDITED; no absence-of-caveat claim made",
+        "known_verified_note": null
+      }
+    },
+    {
+      "index": 6,
+      "title": "LaBinius – Fast Lattice-Based Binary Polynomial Commitment Scheme",
+      "abstract": "Lattice-based proof systems are one of the leading routes to quantum-safe succinct proofs. Existing lattice-based schemes come with inherent limitations arising from the coupling between the commitment and constraint domains. First, commitment efficiency is restricted by the need for invertible challenge differences, which precludes the use of fully splitting moduli that enable the fastest lattice arithmetic. Second, the characteristic of the constraint field must equal the commitment modulus. This limits the efficiency of proving binary computations, including standard hash function evaluations. We present $\\mathsf{LaBinius}$, a lattice-based polynomial commitment scheme, in which the evaluation arithmetic is separated from that of the commitment. The commitment runs over a composite modulus, and all of its prime factors are NTT-friendly. The evaluation claim lives in a binary extension field, without bitness checks or overhead over a binary arithmetisation. We implement the scheme with AVX-512 kernels and connect it to the $\\mathsf{Binius}$ and $\\mathsf{Flock}$ front ends in an almost black-box way, which lets us use their arithmetisations tailored to binary fields. As a result, we obtain a SNARK for standard hashes. Proving $\\mathsf{Keccak}$-$\\mathsf{256}$, $\\mathsf{SHA}$-$\\mathsf{256}$ and $\\mathsf{BLAKE3}$ on one core, our prover takes at most $1.2$ times as long as the hash-based prover supplied with each system, and we obtain a single-core throughput of over $67{,}000$ $\\mathsf{BLAKE3}$ compressions per second with verification in under $40$ milliseconds. With $\\mathsf{LaBRADOR}$ as a recursive compressor, the prover takes less than twice as long as the hash-based provers at the largest sizes we consider, while the proof size is below $100$ KiB. This is about five times smaller than the proofs of $\\mathsf{Binius}$ and $\\mathsf{Flock}$ at those sizes and constitutes the smallest quantum-safe proof of a standard hash evaluation to date.",
+      "source_url": "https://eprint.iacr.org/2026/2103",
+      "authors": [
+        "Michał Osadnik",
+        "Gregor Seiler"
+      ],
+      "stable_ids": {
+        "eprint": "2026/2103",
+        "arxiv": null,
+        "doi": null
+      },
+      "expected_category": "LATTICE_PRIMITIVES",
+      "expected_core": true,
+      "primary_source_verified": true,
+      "expected_kind": "RESEARCH_PAPER",
+      "chronology": {
+        "first_publication_time": null,
+        "earliest_verified_source_date": "2026-09-18",
+        "date_role": "received",
+        "precision": "DATE_ONLY",
+        "arxiv_submission_at": null,
+        "source_announcement_date": null,
+        "source_received_date": "2026-09-18",
+        "paper_revision_at": null,
+        "formal_venue": null,
+        "formal_venue_date": null,
+        "gmail_received_at": null,
+        "public_collector_observed_at": null,
+        "historical_backfill_at": null,
+        "v3_retrieved_at": "2026-10-19T16:25:52.186810+08:00",
+        "qualification": "ePrint received is not approval/public-availability time; date-only approval cannot prove eligibility before a 09:00 cutoff. arXiv submission timestamp is preserved without inventing announcement time. Approval date is retained separately and is not asserted to be a separately observed announcement timestamp.",
+        "source_approved_date": "2026-09-22"
+      },
+      "evidence_ref": "official-known-web.txt",
+      "source_caveats": {
+        "retractions_corrigenda_ai_disclosure": "NOT_FULLY_AUDITED; no absence-of-caveat claim made",
+        "known_verified_note": null
+      }
+    },
+    {
+      "index": 7,
+      "title": "Lattice-Based Synchronous Signatures: Efficiently Aggregatable and Thresholdizable",
+      "abstract": "Aggregate signatures play an important role in proof-of-stake systems, where many validators sign a block. There is a strong desire to aggregate all these signatures into one short signature that is fast to verify. Since all validators know the block number they are signing, this setting is well suited for synchronous (a.k.a stateful) signatures. Boneh and Kim (2019) showed that lattice-based one-time signatures (OTS) can be aggregated very efficiently. The Chipmunk and Lemur signature schemes extend this to an $\\ell$-time synchronous scheme using a (homomorphic) Merkle tree of $\\ell$ one-time public keys. Each leaf of the tree is used to sign one message, and these one-time signatures can be aggregated across many signers. Due to the Merkle tree, every aggregate signature includes a Merkle authentication path of length $O_\\lambda(\\log \\ell)$. We present a different lattice-based approach to constructing a synchronous aggregate signature scheme. The length of an aggregate signature in our scheme is independent of $\\ell$. The resulting signatures are asymptotically shorter than existing schemes, and concretely shorter for some parameter choices. The resulting signature verification algorithm is algebraic, which makes it amendable to efficient threshold signing. Moreover, we are able to prove security in an adaptive corruption model. We thus obtain an efficient lattice-based synchronous threshold signature scheme, where signatures from many signers can be aggregated into a single short signature. The scheme relies on a one time trusted setup to generate the public parameters.",
+      "source_url": "https://eprint.iacr.org/2026/2121",
+      "authors": [
+        "Dan Boneh",
+        "Binyi Chen",
+        "Trisha Datta"
+      ],
+      "stable_ids": {
+        "eprint": "2026/2121",
+        "arxiv": null,
+        "doi": null
+      },
+      "expected_category": "LATTICE_PRIMITIVES",
+      "expected_core": true,
+      "primary_source_verified": true,
+      "expected_kind": "RESEARCH_PAPER",
+      "chronology": {
+        "first_publication_time": null,
+        "earliest_verified_source_date": "2026-09-20",
+        "date_role": "received",
+        "precision": "DATE_ONLY",
+        "arxiv_submission_at": null,
+        "source_announcement_date": null,
+        "source_received_date": "2026-09-20",
+        "paper_revision_at": null,
+        "formal_venue": null,
+        "formal_venue_date": null,
+        "gmail_received_at": null,
+        "public_collector_observed_at": null,
+        "historical_backfill_at": null,
+        "v3_retrieved_at": "2026-10-19T16:25:52.186810+08:00",
+        "qualification": "ePrint received is not approval/public-availability time; date-only approval cannot prove eligibility before a 09:00 cutoff. arXiv submission timestamp is preserved without inventing announcement time. Approval date is retained separately and is not asserted to be a separately observed announcement timestamp.",
+        "source_approved_date": "2026-09-22"
+      },
+      "evidence_ref": "official-known-web.txt",
+      "source_caveats": {
+        "retractions_corrigenda_ai_disclosure": "NOT_FULLY_AUDITED; no absence-of-caveat claim made",
+        "known_verified_note": null
+      }
+    },
+    {
+      "index": 8,
+      "title": "MAMBA-Frost: A Lattice KEM from Learning With Quantization",
+      "abstract": "The Learning With Errors (LWE) problem provides a conservative and well-established security foundation for lattice-based cryptography, while Learning With Rounding (LWR) improves bandwidth efficiency through deterministic rounding. However, the rounding noise in LWR is inherently correlated with the hidden linear term, preventing tight and sample-preserving reductions to standard LWE for polynomial moduli. Prior work on the Learning With Quantization (LWQ) problem established a tight security reduction from LWE, where standard additive noise is intrinsically replaced by quantization error. We specialize this framework by explicitly instantiating the quantization lattice as a scaled integer lattice. Under this geometric choice, specifically utilizing aligned power-of-two moduli, we derive the exact finite-support error distribution and construct an explicit bijection between transmitted split samples and normal-form LWE samples. These ingredients yield \\(\\mathsf{MAMBA\\text{-}Frost}\\), a plain LWQ-based key encapsulation mechanism that seamlessly pairs unstructured LWE security with quantization-based compression. Because its effective error stems entirely from public dithered quantization, \\(\\mathsf{MAMBA\\text{-}Frost}\\) operates strictly with hardware-friendly power-of-two arithmetic. Furthermore, the construction employs an \\(E_8\\)-coded message embedding to optimize the correctness margin without altering the underlying LWQ hardness argument. We instantiate \\(\\mathsf{Frost}\\) at NIST security levels 1, 3, and 5 and provide a complete software implementation. Its power-of-two design realizes the core arithmetic with shifts and masks, keeping the implementation simple and amenable to constant-time engineering. At level 1, \\(\\mathsf{Frost\\text{-}128}\\) reduces the combined public-key and ciphertext size by about \\(40\\%\\) compared with \\(\\mathsf{FrodoKEM\\text{-}640}\\) and by about \\(8\\%\\) compared with \\(\\mathsf{SCloud}^{+}\\text{-}128\\). On an AVX2 platform, \\(\\mathsf{Frost\\text{-}128}\\) achieves speedups of \\(2.3\\times\\), \\(1.8\\times\\), and \\(1.5\\times\\) for key generation, encapsulation, and decapsulation over \\(\\mathsf{FrodoKEM\\text{-}640}\\), and \\(2.1\\times\\), \\(1.5\\times\\), and \\(1.3\\times\\) over \\(\\mathsf{SCloud}^{+}\\text{-}128\\). Note: First-round candidate in the NICCS next-generation commercial cryptographic algorithms global call (KEM track), 2026.",
+      "source_url": "https://eprint.iacr.org/2026/2136",
+      "authors": [
+        "Shanxiang Lyu",
+        "Ke Ma",
+        "Junzuo Lai"
+      ],
+      "stable_ids": {
+        "eprint": "2026/2136",
+        "arxiv": null,
+        "doi": null
+      },
+      "expected_category": "LATTICE_PRIMITIVES",
+      "expected_core": true,
+      "primary_source_verified": true,
+      "expected_kind": "RESEARCH_PAPER",
+      "chronology": {
+        "first_publication_time": null,
+        "earliest_verified_source_date": "2026-09-21",
+        "date_role": "received",
+        "precision": "DATE_ONLY",
+        "arxiv_submission_at": null,
+        "source_announcement_date": null,
+        "source_received_date": "2026-09-21",
+        "paper_revision_at": null,
+        "formal_venue": null,
+        "formal_venue_date": null,
+        "gmail_received_at": null,
+        "public_collector_observed_at": "2026-09-22T02:18:25.565183+00:00",
+        "historical_backfill_at": null,
+        "v3_retrieved_at": "2026-10-19T16:25:52.186810+08:00",
+        "qualification": "ePrint received is not approval/public-availability time; date-only approval cannot prove eligibility before a 09:00 cutoff. arXiv submission timestamp is preserved without inventing announcement time. Approval date is retained separately and is not asserted to be a separately observed announcement timestamp.",
+        "source_approved_date": "2026-09-22"
+      },
+      "evidence_ref": "official-next-web.txt",
+      "source_caveats": {
+        "retractions_corrigenda_ai_disclosure": "NOT_FULLY_AUDITED; no absence-of-caveat claim made",
+        "known_verified_note": "First-round NICCS candidate note confirmed in official abstract."
+      }
+    },
+    {
+      "index": 9,
+      "title": "Post-Quantum PKE and More from a Noisy Unstructured Linear Algebraic Assumption: Beyond LWE and LPN",
+      "abstract": "Noisy linear algebraic assumptions (NLAs), such as $\\mathsf{LWE}$ and Alekhnovich’s $\\mathsf{LPN}$, have long served as the most reliable sources of post-quantum hardness. However, a series of recent classical attacks on assumptions once believed to be quantum-secure, coupled with the rapid progress in quantum technology, underscores the urgent need for assumptions that are plausibly hard even if both $\\mathsf{LWE}$ and $\\mathsf{LPN}$ turn out to be broken. A fascinating recent work of Ghosal et al. (Eurocrypt 2025) takes an important first step in this direction, constructing a PKE scheme by combining two NLAs that remain plausibly secure even if $\\mathsf{LWE}$ and Alekhnovich’s parameter regime for $\\mathsf{LPN}$ were to be polynomially broken. A critical weakness of their work, however, is that it is still $\\mathsf{LPN}$-broken: namely, an oracle that breaks $\\mathsf{LPN}$ with $n^{-\\delta}$ noise rate can break their NLA, for some $\\delta>0$. We ask: can this barrier be overcome? We answer this question positively, by introducing an NLA that is plausibly hard given an oracle that breaks even constant noise rate $\\mathsf{LPN}$, while still being plausibly hard given an oracle that breaks $\\mathsf{LWE}$. Along the way, we improve upon the work of Ghosal et al. significantly in several dimensions. Specifically, we introduce a single new natural NLA and provide constructions of (i) public-key encryption and (ii) two-round maliciously secure oblivious transfer protocol from this single assumption. We also construct a one-time circular-secure secret-key encryption from a binary variant of this assumption. Our assumption takes the form $(\\mathbf{A}, \\mathbf{A}\\mathbf{s} + \\mathbf{e})$, where $\\mathbf{A}$ is a random unstructured square matrix, the secret $\\mathbf{s}$ has short and sparse entries, and the error $\\mathbf{e}$ is a mixture of two components: a small-but-dense error combined with a large-but-sparse error. We provide a comprehensive initial cryptanalysis, ruling out (1) efficient combinatorial attacks that exploit sparsity such as information set decoding, (2) dimension reduction attacks, and (3) dual lattice attacks. We also prove, via a reduction, that our assumption, and its binary variant, is at-least as hard as $\\mathsf{LWE}$. Additionally, we show that for a broad range of parameters including those used by our constructions, our assumption does not appear to fall within the class of “lattice” assumptions, that is, there seems to be no reduction to approximate shortest vector problem solvers, and, crucially, it is plausibly hard even given an oracle that breaks $\\mathsf{LPN}$ for any noise density parameter.",
+      "source_url": "https://eprint.iacr.org/2026/2113",
+      "authors": [
+        "Riddhi Ghosal",
+        "Paul Lou",
+        "Amit Sahai"
+      ],
+      "stable_ids": {
+        "eprint": "2026/2113",
+        "arxiv": null,
+        "doi": null
+      },
+      "expected_category": "ADJACENT_PQC",
+      "expected_core": false,
+      "primary_source_verified": true,
+      "expected_kind": "RESEARCH_PAPER",
+      "chronology": {
+        "first_publication_time": null,
+        "earliest_verified_source_date": "2026-09-19",
+        "date_role": "received",
+        "precision": "DATE_ONLY",
+        "arxiv_submission_at": null,
+        "source_announcement_date": null,
+        "source_received_date": "2026-09-19",
+        "paper_revision_at": null,
+        "formal_venue": null,
+        "formal_venue_date": null,
+        "gmail_received_at": null,
+        "public_collector_observed_at": null,
+        "historical_backfill_at": null,
+        "v3_retrieved_at": "2026-10-19T16:25:52.186810+08:00",
+        "qualification": "ePrint received is not approval/public-availability time; date-only approval cannot prove eligibility before a 09:00 cutoff. arXiv submission timestamp is preserved without inventing announcement time. Approval date is retained separately and is not asserted to be a separately observed announcement timestamp.",
+        "source_approved_date": "2026-09-22"
+      },
+      "evidence_ref": "official-known-web.txt",
+      "source_caveats": {
+        "retractions_corrigenda_ai_disclosure": "NOT_FULLY_AUDITED; no absence-of-caveat claim made",
+        "known_verified_note": null
+      }
+    },
+    {
+      "index": 10,
+      "title": "Too Small to Hide: Single-Trace Key Recovery from ML-KEM Key Generation",
+      "abstract": "Key generation in ML-KEM (CRYSTALS-Kyber) samples a short secret from a centered binomial distribution (CBD) and immediately transforms it with the number-theoretic transform (NTT). Each execution draws fresh randomness, so an attacker obtains a single trace and cannot average. We show that one power trace of the optimized pqm4 implementation on an Arm Cortex-M4 suffices, and that the two operations leak complementary information. The CBD sampler stores each coefficient as a signed $16$-bit two's-complement word, which reveals its sign almost without error but too little about its magnitude to yield long error-free hint sets. The missing magnitude leaks in the subsequent NTT, where coefficients are multiplied by public twiddle factors. Used as hints in a primal lattice attack, the combined leakage reduces the estimated BKZ block size for ML-KEM-768 from $624$ to $129$, corresponding to $2^{182.2}$ and $2^{37.7}$ in the core-SVP model. A control experiment shows that the same NTT code leaks the Hamming weight of a near-uniform operand as strongly as that of the secret, yet reveals almost nothing about its value. What makes a coefficient vulnerable is how few values it can take, not how small it is. That points to a countermeasure inside the CBD sampler. Each sample $v$ is stored as a random representative $\\widetilde v = v + rq$ of its residue class, with $r$ nonzero, so the NTT and all later code run unchanged. This $q$-randomization drives the sign leakage to the noise floor, reduces the NTT magnitude leakage by $4.5\\times$, and raises the block size from $129$ back to $611$, about four bits of estimated security lost instead of more than $140$. The sampler grows by $937$ bytes of firmware.",
+      "source_url": "https://eprint.iacr.org/2026/2137",
+      "authors": [
+        "Vahid Jahandideh"
+      ],
+      "stable_ids": {
+        "eprint": "2026/2137",
+        "arxiv": null,
+        "doi": "10.1145/3847162.3849237"
+      },
+      "expected_category": "LATTICE_CRYPTANALYSIS",
+      "expected_core": true,
+      "primary_source_verified": true,
+      "expected_kind": "RESEARCH_PAPER",
+      "chronology": {
+        "first_publication_time": null,
+        "earliest_verified_source_date": "2026-09-21",
+        "date_role": "received",
+        "precision": "DATE_ONLY",
+        "arxiv_submission_at": null,
+        "source_announcement_date": null,
+        "source_received_date": "2026-09-21",
+        "paper_revision_at": null,
+        "formal_venue": "ACTIVE 2026",
+        "formal_venue_date": null,
+        "gmail_received_at": null,
+        "public_collector_observed_at": "2026-09-22T02:18:25.565183+00:00",
+        "historical_backfill_at": null,
+        "v3_retrieved_at": "2026-10-19T16:25:52.186810+08:00",
+        "qualification": "ePrint received is not approval/public-availability time; date-only approval cannot prove eligibility before a 09:00 cutoff. arXiv submission timestamp is preserved without inventing announcement time. Approval date is retained separately and is not asserted to be a separately observed announcement timestamp.",
+        "source_approved_date": "2026-09-22"
+      },
+      "evidence_ref": "official-final-web.txt",
+      "source_caveats": {
+        "retractions_corrigenda_ai_disclosure": "NOT_FULLY_AUDITED; no absence-of-caveat claim made",
+        "known_verified_note": null
+      }
+    },
+    {
+      "index": 11,
+      "title": "Tree Encodings III: Time/Space Hardness from Lattice Problems",
+      "abstract": "Assuming the polynomial-time hardness of a variant of the short integer solution (SIS) problem, we show the existence of sequential and memory-hard functions. Such an assumption postulates the hardness of a problem against polynomial-time algorithms, regardless of their memory and depth. Yet, we show that this assumption implies that $\\mathsf{P} \\neq \\mathsf{NC}$, that $\\mathsf{P} \\neq \\mathsf{L}$, and that the $\\mathsf{NC}$ hierarchy is proper, i.e., that $\\mathsf{NC}^1 \\subsetneq \\mathsf{NC}^2\\subsetneq \\mathsf{NC}^3 \\dots$ Our main technical tool is a new variant of homomorphic computation over lattice encodings, which does not impose a bound on the circuit depth and is not based on bootstrapping.",
+      "source_url": "https://eprint.iacr.org/2026/2093",
+      "authors": [
+        "Damiano Abram",
+        "Giulio Malavolta",
+        "Lawrence Roy"
+      ],
+      "stable_ids": {
+        "eprint": "2026/2093",
+        "arxiv": null,
+        "doi": null
+      },
+      "expected_category": "LATTICE_FOUNDATIONS",
+      "expected_core": true,
+      "primary_source_verified": true,
+      "expected_kind": "RESEARCH_PAPER",
+      "chronology": {
+        "first_publication_time": null,
+        "earliest_verified_source_date": "2026-09-18",
+        "date_role": "received",
+        "precision": "DATE_ONLY",
+        "arxiv_submission_at": null,
+        "source_announcement_date": null,
+        "source_received_date": "2026-09-18",
+        "paper_revision_at": null,
+        "formal_venue": null,
+        "formal_venue_date": null,
+        "gmail_received_at": null,
+        "public_collector_observed_at": null,
+        "historical_backfill_at": null,
+        "v3_retrieved_at": "2026-10-19T16:25:52.186810+08:00",
+        "qualification": "ePrint received is not approval/public-availability time; date-only approval cannot prove eligibility before a 09:00 cutoff. arXiv submission timestamp is preserved without inventing announcement time. Approval date is retained separately and is not asserted to be a separately observed announcement timestamp.",
+        "source_approved_date": "2026-09-22"
+      },
+      "evidence_ref": "official-extra-web.txt",
+      "source_caveats": {
+        "retractions_corrigenda_ai_disclosure": "NOT_FULLY_AUDITED; no absence-of-caveat claim made",
+        "known_verified_note": null
+      }
+    },
+    {
+      "index": 12,
+      "title": "Two-Bit Lifting for Ternary SIS: Polynomial-Time Collision Attacks on LtHash",
+      "abstract": "LtHash is a lattice-based incremental hash function introduced by Bellare and Micciancio at EUROCRYPT 1997. It can be used in distributed systems to efficiently maintain digests of changing data. Its set-collision resistance rests on the average-case hardness of the ternary short integer solution (SIS) problem in the random oracle model. LtHash implementations typically use power-of-two groups $(\\mathbb{Z}/2^d\\mathbb{Z})^N$ for efficient machine-word arithmetic and SIMD parallelism. Previous security estimates were based on Wagner-type generalized birthday attacks with sub-exponential running time. Chen, Liu, and Zhandry (CLZ, EUROCRYPT'22) describe a folklore algorithm attributed to Regev that solves ternary SIS modulo $2^d$. Applying this algorithm to LtHash yields polynomial-time collision attacks requiring $O(N^d)$ hash queries, a result that has not been previously documented. We improve the Regev--CLZ algorithm by canceling two modulus bits per layer instead of one, while preserving ternary coefficients. This reduces the number of input columns---and hence the number of LtHash queries---from $O(N^d)$ to $O(N^{\\lceil d/2\\rceil})$. This refutes the uniform average-case formulation of Liyan Chen et al.'s conjecture (ITC'26) that the Regev--CLZ bound is optimal. Our technique also extends to inhomogeneous SIS with the same bound. For LtHash16 with $(N,d)=(1024,16)$, used at Facebook and in Solana, our attack requires approximately $2^{81}$ hash queries. Its expected computational cost is at most $2^{101}$ scalar operations over $\\mathbb{F}_2$, compared with our estimates of approximately $2^{180}$ operations for the Regev--CLZ algorithm and $2^{188}$ for the state-of-the-art generalized birthday attack of Tang et al. (CRYPTO'26), under their respective operation models. Our query and scalar-operation costs are both far below the level suggested by the original claim of at least 200-bit security.",
+      "source_url": "https://eprint.iacr.org/2026/2083",
+      "authors": [
+        "Rui Ding",
+        "Xiaorui Gong",
+        "Hao Jiang",
+        "Lili Tang"
+      ],
+      "stable_ids": {
+        "eprint": "2026/2083",
+        "arxiv": null,
+        "doi": null
+      },
+      "expected_category": "LATTICE_CRYPTANALYSIS",
+      "expected_core": true,
+      "primary_source_verified": true,
+      "expected_kind": "RESEARCH_PAPER",
+      "chronology": {
+        "first_publication_time": null,
+        "earliest_verified_source_date": "2026-09-18",
+        "date_role": "received",
+        "precision": "DATE_ONLY",
+        "arxiv_submission_at": null,
+        "source_announcement_date": null,
+        "source_received_date": "2026-09-18",
+        "paper_revision_at": null,
+        "formal_venue": null,
+        "formal_venue_date": null,
+        "gmail_received_at": null,
+        "public_collector_observed_at": null,
+        "historical_backfill_at": null,
+        "v3_retrieved_at": "2026-10-19T16:25:52.186810+08:00",
+        "qualification": "ePrint received is not approval/public-availability time; date-only approval cannot prove eligibility before a 09:00 cutoff. arXiv submission timestamp is preserved without inventing announcement time. Approval date is retained separately and is not asserted to be a separately observed announcement timestamp.",
+        "source_approved_date": "2026-09-22"
+      },
+      "evidence_ref": "official-known-web.txt",
+      "source_caveats": {
+        "retractions_corrigenda_ai_disclosure": "NOT_FULLY_AUDITED; no absence-of-caveat claim made",
+        "known_verified_note": null
+      }
+    },
+    {
+      "index": 13,
+      "title": "Structural Cryptanalysis of Polar-KEM: Direct Recovery of the Secret Isometry",
+      "abstract": "",
+      "source_url": "https://eprint.iacr.org/2026/2211",
+      "authors": [
+        "Yuyang Xiao",
+        "Long Chen",
+        "Zhenfeng Zhang"
+      ],
+      "stable_ids": {
+        "eprint": "2026/2211",
+        "arxiv": null,
+        "doi": null
+      },
+      "expected_category": "LATTICE_CRYPTANALYSIS",
+      "expected_core": true,
+      "primary_source_verified": false,
+      "expected_kind": "RESEARCH_PAPER",
+      "chronology": {
+        "first_publication_time": null,
+        "earliest_verified_source_date": "2026-09-27",
+        "date_role": "maintainer_report_date",
+        "precision": "DATE_ONLY",
+        "arxiv_submission_at": null,
+        "source_announcement_date": null,
+        "source_received_date": null,
+        "paper_revision_at": null,
+        "formal_venue": null,
+        "formal_venue_date": null,
+        "gmail_received_at": null,
+        "public_collector_observed_at": null,
+        "historical_backfill_at": null,
+        "v3_retrieved_at": "2026-10-19T16:25:52.186810+08:00",
+        "qualification": "ePrint received is not approval/public-availability time; date-only approval cannot prove eligibility before a 09:00 cutoff. arXiv submission timestamp is preserved without inventing announcement time. Approval date is retained separately and is not asserted to be a separately observed announcement timestamp.",
+        "source_approved_date": null
+      },
+      "evidence_ref": "polar-primary-maintainer-web.txt",
+      "source_caveats": {
+        "retractions_corrigenda_ai_disclosure": "NOT_FULLY_AUDITED; no absence-of-caveat claim made",
+        "known_verified_note": "Exact ePrint landing/PDF unavailable; independent maintainer report is not the original paper."
+      }
+    },
+    {
+      "index": 14,
+      "title": "A Provable Correctness Analysis of the MATZOV-Style FFT Dual Attack on ML-KEM",
+      "abstract": "The dual attack is a central tool for evaluating the concrete security of the Learning with Errors (LWE) problem, which underlies lattice-based cryptosystems such as ML-KEM. The MATZOV-style FFT dual attack combines dual distinguishing with an FFT-accelerated guessing phase and provides one of the main frameworks for concrete attack estimates against ML-KEM. However, its correctness analysis has traditionally relied on heuristic independence assumptions, leaving a gap between practical attack estimates and provable guarantees. In this work, we give a rigorous correctness analysis of a MATZOV-style FFT-based dual attack for the ML-KEM parameter sets. The analysis treats the correct and incorrect candidates separately and applies different conditioning arguments on the two sides, because the former requires a provable lower bound on the score of the true candidate, while the latter requires a uniform upper bound for all wrong recovered guesses. Combining these two parts, we obtain an explicit success criterion and a provable threshold separation for the FFT score. For concrete cost estimation, we follow the same cost-estimation convention as previous provable dual-attack analyses whenever the same subroutine is involved, using Pouly and Shen's estimates (EUROCRYPT 2024) as our main baseline. We obtain attack costs of 210, 300, and 410 bits for ML-KEM-512, ML-KEM-768, and ML-KEM-1024, respectively. Relative to this baseline, our estimates reduce the attack costs by 28, 47, and 68 bits for ML-KEM-512, ML-KEM-768, and ML-KEM-1024, respectively.",
+      "source_url": "https://eprint.iacr.org/2026/2166",
+      "authors": [
+        "Jiale Li",
+        "Li-Ping Wang",
+        "Huaxiong Wang"
+      ],
+      "stable_ids": {
+        "eprint": "2026/2166",
+        "arxiv": null,
+        "doi": null
+      },
+      "expected_category": "LATTICE_CRYPTANALYSIS",
+      "expected_core": true,
+      "primary_source_verified": true,
+      "expected_kind": "RESEARCH_PAPER",
+      "chronology": {
+        "first_publication_time": null,
+        "earliest_verified_source_date": "2026-09-23",
+        "date_role": "received",
+        "precision": "DATE_ONLY",
+        "arxiv_submission_at": null,
+        "source_announcement_date": null,
+        "source_received_date": "2026-09-23",
+        "paper_revision_at": null,
+        "formal_venue": null,
+        "formal_venue_date": null,
+        "gmail_received_at": null,
+        "public_collector_observed_at": null,
+        "historical_backfill_at": null,
+        "v3_retrieved_at": "2026-10-19T16:25:52.186810+08:00",
+        "qualification": "ePrint received is not approval/public-availability time; date-only approval cannot prove eligibility before a 09:00 cutoff. arXiv submission timestamp is preserved without inventing announcement time. Approval date is retained separately and is not asserted to be a separately observed announcement timestamp.",
+        "source_approved_date": "2026-09-26"
+      },
+      "evidence_ref": "official-known-web.txt",
+      "source_caveats": {
+        "retractions_corrigenda_ai_disclosure": "NOT_FULLY_AUDITED; no absence-of-caveat claim made",
+        "known_verified_note": "Distinct from the general-dual-lattice FFT paper in corpus item16; do not merge by shared FFT/LWE terms."
+      }
+    },
+    {
+      "index": 15,
+      "anchor_only": false,
+      "title": "How Secure are NTRU+ Keys? Analysing the Best Module Attacks",
+      "abstract": "A recent analysis of module-BKZ [Ducas–Engleberts–Perthuis, Asiacrypt'25] predicts subexponential speedups for lattice reduction on module lattices over cyclotomic fields whose conductor has small odd prime factors. This threatens NTRU+, the South Korean standard for key encapsulation, and related schemes; however, the short vectors one seeks to find are short in the coefficient geometry, whereas module-BKZ operates in the canonical geometry. We introduce relative canonical and relative coefficient embeddings, realising a module over a cyclotomic field $K$ as a module over any subfield $L$, and characterise when the two agree up to scaling: exactly when the radicals of their respective conductors $c$ and $\\ell$ satisfy $\\mathrm{rad}(c)/\\mathrm{rad}(\\ell) \\in \\{1,2\\}$. Furthermore we quantify the distortion incurred in general when passing between embeddings, and hence identify the optimal subfield for module-BKZ and BKZ to use. Estimating the cost of the best attack with simulation-based models [Perthuis–Trenkić, PQCrypto'26], we find that the best module attack saves only 4–10 blocksizes, costing NTRU+ keys at most three bits of security in the Core-SVP model. We further extend the analysis of overstretched NTRU regimes [Ducas–Woerden, Asiacrypt'19] to the module setting, and find the fatigue point is reached sooner than with unstructured counterparts, though NTRU+ parameterisations remain safe.",
+      "source_url": "https://eprint.iacr.org/2026/2527",
+      "authors": [
+        "Paola de Perthuis",
+        "Filip Trenkić"
+      ],
+      "stable_ids": {
+        "eprint": "2026/2527",
+        "arxiv": null,
+        "doi": null
+      },
+      "document_type": "paper",
+      "expected_category": "LATTICE_CRYPTANALYSIS",
+      "expected_core": true,
+      "primary_source_verified": true,
+      "expected_kind": "RESEARCH_PAPER",
+      "chronology": {
+        "source_received_date": "2026-10-18",
+        "official_approval_date": "2026-10-19",
+        "paper_revision_date": null,
+        "first_publication_time": null,
+        "first_publication_time_precision": "UNRESOLVED_EXACT_TIME",
+        "formal_venue": null,
+        "formal_venue_online_date": null,
+        "earliest_public_upper_bound": null,
+        "defence_at": null,
+        "defence_timezone": null,
+        "paper_revision_time": null
+      },
+      "evidence_ref": "web-official-details.json",
+      "source_caveats": {
+        "assumptions": "NTRU+; module-BKZ; cyclotomic fields; coefficient versus canonical geometry",
+        "verification_boundary": "E2_OFFICIAL_ABSTRACT"
+      }
+    },
+    {
+      "index": 16,
+      "anchor_only": false,
+      "title": "Provable FFT-Accelerated Dual Attack on LWE Using the General Dual Lattice",
+      "abstract": "The dual attack is a central tool for evaluating the security of the Learning with Errors (LWE) problem, which is the foundation of the lattice-based cryptosystems such as ML-KEM. Since the introduction of FFT acceleration by Guo and Johansson (ASIACRYPT 2021) and subsequent optimizations in the MATZOV report, FFT-based dual attacks have achieved concrete security estimates for ML-KEM. However, these results rely on one specific independence heuristic that is known to fail in certain parameter regimes (CRYPTO 2023). Recent work by Pouly and Shen (EUROCRYPT 2024) initiated the study of provable dual attacks through explicit geometric analysis, but restricted the analysis to the orthogonal lattice, requiring approximately \\(m\\approx2n\\) LWE samples. Qu and Xu (ASIACRYPT 2025) subsequently introduced modulus switching into the provable dual-attack setting, enabling evaluation over a smaller modulus, with a revised analysis given in their later version. More recently, a closely related ePrint revisited the concrete complexity estimates of these provable attacks after correcting the norm-bound formula used in the earlier analysis. In this work, we provide a provable correctness analysis of the Guo--Johansson-style FFT-based dual attack over the general dual lattice. By extending the analysis from the orthogonal lattice to $L_q(\\mathbf{A}^{T})$, where $\\mathbf{y}$ is not restricted to $\\mathbf{0}$, we reduce the required number of LWE samples from $m\\approx2n$ to $m\\approx n$ while retaining the computational efficiency of FFT-based score evaluation. We further derive an explicit upper bound on the false-positive probability via an integral estimate for a geometric distinguishing event. For concrete complexity estimation, we follow the abstractions and cost models used in prior provable analyses while refining the probability-dependent treatment of the norm bounds. We obtain attack costs of $216$, $317$, and $426$ bits for ML-KEM-512, ML-KEM-768, and ML-KEM-1024, respectively. Compared with the recomputed estimates of the previous best published provable dual attack, these represent reductions of $22$, $30$, and $52$ bits, respectively.",
+      "source_url": "https://eprint.iacr.org/2026/2186",
+      "authors": [
+        "Jiale Li",
+        "Li-Ping Wang",
+        "Huaxiong Wang"
+      ],
+      "stable_ids": {
+        "eprint": "2026/2186",
+        "arxiv": null,
+        "doi": null
+      },
+      "document_type": "paper",
+      "expected_category": "LATTICE_CRYPTANALYSIS",
+      "expected_core": true,
+      "primary_source_verified": true,
+      "expected_kind": "RESEARCH_PAPER",
+      "chronology": {
+        "source_received_date": "2026-09-23",
+        "official_approval_date": "2026-09-26",
+        "paper_revision_date": null,
+        "first_publication_time": null,
+        "first_publication_time_precision": "UNRESOLVED_EXACT_TIME",
+        "formal_venue": null,
+        "formal_venue_online_date": null,
+        "earliest_public_upper_bound": null,
+        "defence_at": null,
+        "defence_timezone": null,
+        "paper_revision_time": null
+      },
+      "evidence_ref": "web-fft-general-dual.json",
+      "source_caveats": {
+        "assumptions": "LWE; general dual lattice; geometric false-positive analysis; prior cost-model abstractions",
+        "verification_boundary": "E2_OFFICIAL_ABSTRACT"
+      }
+    },
+    {
+      "index": 17,
+      "anchor_only": false,
+      "title": "Faster ABE for Turing Machines from Circular Evasive LWE",
+      "abstract": "We present a new ABE for Turing machines, where - encryption runs in time $O(T)$ and produces a ciphertext of size $O(T)$ for time $T$ computation; - key generation produces a key of size $O(1)$; - security relies on the (public-coin) circular evasive LWE assumption. In fact, we obtain an ABE for a simple and more general model of computation which we refer to as iterated (local) computation. We improve on the recent construction of Agrawal, Kumari, and Yamada (CRYPTO 24) in three ways: (i) faster encryption and smaller ciphertext size; (ii) smaller key size, and (iii) weaker assumptions, eliminating the need for circular tensor LWE.",
+      "source_url": "https://eprint.iacr.org/2026/2526",
+      "authors": [
+        "Valerio Cini",
+        "Hoeteck Wee"
+      ],
+      "stable_ids": {
+        "eprint": "2026/2526",
+        "arxiv": null,
+        "doi": "10.1007/978-3-031-91131-6_4"
+      },
+      "document_type": "paper",
+      "expected_category": "LATTICE_PRIMITIVES",
+      "expected_core": true,
+      "primary_source_verified": true,
+      "expected_kind": "RESEARCH_PAPER",
+      "chronology": {
+        "source_received_date": "2026-10-18",
+        "official_approval_date": "2026-10-19",
+        "paper_revision_date": null,
+        "first_publication_time": null,
+        "first_publication_time_precision": "UNRESOLVED_EXACT_TIME",
+        "formal_venue": "EUROCRYPT 2025",
+        "formal_venue_online_date": "2025-04-28",
+        "earliest_public_upper_bound": "2025-04-28",
+        "defence_at": null,
+        "defence_timezone": null,
+        "paper_revision_time": null
+      },
+      "evidence_ref": "web-official-details.json",
+      "source_caveats": {
+        "assumptions": "public-coin circular evasive LWE; not plain LWE",
+        "verification_boundary": "E2_OFFICIAL_ABSTRACT"
+      }
+    },
+    {
+      "index": 18,
+      "anchor_only": false,
+      "title": "Threshold Post-Quantum E-Voting from Lattice Commitments",
+      "abstract": "Lattice-based homomorphic e-voting protocols built on commitments, such as EVOLVE, keep ballots private against all but one authority and the tally verifiable even if all authorities collude, but need every authority for tallying. We present T-EVOLVE, in which votes are Shamir-shared over the commitment message space: any t of n authorities complete the tally, privacy holds against t-1 colluding authorities, and verifiability against all of them. The voter proves that her committed shares form a Reed-Solomon codeword whose value at zero is a valid vote; the parity checks cost no communication, and tallying interpolates public column sums without norm growth. Complaints of authorities, including those about ciphertexts that do not decrypt, are publicly verifiable given an encryption scheme with publicly verifiable opening; we define its interface and show that it can be instantiated under LWE. We prove privacy, verifiability, individual verifiability and robustness in the classical random oracle model; the verifiability reduction for the efficient instantiation is not tight. In a C implementation, a voter's yes/no ballot for four authorities takes 109 KB without encryption overhead and signatures, and an authority aggregates 10^4 ballots in about three minutes on one core.",
+      "source_url": "https://eprint.iacr.org/2026/2500",
+      "authors": [
+        "Jalal Alizadeh"
+      ],
+      "stable_ids": {
+        "eprint": "2026/2500",
+        "arxiv": null,
+        "doi": null
+      },
+      "document_type": "paper",
+      "expected_category": "LATTICE_PRIMITIVES",
+      "expected_core": true,
+      "primary_source_verified": true,
+      "expected_kind": "RESEARCH_PAPER",
+      "chronology": {
+        "source_received_date": "2026-10-15",
+        "official_approval_date": "2026-10-17",
+        "paper_revision_date": null,
+        "first_publication_time": null,
+        "first_publication_time_precision": "UNRESOLVED_EXACT_TIME",
+        "formal_venue": null,
+        "formal_venue_online_date": null,
+        "earliest_public_upper_bound": null,
+        "defence_at": null,
+        "defence_timezone": null,
+        "paper_revision_time": null
+      },
+      "evidence_ref": "web-two-anchor-identities.json",
+      "source_caveats": {
+        "assumptions": "lattice commitments; LWE instantiation; classical random oracle model",
+        "verification_boundary": "E2_OFFICIAL_ABSTRACT"
+      }
+    },
+    {
+      "index": 19,
+      "anchor_only": false,
+      "title": "Provable Subexponential Algorithms for Module-SIS and Module-LWE",
+      "abstract": "Ducas, Engelberts and Loyer (CRYPTO 2025) turned Wagner's generalized birthday algorithm into a provable subexponential-time Gaussian sampler for unstructured short integer solutions. Recent preprints of Han, Gao and Hu, and of Chen, Jiang, Wang and Zhang, obtain low-sample decision learning-with-errors algorithms from this framework. We extend it to module matrices over power-of-two cyclotomic rings, for every residue degree of the prime modulus. For fixed module ranks $k,\\ell\\ge1$, let $n=kd$, $m=(k+\\ell)d$, and suppose $\\ln(q/\\sqrt n)=(\\ln n)^{b+o(1)}$. For every fixed $b,c,\\xi>0$, we solve Module-SIS with coefficient infinity-norm bound $q/(\\ln n)^c$ in worst-case time and space $2^{(1/(2b)+\\xi)n/\\ln\\ln n}$. For matrix-independent errors satisfying $\\|e\\|\\le\\sigma\\sqrt m$ with probability $1-o(1)$ and $\\ln(2+\\sigma)=(\\ln n)^{a+o(1)}$, $0\\le a<b$, decision and search Module-LWE take $2^{(1/(2(b-a))+\\xi)n/\\ln\\ln n}$. Success is $1-o(1)$ using only the given $k+\\ell$ ring samples; error coordinates need not be independent. The structural ingredient is a Chinese-remainder-support uncertainty bound: the loss of randomness of sparse dual labels is compensated by an arithmetic lower bound on their length. Scalar row perturbations give search over the base field, and small integer shears remove a singular-block loss. Projection, the Han--Gao--Hu martingale analysis, and a finite enumeration sampler give a common algorithmic framework. We also prove sample-preserving scalar search-LWE and narrow Module-LWE algorithms. In particular, for polynomial prime $q=n^{\\kappa+o(1)}$, $\\kappa>1/2$, one ring sample and growing rank suffice for decision and search in time and space $2^{(1/2+\\xi)n/\\ln\\ln n}$ when the sample supplies $(1+o(1))n/\\ln\\ln n$ scalar responses. Here ``narrow'' restricts both secret and error. Separate heuristic estimates in the model of Ducas, Engelberts and Loyer suggest that Wagner-style attacks do not reach the NIST security targets of ML-KEM and ML-DSA.",
+      "source_url": "https://eprint.iacr.org/2026/2420",
+      "authors": [
+        "William Youmans"
+      ],
+      "stable_ids": {
+        "eprint": "2026/2420",
+        "arxiv": null,
+        "doi": null
+      },
+      "document_type": "paper",
+      "expected_category": "LATTICE_ALGORITHMS",
+      "expected_core": true,
+      "primary_source_verified": true,
+      "expected_kind": "RESEARCH_PAPER",
+      "chronology": {
+        "source_received_date": "2026-10-08",
+        "official_approval_date": "2026-10-12",
+        "paper_revision_date": null,
+        "first_publication_time": null,
+        "first_publication_time_precision": "UNRESOLVED_EXACT_TIME",
+        "formal_venue": null,
+        "formal_venue_online_date": null,
+        "earliest_public_upper_bound": null,
+        "defence_at": null,
+        "defence_timezone": null,
+        "paper_revision_time": null
+      },
+      "evidence_ref": "web-anchor-details-thesis-pdf.json",
+      "source_caveats": {
+        "assumptions": "Module-SIS; Module-LWE; prime modulus residue degree; matrix-independent bounded errors",
+        "verification_boundary": "E2_OFFICIAL_ABSTRACT"
+      }
+    },
+    {
+      "index": 20,
+      "anchor_only": false,
+      "title": "SoK: The Landscape of Post-Quantum Multi-Party Signature Aggregation",
+      "abstract": "Post-quantum signature schemes such as ML-DSA, FN-DSA (Falcon), and SLH-DSA have significantly larger keys and signatures than their classical counterparts, making compact multiparty signing an increasingly important research problem. We survey more than 30 schemes published between 2021 and 2026, covering threshold and dis tributed signing, proof-based aggregation, and algebraic half-aggregation. Our survey shows that most existing work is designed around blockchain and validator-consensus applications, where large numbers of mostly ho mogeneous signers sign a common message and accountability is typically represented by a compact signer set. We found that a different and practically important setting has received little attention: institutional multiparty document signing, where tens to hundreds of signers may use different post-quantum schemes or parame ter sets during a gradual migration, while requiring non-interactive sign ing and exact per-signer accountability. To study this gap, we develop an eight-dimensional taxonomy based on deployment requirements and sys tematically classify existing approaches. We also formulate three testable hypotheses and propose a common benchmark methodology for evalu ating communication, computation, verification cost, scalability, signer heterogeneity, and accountability. Our analysis finds no published study that quantitatively evaluates the institutional workload across the ag gregation paradigms covered in our survey. We therefore identify the key experimental and architectural requirements for assessing whether ex isting post-quantum aggregation techniques can support heterogeneous, accountable, and non-interactive institutional signing. Note: Post-quantum multi-party signature research has expanded across threshold signing, proof-based aggregation, hash-based aggregation, algebraic compression, and bespoke multi-signatures, but existing evaluations remain largely focused on validator-oriented workloads. This SoK systematizes these approaches using a workload-based taxonomy covering interaction, key management, scheme het erogeneity, accountability, verification compatibility, security assumptions, and demonstrated scale.",
+      "source_url": "https://eprint.iacr.org/2026/2222",
+      "authors": [
+        "Gaurav Kumar"
+      ],
+      "stable_ids": {
+        "eprint": "2026/2222",
+        "arxiv": null,
+        "doi": null
+      },
+      "document_type": "paper",
+      "expected_category": "ADJACENT_PQC",
+      "expected_core": false,
+      "primary_source_verified": true,
+      "expected_kind": "SURVEY_OR_SOK",
+      "chronology": {
+        "source_received_date": "2026-09-26",
+        "official_approval_date": "2026-09-27",
+        "paper_revision_date": null,
+        "first_publication_time": null,
+        "first_publication_time_precision": "UNRESOLVED_EXACT_TIME",
+        "formal_venue": null,
+        "formal_venue_online_date": null,
+        "earliest_public_upper_bound": null,
+        "defence_at": null,
+        "defence_timezone": null,
+        "paper_revision_time": null
+      },
+      "evidence_ref": "web-history-negative-boundaries.json",
+      "source_caveats": {
+        "assumptions": "survey; ML-DSA/Falcon/SLH-DSA compared; heterogeneous accountability",
+        "verification_boundary": "E2_OFFICIAL_ABSTRACT"
+      }
+    },
+    {
+      "index": 21,
+      "anchor_only": false,
+      "title": "Lattice Cryptography: Isomorphisms & Dual Attacks",
+      "abstract": "",
+      "source_url": "https://ir.cwi.nl/pub/36664",
+      "authors": [
+        "Ludo Niels Pulles"
+      ],
+      "stable_ids": {
+        "eprint": null,
+        "arxiv": null,
+        "doi": null
+      },
+      "document_type": "dissertation",
+      "expected_category": "LATTICE_FOUNDATIONS",
+      "expected_core": true,
+      "primary_source_verified": true,
+      "expected_kind": "DISSERTATION",
+      "chronology": {
+        "source_received_date": null,
+        "official_approval_date": null,
+        "paper_revision_date": null,
+        "first_publication_time": null,
+        "first_publication_time_precision": "PUBLIC_DIGITAL_AVAILABILITY_UNRESOLVED",
+        "formal_venue": null,
+        "formal_venue_online_date": null,
+        "earliest_public_upper_bound": null,
+        "defence_at": "2026-09-23T16:00:00+02:00",
+        "defence_timezone": "Europe/Amsterdam",
+        "paper_revision_time": null
+      },
+      "evidence_ref": "Pulles-frontmatter.txt",
+      "source_caveats": {
+        "assumptions": "LIP; Module-LIP; LWE/BDD dual-sieve heuristics",
+        "verification_boundary": "E3_OFFICIAL_PDF_FRONTMATTER_AND_TOC_ONLY"
+      }
+    },
+    {
+      "index": 22,
+      "anchor_only": false,
+      "title": "On the Limits of LWE and PCE based UPKE",
+      "abstract": "Updatable Public-Key Encryption (UPKE) enables forward secrecy in asynchronous settings like secure group messaging. At EC'25, Albrecht, Benčina and Lai proposed the first plausibly post-quantum UPKE scheme supporting unlimited updates, based on permutation code equivalence (PCE) over finite fields and hollow lattice problems. However, it has impractically large public keys (4.8MiB) and ciphertexts (1.5MiB). In this work, we first replace the information-theoretic Hollow LHL with a computational assumption secure under binary-secret binary-error LWE, reducing key sizes by an order of magnitude. Second, we show that generalising to Module-LWE is not beneficial: PCE instances over $\\mathbb{F}_{q^d}$ admit a linearisation attack via the $q$-Frobenius structure, enabling recovery of secret isometries unless code rates are inflated by $d$, negating any size benefit from module lattices. Third, we establish IND-CCA security in the model of Alwen, Fuchsbauer and Mularczyk (EC'24), but do not achieve `joiner security' like other post-quantum candidates. Finally, we introduce a heuristic multi-key variant using matrix-valued secret keys, enabling efficient encryption of $\\ell$ bits per ciphertext. We define the Hinted SPCE assumption to capture the main cryptanalytic challenge and show that the performance gain is likely too small to justify adoption, unless the new assumption can be avoided. Overall, our `unlimited' scheme has update sizes 3.5 to 10 times larger than lattice-based schemes limited to $2^{20}$ updates, depending on the aggressiveness of parameter choices.",
+      "source_url": "https://eprint.iacr.org/2026/2164",
+      "authors": [
+        "Martin R. Albrecht",
+        "Benjamin Benčina",
+        "Russell W. F. Lai"
+      ],
+      "stable_ids": {
+        "eprint": "2026/2164",
+        "arxiv": null,
+        "doi": null
+      },
+      "document_type": "paper",
+      "expected_category": "LATTICE_PRIMITIVES",
+      "expected_core": true,
+      "primary_source_verified": true,
+      "expected_kind": "RESEARCH_PAPER",
+      "chronology": {
+        "source_received_date": "2026-09-22",
+        "official_approval_date": "2026-09-26",
+        "paper_revision_date": null,
+        "first_publication_time": null,
+        "first_publication_time_precision": "UNRESOLVED_EXACT_TIME",
+        "formal_venue": null,
+        "formal_venue_online_date": null,
+        "earliest_public_upper_bound": null,
+        "defence_at": null,
+        "defence_timezone": null,
+        "paper_revision_time": null
+      },
+      "evidence_ref": "web-official-details.json",
+      "source_caveats": {
+        "assumptions": "binary-secret binary-error LWE; permutation code equivalence; heuristic Hinted SPCE for multi-key variant",
+        "verification_boundary": "E2_OFFICIAL_ABSTRACT"
+      }
+    },
+    {
+      "index": 23,
+      "anchor_only": false,
+      "title": "Post-Quantum TLS 1.3 Handshake from CPA-Secure KEMs with Tighter Reductions",
+      "abstract": "TLS 1.3 is at the heart of secure modern internet communications. With the rise of quantum attacks, post-quantum TLS 1.3, built on post-quantum key encapsulation mechanisms (KEMs), has naturally become a major research focus. At Eurocrypt 2022, Huguenin-Dumittan and Vaudenay demonstrated that KEMs secure against chosen-plaintext attacks (CPA) are sufficient to construct a secure TLS 1.3 handshake in the random oracle model (ROM), but their security reduction incurs an $\\mathcal{O}(q^6)$ loss, where $q$ is the number of random oracle queries. Improving their security bounds was left as an open problem. To address this problem, Zhou et al. took the first step at Asiacrypt 2024, improving the loss factor to $\\mathcal{O}(q^2)$ in the ROM and $\\mathcal{O}(q^4)$ in the quantum ROM (QROM) for OW-CPA secure KEMs, and to $\\mathcal{O}(q)$ (ROM) and $\\mathcal{O}(q^2)$ (QROM) for IND-CPA secure KEMs. In this work, we advance the state-of-the-art by providing tighter security reductions for TLS 1.3 handshake based on CPA-secure KEMs. We introduce a new security notion, \\textit{IND-1CCA-1MAC}, and show that with a slight ciphertext expansion, the reduction losses can be significantly improved to $\\mathcal{O}(q)$ (ROM) and $\\mathcal{O}(q^2)$ (QROM) for OW-CPA secure KEMs, and to only $\\mathcal{O}(1)$ in both models for IND-CPA secure KEMs. Moreover, we prove that without additional modifications such as ciphertext expansion, the loss of $\\mathcal{O}(q)$ (ROM) and $\\mathcal{O}(q^2)$ (QROM) is unavoidable. Finally, we analyze the security of TLS 1.3 from CPA-secure KEMs in the hybrid key exchange setting, and provide experimental evidence that ciphertext expansion is a practical trade-off for mitigating reduction losses. Note: Corrected minor typos.",
+      "source_url": "https://eprint.iacr.org/2025/1748",
+      "authors": [
+        "Jinrong Chen",
+        "Biming Zhou",
+        "Rongmao Chen",
+        "Haodong Jiang",
+        "Yi Wang",
+        "Xinyi Huang",
+        "Yunlei Zhao",
+        "Moti Yung"
+      ],
+      "stable_ids": {
+        "eprint": "2025/1748",
+        "arxiv": null,
+        "doi": null
+      },
+      "document_type": "paper",
+      "expected_category": "ADJACENT_PQC",
+      "expected_core": false,
+      "primary_source_verified": true,
+      "expected_kind": "RESEARCH_PAPER",
+      "chronology": {
+        "source_received_date": "2025-09-24",
+        "official_approval_date": null,
+        "paper_revision_date": "2026-03-23",
+        "first_publication_time": null,
+        "first_publication_time_precision": "UNRESOLVED_EXACT_TIME",
+        "formal_venue": "EUROCRYPT 2026",
+        "formal_venue_online_date": null,
+        "earliest_public_upper_bound": null,
+        "defence_at": null,
+        "defence_timezone": null,
+        "paper_revision_time": null
+      },
+      "evidence_ref": "web-history-negative-boundaries.json",
+      "source_caveats": {
+        "assumptions": "OW-CPA/IND-CPA KEM; ROM/QROM; hybrid key exchange",
+        "verification_boundary": "E2_OFFICIAL_ABSTRACT"
+      }
+    },
+    {
+      "index": 24,
+      "anchor_only": false,
+      "title": "Pseudorandom Codes from LWE",
+      "abstract": "A pseudorandom code (PRC), introduced by Christ and Gunn (Crypto 2024), is an error-correcting code whose codewords look uniformly random to anyone without the secret key. PRCs not only are natural cryptographic objects to study in their own right, but also have interesting applications such as undetectable watermarking of AI-generated content. Previous PRC constructions have centered on Learning Parity with Noise (LPN), often combined with additional assumptions. In particular, the original PRC of Christ and Gunn is based either on standard LPN together with the planted XOR assumption of Agrawal et al. (Crypto 2024), or on subexponential LPN. In this work, we construct PRCs from Learning with Errors (LWE), providing an alternative foundation for PRCs. Our construction is simple: a codeword is the one-bit rounding of an LWE sample, masked by a random string. The construction can be easily understood as an LWE analogue of the PRC of Christ and Gunn. Indeed, like theirs, it is based either on standard LWE together with the hardness of the planted $t$-SUM problem of Agrawal et al., or on subexponential LWE. However, as the rounding is not linear, its robustness is less straightforward, and we prove it using Fourier analysis.",
+      "source_url": "https://eprint.iacr.org/2026/2339",
+      "authors": [
+        "Keewoo Lee"
+      ],
+      "stable_ids": {
+        "eprint": "2026/2339",
+        "arxiv": null,
+        "doi": null
+      },
+      "document_type": "paper",
+      "expected_category": "LATTICE_PRIMITIVES",
+      "expected_core": true,
+      "primary_source_verified": true,
+      "expected_kind": "RESEARCH_PAPER",
+      "chronology": {
+        "source_received_date": "2026-10-05",
+        "official_approval_date": "2026-10-06",
+        "paper_revision_date": null,
+        "first_publication_time": null,
+        "first_publication_time_precision": "UNRESOLVED_EXACT_TIME",
+        "formal_venue": null,
+        "formal_venue_online_date": null,
+        "earliest_public_upper_bound": null,
+        "defence_at": null,
+        "defence_timezone": null,
+        "paper_revision_time": null
+      },
+      "evidence_ref": "web-history-negative-boundaries.json",
+      "source_caveats": {
+        "assumptions": "standard LWE plus planted t-SUM, OR subexponential LWE; not unconditional plain-LWE-only",
+        "verification_boundary": "E2_OFFICIAL_ABSTRACT"
+      }
+    },
+    {
+      "index": 25,
+      "anchor_only": false,
+      "title": "Aerie: Efficient Aggregation of Falcon Signatures",
+      "abstract": "The post-quantum signatures selected by NIST are ten to over a hundred times larger than the elliptic-curve signatures they replace. Moreover, unlike the BLS signatures that blockchains use to aggregate validator votes, they do not aggregate natively. Both problems can be addressed with a SNARK: a short proof that a batch of signatures is valid, replacing the signatures themselves. The prevailing approach, central to Ethereum's roadmap, pairs hash-based signatures with hash-based SNARKs. This is slow because the prover must prove many hash evaluations per signature. We instead aggregate lattice-based signatures with a lattice-based SNARK. We present Aerie, a proof system for aggregating Falcon-512 and Falcon-1024 signatures. By retaining each signature's short random salt in the aggregate, Aerie lets the verifier compute the hashes directly. The proof then covers only algebraic and norm checks. Aerie combines protocols tailored to these checks with the Akita polynomial commitment scheme. Unlike prior Falcon aggregation schemes, it also proves that the signatures satisfy Falcon's byte-format requirements. On an Apple M4 Max laptop without GPU acceleration, Aerie aggregates 32,768 Falcon-512 signatures, roughly the number of validator votes in one Ethereum slot, in 0.65 seconds. A single proof covers the whole batch, with no recursion. The aggregate is 42.1 bytes per signature including the salts, or about 66 KiB in total if the signatures share one salt. It verifies in 54 milliseconds on one core, 10× faster than checking the signatures individually. On one core, proving takes only about 8× as long as individual verification. We prove knowledge soundness of Aerie in the classical random-oracle model and derive aggregate unforgeability from Falcon's security.",
+      "source_url": "https://eprint.iacr.org/2026/2501",
+      "authors": [
+        "Alberto Centelles",
+        "Quang Dao",
+        "Mohammadtaghi Badakhshan",
+        "Justin Thaler"
+      ],
+      "stable_ids": {
+        "eprint": "2026/2501",
+        "arxiv": null,
+        "doi": null
+      },
+      "document_type": "paper",
+      "expected_category": "LATTICE_PRIMITIVES",
+      "expected_core": true,
+      "primary_source_verified": true,
+      "expected_kind": "RESEARCH_PAPER",
+      "chronology": {
+        "source_received_date": "2026-10-15",
+        "official_approval_date": "2026-10-17",
+        "paper_revision_date": null,
+        "first_publication_time": null,
+        "first_publication_time_precision": "UNRESOLVED_EXACT_TIME",
+        "formal_venue": null,
+        "formal_venue_online_date": null,
+        "earliest_public_upper_bound": null,
+        "defence_at": null,
+        "defence_timezone": null,
+        "paper_revision_time": null
+      },
+      "evidence_ref": "web-two-anchor-identities.json",
+      "source_caveats": {
+        "assumptions": "Falcon security; classical random oracle model; knowledge soundness",
+        "verification_boundary": "E2_OFFICIAL_ABSTRACT"
+      }
+    },
+    {
+      "index": 26,
+      "anchor_only": false,
+      "title": "Domain Specific Post Quantum Signatures for Blockchains",
+      "abstract": "Blockchains need more than post quantum single signer signatures. They need consensus profiled authentication objects with canonical bytes, priced invalid input rejection, stable transaction identifiers, hybrid downgrade resistance, public aggregation, merge semantics, accountable signer evidence, forward secure committee rotation, and light client consequences. We argue for domain specific post quantum signatures for blockchain roles, analogously to how hash function engineering produced domain specific primitives for hash table DoS and arithmetized proof systems. We formalize transaction authorization and quorum certificate requirements, instantiate them on Bitcoin, Ethereum, and a Sei Giga style high throughput BFT stress profile, and evaluate ML-DSA, SLH-DSA, Falcon/FN-DSA, HAWK, MAYO, SNOVA, UOV/QR-UOV, FAEST, SQIsign, LaBRADOR Falcon, Squirrel, Chipmunk, and DKKW/LeanSig. We find that NIST single signer signatures are necessary components, yet none of the current schemes is a sufficient drop in replacement for the signature layer of modern public blockchains. The missing object is a consensus ready post quantum signature profile, not another generic size table.",
+      "source_url": "https://arxiv.org/abs/2609.24689",
+      "authors": [
+        "Maja Lie",
+        "Ben Marsh"
+      ],
+      "stable_ids": {
+        "eprint": null,
+        "arxiv": "2609.24689",
+        "doi": "10.48550/arXiv.2609.24689"
+      },
+      "document_type": "paper",
+      "expected_category": "LATTICE_APPLICATIONS",
+      "expected_core": true,
+      "primary_source_verified": true,
+      "expected_kind": "RESEARCH_PAPER",
+      "chronology": {
+        "source_received_date": null,
+        "official_approval_date": null,
+        "paper_revision_date": null,
+        "first_publication_time": "2026-09-21T14:43:17Z",
+        "first_publication_time_precision": "ARXIV_SUBMISSION_SECOND_PRECISION_NOT_ANNOUNCEMENT",
+        "formal_venue": null,
+        "formal_venue_online_date": null,
+        "earliest_public_upper_bound": null,
+        "defence_at": null,
+        "defence_timezone": null,
+        "paper_revision_time": "2026-10-05T14:03:47Z"
+      },
+      "evidence_ref": "web-official-details.json",
+      "source_caveats": {
+        "assumptions": "deployment requirements; no single lattice assumption",
+        "verification_boundary": "E2_OFFICIAL_ABSTRACT"
+      }
+    },
+    {
+      "index": 27,
+      "anchor_only": false,
+      "title": "DKG Is All You Need",
+      "abstract": "We construct the first Batched Threshold Encryption scheme with a \\emph{transparent} setup where public parameters are \\emph{independent} of the batch size. As a result batches of arbitrary sizes can be decrypted, without imposing an a priori fixed bound. We prove security under a constant size assumption -- the decisional bilinear square Diffie--Hellman assumption. Setup is just a distributed key generation protocol to sample secret shares of a random value. Ciphertexts consist of two $\\mathbb{G}_1$ elements, one $\\mathbb{G}_2$ element and the encrypted message, plus a NIZK for CCA security (two $\\mathbb{F}$ elements with a sigma protocol). Partial decryptions are a single $\\mathbb{G}_1$ element, computed with one scalar multiplication. Decrypting a batch of $B$ ciphertexts costs $O(B)$ pairings and $O(B\\log^2 B)$ group operations. In the ramp setting, with a gap between the reconstruction threshold $t$ and corruption threshold $f$ as in consensus protocols with $n\\ge3f+1$, we construct a pairing-free batched threshold encryption scheme from DDH whose partial decryptions are $2B/(t-f)$ group elements, and reduce the aggregation cost of our pairing-based scheme to $O(B\\log^2(B/(t-f)))$ group operations. Note: Revision: added appendices 1) a pairing-free BTE from DDH 2) faster aggregation for the pairing-based scheme, both in the ramp setting",
+      "source_url": "https://eprint.iacr.org/2026/2205",
+      "authors": [
+        "Guru-Vamsi Policharla"
+      ],
+      "stable_ids": {
+        "eprint": "2026/2205",
+        "arxiv": null,
+        "doi": null
+      },
+      "document_type": "paper",
+      "expected_category": "NON_LATTICE",
+      "expected_core": false,
+      "primary_source_verified": true,
+      "expected_kind": "RESEARCH_PAPER",
+      "chronology": {
+        "source_received_date": "2026-09-24",
+        "official_approval_date": null,
+        "paper_revision_date": "2026-09-30",
+        "first_publication_time": null,
+        "first_publication_time_precision": "UNRESOLVED_EXACT_TIME",
+        "formal_venue": null,
+        "formal_venue_online_date": null,
+        "earliest_public_upper_bound": null,
+        "defence_at": null,
+        "defence_timezone": null,
+        "paper_revision_time": null
+      },
+      "evidence_ref": "web-history-negative-boundaries.json",
+      "source_caveats": {
+        "assumptions": "decisional bilinear square Diffie-Hellman; DDH ramp variant; no lattice hardness",
+        "verification_boundary": "E2_OFFICIAL_ABSTRACT"
+      }
+    },
+    {
+      "index": 28,
+      "anchor_only": false,
+      "title": "Hardness of hinted ISIS from the space-time hardness of lattice problems",
+      "abstract": "We initiate the study of basing the hardness of hinted ISIS problems (i.e. with trapdoor information, or ‘hints’) on the previously conjectured space-time hardness of lattice problems without hints. We present two main results. 1. If there exists an efficient algorithm for hinted ISIS that outputs solutions a constant factor longer than the hints, then there exists a single-exponential time and polynomial memory zero-centred spherical Gaussian sampler solving hinted SIS with norm a constant factor shorter than the hints. 2. Assume the existence of a chain of algorithms for hinted ISIS each taking as input Gaussian hints whose norms decrease by a constant factor at each step in the chain, then there exists a single-exponential time and polynomial memory algorithm for SIS with norm a quasilinear factor from optimal. The existence of such hinted ISIS solvers implies single-exponential time and polynomial memory algorithms for worst-case lattice problems, contradicting a conjecture by Lombardi and Vaikuntanathan (CRYPTO’20) and all known algorithms. This suggests that hinted ISIS is hard. Apart from advancing our understanding of hinted lattice problems, an immediate consequence is that signing the same message twice in GPV-style [Gentry–Peikert–Vaikuntanathan, STOC’08] schemes (without salting or derandomisation) likely does not compromise unforgeability. Also, cryptanalytic attempts on the One-More-ISIS problem [Agrawal–Kirshanova–Stehlé-Yadav, CCS’22] likely will need to overcome the conjectured space-time hardness of lattices.",
+      "source_url": "https://eprint.iacr.org/2026/187",
+      "authors": [
+        "Martin R. Albrecht",
+        "Russell W. F. Lai",
+        "Eamonn W. Postlethwaite"
+      ],
+      "stable_ids": {
+        "eprint": "2026/187",
+        "arxiv": null,
+        "doi": null
+      },
+      "document_type": "paper",
+      "expected_category": "LATTICE_FOUNDATIONS",
+      "expected_core": true,
+      "primary_source_verified": true,
+      "expected_kind": "RESEARCH_PAPER",
+      "chronology": {
+        "source_received_date": "2026-02-05",
+        "official_approval_date": null,
+        "paper_revision_date": "2026-06-07",
+        "first_publication_time": null,
+        "first_publication_time_precision": "UNRESOLVED_EXACT_TIME",
+        "formal_venue": null,
+        "formal_venue_online_date": null,
+        "earliest_public_upper_bound": null,
+        "defence_at": null,
+        "defence_timezone": null,
+        "paper_revision_time": null
+      },
+      "evidence_ref": "web-official-details.json",
+      "source_caveats": {
+        "assumptions": "space-time hardness conjecture; Gaussian hints; exponential-time reduction",
+        "verification_boundary": "E2_OFFICIAL_ABSTRACT"
+      }
+    },
+    {
+      "index": null,
+      "anchor_only": true,
+      "title": "safeRNSgcd: Accelerating Falcon key generation with RNS in SafeGCD",
+      "abstract": "The deepest level of Falcon's NTRU solver needs only one Bézout coefficient from two large integer resultants already represented in a residue number system (RNS). We give $\\mathtt{safeRNSgcd}$, which computes this coefficient while keeping the large states in RNS. Its central insight is that centered explicit CRT can recover the exact low bits needed by SafeGCD batches using single-word fixed-point arithmetic. Integrated into $\\mathtt{ntrugen}$, our C implementation reduces inversion and private-key basis-generation costs on a Raspberry Pi 5 and two x86-64 processors, compared with original $\\mathtt{ntrugen}$ and a variant omitting the unused coefficient.",
+      "source_url": "https://eprint.iacr.org/2026/2507",
+      "authors": [
+        "Cesare Huang",
+        "Bo-Yin Yang"
+      ],
+      "stable_ids": {
+        "eprint": "2026/2507",
+        "arxiv": null,
+        "doi": null
+      },
+      "document_type": "paper",
+      "expected_category": "LATTICE_IMPLEMENTATIONS",
+      "expected_core": true,
+      "primary_source_verified": true,
+      "expected_kind": "RESEARCH_PAPER",
+      "chronology": {
+        "source_received_date": "2026-10-16",
+        "official_approval_date": "2026-10-17",
+        "paper_revision_date": null,
+        "first_publication_time": null,
+        "first_publication_time_precision": "UNRESOLVED_EXACT_TIME",
+        "formal_venue": null,
+        "formal_venue_online_date": null,
+        "earliest_public_upper_bound": null,
+        "defence_at": null,
+        "defence_timezone": null,
+        "paper_revision_time": null
+      },
+      "evidence_ref": "web-anchor-details-thesis-pdf.json",
+      "source_caveats": {
+        "assumptions": "Falcon NTRU solver; exact CRT; SafeGCD",
+        "verification_boundary": "E2_OFFICIAL_ABSTRACT"
+      }
+    },
+    {
+      "index": null,
+      "anchor_only": true,
+      "title": "Fully Homomorphic Encryption for Small Batches of Complex Numbers",
+      "abstract": "We propose a new approximate homomorphic encryption scheme to process small batches of complex numbers. Leveled operations are based on a new shaped rounding, whose error is a multiple of a fixed public ring element $g$, small on the data slots and larger on the others. The unused slots form a guard band that is computed on but never decoded, and the polynomial scaling factor $g^{-1}\\Delta$ generalizes the CKKS scaling factor, with $g=1$ recovering CKKS. Guard-domain bounds determine the scaling factor needed for stability, while a norm bound limits the precision gain for a given guard amplification. A replicated layout uses a unit from a small cyclotomic subring to preserve shaping under admissible rotations and traces. We give a native bootstrapping algorithm whose forward transform reads only data slots, and conversions to and from CKKS with shared keys. Security reduces to Ring-LWE with the same parameters as CKKS. In poulpy, at ring degree $2^{15}$ and parameters targeting 128-bit security, bootstrapping a ciphertext holding 16 or 64 values restores 21 levels and retains about 22.8 bits of minimum precision after 21 sequential products by fresh operands, while sparse CKKS supports only four levels at that degree and comparable precision. For these batch sizes, bootstrapping to restore 16 levels is about 3.6 times faster on one thread than sparse CKKS, which requires ring degree $2^{16}$.",
+      "source_url": "https://eprint.iacr.org/2026/2513",
+      "authors": [
+        "Jules Dumezy"
+      ],
+      "stable_ids": {
+        "eprint": "2026/2513",
+        "arxiv": null,
+        "doi": null
+      },
+      "document_type": "paper",
+      "expected_category": "LATTICE_PRIMITIVES",
+      "expected_core": true,
+      "primary_source_verified": true,
+      "expected_kind": "RESEARCH_PAPER",
+      "chronology": {
+        "source_received_date": "2026-10-16",
+        "official_approval_date": "2026-10-17",
+        "paper_revision_date": null,
+        "first_publication_time": null,
+        "first_publication_time_precision": "UNRESOLVED_EXACT_TIME",
+        "formal_venue": null,
+        "formal_venue_online_date": null,
+        "earliest_public_upper_bound": null,
+        "defence_at": null,
+        "defence_timezone": null,
+        "paper_revision_time": null
+      },
+      "evidence_ref": "web-anchor-details-thesis-pdf.json",
+      "source_caveats": {
+        "assumptions": "Ring-LWE at same parameters as CKKS",
+        "verification_boundary": "E2_OFFICIAL_ABSTRACT"
+      }
+    },
+    {
+      "index": null,
+      "anchor_only": true,
+      "title": "Efficient Fixed-Point Implementation of Mitaka",
+      "abstract": "The Mitaka signature scheme is a variant of Falcon (FN-DSA). It has a considerably simpler signing procedure that can be parallelized while retaining Falcon's efficiency advantage. Mitaka offers two different signing approaches: a default one relying on floating-point arithmetic and an alternative, called MitakaZ, avoiding floating-point arithmetic at the cost of more Gaussian samples. Despite its better portability, MitakaZ has not previously been implemented in practice. This work presents an efficient fixed-point implementation of the Mitaka signing algorithm. We optimize the MitakaZ Gaussian sampler to make it suited to fixed-point arithmetic while achieving higher efficiency. Specifically, we replace the wide integral Gram root decomposition used in MitakaZ with a fixed-point square Cholesky decomposition, which substantially reduces the cost of integer Gaussian sampling. We prove bounds on intermediate values and representation errors without empirical assumptions on their magnitudes. The distributional analysis models each integer Gaussian call as exact at its represented inputs. We provide a fixed-point implementation of the new Mitaka signing algorithm in C. On an Intel Core~i7-1360P, our native AVX2 implementation generates signatures in an average of 361 kcycles for Mitaka-512 and 707 kcycles for Mitaka-1024, measured with Linux hardware performance events. On an ARM Cortex-M4F STM32F411, the corresponding measured costs are 4.0 and 7.8 Mcycles.",
+      "source_url": "https://eprint.iacr.org/2026/2521",
+      "authors": [
+        "Shiduo Zhang",
+        "Paul Kirchner",
+        "Xiuhan Lin",
+        "Yang Yu"
+      ],
+      "stable_ids": {
+        "eprint": "2026/2521",
+        "arxiv": null,
+        "doi": null
+      },
+      "document_type": "paper",
+      "expected_category": "LATTICE_IMPLEMENTATIONS",
+      "expected_core": true,
+      "primary_source_verified": true,
+      "expected_kind": "RESEARCH_PAPER",
+      "chronology": {
+        "source_received_date": "2026-10-17",
+        "official_approval_date": "2026-10-17",
+        "paper_revision_date": null,
+        "first_publication_time": null,
+        "first_publication_time_precision": "UNRESOLVED_EXACT_TIME",
+        "formal_venue": null,
+        "formal_venue_online_date": null,
+        "earliest_public_upper_bound": null,
+        "defence_at": null,
+        "defence_timezone": null,
+        "paper_revision_time": null
+      },
+      "evidence_ref": "web-anchor-details-thesis-pdf.json",
+      "source_caveats": {
+        "assumptions": "Falcon/FN-DSA variant; Gaussian sampling; represented-input exact-Gaussian analysis",
+        "verification_boundary": "E2_OFFICIAL_ABSTRACT"
+      }
+    }
+  ]
+}

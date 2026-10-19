@@ -586,6 +586,11 @@ def main(argv: list[str] | None = None, *, preflight_proof: dict | None = None) 
 
     source_configs = _enabled_source_configs(configs["sources"])
     records = _collect_records(source_configs, context)
+    from lattice_digest.iacr_mail import optional_daily_stage
+    metadata['gmail_iacr'], _ = optional_daily_stage(
+        [r.model_dump(mode='json') for r in records],
+        scheduled_at=(schedule_telemetry(run_datetime).get('scheduled_for')
+                      if schedule_telemetry(run_datetime).get('scheduled_for')!='UNKNOWN' else None))
     prepared_v3 = prepare_for_semantic_analysis_v3(records)
     ranked = rank_records(
         list(prepared_v3.records),

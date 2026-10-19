@@ -9,6 +9,7 @@ from lattice_digest.models import PaperRecord, make_paper_record
 from lattice_digest.sources.base import FetchContext, SourceAdapter, fetch_text, normalize_date
 from lattice_digest.text import normalize_whitespace
 from lattice_digest.source_queries import native_feed_query_request
+from lattice_digest.source_completeness import record_source_coverage
 
 EPRINT_RE = re.compile(r"eprint\.iacr\.org/(?:eprint-bin/)?(?:archive/)?(\d{4}/\d+)", re.IGNORECASE)
 TAG_RE = re.compile(r"<[^>]+>")
@@ -50,9 +51,11 @@ def _extract_eprint_id(*values: str) -> str | None:
 
 def parse_iacr_feed(xml_text: str, source_url: str = "https://eprint.iacr.org/rss/rss.xml") -> list[PaperRecord]:
     root = ET.fromstring(xml_text)
+    if _local_name(root.tag) not in {"rss", "feed", "rdf"}:
+        raise ET.ParseError("expected IACR RSS/Atom feed, received another document")
     records: list[PaperRecord] = []
 
-    rss_items = root.findall(".//item")
+    rss_items = [element for element in root.iter() if _local_name(element.tag) == "item"]
     atom_entries = [element for element in root.iter() if _local_name(element.tag) == "entry"]
     items = rss_items or atom_entries
 
@@ -134,6 +137,8 @@ class IacrEprintSource(SourceAdapter):
                     skipped_by_guard=True,
                 )
                 context.add_warning("IACR ePrint already requested today; skipped to honor max once per day", self.name)
+                record_source_coverage(context, self.name, state="SOURCE_UNAVAILABLE", reason="IACR_DAILY_GUARD_NO_SNAPSHOT",
+                                       requested_since=context.since.isoformat(), observed_items=None)
                 return []
             latest_feed_status = "manual_latest_retry" if context.include_latest_sources else "manual_retry"
             context.add_warning(
@@ -152,6 +157,8 @@ class IacrEprintSource(SourceAdapter):
                     records=0,
                     skipped_by_guard=False,
                 )
+                record_source_coverage(context, self.name, state="SOURCE_UNAVAILABLE", reason="IACR_FEED_FETCH_FAILED",
+                                       requested_since=context.since.isoformat(), observed_items=None)
                 return []
             cache_path.write_text(xml_text, encoding="utf-8")
             observed_at = datetime.now(timezone.utc).isoformat()
@@ -168,16 +175,26 @@ class IacrEprintSource(SourceAdapter):
                     records=0,
                     skipped_by_guard=False,
                 )
+                record_source_coverage(context, self.name, state="SOURCE_UNAVAILABLE", reason="IACR_FEED_FETCH_FAILED",
+                                       requested_since=context.since.isoformat(), observed_items=None)
                 return []
             cache_path.write_text(xml_text, encoding="utf-8")
             observed_at = datetime.now(timezone.utc).isoformat()
 
-        root = ET.fromstring(xml_text)
-        rss_items = root.findall(".//item")
-        atom_entries = [element for element in root.iter() if _local_name(element.tag) == "entry"]
-        raw_count = len(rss_items or atom_entries)
+        try:
+            root = ET.fromstring(xml_text)
+            normalized = parse_iacr_feed(xml_text, source_url=url)
+            rss_items = [element for element in root.iter() if _local_name(element.tag) == "item"]
+            atom_entries = [element for element in root.iter() if _local_name(element.tag) == "entry"]
+            raw_count = len(rss_items or atom_entries)
+        except (ET.ParseError, ValueError) as exc:
+            context.finish_query_attempt(attempt_id, status="failed", raw_candidates=None, error_category="parse_error")
+            context.set_latest_feed_state(self.name, status="parse_failed", reachable=True, parsed=False)
+            context.add_warning(f"IACR ePrint feed parse failed: {exc}", self.name)
+            record_source_coverage(context, self.name, state="SOURCE_UNAVAILABLE", reason="IACR_FEED_PARSE_FAILED",
+                                   requested_since=context.since.isoformat(), observed_items=None)
+            return []
         context.finish_query_attempt(attempt_id, status="success", raw_candidates=raw_count)
-        normalized = parse_iacr_feed(xml_text, source_url=url)
         traced: list[PaperRecord] = []
         for record in normalized:
             occurrence_id = context.record_raw_occurrence(
@@ -229,4 +246,10 @@ class IacrEprintSource(SourceAdapter):
             observability=len(filtered),
             date_filtered=0,
         )
+        record_source_coverage(context, self.name, state="SOURCE_PARTIAL", reason="IACR_LATEST_FEED_NOT_HISTORICAL_COVERAGE",
+                               scope="SOURCE_NATIVE_BOUNDED_LATEST_FEED", requested_since=context.since.isoformat(),
+                               observed_items=raw_count, parsed_items=len(normalized), missing_expected_count=len(missing_expected),
+                               earliest_publication_date=min((record.publication_date for record in normalized if record.publication_date), default=None),
+                               original_snapshot_observed_at=observed_at,
+                               historical_window_complete=False)
         return filtered

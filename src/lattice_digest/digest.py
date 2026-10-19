@@ -1493,8 +1493,8 @@ def generate_markdown(
     *,
     source_configs: list[dict] | None = None,
 ) -> str:
-    from lattice_digest.publication_events import POLICY_VERSION as EVENT_POLICY
-    if metadata and metadata.get('publication_policy_version') == EVENT_POLICY:
+    from lattice_digest.publication_events import SUPPORTED_POLICIES
+    if metadata and metadata.get('publication_policy_version') in SUPPORTED_POLICIES:
         from lattice_digest.scientific_daily import render_scientific_daily
         payload = metadata.get('_publication_payload')
         if payload is None:

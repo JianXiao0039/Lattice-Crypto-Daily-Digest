@@ -7,6 +7,7 @@ from zoneinfo import ZoneInfo
 from lattice_digest.public_contract import public_preflight, finish_telemetry, record_entry_failure
 from lattice_digest.monthly_synthesis import build_monthly_synthesis, write_monthly_outputs
 from lattice_digest.runtime_provenance import schedule_telemetry
+from lattice_digest.period_delivery import writer_lock, publish_period
 
 
 def main(argv: list[str] | None = None) -> int:
@@ -26,22 +27,25 @@ def main(argv: list[str] | None = None) -> int:
         month = args.month or (started.date().replace(day=1) - timedelta(days=1)).strftime('%Y-%m')
         first = datetime.strptime(month, '%Y-%m').date()
         following = first.replace(year=first.year + 1, month=1) if first.month == 12 else first.replace(month=first.month + 1)
+        if following>started.date():
+            raise ValueError('monthly production requires a completed calendar month')
         proof['period'] = {'month': month, 'from_date': first.isoformat(), 'to_date': (following - timedelta(days=1)).isoformat()}
         if args.preflight:
             print(json.dumps(proof, ensure_ascii=False, indent=2))
             return 0
         stage = 'REPORT_GENERATION'
-        payload = build_monthly_synthesis(paths.data_root, month)
-        payload.setdefault('metadata', {}).update(proof['runtime_provenance'])
-        payload['metadata'].update(schedule_telemetry(started))
-        payload['metadata']['runtime_paths'] = paths.as_dict()
-        write_monthly_outputs(payload, paths.data_root, paths.digest_root)
+        with writer_lock(paths,'MONTHLY',month):
+            payload = build_monthly_synthesis(paths.data_root, month)
+            payload.setdefault('metadata', {}).update(proof['runtime_provenance'])
+            payload['metadata'].update(schedule_telemetry(started))
+            payload['metadata']['runtime_paths'] = paths.as_dict()
+            publish_period(payload,paths,write_monthly_outputs)
         if args.exports:
             from lattice_digest.monthly_downstream import run_downstream
             run_downstream(paths, first.isoformat(), (following - timedelta(days=1)).isoformat(), obsidian=args.obsidian)
         finish_telemetry(paths, profile, started, proof['runtime_provenance'])
         return 0
-    except ValueError as exc:
+    except (OSError,ValueError) as exc:
         print(str(exc))
         receipt = record_entry_failure(profile, exc, stage=stage, proof=proof, arguments=argv)
         if receipt: print('Operational failure receipt: ' + receipt)

@@ -85,8 +85,12 @@ def semantic_qa(payload: dict[str, Any], markdown: str | None, *, source_configs
     unknown: list[str] = []
     if not isinstance(records, list) or any(not isinstance(r, dict) for r in records):
         issues.append('invalid_records')
-    from lattice_digest.publication_events import POLICY_VERSION as EVENT_POLICY, ledger_issues
-    if meta.get('publication_policy_version')==EVENT_POLICY:
+    from lattice_digest.publication_events import SUPPORTED_POLICIES, ledger_issues, scope_evaluator_for_policy
+    event_policy=meta.get('publication_policy_version')
+    scope_evaluator=scope_evaluator_for_policy(event_policy) if event_policy in SUPPORTED_POLICIES else None
+    if event_policy and event_policy not in SUPPORTED_POLICIES:
+        issues.append('UNSUPPORTED_PUBLICATION_POLICY')
+    if event_policy in SUPPORTED_POLICIES or 'publication_event_ledger' in payload:
         issues.extend(ledger_issues(payload,markdown))
         decision['selection_counts']=payload.get('publication_event_ledger',{}).get('counts',{})
     for key in ['authority_state', 'source_coverage', 'selection_counts', 'render_branch']:
@@ -131,7 +135,7 @@ def semantic_qa(payload: dict[str, Any], markdown: str | None, *, source_configs
                 and health == [{'source': 'UNKNOWN_LEGACY_PROVIDER_HEALTH', 'health_status': 'unknown',
                     'runtime_state': 'NOT_RECORDED', 'evidence_state': 'UNRESOLVED_EVIDENCE', 'requests_attempted': 'N/A'}]
             )
-            issues.extend(evidence_quality_issues(record, legacy_unknown_health=legacy_unknown_health))
+            issues.extend(evidence_quality_issues(record, legacy_unknown_health=legacy_unknown_health, scope_evaluator=scope_evaluator))
         if record.get('primary_today_new_eligible') is True and record.get('cross_day_event') in {'UNCHANGED_CROSS_DAY_DUPLICATE', 'GENUINE_NEW_VERSION', 'GENUINE_CONTENT_REVISION', 'METADATA_ONLY_UPDATE', 'IDENTITY_UNCERTAIN'}:
             issues.append('cross_day_false_primary')
     status = 'FAIL' if issues else ('UNKNOWN' if unknown else 'PASS')

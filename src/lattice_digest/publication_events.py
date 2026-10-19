@@ -16,7 +16,17 @@ from typing import Any
 from lattice_digest.promotion_history import identity_keys, authoritative_version, content_fingerprint
 from lattice_digest.scientific_scope import evaluate_scope
 
-POLICY_VERSION = 'scientific-publication-p0-v1'
+LEGACY_POLICY_VERSION = 'scientific-publication-p0-v1'
+POLICY_VERSION = 'scientific-publication-v3-v2'
+SUPPORTED_POLICIES = {LEGACY_POLICY_VERSION, POLICY_VERSION}
+
+def scope_evaluator_for_policy(policy):
+    if policy == LEGACY_POLICY_VERSION:
+        from lattice_digest.scientific_scope_v1 import evaluate_scope as frozen
+        return frozen
+    if policy == POLICY_VERSION:
+        return evaluate_scope
+    raise ValueError('UNSUPPORTED_PUBLICATION_POLICY: '+str(policy))
 COLLECTIONS = ('primary_publication_events','revision_events','new_critical_verify_events',
                'background_updates','historical_library_observations')
 CORE_EVENTS = set(COLLECTIONS[:3])
@@ -90,6 +100,8 @@ def _action(row, kind):
 
 
 def build_event_ledger(records: list[dict], metadata: dict, prior: list[dict] = ()) -> dict:
+    policy=metadata.get('publication_policy_version') or POLICY_VERSION
+    evaluator=scope_evaluator_for_policy(policy)
     target=date.fromisoformat(str(metadata['target_date'])[:10])
     start,end=coverage(metadata,target)
     collections={k:[] for k in COLLECTIONS}
@@ -98,7 +110,7 @@ def build_event_ledger(records: list[dict], metadata: dict, prior: list[dict] = 
     for position,p in enumerate(prior):
         for key in identity_keys(p):prior_by_key.setdefault(key,set()).add(position)
     for index,row in enumerate(records):
-        scientific=evaluate_scope(row)
+        scientific=evaluator(row)
         identity=canonical_identity(row); keys=identity_keys(row)
         positions=set().union(*(prior_by_key.get(key,set()) for key in keys)) if keys else set()
         matches=[prior[p] for p in sorted(positions)]
@@ -132,7 +144,7 @@ def build_event_ledger(records: list[dict], metadata: dict, prior: list[dict] = 
         date_uncertain=(not timestamp(pub) and not timestamp(ann) and not timestamp(revision)) or (bool(pub) and timestamp(pub) is None and not new_pub and not genuinely_revised)
         future_only=timestamp(pub) is not None and timestamp(pub)>=end and not new_pub and not genuinely_revised
         from lattice_digest.evidence_contract import source_scope_score, Scope
-        qualified=scientific['lattice_relevance_qualified'] and source_scope_score(row)[0] in {Scope.DIRECT_LATTICE_CRYPTO,Scope.DIRECT_LATTICE_HARDNESS_THEORY}
+        qualified=scientific['lattice_relevance_qualified'] and source_scope_score(row,scope_evaluator=evaluator)[0] in {Scope.DIRECT_LATTICE_CRYPTO,Scope.DIRECT_LATTICE_HARDNESS_THEORY}
         if qualified:qualified_identities.add(identity)
         if not keys or conflicting:
             reason='IDENTITY_UNCERTAIN: conflicting or absent canonical identity'
@@ -198,7 +210,7 @@ def build_event_ledger(records: list[dict], metadata: dict, prior: list[dict] = 
             'background_updates':len(collections['background_updates']),
             'classification_counts':dict(Counter(e['relevance_label'] for e in active)),
             'action_counts':dict(Counter(e['action'] for e in active))}
-    return {'policy_version':POLICY_VERSION,'collections':collections,'critical_watch':watches,
+    return {'policy_version':policy,'collections':collections,'critical_watch':watches,
             'decisions':decisions,'counts':counts,'coverage_start':start.isoformat(),'coverage_end':end.isoformat()}
 
 
@@ -222,6 +234,9 @@ def ledger_issues(payload: dict, markdown: str | None = None):
     ledger=payload.get('publication_event_ledger')
     if not isinstance(ledger,dict):return ['PUBLICATION_EVENT_LEDGER_MISSING']
     records=payload.get('records',[]); meta=payload.get('metadata',{})
+    policy=meta.get('publication_policy_version')
+    if policy not in SUPPORTED_POLICIES or ledger.get('policy_version')!=policy:
+        return ['UNSUPPORTED_OR_MISMATCHED_PUBLICATION_POLICY']
     # Recompute using the bounded source-history evidence saved with the ledger.
     try:
         recomputed=build_event_ledger(records,meta,payload.get('publication_history_evidence',[]))
@@ -272,7 +287,7 @@ def period_event_rows(payload):
     """
     rows=payload.get('records',[])
     if '_period_publication_rows' in payload:return payload['_period_publication_rows']
-    if payload.get('metadata',{}).get('publication_policy_version')==POLICY_VERSION:
+    if payload.get('metadata',{}).get('publication_policy_version') in SUPPORTED_POLICIES:
         if payload.get('_daily_input_quality',{}).get('semantic_status') in {'FAIL','UNKNOWN'}:return []
         return [r for r in rows if r.get('publication_event_type') in CORE_EVENTS]
     return rows
@@ -287,14 +302,16 @@ def normalize_period_inputs(loaded):
     normalized=[];prior=[]
     for day,payload in sorted(loaded,key=lambda item:item[0]):
         meta=payload.get('metadata',{});rows=payload.get('records',[])
-        if meta.get('publication_policy_version')!=POLICY_VERSION and meta.get('quality_status') in {'authoritative','authoritative_backfill'} and meta.get('coverage_start') and meta.get('coverage_end'):
-            ledger=build_event_ledger(rows,{**meta,'target_date':day.isoformat()},prior)
+        if not meta.get('publication_policy_version') and 'publication_event_ledger' in payload:
+            raise ValueError('UNVERSIONED_PUBLICATION_LEDGER')
+        if not meta.get('publication_policy_version') and meta.get('quality_status') in {'authoritative','authoritative_backfill'} and meta.get('coverage_start') and meta.get('coverage_end'):
+            ledger=build_event_ledger(rows,{**meta,'target_date':day.isoformat(),'publication_policy_version':LEGACY_POLICY_VERSION},prior)
             selected=[]
             from lattice_digest.evidence_contract import source_scope_score,score_to_label
             if payload.get('_daily_input_quality',{}).get('semantic_status') not in {'FAIL','UNKNOWN'}:
                 for e in ledger['decisions']:
                     if e['collection'] in CORE_EVENTS:
-                        row=rows[e['row_index']];scope,score=source_scope_score(row)
+                        row=rows[e['row_index']];scope,score=source_scope_score(row,scope_evaluator=scope_evaluator_for_policy(LEGACY_POLICY_VERSION))
                         selected.append({**row,'upstream_relevance_label':row.get('relevance_label'),
                             'upstream_relevance_score':row.get('relevance_score'),'relevance_score':score,
                             'relevance_label':score_to_label(score),'relevance_scope':str(scope),
@@ -302,6 +319,8 @@ def normalize_period_inputs(loaded):
                             'primary_today_new_eligible':e['collection']=='primary_publication_events'})
             payload={**payload,'_period_publication_rows':selected,'_period_event_ledger':ledger,
                      '_period_reconciliation':'SOURCE_WINDOW_REPLAY_OF_PRE_P0_CONTROLLED_DAILY'}
+        if meta.get('publication_policy_version') and meta['publication_policy_version'] not in SUPPORTED_POLICIES:
+            raise ValueError('UNSUPPORTED_PUBLICATION_POLICY: '+str(meta['publication_policy_version']))
         normalized.append((day,payload));prior.extend(rows)
     return normalized
 
@@ -312,7 +331,7 @@ def period_views(loaded):
     verified=set();derived=set();unassessed=set()
     for day,payload in loaded:
         status=payload.get('_daily_input_quality',{}).get('semantic_status')
-        current=payload.get('metadata',{}).get('publication_policy_version')==POLICY_VERSION
+        current=payload.get('metadata',{}).get('publication_policy_version') in SUPPORTED_POLICIES
         reconstructed=payload.get('_period_reconciliation')=='SOURCE_WINDOW_REPLAY_OF_PRE_P0_CONTROLLED_DAILY'
         tier=('UNRESOLVED_DAILY_INPUT' if status in {'FAIL','UNKNOWN'} else
               'DERIVED_HISTORICAL_EVENT_CANDIDATE' if reconstructed else

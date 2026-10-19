@@ -36,7 +36,7 @@ class ScientificScope(StrEnum):
 
 
 QUALIFIED_SCOPES = {ScientificScope.CORE, ScientificScope.FOUNDATION, ScientificScope.IMPLEMENTATION}
-CORE = r'\b(?:[krmpt]?lwe|mlwe|learning[ -]with[ -]errors|learning[ -]with[ -]rounding|lwr|(?:module[ -]|ring[ -])?sis|short[ -]integer[ -]solution|ntru(?:encrypt)?|kyber|ml[ -]kem|dilithium|ml[ -]dsa|falcon|fn[ -]dsa|frodokem|(?:light|fire)?saber|newhope|qtesla|hawk|haetae|raccoon|(?:module[ -])?lip|lattice[ -]isomorphism|lattice[ -]based|lattice[ -](?:cryptography|signatures?|commitments?|trapdoors?)|fully[ -]homomorphic[ -]encryption|fhe|ckks|bfv|bgv|tfhe|gsw)\b'
+CORE = r'\b(?:(?:[krmpt]|c?i)?lwe|mlwe|lwq|learning[ -]with[ -](?:errors|quantization)|learning[ -]with[ -]rounding|lwr|(?:module[ -]|ring[ -])?(?:sis|isis)|short[ -]integer[ -]solutions?|ntru(?:encrypt)?\+?|kyber|ml[ -]kem|dilithium|ml[ -]dsa|falcon|fn[ -]dsa|frodokem|(?:light|fire)?saber|newhope|qtesla|hawk|haetae|raccoon|(?:module[ -])?lip|lattice[ -]isomorphism|lattice[ -]based|lattice[ -](?:cryptography|signatures?|commitments?|trapdoors?)|fully[ -]homomorphic[ -]encryption|fhe|ckks|bfv|bgv|tfhe|gsw)\b'
 FOUNDATION = r'\b(?:[hu]?svp|sivp|gapsvp|gapcvp|cvp|bdd|shortest[ -]vector[ -]problem|closest[ -]vector[ -]problem|bounded[ -]distance[ -]decoding|bkz|lll|g6k|fplll|lattice[ -](?:reduction|sieving|decoding|problems?)|(?:module|ideal|q[ -]ary|structured)[ -]lattices?)\b'
 NONLATTICE = r'\b(?:hqc|bike|mceliece|code[ -]based|isogen(?:y|ies)|sqisign|schnorr|rsa|ecdsa|elliptic[ -]curve|hidden[ -]subgroup|universal[ -]algebras?|blockchain)\b'
 METHOD = r'\b(?:using|use|via|subroutine|inspired|based on|with the help)\b'
@@ -79,7 +79,7 @@ def _evaluate_scope(title: str, abstract: str, source_url: str) -> dict:
                 lattice_core = bool(re.fullmatch(CORE, term, re.I))
                 role = RelationRole.BACKGROUND_MENTION
                 rule = 'primary-object-role-v1'
-                if term.lower() in {'lattice-based','lattice based','falcon','hawk','sis','lip'} and not re.search(r'\b(?:cryptograph\w*|cryptanalysis|signature|signatures|encryption|kem|security|trapdoor|learning|hardness|module[ -]sis|dual attacks?|lattice settings)\b',title+' '+sentence,re.I):
+                if term.lower() in {'lattice-based','lattice based','falcon','hawk','sis','isis','lip'} and not re.search(r'\b(?:cryptograph\w*|cryptanalysis|signature|signatures|commitments?|proofs?|zero[ -]knowledge|encryption|kem|security|trapdoor|learning|hardness|module[ -]sis|dual attacks?|lattice settings)\b',title+' '+sentence,re.I):
                     continue
                 # Negative applicability does not establish an independent target.
                 negative = bool(re.search(r'\b(?:not (?:directly )?(?:apply|applicable|about)|unrelated|not covered|without (?:cryptography|cryptanalysis|LWE)|no (?:lattice|cryptographic) (?:context|relevance))\b', sentence, re.I))
@@ -136,8 +136,11 @@ def _evaluate_scope(title: str, abstract: str, source_url: str) -> dict:
     # A generic proof merely assuming LWE is not a lattice construction.
     # Concrete lattice instantiation, direct target, or a lattice primary title
     # must establish the object independently of the assumption mention.
-    qualifying=[r for r in qualifying if r['role']!=RelationRole.LATTICE_HARDNESS_ASSUMPTION or
-        title_core or re.search(r'\bwe (?:also |first |next |then )?(?:construct|instantiate|design|develop|propose|present|give)\b',r['source_excerpt'],re.I)]
+    explicit_nonlattice_assumption=bool(re.search(
+        r'(?:our|this) assumption.{0,180}(?:does not appear to fall within|lies? outside|seems? to (?:lie|fall) outside).{0,80}lattice',
+        fields['abstract'],re.I))
+    qualifying=[r for r in qualifying if not explicit_nonlattice_assumption and (r['role']!=RelationRole.LATTICE_HARDNESS_ASSUMPTION or
+        title_core or re.search(r'\bwe (?:also |first |next |then )?(?:construct|instantiate|design|develop|propose|present|give)\b',r['source_excerpt'],re.I))]
     if noncrypto_domain and not crypto_context:
         qualifying=[]
     for relation in roles:

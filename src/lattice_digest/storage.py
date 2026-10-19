@@ -90,13 +90,23 @@ def build_daily_payload(
     payload_metadata["source_health"] = source_health or []
     payload_metadata["warnings"] = warnings or []
     payload_metadata.pop('_publication_prior',None)
-    payload_metadata['publication_policy_version']=EVENT_POLICY
+    payload_metadata['publication_policy_version']=ledger['policy_version']
     payload_metadata['selection_counts']=ledger['counts']
     payload_metadata.update(derive_authority(enriched_records, source_health, source_configs=source_configs))
     payload_metadata['selection_counts']=ledger['counts']
     payload_metadata.setdefault('semantic_qa', {'status': 'UNKNOWN'})
     payload_metadata.setdefault('structural_qa', {'status': 'NOT_RUN'})
+    from lattice_digest.publication_chronology import late_discoveries, precision
+    from lattice_digest.publication_events import coverage, canonical_identity, event_id
+    start,end=coverage(event_metadata,digest_date)
     payload = {
+        "late_arrivals":late_discoveries(enriched_records,prior,start,end,canonical_identity,event_id),
+        "chronology_v3":{'version':'source-precision-v3.1','records':[
+            {'identity':canonical_identity(r),'source_publication_value':r.get('preprint_first_posted_at') or r.get('publication_timestamp') or r.get('publication_date'),
+             'source_precision':precision(r.get('preprint_first_posted_at') or r.get('publication_timestamp') or r.get('publication_date')),
+             'timezone': 'UNSPECIFIED_BY_SOURCE' if precision(r.get('preprint_first_posted_at') or r.get('publication_timestamp') or r.get('publication_date'))=='DATE_ONLY' else 'SOURCE_OFFSET',
+             'ownership_caveat':'Date-only evidence cannot establish an exact 09:00 cutoff; frozen v1 event policy retained pending explicit migration.'}
+            for r in enriched_records]},
         "publication_event_ledger":ledger,
         "publication_history_evidence":[{k:p.get(k) for k in (
             'doi','arxiv_id','eprint_id','source_url','paper_id','source_urls','abstract','publication_timestamp',

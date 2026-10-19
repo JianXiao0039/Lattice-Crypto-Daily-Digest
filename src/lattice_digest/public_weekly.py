@@ -7,6 +7,7 @@ from zoneinfo import ZoneInfo
 from lattice_digest.public_contract import public_preflight, finish_telemetry, record_entry_failure
 from lattice_digest.weekly_synthesis import build_weekly_synthesis, write_weekly_outputs
 from lattice_digest.runtime_provenance import schedule_telemetry
+from lattice_digest.period_delivery import writer_lock, publish_period
 
 
 def main(argv: list[str] | None = None) -> int:
@@ -22,21 +23,23 @@ def main(argv: list[str] | None = None) -> int:
         end = (datetime.fromisoformat(args.to_date).date() if args.to_date else
                started.date() - timedelta(days=started.weekday() + 1))
         start = datetime.fromisoformat(args.from_date).date() if args.from_date else end - timedelta(days=6)
-        if start > end:
-            raise ValueError('weekly start must not follow end')
+        if start.weekday()!=0 or end!=start+timedelta(days=6) or end>=started.date():
+            raise ValueError('weekly production requires a completed Monday-Sunday ISO week')
         proof['period'] = {'from_date': start.isoformat(), 'to_date': end.isoformat()}
         if args.preflight:
             print(json.dumps(proof, ensure_ascii=False, indent=2))
             return 0
         stage = 'REPORT_GENERATION'
-        payload = build_weekly_synthesis(paths.data_root, start, end)
-        payload.setdefault('metadata', {}).update(proof['runtime_provenance'])
-        payload['metadata'].update(schedule_telemetry(started))
-        payload['metadata']['runtime_paths'] = paths.as_dict()
-        write_weekly_outputs(payload, paths.data_root, paths.digest_root)
+        key=f'{start.isocalendar().year}-W{start.isocalendar().week:02d}'
+        with writer_lock(paths,'WEEKLY',key):
+            payload = build_weekly_synthesis(paths.data_root, start, end)
+            payload.setdefault('metadata', {}).update(proof['runtime_provenance'])
+            payload['metadata'].update(schedule_telemetry(started))
+            payload['metadata']['runtime_paths'] = paths.as_dict()
+            publish_period(payload,paths,write_weekly_outputs)
         finish_telemetry(paths, 'WEEKLY', started, proof['runtime_provenance'])
         return 0
-    except ValueError as exc:
+    except (OSError,ValueError) as exc:
         print(str(exc))
         receipt = record_entry_failure('WEEKLY', exc, stage=stage, proof=proof, arguments=argv)
         if receipt: print('Operational failure receipt: ' + receipt)
