@@ -343,8 +343,18 @@ def test_tie_breaker_prefers_ai4lattice_before_generic_pqc() -> None:
     assert pqc_record.title not in section_2
 
 
-def test_papers_db_exists_and_is_not_deleted() -> None:
-    db_path = Path(__file__).resolve().parents[1] / "papers.db"
-
-    assert db_path.exists()
-    assert db_path.is_file()
+def test_papers_db_exists_and_is_not_deleted(tmp_path, monkeypatch) -> None:
+    from lattice_digest.runtime_paths import RuntimePaths
+    from lattice_digest.storage import write_sqlite
+    code, canonical = tmp_path / "published", tmp_path / "canonical"
+    code.mkdir()
+    canonical.mkdir()
+    monkeypatch.setenv("LATTICE_DIGEST_CANONICAL_ROOT", str(canonical))
+    paths = RuntimePaths.resolve(code_root=code)
+    assert paths.database_path == canonical / "papers.db"
+    write_sqlite([], paths.database_path)
+    assert paths.database_path.exists()
+    assert paths.database_path.is_file()
+    write_sqlite([], paths.database_path)
+    assert paths.database_path.is_file()
+    assert not (code / "papers.db").exists()

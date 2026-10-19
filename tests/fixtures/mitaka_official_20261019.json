@@ -1,0 +1,26 @@
+{
+  "source_record": {
+    "title": "Eﬃcient Fixed-Point Implementation of Mitaka",
+    "abstract": "The Mitaka signature scheme is a variant of Falcon (FN-DSA). It has a considerably simpler signing procedure that can be parallelized while retaining Falcon's efficiency advantage. Mitaka offers two different signing approaches: a default one relying on floating-point arithmetic and an alternative, called MitakaZ, avoiding floating-point arithmetic at the cost of more Gaussian samples. Despite its better portability, MitakaZ has not previously been implemented in practice. This work presents an efficient fixed-point implementation of the Mitaka signing algorithm. We optimize the MitakaZ Gaussian sampler to make it suited to fixed-point arithmetic while achieving higher efficiency. Specifically, we replace the wide integral Gram root decomposition used in MitakaZ with a fixed-point square Cholesky decomposition, which substantially reduces the cost of integer Gaussian sampling. We prove bounds on intermediate values and representation errors without empirical assumptions on their magnitudes. The distributional analysis models each integer Gaussian call as exact at its represented inputs. We provide a fixed-point implementation of the new Mitaka signing algorithm in C. On an Intel Core~i7-1360P, our native AVX2 implementation generates signatures in an average of 361 kcycles for Mitaka-512 and 707 kcycles for Mitaka-1024, measured with Linux hardware performance events. On an ARM Cortex-M4F STM32F411, the corresponding measured costs are 4.0 and 7.8 Mcycles.",
+    "source_url": "https://eprint.iacr.org/2026/2521",
+    "publication_timestamp": "Sat, 17 Oct 2026 12:57:50 +0000",
+    "publication_date": "2026-10-17",
+    "first_seen_at": "2026-10-18T08:18:45.536208+00:00",
+    "scientific_scope": "GENERAL_CRYPTO_BACKGROUND",
+    "relevance_score": 49,
+    "relevance_label": "C",
+    "publication_event_type": "background_updates",
+    "source": "iacr_eprint",
+    "eprint_id": "2026/2521",
+    "paper_id": "eprint:2026/2521"
+  },
+  "retrieval": {
+    "url": "https://eprint.iacr.org/2026/2521",
+    "actual_retrieval_at": "2026-10-19T01:28:57.982180+00:00",
+    "status": 200,
+    "content_type": "text/html; charset=utf-8",
+    "bytes": 16077,
+    "sha256": "2483d2b2df75d5c51acd529b1732cad2eaff4fb1fbf713d3c3c23b07b9b75d48"
+  },
+  "abstract_match": "normalized abstract equals live official og:description; official published and modified timestamps match saved feed"
+}

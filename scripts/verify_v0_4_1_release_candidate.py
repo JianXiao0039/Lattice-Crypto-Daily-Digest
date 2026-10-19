@@ -29,7 +29,10 @@ def read_versions(root: Path) -> dict[str, str]:
         "source_package": _version_from_init(root / "src" / "lattice_digest" / "__init__.py"),
     }
     bridge = root / "lattice_digest" / "__init__.py"
-    versions["bridge_package"] = _version_from_init(bridge) if bridge.exists() else "missing"
+    # The supported setuptools src layout needs no root import bridge. A local
+    # compatibility bridge, when present, remains subject to version checking.
+    if bridge.exists():
+        versions["bridge_package"] = _version_from_init(bridge)
     return versions
 
 

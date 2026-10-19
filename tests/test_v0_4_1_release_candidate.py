@@ -15,11 +15,9 @@ SPEC.loader.exec_module(MODULE)
 def test_active_version_sources_are_v041() -> None:
     versions = MODULE.read_versions(ROOT)
 
-    assert versions == {
-        "pyproject": "0.4.1",
-        "source_package": "0.4.1",
-        "bridge_package": "0.4.1",
-    }
+    assert versions["pyproject"] == versions["source_package"] == "0.4.1"
+    assert all(value == "0.4.1" for value in versions.values())
+    assert ("bridge_package" in versions) == (ROOT / "lattice_digest/__init__.py").exists()
 
 
 def test_submission_contract_is_narrow() -> None:

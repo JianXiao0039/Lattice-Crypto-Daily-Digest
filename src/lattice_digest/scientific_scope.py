@@ -78,6 +78,7 @@ def _evaluate_scope(title: str, abstract: str, source_url: str) -> dict:
                 term = match.group()
                 lattice_core = bool(re.fullmatch(CORE, term, re.I))
                 role = RelationRole.BACKGROUND_MENTION
+                rule = 'primary-object-role-v1'
                 if term.lower() in {'lattice-based','lattice based','falcon','hawk','sis','lip'} and not re.search(r'\b(?:cryptograph\w*|cryptanalysis|signature|signatures|encryption|kem|security|trapdoor|learning|hardness|module[ -]sis|dual attacks?|lattice settings)\b',title+' '+sentence,re.I):
                     continue
                 # Negative applicability does not establish an independent target.
@@ -100,6 +101,17 @@ def _evaluate_scope(title: str, abstract: str, source_url: str) -> dict:
                         role = RelationRole.PRIMARY_RESEARCH_OBJECT
                 elif name != 'title' and re.search(COMPARE,sentence,re.I) and not re.search(INTENT,sentence,re.I):
                     role = RelationRole.COMPARISON_BASELINE
+                elif name == 'abstract' and re.search(PHYSICAL, title, re.I) and any(
+                        re.search(r'\b' + re.escape(link[1]) + r'\b', title, re.I)
+                        and match.start() >= link.end()
+                        for link in re.finditer(
+                            r'\b([A-Za-z][A-Za-z0-9-]*)\s+(?:signature|encryption|key[ -]encapsulation)\s+'
+                            r'(?:scheme|algorithm)\s+is\s+(?:an?\s+)?variant\s+of\s+', sentence, re.I)):
+                    # The source explicitly connects the implementation's named
+                    # object to a recognized lattice primitive. A mere baseline
+                    # mention or a scheme name without this relation cannot qualify.
+                    role = RelationRole.PRIMARY_RESEARCH_OBJECT
+                    rule = 'primary-object-role-v1.1-explicit-variant-implementation'
                 elif name == 'title' or re.search(INTENT, sentence, re.I):
                     if re.search(r'\b(?:attack|break|cryptanalysis)\b', local, re.I):
                         role = RelationRole.ATTACK_TARGET
@@ -117,7 +129,7 @@ def _evaluate_scope(title: str, abstract: str, source_url: str) -> dict:
                               'source_excerpt':sentence,'source_url':_field(row,'source_url'),
                               'source_sha256':hashlib.sha256(text.encode()).hexdigest(),
                               'evidence_status':'SOURCE_SPAN_MODEL_INTERPRETATION',
-                              'is_core_term':lattice_core,'rule':'primary-object-role-v1'})
+                              'is_core_term':lattice_core,'rule':rule})
     qualifying = [r for r in roles if r['role'] in {
         RelationRole.PRIMARY_RESEARCH_OBJECT, RelationRole.ATTACK_TARGET,
         RelationRole.SECURITY_TARGET, RelationRole.LATTICE_HARDNESS_ASSUMPTION}]

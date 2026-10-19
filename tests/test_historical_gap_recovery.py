@@ -31,14 +31,24 @@ def test_legacy_all_filtered_rows_still_render_incomplete_zero_caveat():
     assert semantic_qa(payload,md)['status']=='PASS'
 
 
-def test_gap_creation_has_unknown_counts_no_events_and_no_prior_history(tmp_path):
+@pytest.mark.parametrize('timestamp', ['2026-10-15T04:06:20.247236+00:00', '2026-10-15T04:06:20+00:00'])
+def test_gap_creation_has_unknown_counts_no_events_and_no_prior_history(tmp_path, monkeypatch, timestamp):
+    class FixedClock(repair.datetime):
+        @classmethod
+        def now(cls, tz=None):
+            return cls.fromisoformat(timestamp)
+    monkeypatch.setattr(repair, 'datetime', FixedClock)
     payload,item=candidate(tmp_path)
     result=repair.repair_pair(tmp_path,item,tmp_path/'.ops/evidence/tx',execute=True)
     assert result['status']=='PROMOTED_INCOMPLETE_HISTORY'
     jp,mp=repair.pair_paths(tmp_path,'daily',item['target'])
     assert json.loads(jp.read_bytes())==payload
     assert '原始发现数量 N/A' in mp.read_text(encoding='utf-8')
-    assert '36' not in mp.read_text(encoding='utf-8')
+    # Digits in the actual recovery timestamp or UUID are not coverage claims.
+    assert all(payload['metadata'].get(k) is None for k in ('coverage_start', 'coverage_end', 'run_date'))
+    assert '原始覆盖窗口 UNKNOWN' in mp.read_text(encoding='utf-8')
+    assert '36h' not in mp.read_text(encoding='utf-8')
+    assert '36 小时' not in mp.read_text(encoding='utf-8')
     assert 'publication_event_ledger' not in payload and payload['records']==[]
     assert load_promotion_history(tmp_path/'data', __import__('datetime').date(2026,8,23))[0]==[]
     assert verify_daily(tmp_path,item['target'])['status']=='verified'
