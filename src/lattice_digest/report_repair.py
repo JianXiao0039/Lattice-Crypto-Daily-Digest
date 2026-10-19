@@ -189,6 +189,18 @@ def render_legacy_archive(payload: dict, target: str) -> bytes:
 def _source_projection(rows):
     return [{k:r[k] for k in SOURCE_FIELDS if k in r} for r in rows]
 
+
+def render_period_repair(payload: dict, render) -> bytes:
+    """Preserve legacy repairs and the newer durable generation-pair contract."""
+    import re
+    generation=payload.get('metadata',{}).get('generation_id')
+    text=render(payload)+REPAIR_NOTE
+    if not generation:return text.encode('utf-8')
+    if not isinstance(generation,str) or not re.fullmatch(r'[0-9a-f]{32}',generation):
+        raise ValueError('invalid period repair generation identity')
+    text+='\n<!-- generation:'+generation+' -->\n'
+    return text.replace('\r\n','\n').replace('\r','\n').encode('utf-8')
+
 def validate_candidate(root: Path, candidate_root: Path, kind: str, target: str, original: dict, candidate: dict, markdown: bytes) -> dict:
     if kind=='daily':
         if isinstance(original, list):
@@ -236,8 +248,17 @@ def validate_candidate(root: Path, candidate_root: Path, kind: str, target: str,
         proposed={k:v for k,v in candidate.items() if k not in ('metadata','repair_receipt')}
         actual={k:v for k,v in expected.items() if k not in ('metadata','repair_receipt')}
         if proposed!=actual:raise ValueError('period data differs from current canonical input derivation')
-        if markdown!=(render(expected)+REPAIR_NOTE).encode('utf-8'):
+        if original.get('metadata',{}).get('generation_id') and not candidate.get('metadata',{}).get('generation_id'):
+            raise ValueError('modern period repair cannot discard generation contract')
+        expected_render={**expected,'metadata':candidate.get('metadata',{})}
+        if markdown!=render_period_repair(expected_render,render):
             raise ValueError('period Markdown differs from source-derived renderer')
+        if candidate.get('metadata',{}).get('generation_id'):
+            from lattice_digest.period_delivery import verify_period_pair
+            candidate_json,candidate_markdown=pair_paths(candidate_root,kind,target)
+            if json.loads(candidate_json.read_bytes())!=candidate or candidate_markdown.read_bytes()!=markdown:
+                raise ValueError('period candidate bytes differ from validated promotion contents')
+            verify_period_pair(candidate_json,candidate_markdown)
         qa=durable.get('semantic_qa',{})
     if durable.get('status')!='verified':raise ValueError('durable verifier failed: '+json.dumps(durable))
     return {'structural':'PASS','semantic':qa['status'],'cross_day':'PASS','durable':'PASS',

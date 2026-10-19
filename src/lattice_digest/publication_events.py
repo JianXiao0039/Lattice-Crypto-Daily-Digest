@@ -348,7 +348,9 @@ def period_views(loaded):
             if name in CORE_EVENTS:
                 target=derived if reconstructed else verified if current and status=='PASS' else unassessed
                 target.update(entry['event_id'] for entry in entries)
+    late,late_warnings=_period_late_supplement(loaded,collections)
     return {'collections':{k:list(v.values()) for k,v in collections.items()},
+            **({'late_discoveries':late,'late_discovery_warnings':late_warnings} if late or late_warnings else {}),
             'counts':{k:len(v) for k,v in collections.items()},
             'evidence_provenance':{
                 'policy_version':'period-event-evidence-v1',
@@ -359,6 +361,107 @@ def period_views(loaded):
                 'reconstruction_status':'DERIVED_VIEW_NOT_SOURCE_OBSERVED_CURRENT_SCHEMA_FACT',
             },
             'trend_scope':'loaded canonical publication events only; partial source coverage does not establish a global field trend'}
+
+
+def _period_official_identity(url):
+    if not isinstance(url,str):return None
+    match=re.fullmatch(r'https://eprint\.iacr\.org/(\d{4}/[1-9]\d*)',url)
+    if match:return 'eprint:'+match[1]
+    match=re.fullmatch(r'https://arxiv\.org/abs/(\d{4}\.\d{4,5})(?:v[1-9]\d*)?',url)
+    return 'arxiv:'+match[1] if match else None
+
+
+def _period_late_supplement(loaded,collections):
+    """Non-counting, source-bound copies of verified Daily late observations.
+
+    This does not infer publication dates or rebuild the upstream event ledger.
+    Diagnostics contain fixed reason codes, never attacker-controlled strings.
+    """
+    counted={e.get('canonical_identity') for k in CORE_EVENTS for e in collections[k].values()}
+    represented=set(counted)
+    for _,payload in loaded:
+        rows=payload.get('records',[])
+        ledger=payload.get('_period_event_ledger',payload.get('publication_event_ledger',{}))
+        for name in CORE_EVENTS:
+            for event in ledger.get('collections',{}).get(name,[]):
+                i=event.get('row_index')
+                if isinstance(i,int) and not isinstance(i,bool) and 0<=i<len(rows) and event.get('canonical_identity') in counted:
+                    represented.update(identity_keys(rows[i]))
+    result={};aliases={};warnings=[]
+    def warn(day,reason):warnings.append({'input_date':day.isoformat(),'reason_code':reason})
+    for day,payload in sorted(loaded,key=lambda item:item[0]):
+        entries=payload.get('late_arrivals',[])
+        if not isinstance(entries,list):warn(day,'INVALID_DAILY_LATE_CONTAINER');continue
+        if not entries:continue
+        if payload.get('_daily_input_quality',{}).get('semantic_status')!='PASS' or payload.get('metadata',{}).get('publication_policy_version') not in SUPPORTED_POLICIES:
+            warn(day,'UNVERIFIED_DAILY_LATE_SUPPLEMENT');continue
+        rows=payload.get('records',[])
+        for entry in entries:
+            if not isinstance(entry,dict):warn(day,'INVALID_LATE_ENTRY');continue
+            url=entry.get('source_url')
+            key=_period_official_identity(url)
+            if not key:warn(day,'UNTRUSTED_OR_NONCANONICAL_SOURCE_URL');continue
+            i=entry.get('row_index')
+            if not isinstance(i,int) or isinstance(i,bool) or not 0<=i<len(rows) or not isinstance(rows[i],dict):warn(day,'INVALID_SOURCE_ROW_BINDING');continue
+            row=rows[i];keys=identity_keys(row)
+            if key not in keys or entry.get('canonical_identity') not in keys or entry.get('title')!=row.get('title') or url!=row.get('source_url'):
+                warn(day,'SOURCE_IDENTITY_OR_TITLE_MISMATCH');continue
+            evaluator=scope_evaluator_for_policy(payload['metadata']['publication_policy_version'])
+            if row.get('publication_event_blockers') or not evaluator(row)['lattice_relevance_qualified']:
+                warn(day,'UNQUALIFIED_SCIENTIFIC_SOURCE');continue
+            original=row.get('preprint_first_posted_at') or row.get('publication_timestamp') or row.get('publication_date')
+            observed=row.get('source_observed_at') or row.get('first_seen_at')
+            expected_precision='DATE_ONLY' if isinstance(original,str) and re.fullmatch(r'\d{4}-\d{2}-\d{2}',original) else 'SOURCE_TIMESTAMP'
+            try:obs=datetime.fromisoformat(str(observed).replace('Z','+00:00'))
+            except ValueError:obs=None
+            if not isinstance(original,str) or not original or timestamp(original) is None or original!=entry.get('first_publication_time') or expected_precision!=entry.get('publication_time_precision') or observed!=entry.get('public_collector_observed_at') or obs is None or obs.tzinfo is None:
+                warn(day,'INVALID_OR_MISMATCHED_TIME_EVIDENCE');continue
+            if entry.get('counts_as_new_publication') is not False or entry.get('status')!='LATE_ARRIVAL':warn(day,'INVALID_NONCOUNTING_CONTRACT');continue
+            if keys&represented:warn(day,'ALREADY_REPRESENTED_BY_COUNTED_EVENT');continue
+            existing=next((aliases[k] for k in sorted(keys) if k in aliases),None)
+            if existing is not None:
+                saved=result[existing]
+                if saved['first_publication_time']!=original or saved['publication_time_precision']!=entry['publication_time_precision']:
+                    warn(day,'CONFLICTING_LATE_PUBLICATION_EVIDENCE');continue
+                saved['input_dates']=sorted(set(saved['input_dates']+[day.isoformat()]))
+                observation={'input_date':day.isoformat(),'source_url':url,'public_collector_observed_at':observed}
+                if observation not in saved['observations']:saved['observations'].append(observation)
+                for alias in keys:aliases[alias]=existing
+                continue
+            canonical=canonical_identity(row)
+            for alias in keys:aliases[alias]=canonical
+            result[canonical]={'canonical_identity':canonical,'upstream_canonical_identity':entry['canonical_identity'],
+                'title':row['title'],'source_url':url,'first_publication_time':original,
+                'publication_time_precision':entry['publication_time_precision'],
+                'public_collector_observed_at':observed,'observation_time_precision':'SOURCE_TIMESTAMP',
+                'observations':[{'input_date':day.isoformat(),'source_url':url,'public_collector_observed_at':observed}],
+                'input_dates':[day.isoformat()],'source_daily_event_id':event_id(canonical,'LATE_DISCOVERY',str(original)),
+                'source_event_id_derivation':'RECOMPUTED_FROM_BOUND_IDENTITY_AND_ORIGINAL_SOURCE_TIME',
+                'source_abstract_sha256':hashlib.sha256(str(row.get('abstract') or '').encode()).hexdigest(),
+                'status':'LATE_OBSERVATION_PENDING_CHRONOLOGY_VERIFICATION','counts_as_new_publication':False,
+                'evidence_boundary':'COPIED_FROM_VERIFIED_DAILY; SOURCE_TIMES_NOT_REINTERPRETED; NOT_PROOF_OF_ORIGINAL_CUTOFF_VISIBILITY'}
+    return list(result.values()),warnings
+
+
+def period_late_markdown(views):
+    """Render a bounded reading supplement without changing period statistics."""
+    entries=views.get('late_discoveries',[]);warnings=views.get('late_discovery_warnings',[])
+    if not entries and not warnings:return []
+    def safe(value):
+        text=' '.join(str(value).split())[:300]
+        text=text.replace('&','&amp;').replace('<','&lt;').replace('>','&gt;')
+        return re.sub(r'([\\`*_{}\[\]()#!|])',r'\\\1',text)
+    lines=['## 迟到发现阅读补充（不计入本期出版事件）','',
+        '- 以下仅承接已核验 Daily 的迟到观察；不增加论文、首发、修订或趋势统计。来源时间沿用原记录，精确历史归属仍待核验。']
+    rejected=0
+    for entry in entries:
+        if not isinstance(entry,dict) or not isinstance(entry.get('title'),str) or not _period_official_identity(entry.get('source_url')) or entry.get('counts_as_new_publication') is not False:
+            rejected+=1;continue
+        lines.extend([f"- {safe(entry['title'])}：{entry['source_url']}",
+            f"  - 原记录时间：{safe(entry.get('first_publication_time','UNKNOWN'))}（{safe(entry.get('publication_time_precision','UNKNOWN'))}）；实际观察：{safe(entry.get('public_collector_observed_at','UNKNOWN'))}；输入日报：{safe(', '.join(entry.get('input_dates',[])))}。",
+            '  - 阅读动作：核查官方摘要中的研究对象、假设与贡献，并核对首发／修订时间；这里只建立阅读入口，不声称证明、性能或安全结论已经独立验证。'])
+    if warnings or rejected:lines.append(f'- 补充证据检查记录 {len(warnings)+rejected} 条；安全原因码保留在配对 JSON，不回显异常输入。')
+    return lines+['']
 
 
 def period_evidence_caveat(views):

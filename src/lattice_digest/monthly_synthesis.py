@@ -1,6 +1,6 @@
 from __future__ import annotations
 
-from lattice_digest.publication_events import period_views, normalize_period_inputs, period_evidence_caveat
+from lattice_digest.publication_events import period_views, normalize_period_inputs, period_evidence_caveat, period_late_markdown
 
 import argparse
 import calendar
@@ -500,6 +500,7 @@ def render_markdown(payload: dict[str, Any]) -> str:
         render_bilingual = index < 5 or str(paper.get("relevance_label") or "") == "A"
         lines.extend(_core_paper_markdown(paper, bilingual=render_bilingual))
 
+    lines.extend(period_late_markdown(payload.get('publication_event_views',{})))
     lines.extend(["## Direction Trends", ""])
     for trend in trends:
         appeared = ", ".join(trend["what_appeared"]) if trend["what_appeared"] else "none"

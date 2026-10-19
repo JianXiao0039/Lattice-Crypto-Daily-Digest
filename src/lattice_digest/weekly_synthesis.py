@@ -1,6 +1,6 @@
 from __future__ import annotations
 
-from lattice_digest.publication_events import period_views, normalize_period_inputs, period_event_rows, period_evidence_caveat
+from lattice_digest.publication_events import period_views, normalize_period_inputs, period_event_rows, period_evidence_caveat, period_late_markdown
 
 import argparse
 import json
@@ -945,6 +945,7 @@ def render_markdown(payload: dict[str, Any]) -> str:
     else:
         lines.extend(["- No verify-first records.", ""])
 
+    lines.extend(period_late_markdown(payload.get('publication_event_views',{})))
     lines.extend(["## Topic Distribution", ""])
     for topic in TOPIC_GROUP_ORDER:
         topic_records = topics[topic]
