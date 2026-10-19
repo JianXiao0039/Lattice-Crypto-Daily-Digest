@@ -378,7 +378,8 @@ def _direct_relation(concept_id: str) -> RelationType:
 
 def _normal(value: str) -> str:
     normalized = re.sub(r"[^a-z0-9]+", " ", str(value).lower())
-    return f" {re.sub(r'\s+', ' ', normalized).strip()} "
+    normalized = re.sub(r"\s+", " ", normalized).strip()
+    return f" {normalized} "
 
 
 def _any(text: str, *options: str) -> bool:

@@ -4,14 +4,44 @@ No live provider completeness claim: Daily replaces only discovery transport wit
 the complete saved October18 source population. Renderer, SQLite, provenance,
 source ranking, event ledger, pair publication and QA all execute normally.
 """
-from datetime import date,datetime,timezone
+from datetime import date,datetime,timezone,timedelta
 from pathlib import Path
-import hashlib,json,os,subprocess,sys
+import hashlib,json,os,subprocess,sys,shutil
 import pytest
 from tests.test_runtime_isolation_v2 import published_repo
 
 CAN=Path(r'D:\Code\CodexProjects\lattice-crypto-daily-digest')
-E=CAN/'.ops/evidence/digest-v3-20261019'
+PRODUCTION_PYTHON=Path(r'D:\CyberSecurity\Python313\python.exe')
+PERIODS={'daily':('2026-10-04','2026-10-17'),'weekly':('2026-10-05','2026-10-11'),
+         'monthly':('2026-09-01','2026-09-30')}
+
+
+def required_history_inputs(kind, source_root):
+    """Availability only; content and historical coverage remain actual assertions."""
+    low,high=map(date.fromisoformat,PERIODS[kind]);inputs=[]
+    day=low
+    while day<=high:
+        for part,ext in [('data','json'),('digests','md')]:
+            inputs.append(source_root/part/'2026/daily'/f'{day}.{ext}')
+        day+=timedelta(days=1)
+    if kind=='daily':inputs.append(source_root/'data/2026/daily/2026-10-18.json')
+    return inputs
+
+
+def history_unavailable_reason(kind, *, source_root=CAN, python=PRODUCTION_PYTHON):
+    if not python.is_file():
+        return 'Real historical E2E unavailable: approved local production Python 3.13 is not installed.'
+    missing=[p for p in required_history_inputs(kind,source_root) if not p.is_file()]
+    if missing:
+        return f'Real historical {kind} E2E unavailable: {len(missing)} required local input files are absent; CI does not contain the canonical historical corpus.'
+    return None
+
+
+def history_case(kind, *, source_root=CAN, python=PRODUCTION_PYTHON):
+    # Param-level skip is decided before published_repo or any other fixture runs.
+    reason=history_unavailable_reason(kind,source_root=source_root,python=python)
+    return pytest.param(kind,marks=pytest.mark.skipif(reason is not None,
+        reason=reason or 'Historical runtime and corpus are available.'))
 
 def sha(p):return hashlib.sha256(p.read_bytes()).hexdigest()
 def seed(target,low,high):
@@ -20,22 +50,23 @@ def seed(target,low,high):
         for p in sorted((CAN/part/'2026/daily').glob('*.'+ext)):
             if low<=p.stem<=high:
                 to=target/p.relative_to(CAN);to.parent.mkdir(parents=True,exist_ok=True)
-                os.link(p,to)
+                # Independent bytes: scratch writes must not alias canonical evidence.
+                shutil.copy2(p,to)
                 rows.append({'source':str(p),'sha256':sha(p),'snapshot':str(to)})
     return rows
 
-@pytest.mark.parametrize('kind',['daily','weekly','monthly'])
+@pytest.mark.parametrize('kind',[history_case(kind) for kind in PERIODS])
 def test_real_history_public_entry(published_repo,tmp_path,kind):
     code,_=published_repo
+    E=tmp_path/'execution-evidence';E.mkdir()
     canonical=tmp_path/'canonical';canonical.mkdir()
     target={'daily':'2026-10-18','weekly':'2026-W41','monthly':'2026-09'}[kind]
-    lo,hi={'daily':('2026-10-04','2026-10-17'),'weekly':('2026-10-05','2026-10-11'),
-           'monthly':('2026-09-01','2026-09-30')}[kind]
+    lo,hi=PERIODS[kind]
     inputs=seed(canonical,lo,hi)
     env={k:v for k,v in os.environ.items() if not k.startswith('LATTICE_DIGEST_')}
     env.update(PYTHONPATH=str(code/'src'),PYTHONDONTWRITEBYTECODE='1',
         LATTICE_DIGEST_CANONICAL_ROOT=str(canonical))
-    python=r'D:\CyberSecurity\Python313\python.exe'
+    python=str(PRODUCTION_PYTHON)
     module='lattice_digest.public_'+kind
     args={'weekly':['--from-date','2026-10-05','--to-date','2026-10-11'],
           'monthly':['--month','2026-09']} .get(kind)
@@ -80,7 +111,8 @@ sys.exit(main(ARGS))
     (E/f'{kind}-real-execution.log').write_text(result.stdout+result.stderr,encoding='utf-8')
     jp=canonical/f'data/2026/{kind}/{target}.json';mp=canonical/f'digests/2026/{kind}/{target}.md'
     receipt={'kind':kind,'target':target,'input_root':str(canonical),'inputs':inputs,
-        'source_base_head':'44da1e505c8a67ad28e8e98dcee554e91a8d7bec',
+        'source_base_head':subprocess.check_output(['git','rev-parse','HEAD'],
+            cwd=Path(__file__).resolve().parents[1],text=True).strip(),
         'test_authority_head':subprocess.check_output(['git','rev-parse','HEAD'],cwd=code,text=True).strip(),
         'authority_kind':'DISPOSABLE_LOCAL_TEST_AUTHORITY_NOT_PRODUCTION_DEPLOYMENT',
         'preflight_command':precommand,'preflight_exit':pre.returncode,
