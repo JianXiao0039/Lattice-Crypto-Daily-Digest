@@ -12,6 +12,7 @@ import os
 import re
 import tempfile
 from uuid import uuid4
+from lattice_digest.public_contract import _reject_redirects
 
 
 @contextmanager
@@ -19,8 +20,10 @@ def writer_lock(paths, profile: str, key: str):
     if profile not in ('DAILY','WEEKLY','MONTHLY') or not re.fullmatch(r'\d{4}-(?:\d{2}(?:-\d{2})?|W\d{2})',key):
         raise ValueError('invalid writer identity')
     directory=paths.audit_root/'writer-locks'
-    if directory.is_symlink() or getattr(directory,'is_junction',lambda:False)():
-        raise ValueError('writer lock redirection forbidden')
+    try:
+        _reject_redirects(directory)
+    except ValueError as exc:
+        raise ValueError('writer lock redirection forbidden') from exc
     directory.mkdir(parents=True,exist_ok=True)
     target=directory/f'{profile}-{key}.lock'
     try: stream=target.open('x',encoding='utf-8')

@@ -40,6 +40,35 @@ def _aware(value: str) -> datetime:
     return out
 
 
+def _is_iacr_sender(value: str) -> bool:
+    """Accept one explicit mailbox, independent of parseaddr's version defaults.
+
+    Older Python can treat an email-shaped display name as the mailbox and
+    ignore an attacker-controlled angle address. Validate the entire header's
+    narrow single-address grammar before consulting the compatibility parser.
+    Comments, groups and folded headers are unnecessary for this newsletter.
+    """
+    if not isinstance(value,str) or any(ord(char)<32 or ord(char)==127 for char in value):
+        return False
+    text=value.strip(' ')
+    if text.lower()==SENDER:
+        return True
+    match=re.fullmatch(r'([^<>]+?) *<([^<>]+)>',text)
+    if not match or match[2].lower()!=SENDER:
+        return False
+    display=match[1].strip(' ')
+    if not display or '@' in display:
+        return False
+    if display.startswith('"'):
+        if not re.fullmatch(r'"(?:[^"\\]|\\["\\])*"',display):
+            return False
+    elif any(char in display for char in ',;:"\\()[]'):
+        return False
+    # Entire-input grammar and exact angle mailbox checks above are the gate;
+    # parseaddr remains only a secondary check, never a sender-prefix extractor.
+    return parseaddr(text)[1].lower()==SENDER
+
+
 def _person_line(line: str) -> bool:
     # Deliberately conservative: preserve unresolved lines rather than invent authors.
     if any(c in line for c in ':$()='):
@@ -68,7 +97,7 @@ def parse_newsletter(*, sender: str, subject: str, body: str,
     Unverified title/author text must never be copied into public release bundles.
     Actual private message IDs belong only in the caller's restricted checkpoint.
     """
-    if parseaddr(sender)[1].lower() != SENDER or not SUBJECT.fullmatch(subject):
+    if not _is_iacr_sender(sender) or not SUBJECT.fullmatch(subject):
         raise ValueError('NOT_IACR_EPRINT_NEWSLETTER')
     _aware(received_at); _aware(ingested_at)
     advertised = int(SUBJECT.fullmatch(subject)[1])

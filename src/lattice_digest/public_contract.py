@@ -4,6 +4,7 @@ import importlib
 import json
 import os
 from pathlib import Path
+import stat
 import sys
 from datetime import datetime
 from zoneinfo import ZoneInfo
@@ -13,9 +14,15 @@ from lattice_digest.runtime_provenance import runtime_provenance, public_runtime
 
 
 def _reject_redirects(path: Path) -> None:
-    """Check the lexical route too: resolve() alone hides junctions/symlinks."""
+    """Check lexical ancestors; lstat catches NTFS redirects on Python 3.11 too."""
     for part in (path, *path.parents):
-        if part.is_symlink() or getattr(part, 'is_junction', lambda: False)():
+        try:
+            info = part.lstat()
+        except FileNotFoundError:
+            # New output leaves may be absent while an existing ancestor redirects.
+            continue
+        if (stat.S_ISLNK(info.st_mode) or
+                getattr(info, 'st_file_attributes', 0) & getattr(stat, 'FILE_ATTRIBUTE_REPARSE_POINT', 0x400)):
             raise ValueError(f'public runtime path redirect is forbidden: {part}')
 
 
