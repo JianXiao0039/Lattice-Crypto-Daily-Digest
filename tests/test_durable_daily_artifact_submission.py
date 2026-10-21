@@ -6,13 +6,14 @@ from pathlib import Path
 ROOT = Path(__file__).resolve().parents[1]
 
 
-def test_daily_workflow_force_adds_only_verified_dated_artifacts() -> None:
-    workflow = (ROOT / ".github" / "workflows" / "daily.yml").read_text(encoding="utf-8")
-
-    assert 'markdown_path="digests/${digest_date}.md"' in workflow
-    assert 'json_path="data/${digest_date}.json"' in workflow
-    assert 'git add -f -- "$markdown_path" "$json_path"' in workflow
-    assert "git add -- papers.db" in workflow
+def test_daily_workflow_exports_only_public_candidates() -> None:
+    workflow = (ROOT / ".github/workflows/daily.yml").read_text(encoding="utf-8")
+    assert "lattice_digest.cloud_daily" in workflow
+    assert "contents: read" in workflow
+    assert "persist-credentials: false" in workflow
+    assert "git add" not in workflow and "git push" not in workflow
+    assert "${{ runner.temp }}/public-candidate/" in workflow
+    assert "papers.db" not in workflow
 
 
 def test_daily_workflow_has_no_broad_force_add() -> None:
@@ -30,9 +31,9 @@ def test_daily_workflow_has_no_broad_force_add() -> None:
         assert command not in workflow
 
 
-def test_daily_workflow_validates_before_staging() -> None:
-    workflow = (ROOT / ".github" / "workflows" / "daily.yml").read_text(encoding="utf-8")
-
-    assert workflow.index("- name: Verify generated artifacts") < workflow.index("- name: Commit generated digest")
-    assert 'test -f "$markdown_path"' in workflow
-    assert 'test -f "$json_path"' in workflow
+def test_daily_workflow_validates_before_upload() -> None:
+    workflow = (ROOT / ".github/workflows/daily.yml").read_text(encoding="utf-8")
+    assert workflow.index("Independent production report and public privacy gates") < workflow.index("actions/upload-artifact@v4")
+    assert "verify(root/'cloud-canonical', 'daily', context['target_date'])" in workflow
+    assert "inspect_tree(root/'public-candidate')" in workflow
+    assert "date +" not in workflow and "grep -q" not in workflow

@@ -462,6 +462,62 @@
         "src/lattice_digest/venue_registry.py",
         "src/lattice_digest/weekly_synthesis.py"
       ]
+    },
+    "PUBLIC_DELIVERY": {
+      "roots": [
+        "src/lattice_digest/public_delivery.py"
+      ],
+      "function_scopes": {},
+      "branch_values": {},
+      "reviewed_non_python": [
+        "config/keywords.yaml",
+        "config/negative_keywords.yaml",
+        "config/retrieval_ontology_v3.yaml",
+        "config/sources.yaml",
+        "config/taxonomy.yaml",
+        "pyproject.toml"
+      ],
+      "paths": [
+        "config/keywords.yaml",
+        "config/negative_keywords.yaml",
+        "config/retrieval_ontology_v3.yaml",
+        "config/runtime_dependencies.json",
+        "config/sources.yaml",
+        "config/taxonomy.yaml",
+        "pyproject.toml",
+        "src/lattice_digest/__init__.py",
+        "src/lattice_digest/artifact_paths.py",
+        "src/lattice_digest/authority.py",
+        "src/lattice_digest/config.py",
+        "src/lattice_digest/consequence_graph_v3.py",
+        "src/lattice_digest/critical_security.py",
+        "src/lattice_digest/daily_inputs.py",
+        "src/lattice_digest/digest_sections.py",
+        "src/lattice_digest/evidence_contract.py",
+        "src/lattice_digest/models.py",
+        "src/lattice_digest/monthly_synthesis.py",
+        "src/lattice_digest/ontology_v3.py",
+        "src/lattice_digest/period_delivery.py",
+        "src/lattice_digest/promotion_history.py",
+        "src/lattice_digest/public_contract.py",
+        "src/lattice_digest/public_delivery.py",
+        "src/lattice_digest/public_publisher.py",
+        "src/lattice_digest/public_report.py",
+        "src/lattice_digest/publication_diagnostics.py",
+        "src/lattice_digest/publication_events.py",
+        "src/lattice_digest/reading_actions.py",
+        "src/lattice_digest/recommendation_rationale.py",
+        "src/lattice_digest/report_gate.py",
+        "src/lattice_digest/report_quality.py",
+        "src/lattice_digest/runtime_dependencies.py",
+        "src/lattice_digest/runtime_paths.py",
+        "src/lattice_digest/runtime_provenance.py",
+        "src/lattice_digest/scientific_scope.py",
+        "src/lattice_digest/scientific_scope_v1.py",
+        "src/lattice_digest/source_roles.py",
+        "src/lattice_digest/text.py",
+        "src/lattice_digest/weekly_synthesis.py"
+      ]
     }
   }
 }

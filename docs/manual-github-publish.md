@@ -122,3 +122,9 @@ python -m pytest tests --basetemp=.pytest_tmp
 Do not rely on bare pytest collection from arbitrary working directories. On Windows, external packages such as pywin32 may include their own tests under global or environment paths; project validation must not collect `site-packages`, `.venv`, `Lib`, `Scripts`, or other external directories.
 
 `.pytest_tmp/` is local, ignored, and safe to delete after tests. For cmd users, the manual helper `scripts\run_project_tests.bat` creates `.pytest_tmp/`, points `TEMP` and `TMP` at it, and runs the scoped pytest command.
+
+## Public literature reports
+
+This source-code helper does not publish public report candidates. The proposed public-digests branch starts from an empty isolated tree and requires separate approval. Canonical JSON and papers.db are never copied into it. Review exact sanitized pair hashes before authorizing the isolated public publisher. See [the public publication contract](public-report-publication.md).
+
+Adding .gitignore or a deletion commit does not erase public history. No history rewrite or historical bulk publication is authorized by this preparation phase.

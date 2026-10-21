@@ -22,15 +22,12 @@ def test_pyproject_uses_repo_local_pytest_basetemp() -> None:
 
 
 def test_github_workflows_use_repo_local_pytest_basetemp() -> None:
-    for workflow_path in [
-        ".github/workflows/daily.yml",
-        ".github/workflows/ci.yml",
-    ]:
-        workflow = _read(workflow_path)
-
-        assert "python -m pytest tests --basetemp=.pytest_tmp" in workflow
-        assert not re.search(r"(?m)^\s*(?:run:\s*)?python -m pytest\s*$", workflow)
-        assert not re.search(r"(?m)^\s*(?:run:\s*)?pytest\s*$", workflow)
+    ci = _read(".github/workflows/ci.yml")
+    daily = _read(".github/workflows/daily.yml")
+    assert "python -m pytest tests --basetemp=.pytest_tmp" in ci
+    assert "python -m pytest tests/test_public_report_pipeline.py" in daily
+    assert "--basetemp=.pytest_tmp" in daily
+    assert not re.search(r"(?m)^\s*(?:run:\s*)?python -m pytest\s*$", daily)
 
 
 def test_manual_publish_uses_repo_local_temp_and_basetemp() -> None:

@@ -2,12 +2,18 @@ name: Daily Lattice Crypto Digest
 
 on:
   workflow_dispatch:
+    inputs:
+      target_date:
+        description: "Explicit YYYY-MM-DD target for bounded manual recovery"
+        required: false
+        type: string
   schedule:
-    # 01:17 UTC = 09:17 Asia/Shanghai / Asia/Singapore
+    # Nominal 01:17 UTC; hosted schedule execution is not exact.
     - cron: "17 1 * * *"
 
 permissions:
-  contents: write
+  contents: read
+  actions: read
 
 concurrency:
   group: daily-lattice-crypto-digest
@@ -16,90 +22,94 @@ concurrency:
 jobs:
   digest:
     runs-on: ubuntu-latest
-    timeout-minutes: 20
-
+    timeout-minutes: 35
     steps:
       - uses: actions/checkout@v4
         with:
-          fetch-depth: 0
-
+          persist-credentials: false
       - uses: actions/setup-python@v5
         with:
           python-version: "3.11"
           cache: "pip"
-
       - name: Install dependencies
-        run: |
-          python -m pip install --upgrade pip
-          python -m pip install -e ".[dev]"
-
-      - name: Run tests
-        run: |
-          python -m pytest tests --basetemp=.pytest_tmp
-
-      - name: Run daily digest
+        run: python -m pip install -e ".[dev]"
+      - name: Production smoke gate
+        run: >-
+          python -m pytest tests/test_public_report_pipeline.py --basetemp=.pytest_tmp
+          -k "not local and not lower_authority and not permission and not official"
+      - name: Resolve verified GitHub event clock
         env:
-          CONTACT_EMAIL: ${{ secrets.CONTACT_EMAIL }}
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          python - <<'PY'
+          import json, os, urllib.request
+          url = f"https://api.github.com/repos/{os.environ['GITHUB_REPOSITORY']}/actions/runs/{os.environ['GITHUB_RUN_ID']}"
+          request = urllib.request.Request(url, headers={"Authorization": "Bearer " + os.environ["GH_TOKEN"], "Accept": "application/vnd.github+json"})
+          with urllib.request.urlopen(request, timeout=30) as response:
+              run = json.load(response)
+          with open(os.environ['GITHUB_ENV'], 'a', encoding='utf-8') as output:
+              output.write('VERIFIED_EVENT_CREATED_AT=' + run['created_at'] + '\n')
+          PY
+      - name: Generate and privacy-gate provisional public candidate
+        env:
+          TARGET_DATE: ${{ inputs.target_date }}
           SEMANTIC_SCHOLAR_API_KEY: ${{ secrets.SEMANTIC_SCHOLAR_API_KEY }}
         run: |
-          python -m lattice_digest.run --since 36h --output markdown,json --send none --collector github_actions --quality-status provisional --run-mode daily
+          args=()
+          if [ -n "$TARGET_DATE" ]; then args+=(--target-date "$TARGET_DATE"); fi
+          python -m lattice_digest.cloud_daily --event-created-at "$VERIFIED_EVENT_CREATED_AT" --trigger "$GITHUB_EVENT_NAME" --output-root "$RUNNER_TEMP/cloud-canonical" --public-output "$RUNNER_TEMP/public-candidate" "${args[@]}"
+      - name: Independent production report and public privacy gates
+        run: |
+          python - <<'PY'
+          import json, os
+          from pathlib import Path
+          from lattice_digest.report_gate import verify
+          from lattice_digest.public_report import inspect_tree
+          root = Path(os.environ['RUNNER_TEMP'])
+          context = json.loads((root/'cloud-canonical/audits/cloud-target.json').read_text('utf-8'))
+          verify(root/'cloud-canonical', 'daily', context['target_date'])
+          inspect_tree(root/'public-candidate')
+          print('PRODUCTION_REPORT_GATE PASS; PUBLIC_PRIVACY_GATE PASS; REMOTE_PUBLICATION_GATE CANDIDATE_READY')
+          PY
+      - name: Retain only reviewed-shape public candidate
+        uses: actions/upload-artifact@v4
+        with:
+          name: public-digest-candidate
+          path: ${{ runner.temp }}/public-candidate/
+          if-no-files-found: error
+          retention-days: 7
 
-      - name: Verify generated artifacts
+  publish:
+    needs: digest
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    permissions:
+      contents: write
+      actions: read
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+          cache: "pip"
+      - name: Install reviewed publisher
+        run: python -m pip install -e .
+      - uses: actions/download-artifact@v4
+        with:
+          name: public-digest-candidate
+          path: ${{ runner.temp }}/public-candidate
+      - name: Publish exact sanitized tree and independently read back
+        env:
+          GH_TOKEN: ${{ github.token }}
         run: |
           set -euo pipefail
-          digest_date="$(TZ=Asia/Singapore date +'%Y-%m-%d')"
-          markdown_path="digests/${digest_date}.md"
-          json_path="data/${digest_date}.json"
-
-          test -f "$markdown_path"
-          test -f "$json_path"
-          test -f papers.db
-
-          python - "$json_path" <<'PY'
-          import json
-          import sys
-
-          with open(sys.argv[1], encoding="utf-8") as handle:
-              payload = json.load(handle)
-          metadata = payload.get("metadata", {})
-          assert metadata.get("collector") in {"github_actions", "local_codex"}
-          assert metadata.get("quality_status") in {"provisional", "authoritative", "authoritative_backfill"}
-          assert metadata.get("run_mode") in {"daily", "backfill", "dry_run"}
-          PY
-
-          for section in "今日核心结论" "高优先级论文" "AI4Lattice 与机器学习辅助密码分析" "格基约简与经典攻击" "PQC 标准、原语与实现" "阅读队列与精读建议" "可孵化研究 idea 与导师讨论问题" "数据源健康与空报告处理"; do
-            grep -q "$section" "$markdown_path"
-          done
-
-      - name: Commit generated digest
-        run: |
-          digest_date="$(TZ=Asia/Singapore date +'%Y-%m-%d')"
-          markdown_path="digests/${digest_date}.md"
-          json_path="data/${digest_date}.json"
-          git config user.name "github-actions[bot]"
-          git config user.email "github-actions[bot]@users.noreply.github.com"
-          # The dated files are intentionally ignored for local runs. Force-add
-          # only this run's verified pair; never force-add directories or globs.
-          git add -f -- "$markdown_path" "$json_path"
-          git add -- papers.db
-          if git diff --cached --quiet; then
-            echo "No digest changes to commit."
-          else
-            git commit -m "daily lattice digest: ${digest_date}"
-            git push origin main
-          fi
-
-      - name: Send digest email
-        env:
-          SMTP_HOST: ${{ secrets.SMTP_HOST }}
-          SMTP_PORT: ${{ secrets.SMTP_PORT }}
-          SMTP_USERNAME: ${{ secrets.SMTP_USERNAME }}
-          SMTP_PASSWORD: ${{ secrets.SMTP_PASSWORD }}
-          DIGEST_EMAIL_FROM: ${{ secrets.DIGEST_EMAIL_FROM }}
-          DIGEST_EMAIL_TO: ${{ secrets.DIGEST_EMAIL_TO }}
-        run: |
-          if [ -n "$SMTP_HOST" ] && [ -n "$SMTP_PORT" ] && [ -n "$SMTP_USERNAME" ] && [ -n "$SMTP_PASSWORD" ] && [ -n "$DIGEST_EMAIL_FROM" ] && [ -n "$DIGEST_EMAIL_TO" ]; then
-            python scripts/send_latest_digest_email.py
-          else
-            echo "Email sending skipped: SMTP secrets not configured."
-          fi
+          python -m lattice_digest.public_publisher --candidate "$RUNNER_TEMP/public-candidate" --remote "https://github.com/$GITHUB_REPOSITORY.git" --approve-reviewed-publication --use-gh-credentials --accept-superseded | tee "$RUNNER_TEMP/publication-receipt.json"
+      - name: Retain public publication receipt
+        uses: actions/upload-artifact@v4
+        with:
+          name: public-publication-receipt
+          path: ${{ runner.temp }}/publication-receipt.json
+          if-no-files-found: error
+          retention-days: 30

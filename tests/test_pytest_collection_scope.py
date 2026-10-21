@@ -46,16 +46,12 @@ def test_pyproject_limits_pytest_collection_to_project_tests() -> None:
 
 
 def test_github_actions_use_project_scoped_pytest() -> None:
-    for workflow_path in [
-        ".github/workflows/daily.yml",
-        ".github/workflows/ci.yml",
-    ]:
-        workflow = _read(workflow_path)
-        lines = _pytest_command_lines(workflow)
-
-        assert lines
-        assert all("python -m pytest tests --basetemp=.pytest_tmp" in line for line in lines)
-        assert not re.search(r"(?m)^\s*(?:run:\s*)?python -m pytest\s*$", workflow)
+    ci = _read(".github/workflows/ci.yml")
+    daily = _read(".github/workflows/daily.yml")
+    assert "python -m pytest tests --basetemp=.pytest_tmp" in ci
+    assert "python -m pytest tests/test_public_report_pipeline.py" in daily
+    assert "--basetemp=.pytest_tmp" in daily
+    assert not re.search(r"(?m)^\s*(?:run:\s*)?python -m pytest\s*$", daily)
 
 
 def test_manual_publish_uses_project_scoped_pytest() -> None:

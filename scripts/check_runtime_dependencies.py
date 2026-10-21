@@ -13,9 +13,10 @@ def build_manifest(root: Path = ROOT) -> dict:
               'config/retrieval_ontology_v3.yaml']
     common += [name for name in ('requirements.txt', 'uv.lock', 'poetry.lock') if (root / name).is_file()]
     profiles = {}
-    for name in ('DAILY', 'WEEKLY', 'MONTHLY', 'MONTHLY_EXPORTS', 'MONTHLY_OBSIDIAN', 'REPORT_REPAIR', 'EXPORT_FIELD_REPAIR'):
+    for name in ('DAILY', 'WEEKLY', 'MONTHLY', 'MONTHLY_EXPORTS', 'MONTHLY_OBSIDIAN', 'REPORT_REPAIR', 'EXPORT_FIELD_REPAIR', 'PUBLIC_DELIVERY'):
         command = name.split('_')[0].lower()
-        roots = (['src/lattice_digest/export_field_repair.py'] if name == 'EXPORT_FIELD_REPAIR' else
+        roots = (['src/lattice_digest/public_delivery.py'] if name == 'PUBLIC_DELIVERY' else
+                 ['src/lattice_digest/export_field_repair.py'] if name == 'EXPORT_FIELD_REPAIR' else
                  ['src/lattice_digest/report_repair.py'] if name == 'REPORT_REPAIR' else [f'src/lattice_digest/public_{command}.py'])
         scopes, branches = {}, {}
         non_python = list(common)
@@ -23,7 +24,7 @@ def build_manifest(root: Path = ROOT) -> dict:
             scopes['src/lattice_digest/workflow.py'] = ['doctor_report', '_doctor_release_hygiene', '_latest']
             non_python += ['config/taxonomy.yaml', 'config/keywords.yaml', 'config/negative_keywords.yaml',
                            'config/query_portfolio_v3.yaml', 'CHANGELOG.md', 'docs/releases/v0.4.1.md']
-        if name in ('REPORT_REPAIR', 'EXPORT_FIELD_REPAIR'):
+        if name in ('REPORT_REPAIR', 'EXPORT_FIELD_REPAIR', 'PUBLIC_DELIVERY'):
             non_python += ['config/taxonomy.yaml', 'config/keywords.yaml', 'config/negative_keywords.yaml']
         if name.startswith('MONTHLY'):
             branches = {'src/lattice_digest/public_monthly.py': {'args.exports': name != 'MONTHLY'},

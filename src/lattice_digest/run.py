@@ -488,11 +488,18 @@ def _load_dotenv(root: Path, *, public: bool = False) -> None:
             os.environ[key] = value
 
 
-def main(argv: list[str] | None = None, *, preflight_proof: dict | None = None) -> int:
+def main(argv: list[str] | None = None, *, preflight_proof: dict | None = None, cloud_context: dict | None = None) -> int:
     args = parse_args(argv)
     root = project_root()
     paths = RuntimePaths.resolve(code_root=root, canonical_root=args.output_root)
     output_root = paths.canonical_root
+    cloud = cloud_context is not None
+    if cloud and (args.collector != 'github_actions' or args.quality_status != 'provisional'
+            or args.run_mode != 'daily' or args.date or args.coverage_start or args.force
+            or args.send != 'none' or args.config_dir or args.output_root is None or output_root == root
+            or cloud_context.get('schema_version') != 'cloud-target-v1'
+            or args.target_date != cloud_context.get('target_date')):
+        raise ValueError('invalid isolated cloud provisional context')
     if args.candidate_ledger and args.output_root is None:
         raise SystemExit("--candidate-ledger requires an explicit external --output-root")
     if os.getenv('LATTICE_DIGEST_PUBLIC_AUTOMATION') == '1' and args.config_dir is not None and args.config_dir.resolve() != paths.config_root:
@@ -505,11 +512,21 @@ def main(argv: list[str] | None = None, *, preflight_proof: dict | None = None) 
                          or (output_root == root and args.run_mode == 'daily'
                              and code_provenance['runtime_code_state'] in {'UNPUBLISHED_RUNTIME_CODE', 'UNPUBLISHED_RUNTIME_COMMIT', 'DIRTY_RUNTIME_DEPENDENCY'}))
     allowed = public_runtime_allowed(code_provenance, public_automation=public_automation)
+    if cloud:
+        # Cloud provenance is deliberately not the local published-runtime contract.
+        allowed = True
+        code_provenance['runtime_code_state'] = 'GITHUB_ACTIONS_PROVISIONAL'
+        code_provenance['runtime_provenance_observation'] = 'CLOUD_SOURCE_CHECKOUT'
     exact_date = args.date
     since_window = "24h" if exact_date is not None else (args.since or "36h")
     hours = parse_duration_to_hours(since_window)
     digest_date = exact_date or _parse_target_date(args.target_date, run_datetime)
-    if args.coverage_start:
+    if cloud:
+        coverage_start = datetime.fromisoformat(cloud_context['coverage_start'])
+        coverage_end = datetime.fromisoformat(cloud_context['coverage_end'])
+        if not coverage_start.tzinfo or not coverage_end.tzinfo or coverage_end-coverage_start != timedelta(hours=36):
+            raise ValueError('invalid cloud collection interval')
+    elif args.coverage_start:
         coverage_start, coverage_end = exact_window(args.coverage_start, args.coverage_end, args.target_date,
                                                    run_mode=args.run_mode,
                                                    since_hours=hours if args.since else None)
@@ -538,6 +555,8 @@ def main(argv: list[str] | None = None, *, preflight_proof: dict | None = None) 
     metadata.update(code_provenance)
     metadata.update(schedule_telemetry(run_datetime))
     metadata['runtime_paths'] = paths.as_dict()
+    if cloud:
+        metadata['cloud_execution'] = dict(cloud_context)
     if args.coverage_start:
         metadata.update(recovery_metadata(digest_date, coverage_start, coverage_end, run_datetime, args.original_missing_reason))
         if args.preflight:
@@ -558,7 +577,8 @@ def main(argv: list[str] | None = None, *, preflight_proof: dict | None = None) 
             or daily_digest_path(digest_date, paths.digest_root).exists()):
         print('Exact recovery target already exists; explicit repair/--force authorization required.')
         return 2
-    _load_dotenv(root, public=public_automation)
+    if not cloud:
+        _load_dotenv(root, public=public_automation)
     configs = load_config_bundle(args.config_dir)
     request_config = configs["sources"].get("request", {})
     context = FetchContext(
@@ -579,18 +599,21 @@ def main(argv: list[str] | None = None, *, preflight_proof: dict | None = None) 
         include_latest_sources=args.include_latest_sources,
         api_keys={
             "SEMANTIC_SCHOLAR_API_KEY": os.getenv("SEMANTIC_SCHOLAR_API_KEY", ""),
-            "OPENAI_API_KEY": os.getenv("OPENAI_API_KEY", ""),
-            "CONTACT_EMAIL": os.getenv("CONTACT_EMAIL", ""),
+            "OPENAI_API_KEY": "" if cloud else os.getenv("OPENAI_API_KEY", ""),
+            "CONTACT_EMAIL": "" if cloud else os.getenv("CONTACT_EMAIL", ""),
         },
     )
 
     source_configs = _enabled_source_configs(configs["sources"])
     records = _collect_records(source_configs, context)
     from lattice_digest.iacr_mail import optional_daily_stage
-    metadata['gmail_iacr'], _ = optional_daily_stage(
-        [r.model_dump(mode='json') for r in records],
-        scheduled_at=(schedule_telemetry(run_datetime).get('scheduled_for')
-                      if schedule_telemetry(run_datetime).get('scheduled_for')!='UNKNOWN' else None))
+    if cloud:
+        metadata['gmail_iacr'] = {'status':'NOT_AVAILABLE_CLOUD_PUBLIC_SOURCES_ONLY'}
+    else:
+        metadata['gmail_iacr'], _ = optional_daily_stage(
+            [r.model_dump(mode='json') for r in records],
+            scheduled_at=(schedule_telemetry(run_datetime).get('scheduled_for')
+                          if schedule_telemetry(run_datetime).get('scheduled_for')!='UNKNOWN' else None))
     prepared_v3 = prepare_for_semantic_analysis_v3(records)
     ranked = rank_records(
         list(prepared_v3.records),

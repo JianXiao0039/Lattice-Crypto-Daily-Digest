@@ -37,27 +37,14 @@ def read_versions(root: Path) -> dict[str, str]:
 
 
 def validate_submission_contract(workflow_text: str) -> list[str]:
-    failures: list[str] = []
-    required = (
-        'markdown_path="digests/${digest_date}.md"',
-        'json_path="data/${digest_date}.json"',
-        'git add -f -- "$markdown_path" "$json_path"',
-        "git add -- papers.db",
-    )
-    for item in required:
+    failures = []
+    for item in ("contents: read", "persist-credentials: false", "lattice_digest.cloud_daily",
+                 "inspect_tree(root/'public-candidate')", "${{ runner.temp }}/public-candidate/"):
         if item not in workflow_text:
-            failures.append(f"missing workflow contract: {item}")
-    forbidden = (
-        "git add -f .",
-        "git add -f -A",
-        "git add -f --all",
-        "git add -f -- digests/*.md",
-        "git add -f -- data/*.json",
-        "git add -f -- papers.db",
-    )
-    for item in forbidden:
+            failures.append("missing public candidate gate: " + item)
+    for item in ("git add", "git commit", "git push", "SMTP_", "papers.db", "grep -q"):
         if item in workflow_text:
-            failures.append(f"broad force-add forbidden: {item}")
+            failures.append("forbidden cloud publication behavior: " + item)
     return failures
 
 

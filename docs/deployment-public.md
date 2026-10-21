@@ -32,8 +32,8 @@
 ### 推荐项
 
 - `SEMANTIC_SCHOLAR_API_KEY`：推荐配置，用于提高 Semantic Scholar 稳定性和降低 rate-limit 风险。
-- GitHub Actions repository secrets：用于云端运行和邮件发送。
-- SMTP secrets：仅在需要邮件发送时配置。
+- GitHub Actions 的文献来源 API key：仅用于公开学术来源；云端不配置邮箱、Gmail 或 SMTP。
+- 本地邮件配置独立管理，不进入 public-digests 或 GitHub 云端。
 
 ### 可选项
 
@@ -101,31 +101,13 @@ python -m lattice_digest.run --since 36h --output markdown,json --send none
 
 ## 5. GitHub Actions 部署
 
-fork 或 clone 项目后，在 GitHub 仓库的 Actions 页面启用 workflow。`.github/workflows/daily.yml` 会：
+候选云端流程只使用公开来源，生成 PROVISIONAL_PUBLIC 候选。现有 ci.yml 保留多平台全套测试；daily.yml 运行有界 smoke、显式日期的 canonical 配对与科学 QA，再构造严格白名单公开报告。
 
-- 每天运行一次，也支持手动 `Run workflow`。
-- 运行测试。
-- 生成 `collector=github_actions`、`quality_status=provisional` 的日报。
-- 验证 Markdown、JSON 和 `papers.db`。
-- 只提交 `digests/*.md`、`data/*.json` 和 `papers.db`。
-- SMTP secrets 完整时发送邮件；不完整时跳过邮件且不失败。
+候选 workflow 使用 contents: read，只保留已通过隐私门禁的 public candidate artifact，不提交 main、不推送、不发邮件。没有修改线上自动化。
 
-GitHub Actions 生成的是 provisional 日报。本地回填生成 `authoritative_backfill`，可在更好的本地网络环境下覆盖 provisional。
+保留名义定时 01:17 UTC；GitHub 执行可能延迟。截止时间由已验证的 GitHub run created_at 和有界计划解析规则确定，不能按实际启动时间移动窗口。延迟过长会要求显式恢复。
 
-当前 workflow 真实使用的 repository secrets：
-
-- `CONTACT_EMAIL`
-- `SEMANTIC_SCHOLAR_API_KEY`
-- `SMTP_HOST`
-- `SMTP_PORT`
-- `SMTP_USERNAME`
-- `SMTP_PASSWORD`
-- `DIGEST_EMAIL_FROM`
-- `DIGEST_EMAIL_TO`
-
-`SMTP_USER` 是本地邮件脚本支持的 legacy alias，但当前 GitHub Actions workflow 使用 `SMTP_USERNAME`。`SMTP_FROM` / `SMTP_TO` 当前未使用；请使用 `DIGEST_EMAIL_FROM` / `DIGEST_EMAIL_TO`。
-
-不建议把本地随手生成的 `data/`、`digests/`、`papers.db` 混入功能 commit。正式日报产物应由 GitHub Actions 或明确的发布流程提交。
+本地三周期继续使用原有 published-runtime 与独立 canonical root。公开导出是后续单独阶段，不能复制完整 canonical JSON 或数据库。参见 [公开报告发布契约](public-report-publication.md)。
 
 ## 6. 本地权威回填
 
@@ -387,20 +369,7 @@ python -m lattice_digest.run --since 36h --output markdown,json --send none
 
 ## 5. GitHub Actions Deployment
 
-Enable Actions after forking or cloning the repository. GitHub Actions generates provisional reports. Local backfill generates authoritative reports and can replace provisional reports when appropriate.
-
-Current workflow secrets:
-
-- `CONTACT_EMAIL`
-- `SEMANTIC_SCHOLAR_API_KEY`
-- `SMTP_HOST`
-- `SMTP_PORT`
-- `SMTP_USERNAME`
-- `SMTP_PASSWORD`
-- `DIGEST_EMAIL_FROM`
-- `DIGEST_EMAIL_TO`
-
-`SMTP_USER` is a legacy local alias. `SMTP_FROM` and `SMTP_TO` are not used by the current workflow.
+The candidate cloud workflow uses public sources and an isolated output root. It runs smoke/report/privacy gates and retains only sanitized provisional candidates. It has read-only repository permissions and no commit, push, email or local mailbox access. Full multi-platform testing stays in CI. Publication requires separate approval. See [the contract](public-report-publication.md).
 
 ## 6. Local Authoritative Backfill
 
@@ -470,4 +439,4 @@ Digest operations:
 
 - GitHub Actions provides provisional daily reports.
 - Local Windows PowerShell performs authoritative backfill.
-- Commit important backfill outputs separately from feature commits.
+- Keep canonical backfill outputs and papers.db local. Export through the reviewed public-only schema and exact-tree publisher; see public-report-publication.md.
