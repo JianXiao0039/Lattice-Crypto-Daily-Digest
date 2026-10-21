@@ -80,7 +80,7 @@ def test_historical_reconstruction_stays_provisional_and_publicly_labeled(canoni
     pair=verify(canonical,kind,period)
     public=project(pair)
     assert public['quality']=='PROVISIONAL_PUBLIC'
-    assert public['event_count']==1
+    assert public['event_count']==0 and public['historical_candidate_count']==1 and public['entry_count']==1
     assert public['papers'][0]['event_evidence']=='DERIVED_HISTORICAL_EVENT_CANDIDATE'
     assert any(i['event_evidence']=='MISSING_CANONICAL_INPUT' for i in public['input_evidence'])
     output=tmp_path/'safe';export(canonical,kind,period,output)

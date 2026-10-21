@@ -272,6 +272,18 @@
       "title": "Public Generation Id",
       "type": "string"
     },
+    "entry_count": {
+      "maximum": 2000,
+      "minimum": 0,
+      "title": "Entry Count",
+      "type": "integer"
+    },
+    "historical_candidate_count": {
+      "maximum": 2000,
+      "minimum": 0,
+      "title": "Historical Candidate Count",
+      "type": "integer"
+    },
     "event_count": {
       "maximum": 2000,
       "minimum": 0,
@@ -314,6 +326,8 @@
     "source_generation_ids",
     "canonical_pair_sha256",
     "public_generation_id",
+    "entry_count",
+    "historical_candidate_count",
     "event_count",
     "omitted_event_count",
     "papers",

@@ -156,6 +156,8 @@ class PublicReport(Strict):
     source_generation_ids: list[str]
     canonical_pair_sha256: dict[str, str]
     public_generation_id: str
+    entry_count: int = Field(ge=0, le=2000)
+    historical_candidate_count: int = Field(ge=0, le=2000)
     event_count: int = Field(ge=0, le=2000)
     omitted_event_count: int = Field(ge=0)
     papers: list[PublicPaper] = Field(max_length=2000)
@@ -246,7 +248,10 @@ def project(pair: VerifiedPair) -> dict:
         source_policy_version=meta.get('publication_policy_version', 'period-event-evidence-v1'),
         source_generation_ids=[meta['generation_id']], input_evidence=[PublicInputEvidence.model_validate(i).model_dump() for i in pair.input_provenance],
         canonical_pair_sha256={'json': pair.json_sha256, 'markdown': pair.markdown_sha256},
-        public_generation_id='', event_count=len(papers), omitted_event_count=len(pair.events)-len(papers),
+        public_generation_id='', entry_count=len(papers),
+        event_count=sum(p['event_evidence']=='VERIFIED_CURRENT_SCHEMA_EVENT' for p in papers),
+        historical_candidate_count=sum(p['event_evidence']=='DERIVED_HISTORICAL_EVENT_CANDIDATE' for p in papers),
+        omitted_event_count=len(pair.events)-len(papers),
         papers=papers, limitations_zh=['来源覆盖受限时，报告不能用于断言该时期没有相关新论文。',
             '公开导出只覆盖通过来源与隐私门禁的事件；不代表全部检索记录或领域总体趋势。'])
     public['public_generation_id'] = sha(encoded(public))
@@ -260,7 +265,10 @@ def validate_public(public: dict) -> dict:
         fail('PUBLIC_PRIVACY_GATE_FAILED', 'public schema rejected fields or content; details redacted')
     from lattice_digest.report_gate import period_bounds
     first,last=period_bounds(validated['report_type'], validated['report_period'])
-    if validated['event_count'] != len(validated['papers']) or len({p['event_id'] for p in validated['papers']}) != validated['event_count']:
+    if (validated['entry_count'] != len(validated['papers']) or
+            len({p['event_id'] for p in validated['papers']}) != validated['entry_count'] or
+            validated['event_count'] != sum(p['event_evidence']=='VERIFIED_CURRENT_SCHEMA_EVENT' for p in validated['papers']) or
+            validated['historical_candidate_count'] != sum(p['event_evidence']=='DERIVED_HISTORICAL_EVENT_CANDIDATE' for p in validated['papers'])):
         fail('EVENT_OWNERSHIP_INVALID', 'public event count mismatch')
     if any(p['event_evidence']=='DERIVED_HISTORICAL_EVENT_CANDIDATE' for p in validated['papers']) and validated['quality']!='PROVISIONAL_PUBLIC':
         fail('EVENT_OWNERSHIP_INVALID', 'historical reconstruction cannot assert current event authority')
@@ -332,7 +340,7 @@ def render(public: dict) -> bytes:
     p = validate_public(public)
     lines = [f"# {p['title']}", '', '<!-- public-readable-v1 -->',
         f"报告：{p['report_type']} / {p['report_period']}", f"执行质量：{p['quality']}",
-        f"来源覆盖：{p['source_coverage_state']}", f"公开事件：{p['event_count']}；未导出事件：{p['omitted_event_count']}", '',
+        f"来源覆盖：{p['source_coverage_state']}", f"公开条目：{p['entry_count']}；当前模式已核验事件：{p['event_count']}；历史重建候选：{p['historical_candidate_count']}；未导出条目：{p['omitted_event_count']}", '',
         '## 来源与限制', *('- ' + s for s in p['limitations_zh']), '', '## 公开文献事件']
     if p['input_evidence']:
         gaps=[i['date'] for i in p['input_evidence'] if i['event_evidence'] in ('MISSING_CANONICAL_INPUT','NONCONTRIBUTING_HISTORICAL_INPUT')]
