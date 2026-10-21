@@ -42,6 +42,29 @@ def resolve_target(event_created_at: str, actual_start: str, trigger: str, targe
         'trigger':trigger,'target_resolution':'NOMINAL_CRON_WITH_12H_BOUND' if trigger=='schedule' else 'EXPLICIT_BOUNDED_MANUAL_TARGET'}
 
 
+def execution_receipt(target: dict, metadata: dict) -> dict:
+    # A new allowlisted operational clock record; never copy queries or headers.
+    attempts=metadata.get('source_query_runtime',[])
+    if not isinstance(attempts,list) or len(attempts)>2000:
+        fail('SCHEMA_INVALID','cloud execution timing exceeds bounded attempt contract')
+    starts=[];ends=[]
+    for attempt in attempts:
+        if not isinstance(attempt,dict): continue
+        for field,values in [('started_at',starts),('finished_at',ends)]:
+            try:
+                stamp=datetime.fromisoformat(str(attempt.get(field,'')).replace('Z','+00:00'))
+                if stamp.tzinfo: values.append(stamp)
+            except ValueError: pass
+    return {'schema_version':'cloud-execution-receipt-v1',
+        'scheduler_event_time':target['scheduler_event_time'],'actual_start':target['actual_start'],
+        'report_target_date':target['target_date'],'cutoff':target['coverage_end'],
+        'coverage_start':target['coverage_start'],
+        'actual_collection_start':min(starts).isoformat() if starts else 'UNKNOWN_NO_QUERY_CLOCK',
+        'actual_collection_end':max(ends).isoformat() if ends else 'UNKNOWN_NO_QUERY_CLOCK',
+        'source_attempt_count':len(attempts),
+        'retrieval_mode':'NEW_BOUNDED_PUBLIC_SOURCE_RETRIEVAL_NOT_ORIGINAL_RUNNER_SNAPSHOT'}
+
+
 def main(argv=None):
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument('--event-created-at',required=True)
@@ -66,17 +89,23 @@ def main(argv=None):
             '--output-root',str(root)],cloud_context=target)
         if code:
             return code
+        from lattice_digest.report_gate import paths_for, safe_file, strict_json
+        canonical_json,_=paths_for(root,'daily',target['target_date'])
+        timing=execution_receipt(target,strict_json(safe_file(root,canonical_json))['metadata'])
+        print(json.dumps({'event':'CLOUD_CANONICAL_GENERATED','execution':timing}))
         from lattice_digest.public_report import export
         export(root,'daily',target['target_date'],args.public_output)
         receipt=root/'audits'/'cloud-target.json'
         receipt.parent.mkdir(parents=True,exist_ok=True)
         receipt.write_bytes(encoded(target)+b'\n')
+        (receipt.parent/'cloud-execution.json').write_bytes(encoded(timing)+b'\n')
         print(json.dumps({'gate':'PUBLIC_PRIVACY_GATE','status':'PASS','target_date':target['target_date'],
                           'publication':'CANDIDATE_ONLY_NO_REMOTE_WRITE'}))
         return 0
     except (GateError, OSError, ValueError, TypeError, KeyError) as exc:
-        print(json.dumps({'gate':'PRODUCTION_REPORT_GATE','status':'FAIL',
-            'code':exc.code if isinstance(exc,GateError) else 'CLOUD_GENERATION_FAILED'}))
+        print(json.dumps({'gate':'PUBLIC_PRIVACY_GATE' if isinstance(exc,GateError) and exc.code.startswith('PUBLIC_') else 'PRODUCTION_REPORT_GATE','status':'FAIL',
+            'code':exc.code if isinstance(exc,GateError) else 'CLOUD_GENERATION_FAILED',
+            'diagnostic':str(exc) if isinstance(exc,GateError) else 'details redacted'}))
         return 2
 
 

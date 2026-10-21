@@ -790,11 +790,17 @@ def main(argv: list[str] | None = None, *, preflight_proof: dict | None = None, 
 
     print(f"Observed {len(ordered)} canonical identities; Daily publication events: {event_ledger['counts']['event_count']}.")
     for path in written:
-        print(path)
+        if not cloud:
+            print(path)
+        elif path.name!='papers.db':
+            print(path.relative_to(output_root).as_posix())
     if context.warnings:
         print("\nWarnings:")
-        for warning in context.warnings:
-            print(f"- {warning}")
+        if cloud:
+            print(f"SOURCE_WARNING_COUNT={len(context.warnings)}; raw source/query diagnostics retained only in isolated canonical execution state")
+        else:
+            for warning in context.warnings:
+                print(f"- {warning}")
     _print_source_health(source_health)
     return 0
 

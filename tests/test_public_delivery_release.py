@@ -130,3 +130,37 @@ def test_delivery_transport_timeout_is_pending_and_redacted(canonical,monkeypatc
     receipt=deliver(canonical,'daily','2026-09-22',approved=True)
     assert receipt['status']=='PUBLISH_PENDING' and receipt['error_code']=='REMOTE_PUBLICATION_FAILED'
     assert 'private-command-canary' not in json.dumps(receipt)
+
+
+def test_deployed_deduplicator_public_adapter_merge_is_explicitly_supported(canonical):
+    from lattice_digest.models import PaperRecord
+    from lattice_digest.dedup import deduplicate
+    from lattice_digest.public_report import reviewed_public_adapters
+    path=canonical/'data/2026/daily/2026-09-22.json'
+    row=json.loads(path.read_bytes())['records'][0]
+    first=PaperRecord(**{k:v for k,v in row.items() if k in PaperRecord.model_fields})
+    second=first.model_copy(deep=True);second.source='crossref'
+    merged=deduplicate([first,second])
+    assert len(merged)==1 and merged[0].source==first.source+', crossref'
+    assert reviewed_public_adapters(merged[0].source)==(first.source,'crossref')
+    rewrite(canonical,lambda p:p['records'][0].update(source=merged[0].source))
+    assert project(verify(canonical,'daily','2026-09-22'))['event_count']==1
+
+
+@pytest.mark.parametrize('value',['arxiv, unreviewed','arxiv,crossref','arxiv, arxiv','arxiv, ../notes','arxiv, gmail'])
+def test_unknown_or_mail_adapter_merge_never_crosses_the_public_boundary(value):
+    from lattice_digest.public_report import reviewed_public_adapters
+    with pytest.raises(GateError,match='PUBLIC_PRIVACY_GATE_FAILED'):reviewed_public_adapters(value)
+
+
+def test_cloud_clock_receipt_constructs_only_allowlisted_timing_fields():
+    from lattice_digest.cloud_daily import execution_receipt,resolve_target
+    target=resolve_target('2026-09-22T06:00:00Z','2026-09-22T06:01:00Z','schedule')
+    secret='PRIVATE_HTTP_QUERY_OR_HEADER_CANARY'
+    receipt=execution_receipt(target,{'source_query_runtime':[{
+        'started_at':'2026-09-22T06:01:01Z','finished_at':'2026-09-22T06:01:02Z',
+        'query':secret,'headers':secret}], 'runtime_paths':secret})
+    assert receipt['actual_collection_start']=='2026-09-22T06:01:01+00:00'
+    assert receipt['actual_collection_end']=='2026-09-22T06:01:02+00:00'
+    assert receipt['source_attempt_count']==1 and receipt['report_target_date']=='2026-09-22'
+    assert secret not in json.dumps(receipt) and 'query' not in receipt

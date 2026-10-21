@@ -181,6 +181,20 @@ ENRICHED = {'date', 'year', 'url', 'tags', 'research_tags', 'priority', 'reading
     'source_health_ref', 'ranking_explanation', 'research_sections', 'report_buckets', 'research_idea_status'}
 
 
+PUBLIC_ADAPTERS = frozenset(('arxiv', 'iacr_eprint', 'crossref', 'dblp', 'openalex', 'semantic_scholar'))
+
+
+def reviewed_public_adapters(value: str) -> tuple[str, ...]:
+    # The deployed deduplicator joins corroborating public adapters with ", ".
+    # Accept exactly that bounded contract, never arbitrary source prose or mail.
+    if not isinstance(value,str) or not 1<=len(value)<=120:
+        fail('PUBLIC_PRIVACY_GATE_FAILED', 'invalid public source adapter identity')
+    names=tuple(value.split(', '))
+    if len(names)!=len(set(names)) or any(name not in PUBLIC_ADAPTERS for name in names):
+        fail('PUBLIC_PRIVACY_GATE_FAILED', 'unreviewed source adapter')
+    return names
+
+
 def project(pair: VerifiedPair) -> dict:
     allowed = {'daily': DAILY_TOP, 'weekly': WEEKLY_TOP, 'monthly': MONTHLY_TOP}[pair.kind]
     if set(pair.payload) - allowed:
@@ -202,8 +216,7 @@ def project(pair: VerifiedPair) -> dict:
         seen.add(event['event_id'])
         # Only reviewed primary source fields enter classification and the renderer.
         public_source = {k: row.get(k) for k in ('title', 'abstract', 'source', 'source_url')}
-        if public_source['source'] not in ('arxiv', 'iacr_eprint', 'crossref', 'dblp', 'openalex', 'semantic_scholar'):
-            fail('PUBLIC_PRIVACY_GATE_FAILED', 'unreviewed source adapter')
+        reviewed_public_adapters(public_source['source'])
         title = text(row['title'])
         abstract = row.get('abstract') or ''
         # Scan source input without copying it. Complete abstracts are never emitted.

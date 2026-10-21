@@ -350,11 +350,12 @@ def test_official_weekly_monthly_replay_and_public_export(nested_repo,tmp_path):
         assert publish(public,remote,approved=True)['status']=='NO_OP'
 
 
-def test_cloud_provisional_generation_and_safe_export(tmp_path,monkeypatch):
+def test_cloud_provisional_generation_and_safe_export(tmp_path,monkeypatch,capsys):
     from lattice_digest import run
     from lattice_digest.cloud_daily import resolve_target
     rows=[make_paper_record(**CANARIES[0]['source_record'])]
     def collect(configs,context):
+        context.warnings.append('PRIVATE_SOURCE_QUERY_CANARY')
         for config in configs:
             context.register_source(config)
             item=context.health(config['name']);item.runtime_state='partial'
@@ -367,6 +368,8 @@ def test_cloud_provisional_generation_and_safe_export(tmp_path,monkeypatch):
     root=tmp_path/'cloud'
     assert run.main(['--target-date','2026-09-22','--since','36h','--collector','github_actions',
         '--quality-status','provisional','--run-mode','daily','--send','none','--output-root',str(root)],cloud_context=context)==0
+    console=capsys.readouterr().out
+    assert 'PRIVATE_SOURCE_QUERY_CANARY' not in console and 'papers.db' not in console
     export(root,'daily','2026-09-22',tmp_path/'public-cloud')
     manifest,_=inspect_tree(tmp_path/'public-cloud')
     assert manifest['reports']['daily:2026-09-22']['quality']=='PROVISIONAL_PUBLIC'
