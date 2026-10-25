@@ -124,7 +124,22 @@ def publish(candidate: Path, remote: str, *, approved: bool = False, attempts: i
                     return {'status':'NO_OP', 'remote_readback':'PASS', 'commit':base, 'attempts':attempt, 'remote_kind':kind,
                             'report':key, 'public_artifacts':{name:sha(raw) for name,raw in files.items()}}
                 if QUALITY[old['quality']] == QUALITY[entry['quality']]:
-                    fail('PUBLISH_CONFLICT', 'same-authority changed report requires a separate reviewed version policy')
+                    # The reviewed one-way v1 -> v2 readability migration must
+                    # preserve the exact canonical pair and every counted event.
+                    from lattice_digest.public_report import validate_public, PublicPaper
+                    from lattice_digest.report_gate import strict_json
+                    before = validate_public(strict_json(files[old['json']]))
+                    after = validate_public(strict_json(source_files[entry['json']]))
+                    identity = lambda p: sorted((r['event_id'],r['public_canonical_id'],r['verified_date'],
+                        r['event_kind'],r['event_evidence']) for r in p['papers'])
+                    upgrade = (before['public_schema_version']=='public-literature-v1' and
+                        after['public_schema_version']=='public-literature-v2' and
+                        before['canonical_pair_sha256']==after['canonical_pair_sha256'] and
+                        before['input_evidence']==after['input_evidence'] and identity(before)==identity(after) and
+                        before['papers']==[{k:v for k,v in p.items() if k in PublicPaper.model_fields} for p in after['papers']] and
+                        before['source_coverage_state']==after['source_coverage_state'])
+                    if not upgrade:
+                        fail('PUBLISH_CONFLICT', 'same-authority changed report requires a separate reviewed version policy')
             merged = {'schema_version':'public-manifest-v1', 'reports':{**manifest['reports'], key:entry}}
             files.update({entry['json']:source_files[entry['json']], entry['markdown']:source_files[entry['markdown']],
                           'manifest.json':encoded(merged)+b'\n', 'index.md':index_bytes(merged)})
@@ -140,7 +155,8 @@ def publish(candidate: Path, remote: str, *, approved: bool = False, attempts: i
             if staged != set(files):
                 fail('PUBLIC_PRIVACY_GATE_FAILED', 'Git index exceeds exact public file allowlist')
             tree = git(work, 'write-tree').stdout.decode().strip()
-            args = ['commit-tree', tree, '-m', 'Publish reviewed public literature report ' + key]
+            reason = ' [reviewed v1-to-v2 source-bound readability correction]' if old and QUALITY[old['quality']]==QUALITY[entry['quality']] else ''
+            args = ['commit-tree', tree, '-m', 'Publish reviewed public literature report ' + key + reason]
             if base:
                 args.extend(['-p',base])
             last_commit = git(work, *args).stdout.decode().strip()

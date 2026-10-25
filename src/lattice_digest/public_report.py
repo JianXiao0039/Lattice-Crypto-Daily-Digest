@@ -151,7 +151,7 @@ class PublicReport(Strict):
     title: str
     quality: Literal['VERIFIED_AUTHORITATIVE', 'VALID_DEGRADED_AUTHORITATIVE', 'PROVISIONAL_PUBLIC']
     source_coverage_state: Literal['AUTHORITATIVE_COMPLETE', 'AUTHORITATIVE_DEGRADED', 'PARTIAL_VERIFY_FIRST', 'INCOMPLETE_DO_NOT_INTERPRET_AS_NO_NEWS']
-    source_policy_version: Literal['scientific-publication-v3-v2', 'scientific-publication-p0-v1', 'period-event-evidence-v1']
+    source_policy_version: Literal['scientific-publication-v4-v3', 'scientific-publication-v3-v2', 'scientific-publication-p0-v1', 'period-event-evidence-v1']
     input_evidence: list[PublicInputEvidence]
     source_generation_ids: list[str]
     canonical_pair_sha256: dict[str, str]
@@ -162,6 +162,57 @@ class PublicReport(Strict):
     omitted_event_count: int = Field(ge=0)
     papers: list[PublicPaper] = Field(max_length=2000)
     limitations_zh: list[str]
+
+
+class PublicPaperV2(PublicPaper):
+    technical_detail: dict
+    scientific_domain: Literal['DIRECT_LATTICE_MATH','LATTICE_CRYPTANALYSIS','LATTICE_PRIMITIVE',
+        'LATTICE_IMPLEMENTATION','LATTICE_APPLICATION','ADJACENT_PQC','NON_LATTICE','VERIFY_FIRST']
+
+
+class PublicObservation(Strict):
+    title: str
+    source_url: str
+    observation_status: Literal['RETROSPECTIVE_SCOPE_CORRECTION_NONCOUNTING','LATE_OBSERVED_NONCOUNTING']
+    technical_detail: dict
+    source_topics: list[str]
+
+
+class PublicReportV2(PublicReport):
+    public_schema_version: Literal['public-literature-v2']
+    readable_contract_version: Literal['public-readable-v2']
+    papers: list[PublicPaperV2] = Field(max_length=2000)
+    temporal_evidence: dict
+    revision_reason: Literal['SOURCE_GROUNDED_READABILITY_AND_CLOCK_DISCLOSURE_V2']
+    noncounting_observations: list[PublicObservation] = Field(max_length=2000)
+
+
+def temporal_evidence(meta):
+    from datetime import datetime
+    cloud = meta.get('cloud_execution', {})
+    def clock(value):
+        if value in (None, '', 'UNKNOWN'): return 'UNKNOWN'
+        try:
+            parsed = datetime.fromisoformat(str(value).replace('Z', '+00:00'))
+            if not parsed.tzinfo: raise ValueError
+            return parsed.isoformat()
+        except (ValueError, TypeError):
+            fail('EVENT_OWNERSHIP_INVALID', 'invalid source execution clock')
+    attempts = meta.get('source_query_runtime', [])
+    if not isinstance(attempts, list) or len(attempts)>2000:
+        fail('PAYLOAD_SIZE_INVALID', 'unbounded source timing')
+    starts = [clock(a.get('started_at')) for a in attempts if isinstance(a, dict)]
+    ends = [clock(a.get('finished_at')) for a in attempts if isinstance(a, dict)]
+    def edge(values, fn):
+        stamps = [datetime.fromisoformat(v) for v in values if v != 'UNKNOWN']
+        return fn(stamps).isoformat() if stamps else 'UNKNOWN'
+    return dict(nominal_scheduled_time=clock(cloud.get('scheduled_for', meta.get('scheduled_for'))),
+        scheduler_event_time=clock(cloud.get('scheduler_event_time')),
+        actual_process_start=clock(cloud.get('actual_start', meta.get('run_started_at'))),
+        actual_collection_start=edge(starts, min), actual_collection_end=edge(ends, max),
+        source_retrieval_cutoff=clock(meta.get('coverage_end')),
+        retrospective_reconstruction_time=clock(meta.get('repair_executed_at')),
+        publication_first_available_time='UNKNOWN', public_revision_time='UNKNOWN')
 
 
 DAILY_TOP = {'late_arrivals', 'chronology_v3', 'publication_event_ledger', 'publication_history_evidence',
@@ -195,7 +246,9 @@ def reviewed_public_adapters(value: str) -> tuple[str, ...]:
     return names
 
 
-def project(pair: VerifiedPair) -> dict:
+def project(pair: VerifiedPair, *, readable_version: int = 2) -> dict:
+    if readable_version not in (1, 2):
+        fail('SCHEMA_VERSION_UNSUPPORTED', 'unsupported public readable version')
     allowed = {'daily': DAILY_TOP, 'weekly': WEEKLY_TOP, 'monthly': MONTHLY_TOP}[pair.kind]
     if set(pair.payload) - allowed:
         fail('PUBLIC_PRIVACY_GATE_FAILED', 'unknown canonical root extension')
@@ -223,7 +276,9 @@ def project(pair: VerifiedPair) -> dict:
         if not isinstance(abstract, str) or len(abstract) > 50000:
             fail('PUBLIC_PRIVACY_GATE_FAILED', 'invalid public abstract input')
         # URL/email patterns inside a public abstract need explicit source review too.
-        if SUSPICIOUS.search(unicodedata.normalize('NFKC', abstract)):
+        if (SUSPICIOUS.search(unicodedata.normalize('NFKC', abstract)) or
+                any(unicodedata.category(c) in ('Cf', 'Cs') or
+                    (unicodedata.category(c) == 'Cc' and c not in '\n\r\t') for c in abstract)):
             fail('PUBLIC_PRIVACY_GATE_FAILED', 'suspicious source abstract; content redacted')
         url = normalized_source_url(row['source_url'])
         _, score = source_scope_score(public_source)
@@ -267,13 +322,64 @@ def project(pair: VerifiedPair) -> dict:
         omitted_event_count=len(pair.events)-len(papers),
         papers=papers, limitations_zh=['来源覆盖受限时，报告不能用于断言该时期没有相关新论文。',
             '公开导出只覆盖通过来源与隐私门禁的事件；不代表全部检索记录或领域总体趋势。'])
+    if readable_version == 2:
+        from lattice_digest.public_technical import detail, domain
+        by_event = {e['event_id']: pair.source_rows[e['row_index']] for e in pair.events}
+        for paper in papers:
+            paper['scientific_domain']=domain(paper['title'],paper['source_topics'])
+            paper['technical_detail'] = detail(by_event[paper['event_id']].get('abstract') or '',
+                                               paper['source_url'], paper['source_topics'])
+        public.update(public_schema_version='public-literature-v2', readable_contract_version='public-readable-v2',
+            temporal_evidence=temporal_evidence(meta),
+            revision_reason='SOURCE_GROUNDED_READABILITY_AND_CLOCK_DISCLOSURE_V2', noncounting_observations=[])
+        # Correct recognition without silently rebuilding a frozen source ledger.
+        if pair.kind == 'daily':
+            from lattice_digest.publication_events import scope_evaluator_for_policy, POLICY_VERSION
+            old_policy=meta.get('publication_policy_version')
+            from lattice_digest.scientific_scope import evaluate_scope
+            selected={p['source_url'] for p in papers}
+            candidates={}
+            if old_policy and old_policy != POLICY_VERSION:
+                frozen=scope_evaluator_for_policy(old_policy)
+                candidates={i:'RETROSPECTIVE_SCOPE_CORRECTION_NONCOUNTING' for i,row in enumerate(pair.source_rows)
+                    if evaluate_scope(row)['lattice_relevance_qualified'] and not frozen(row)['lattice_relevance_qualified']}
+            from lattice_digest.publication_events import canonical_identity
+            for item in pair.payload.get('late_arrivals',[]):
+                i=item.get('row_index')
+                if (type(i) is not int or not 0<=i<len(pair.source_rows) or
+                        item.get('counts_as_new_publication') is not False or item.get('status')!='LATE_ARRIVAL'):
+                    fail('EVENT_OWNERSHIP_INVALID','invalid noncounting late input')
+                if canonical_identity(pair.source_rows[i]) != item.get('canonical_identity'):
+                    fail('EVENT_OWNERSHIP_INVALID','late input source identity mismatch')
+                if evaluate_scope(pair.source_rows[i])['lattice_relevance_qualified']:
+                    candidates.setdefault(i,'LATE_OBSERVED_NONCOUNTING')
+            for i,status in sorted(candidates.items()):
+                    row=pair.source_rows[i]
+                    if row.get('source_url') in selected: continue
+                    selected.add(row.get('source_url'))
+                    # Apply the same input safety checks even for noncounting text.
+                    if set(row)-known_rows:
+                        fail('PUBLIC_PRIVACY_GATE_FAILED','unknown retrospective source extension')
+                    reviewed_public_adapters(row['source'])
+                    url=normalized_source_url(row['source_url']); title=text(row['title'])
+                    abstract=row.get('abstract') or ''
+                    if (not isinstance(abstract,str) or len(abstract)>50000 or
+                            SUSPICIOUS.search(unicodedata.normalize('NFKC',abstract)) or
+                            any(unicodedata.category(c) in ('Cf','Cs') or
+                                (unicodedata.category(c)=='Cc' and c not in '\n\r\t') for c in abstract)):
+                        fail('PUBLIC_PRIVACY_GATE_FAILED','unsafe retrospective source input')
+                    topics=source_topics(row)[:8]
+                    public['noncounting_observations'].append(dict(title=title,source_url=url,source_topics=topics,
+                        observation_status=status,
+                        technical_detail=detail(abstract,url,topics)))
     public['public_generation_id'] = sha(encoded(public))
     return validate_public(public)
 
 
 def validate_public(public: dict) -> dict:
     try:
-        validated = PublicReport.model_validate(public).model_dump()
+        model = PublicReportV2 if public.get('public_schema_version') == 'public-literature-v2' else PublicReport
+        validated = model.model_validate(public).model_dump()
     except (ValidationError, ValueError):
         fail('PUBLIC_PRIVACY_GATE_FAILED', 'public schema rejected fields or content; details redacted')
     from lattice_digest.report_gate import period_bounds
@@ -321,6 +427,13 @@ def validate_public(public: dict) -> dict:
             'AUTHORITATIVE_COMPLETE','AUTHORITATIVE_DEGRADED','PARTIAL_VERIFY_FIRST','INCOMPLETE_DO_NOT_INTERPRET_AS_NO_NEWS'):
         fail('PUBLIC_PRIVACY_GATE_FAILED', 'unreviewed report title or coverage state')
     for paper in validated['papers']:
+        if validated['public_schema_version'] == 'public-literature-v2':
+            from lattice_digest.public_technical import check_detail, domain
+            try: check_detail(paper['technical_detail'], paper['source_url'], paper['source_topics'])
+            except (ValueError, KeyError, TypeError):
+                fail('PUBLIC_PRIVACY_GATE_FAILED', 'unreviewed technical detail')
+            if paper['scientific_domain'] != domain(paper['title'],paper['source_topics']):
+                fail('PUBLIC_PRIVACY_GATE_FAILED','arbitrary scientific grouping')
         if paper['public_identifier'] != urlsplit(paper['source_url']).path.lstrip('/'):
             fail('PUBLIC_PRIVACY_GATE_FAILED','public identifier must match its reviewed source URL')
         try:
@@ -342,6 +455,35 @@ def validate_public(public: dict) -> dict:
             '公开导出只覆盖通过来源与隐私门禁的事件；不代表全部检索记录或领域总体趋势。']:
         fail('PUBLIC_PRIVACY_GATE_FAILED', 'unreviewed public limitations extension')
     original = dict(validated, public_generation_id='')
+    if validated['public_schema_version'] == 'public-literature-v2':
+        from lattice_digest.public_technical import check_detail
+        seen=set()
+        for row in validated['noncounting_observations']:
+            text(row['title']);source_url(row['source_url'])
+            guide_for(row['source_topics'],'E3')
+            try: check_detail(row['technical_detail'],row['source_url'],row['source_topics'])
+            except (ValueError,KeyError,TypeError):
+                fail('PUBLIC_PRIVACY_GATE_FAILED','unreviewed retrospective technical detail')
+            if row['source_url'] in seen or any(r['source_url']==row['source_url'] for r in validated['papers']):
+                fail('EVENT_OWNERSHIP_INVALID','duplicate retrospective observation')
+            seen.add(row['source_url'])
+        clocks = validated['temporal_evidence']
+        expected = set(temporal_evidence({}))
+        if set(clocks) != expected:
+            fail('PUBLIC_PRIVACY_GATE_FAILED', 'unknown temporal field')
+        for value in clocks.values():
+            if value == 'UNKNOWN': continue
+            try:
+                stamp = datetime.fromisoformat(value)
+                if not stamp.tzinfo: raise ValueError
+            except (ValueError, TypeError):
+                fail('EVENT_OWNERSHIP_INVALID', 'invalid public clock')
+        a,b = clocks['actual_collection_start'],clocks['actual_collection_end']
+        if a != 'UNKNOWN' and b != 'UNKNOWN' and datetime.fromisoformat(a)>datetime.fromisoformat(b):
+            fail('EVENT_OWNERSHIP_INVALID', 'reversed source retrieval clocks')
+        cutoff=clocks['source_retrieval_cutoff']
+        if cutoff != 'UNKNOWN' and b != 'UNKNOWN' and datetime.fromisoformat(cutoff)>datetime.fromisoformat(b):
+            fail('EVENT_OWNERSHIP_INVALID','retrieval ended before claimed cutoff')
     if sha(encoded(original)) != validated['public_generation_id']:
         fail('PAIR_HASH_MISMATCH', 'public generation content hash mismatch')
     if len(encoded(validated)) > MAX_PUBLIC_BYTES:
@@ -351,10 +493,39 @@ def validate_public(public: dict) -> dict:
 
 def render(public: dict) -> bytes:
     p = validate_public(public)
-    lines = [f"# {p['title']}", '', '<!-- public-readable-v1 -->',
+    def escape(value):
+        return re.sub(r'([\\`*_[\]{}()#!|>])', r'\\\1', html.escape(value))
+    v2 = p['public_schema_version'] == 'public-literature-v2'
+    lines = [f"# {p['title']}", '', '<!-- '+p['readable_contract_version']+' -->',
         f"报告：{p['report_type']} / {p['report_period']}", f"执行质量：{p['quality']}",
         f"来源覆盖：{p['source_coverage_state']}", f"公开条目：{p['entry_count']}；当前模式已核验事件：{p['event_count']}；历史重建候选：{p['historical_candidate_count']}；未导出条目：{p['omitted_event_count']}", '',
         '## 来源与限制', *('- ' + s for s in p['limitations_zh']), '', '## 公开文献事件']
+    if v2:
+        lines[2:2] = ['## 执行摘要',
+            f"本期列出 {p['entry_count']} 项文献；核验事件 {p['event_count']} 项，历史候选 {p['historical_candidate_count']} 项。下文主题讨论不增加首发计数。",
+            '技术说明仅归纳已核对的公开摘要；数值和安全结论均归于作者，不代表独立复现或全文证明核验。', '']
+        labels = dict(nominal_scheduled_time='名义计划时间', scheduler_event_time='实际调度事件时间',
+            actual_process_start='实际进程开始', actual_collection_start='实际检索开始',
+            actual_collection_end='实际检索结束', source_retrieval_cutoff='检索窗口截止',
+            retrospective_reconstruction_time='回溯重建时间', publication_first_available_time='首次公开可用时间',
+            public_revision_time='公开修订时间')
+        lines.extend(['', '### 时间与覆盖', f"名义报告区间：{p['period_start']} 至 {p['period_end']}",
+            *[f"- {label}：{p['temporal_evidence'][k]}" for k,label in labels.items()],
+            'UNKNOWN 表示缺乏可用证据。36 小时重叠是发现窗口，不是完整性证明；迟到检索不等于截止前已观察。',
+            '首次公开可用及后续修订以 Git 历史和独立发布回执核验，不从源论文日期推算。'])
+        primary = [r for r in p['papers'] if r['event_evidence']=='VERIFIED_CURRENT_SCHEMA_EVENT' and r['event_kind']=='primary_publication_events']
+        revisions = [r for r in p['papers'] if r['event_evidence']=='VERIFIED_CURRENT_SCHEMA_EVENT' and r['event_kind']=='revision_events']
+        lines.extend(['', '### 事件与主题分开解读',
+            f"当前模式首发事件：{len(primary)}；修订事件：{len(revisions)}；历史候选：{p['historical_candidate_count']}。修订不作为新增论文身份。"])
+        groups = [('格算法与密码分析', {'Lattice Reduction','Cryptanalysis','SVP','Module Lattice'}),
+                  ('格原语与隐私协议', {'LWE','MLWE','SIS','Module-SIS','Lattice Signatures','ML-DSA','Lattice ZK'}),
+                  ('同态计算', {'FHE'}), ('实现与部署', {'PQC Implementation','Sampling','ML-KEM','Falcon'})]
+        for label,topics in groups:
+            rows = [r for r in p['papers'] if set(r['source_topics']) & topics]
+            if rows:
+                lines.append('- '+label+'：'+'；'.join(r['source_url'] for r in rows)+'。主题可交叉，不能相加为事件总数。')
+        if p['report_type'] != 'daily':
+            lines.append('本期仅按已验证来源组织技术线索；未核实方法、假设与指标可比时，不给出跨论文性能排名或趋势性结论。')
     if p['input_evidence']:
         gaps=[i['date'] for i in p['input_evidence'] if i['event_evidence'] in ('MISSING_CANONICAL_INPUT','NONCONTRIBUTING_HISTORICAL_INPUT')]
         if gaps: lines.extend(['来源输入限制日期：'+ '、'.join(gaps), '这些日期未通过当前模式事件核验；不能解释为没有新论文。'])
@@ -362,14 +533,29 @@ def render(public: dict) -> bytes:
         lines.append('本报告没有可公开列出的已验证事件；请结合来源覆盖状态解读。')
     for row in p['papers']:
         # Escape Markdown/HTML metacharacters in public source strings.
-        def escape(value):
-            return re.sub(r'([\\`*_[\]{}()#!|>])', r'\\\1', html.escape(value))
         lines.extend(['', '### ' + escape(row['title']), row['source_url'],
             '作者：' + (escape('、'.join(row['authors'])) or '公开元数据未提供'),
             f"事件：{row['event_kind']}；日期：{row['verified_date']}；{row['date_precision']} / {row['date_timezone']}",
             f"证据：{row['evidence_grade']}；事件证据：{row['event_evidence']}；相关性：{row['lattice_category']}",
             *(['历史重建候选：由已保存来源窗口推导，不代表原运行时已观察到的当前模式事件。'] if row['event_evidence']=='DERIVED_HISTORICAL_EVENT_CANDIDATE' else []), row['technical_guide_zh'],
             *('- ' + s for s in row['limitations_zh'])])
+        if v2:
+            d = row['technical_detail']
+            lines.extend(['- 技术分组：'+row['scientific_domain']+'（公开标题与来源主题的描述分组，不增加事件计数）',
+                '- 技术证据状态：'+d['status'],
+                '- 数学／安全对象：'+escape(d['object_zh']), '- 问题：'+escape(d['problem_zh']),
+                '- 方法：'+escape(d['method_zh']), '- 作者报告的结果：'+escape(d['result_zh']),
+                '- 条件与局限：'+escape(d['assumptions_zh']), '- 格密码意义：'+escape(d['significance_zh']),
+                *('- 技术核验问题：'+escape(q) for q in d['verification_questions_zh'])])
+    if v2 and p['noncounting_observations']:
+        lines.extend(['','## 迟到发现与回溯范围更正（不计入本期首发或修订事件）',
+            '以下条目来自已保存的公开来源：LATE_OBSERVED 表示当前检索才观察到的较早论文；RETROSPECTIVE_SCOPE_CORRECTION 表示新版规则补识别的原分类漏项。保留原 canonical 事件历史，不声称原期间已正确选入。'])
+        for row in p['noncounting_observations']:
+            d=row['technical_detail']
+            lines.extend(['','### '+escape(row['title']),row['source_url'],
+                row['observation_status'], '- 数学／安全对象：'+escape(d['object_zh']),
+                '- 问题：'+escape(d['problem_zh']),'- 方法：'+escape(d['method_zh']),
+                '- 作者报告的结果：'+escape(d['result_zh']),'- 条件与局限：'+escape(d['assumptions_zh'])])
     lines.extend(['', '<!-- public-generation:' + p['public_generation_id'] + ' -->', ''])
     result = '\n'.join(lines).encode('utf-8')
     if len(result) > MAX_PUBLIC_BYTES:

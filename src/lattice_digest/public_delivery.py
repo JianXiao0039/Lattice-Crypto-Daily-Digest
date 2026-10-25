@@ -4,6 +4,7 @@ import argparse
 import json
 import os
 import subprocess
+from datetime import datetime, timezone
 from pathlib import Path
 from lattice_digest.report_gate import verify, encoded, GateError, fail, period_bounds
 from lattice_digest.public_report import project, export, inspect_tree
@@ -25,7 +26,11 @@ def deliver(root: Path, kind: str, period: str, *, remote: str = REMOTE,
     try: owner = lock.open('x',encoding='utf-8')
     except FileExistsError: fail('PUBLISH_CONFLICT','active or stale public delivery writer; inspect before recovery')
     receipt = {'schema_version':'public-delivery-v1','report_type':kind,'report_period':period,
-               'states':[],'status':'STARTED'}
+               'states':[],'status':'STARTED', 'started_at':datetime.now(timezone.utc).isoformat(),
+               'state_times':{}, 'trigger_kind':os.environ.get('LATTICE_DIGEST_TRIGGER_KIND','UNKNOWN')}
+    def state(name):
+        receipt['states'].append(name)
+        receipt['state_times'][name]=datetime.now(timezone.utc).isoformat()
     def save():
         target=directory/'receipt.json';staged=directory/'receipt.staged'
         _reject_redirects(target);_reject_redirects(staged)
@@ -36,7 +41,7 @@ def deliver(root: Path, kind: str, period: str, *, remote: str = REMOTE,
         with owner:
             owner.write(str(os.getpid()));owner.flush();os.fsync(owner.fileno())
             pair=verify(root,kind,period)
-            receipt['states'] += ['CANONICAL_GENERATED','CANONICAL_QA_VERIFIED']
+            state('CANONICAL_GENERATED');state('CANONICAL_QA_VERIFIED')
             public=project(pair)
             generation=public['public_generation_id']
             candidate=directory/generation
@@ -50,7 +55,7 @@ def deliver(root: Path, kind: str, period: str, *, remote: str = REMOTE,
             inspect_tree(candidate)
             receipt.update(source_generation_id=pair.payload['metadata']['generation_id'],
                            public_generation_id=generation, canonical_pair_sha256=public['canonical_pair_sha256'])
-            receipt['states'] += ['PUBLIC_EXPORT_VERIFIED','PRIVACY_QA_VERIFIED']
+            state('PUBLIC_EXPORT_VERIFIED');state('PRIVACY_QA_VERIFIED')
             receipt['status']='PUBLISH_PENDING';save()
             try:
                 result=publish(candidate,remote,approved=True,use_windows_credentials=windows_credentials,
@@ -61,7 +66,13 @@ def deliver(root: Path, kind: str, period: str, *, remote: str = REMOTE,
                 return receipt
             if result['remote_readback']!='PASS':
                 fail('REMOTE_READBACK_FAILED','publisher did not supply verified remote evidence')
-            receipt['states'] += ['GITHUB_PUSH_VERIFIED','REMOTE_READBACK_VERIFIED']
+            state('GITHUB_PUSH_VERIFIED');state('REMOTE_READBACK_VERIFIED')
+            # v1 states remain compatible. This explicitly named v2 state chain
+            # distinguishes real remote publication from tests/configuration.
+            receipt['delivery_state_machine']=['CANONICAL_GENERATED','CANONICAL_QA_VERIFIED',
+                'PUBLIC_EXPORT_VERIFIED','PRIVACY_QA_VERIFIED','REMOTE_PUBLISHED','REMOTE_READBACK_VERIFIED']
+            receipt['remote_delivery_operation']=result['status']
+            receipt['finished_at']=datetime.now(timezone.utc).isoformat()
             receipt.update(status=result['status'],remote_commit=result['commit'],publication=result)
             save()
             return receipt

@@ -101,6 +101,15 @@ def _evaluate_scope(title: str, abstract: str, source_url: str) -> dict:
                         role = RelationRole.PRIMARY_RESEARCH_OBJECT
                 elif name != 'title' and re.search(COMPARE,sentence,re.I) and not re.search(INTENT,sentence,re.I):
                     role = RelationRole.COMPARISON_BASELINE
+                elif (name == 'abstract' and lattice_core and
+                      re.search(r'\b(?:programmable|functional) bootstrapping\b', title, re.I) and
+                      re.search(r'\b(?:TFHE|FHEW|CKKS|BFV|BGV)\b', term, re.I) and
+                      re.search(r'\b(?:engine|implementation|implemented)\b', sentence, re.I) and
+                      re.search(r'\b(?:evaluates?|implements?|runs?)\b', sentence, re.I)):
+                    # Explicit implementation of the title's bootstrapping object.
+                    # A definition or a comparison-only mention is insufficient.
+                    role = RelationRole.PRIMARY_RESEARCH_OBJECT
+                    rule = 'primary-object-role-v1.2-explicit-bootstrap-implementation'
                 elif name == 'abstract' and re.search(PHYSICAL, title, re.I) and any(
                         re.search(r'\b' + re.escape(link[1]) + r'\b', title, re.I)
                         and match.start() >= link.end()

@@ -1,0 +1,239 @@
+{
+  "schema_version": "public-technical-cards-v1",
+  "cards": {
+    "f7e14850c0610555d5fc9e41003d41948d0b8406b7d5aafa11745ea08c0d98f3": {
+      "source_url": "https://eprint.iacr.org/2026/2618",
+      "object_zh": "CI-CKKS 共轭不变环上的自举与函数自举。",
+      "problem_zh": "实数槽编码提高利用率，但原有 CoeffToSlot 与 SlotToCoeff 依赖复数；经标准 CKKS 转换的既有方案偏向成对批处理。",
+      "method_zh": "作者构造共轭不变环上的实 FFT，使 CI-CKKS 原生自举；函数自举采用径向修正的实值 AKP 插值与单余弦 Hermite 插值，并研究双实密文模拟复数运算。",
+      "result_zh": "摘要报告：在 Lattigo 中，原生单密文自举随 StC/CtS 分解取得 1.46–1.80 倍加速；相对标准 CKKS 函数自举，吞吐提升 1.16–1.68 倍。均为作者报告，未独立复现。",
+      "assumptions_zh": "数值精度与效率存在折衷；摘要未提供足以复核全部参数和比较公平性的信息。未核验全文证明。",
+      "significance_zh": "把实数槽的编码优势延伸到自举阶段，直接关系 CKKS 实数计算的刷新成本与处理灵活性。",
+      "verification_questions_zh": [
+        "比较是否保持相同环维度、目标精度、安全级别与线程配置？",
+        "实 FFT 和插值误差如何共同影响自举输出精度？"
+      ]
+    },
+    "1dbbb6e6fec4990cf7b847bb27db0f6b81bfb801fe94fbf7df0e25aaea26b291": {
+      "source_url": "https://eprint.iacr.org/2026/2485",
+      "object_zh": "基于 LWE 的异步门限 FHE 解密。",
+      "problem_zh": "单个 FHE 密钥构成单点风险；目标是在任意 t 个参与方不必同时在线或交互的条件下完成门限解密。",
+      "method_zh": "作者为基础 FHE 模块化增加异步解密，密文仅附加随机标签；用公开且依赖密文的预处理替换在线交互所需的秘密相关随机性。",
+      "result_zh": "摘要报告：16-of-512 且密文已公开预处理时，秘密相关部分解密与公开组合分别耗时 3.7 ms、0.5 ms；另有 0.5 s 的预处理。均为作者在指定硬件条件下的测量。",
+      "assumptions_zh": "作者称安全性基于标准 LWE，并允许挑战密文的部分解密查询。在线数值不包含公开预处理；完整安全模型与参数尚未独立核验。",
+      "significance_zh": "关键变化是门限解密的异步可用性与成本分摊，不能仅凭在线时间推断所有 FHE 工作负载的整体加速。",
+      "verification_questions_zh": [
+        "公开预处理能否摊销，密文变化是否要求重新执行？",
+        "部分解密查询的安全游戏和腐化阈值具体如何限定？"
+      ]
+    },
+    "082edb90c4d5844b21d1b79bc05451f4b2e5b3f874dfcc17a660718ee0ea08f5": {
+      "source_url": "https://eprint.iacr.org/2026/2490",
+      "object_zh": "公开 C2S 求值密钥与客户端一位有效性反馈形成的 CKKS 协议泄漏。",
+      "problem_zh": "恶意求值方可能利用客户端有效性反应恢复三元秘密；研究对象是暴露该反馈的部署接口。",
+      "method_zh": "作者利用公开线性变换将秘密系数猜测编码为有效性条件，并为每个查询加入新鲜零加密以随机化密文。",
+      "result_zh": "摘要报告：查询复杂度为 O(H)，H 为秘密熵；在 Lattigo v6.2.0 的四组标准预设上实现完整秘密恢复。均为作者报告，尚未复现。",
+      "assumptions_zh": "必须具备公开 C2S 密钥和可观察的一位有效性反馈。作者明确说明此攻击不破坏 RLWE 假设或 CKKS 的 IND-CPA 安全性。",
+      "significance_zh": "区分基础加密安全与协议接口安全：即使假设仍成立，客户端反应也可能成为密钥恢复通道。",
+      "verification_questions_zh": [
+        "实际客户端的错误处理是否暴露论文所需的反馈？",
+        "查询预算、秘密分布和反馈噪声会怎样限制实验结论？"
+      ]
+    },
+    "b90ae03bb31b8cb310b55448206cce3d75dfa9ff694095f1a169f1f5bf698831": {
+      "source_url": "https://eprint.iacr.org/2026/2521",
+      "object_zh": "Mitaka/MitakaZ 签名的定点 Gaussian 采样与实现。",
+      "problem_zh": "MitakaZ 避免浮点运算但需要更多 Gaussian 样本，既有整数分解带来较高采样成本。",
+      "method_zh": "作者以定点平方 Cholesky 分解替换宽整数 Gram 根分解，并证明中间值与表示误差界，提供 C 与 AVX2 实现。",
+      "result_zh": "摘要报告：i7-1360P 上 Mitaka-512/1024 为 361/707 kcycles；STM32F411 Cortex-M4F 上为 4.0/7.8 Mcycles。属于指定平台的作者测量。",
+      "assumptions_zh": "分布分析将每次整数 Gaussian 调用建模为在所表示输入上精确；该条件不能由满足代数关系或运行成功替代。未独立验证实现。",
+      "significance_zh": "把定点表示误差、采样分布条件和实际周期成本联系起来，直接影响 Falcon 变体的实现可移植性。",
+      "verification_questions_zh": [
+        "实际整数 Gaussian 实现与精确调用模型之间有何统计距离保证？",
+        "周期统计是否包含完整签名路径、拒绝重采样与计时开销？"
+      ]
+    },
+    "b847b9816a70b0a9cbfbdd09d46d3027a534c4dec2c90512981070260aaabbb5": {
+      "source_url": "https://eprint.iacr.org/2026/2473",
+      "object_zh": "ML-DSA 与 VOLE-in-the-head 构成的盲签名和 edaBitE 一致性检查。",
+      "problem_zh": "已有候选后量子盲签名依赖定制方案，难以直接复用仅支持标准签名的安全元件。",
+      "method_zh": "发行方用未修改的 ML-DSA 对承诺签名；用户以 VOLE-in-the-head 证明拥有该签名。edaBitE 批处理检查二进制与素域承诺的一致性。",
+      "result_zh": "摘要报告：盲签名约 1 MB，生成少于一秒，验证约半秒；发行方隐藏与选择性披露仅增加数十 KB。为作者报告，具体参数尚待全文核验。",
+      "assumptions_zh": "作者称安全性归约到 ML-DSA 的 EUF-CMA 安全性与证明系统。未独立核验盲性游戏、证明系统条件或实现。",
+      "significance_zh": "展示标准 ML-DSA 签名接口与隐私协议的衔接，同时明确证明大小是实际部署的重要成本。",
+      "verification_questions_zh": [
+        "盲性与不可伪造性各依赖证明系统的哪些性质？",
+        "约 1 MB 的通信成本在不同参数和披露策略下如何变化？"
+      ]
+    },
+    "7aa7bb3242d62d3e4ed60fc4d6bf4391076a5f36ea4337ab331ed97dfa052828": {
+      "source_url": "https://eprint.iacr.org/2026/2472",
+      "object_zh": "ML-DSA 匿名凭证的模块化设备绑定。",
+      "problem_zh": "通用非交互零知识证明为设备签名证明复杂语句，导致较高证明成本。",
+      "method_zh": "作者利用 ML-DSA 结构设计设备绑定协议，不修改 FIPS 204 签名接口，并给出概念验证实现。",
+      "result_zh": "摘要支持的结论是模块化协议与概念验证实现；未提供可直接复核的具体加速倍数。不得据此宣称标准级部署完成。",
+      "assumptions_zh": "最高效变体额外依赖 weak-MLWR 以保证不可链接性；移除此假设会降低效率。完整安全证明尚未独立核验。",
+      "significance_zh": "把标准化签名接口、设备绑定与匿名性条件区分开，便于评估隐私功能所付出的额外假设。",
+      "verification_questions_zh": [
+        "weak-MLWR 在不可链接性证明中出现在哪个步骤？",
+        "移除额外假设后，证明大小、时间与设备接口成本如何变化？"
+      ]
+    },
+    "1d90f417d582261ee7d039adfe7da519ff682db2a144050d2c17785634aca72c": {
+      "source_url": "https://eprint.iacr.org/2026/2616",
+      "object_zh": "FHEW/TFHE 的可编程自举与超出环维度的大查找表。",
+      "problem_zh": "大表在模块累加器中的旋转和重新打包反复支付模块秩成本；Meta-PBS 在模块内运行仍受该成本影响。",
+      "method_zh": "作者让模块秘密从子环嵌入，使截断与秘密相容；首次旋转后通过合并列的公开函数密钥切换降回环内，再继续 Meta-PBS 精化。",
+      "result_zh": "摘要报告：TFHE-rs 引擎中，16 位 negacyclic LUT 单线程为 196 ms，标称 128 位安全，模型预测失败概率低于 2 的负 64 次方；16 位密钥占 1,208 MB。均为作者报告。",
+      "assumptions_zh": "关键条件包括子环嵌入秘密；block one-hot 优化还依赖特定秘密结构。失败概率是经可观测区间验证的模型预测，不能称为实测失败率。未独立核验安全估计和性能。",
+      "significance_zh": "把模块秩开销限制在首次旋转，直接针对大 LUT 自举的时间与存储折衷。",
+      "verification_questions_zh": [
+        "子环嵌入及 block one-hot 秘密如何影响实际安全估计？",
+        "模型在极低失败率区间的外推依据与内存代价如何核验？"
+      ]
+    },
+    "3b35347ff927dfc3290bdb3a5ab2787ba94c53fde77e6f56cebd3fa3728b2bed": {
+      "source_url": "https://arxiv.org/abs/2609.01121v1",
+      "object_zh": "ML-KEM、X25519 与 QKD 混合 IPsec 的可用性。",
+      "problem_zh": "QKD 密钥服务不可用时，混合握手可能中断隧道。",
+      "method_zh": "作者通过 RFC 9370 多次密钥交换与 sentinel 协调，在 QKD 分支失败时完成握手，并在下次 rekey 恢复 QKD 份额。",
+      "result_zh": "摘要报告：33 km 城域链路测试床中，完整混合认证为 103 ms，基线为 61 ms；故障注入时受保护流量保持可用。均为作者测量。",
+      "assumptions_zh": "这是格方案参与的系统集成实验，不是 ML-KEM 数学安全改进。需要核验降级策略的认证与攻击者模型。",
+      "significance_zh": "关注混合协议的可用性与降级边界，不能把 QKD 失效后的继续运行等同于原全部安全属性保持。",
+      "verification_questions_zh": [
+        "降级协商是否被认证并防止恶意强制降级？",
+        "故障持续时间、负载与 rekey 策略如何影响可用性结论？"
+      ]
+    },
+    "3ba49a972fedb6d4e3bdace473219e4d180743730e60c5af365ced97a59e68af": {
+      "source_url": "https://arxiv.org/abs/2609.01448v1",
+      "object_zh": "低深度量子采样与基于 LWE 的经典可验证性。",
+      "problem_zh": "希望量子电路极浅，同时保持经典困难性与高效经典验证。",
+      "method_zh": "作者把基于 LWE 的单轮量子性证明编译为低深度电路，给出 log-log 深度双量子位门版本和允许无界扇入的常深度版本。",
+      "result_zh": "摘要支持无需中途测量或 feed-forward 的浅电路采样构造；困难性依赖特定格假设，未独立核验定理。",
+      "assumptions_zh": "除 lattice knowledge assumption 外，还需加强的 LWE adaptive-hardcore-bit 性质；不能只写成标准 LWE 假设。",
+      "significance_zh": "贡献在于量子电路深度、验证结构与假设强度之间的权衡，不是 LWE 密钥恢复算法。",
+      "verification_questions_zh": [
+        "加强的 adaptive-hardcore-bit 性质与标准版本有何差别？",
+        "两种电路模型的门集与深度定义能否直接比较？"
+      ]
+    },
+    "9afedb67d0e2fcdb13fb717a65298308b1753454d978713bb90357c8e7233e81": {
+      "source_url": "https://arxiv.org/abs/2609.09983v1",
+      "object_zh": "ML-KEM-768 在显式 ROM/CBD 抽象中的诚实解封装失败上界。",
+      "problem_zh": "保留公开矩阵和压缩项引起的相关性，严格处理启发式极低失败概率尺度。",
+      "method_zh": "作者组合图耦合完整理想参考、二元 Fourier 传输与精确逐位解码事件，最后对 256 个坐标使用 union bound。",
+      "result_zh": "摘要给出认证上界 P* 不超过 2 的负 164.81 次方，且不能认证 164.82。属于作者证明主张，未独立重放证书。",
+      "assumptions_zh": "假设域分离矩阵流为独立均匀环元素、秘密和噪声为独立 CBD2；不是固定 SHAKE 实例的信息论结论，不是精确 DFR、IND-CCA 新归约或自适应正确性。",
+      "significance_zh": "明确区分失败概率认证的抽象模型与 FIPS 203 固定实现，对正确性边界的理解比单一安全位数更重要。",
+      "verification_questions_zh": [
+        "有理证书和穷举分支是否可独立重放？",
+        "从随机函数抽象到固定 SHAKE 实例还缺少什么论证？"
+      ]
+    },
+    "257a72f17d22d087a0982f2c7006cc9c1ec005dbf24d1bc113d87ee4cbe99ebd": {
+      "source_url": "https://eprint.iacr.org/2026/2017",
+      "object_zh": "MQV 风格 LWE 认证密钥交换中的 eCK 泄漏模型。",
+      "problem_zh": "密钥复用及 reconciliation 的信号泄漏可能在临时密钥泄露后暴露长期秘密。",
+      "method_zh": "作者从几何视角构造新信号泄漏攻击，分别针对 ZZDSD-AKE 与带随机噪声对策的 GDLL-KE。",
+      "result_zh": "摘要报告：两协议约需 1,700 与 180 次查询恢复秘密。作者对特定协议的 eCK 安全性给出负面结论，未独立复现。",
+      "assumptions_zh": "攻击依赖所讨论的主动查询与临时密钥妥协模型；不能推广为 LWE 假设被破解或所有 LWE AKE 不安全。",
+      "significance_zh": "说明 reconciliation 与密钥复用必须纳入协议安全游戏，局部随机化对策不能自动保证 eCK 安全。",
+      "verification_questions_zh": [
+        "攻击需要哪些具体 oracle、会话状态与密钥泄露？",
+        "查询数在不同噪声和复用策略下如何变化？"
+      ]
+    },
+    "15683969d506f04bfffd70b8397fe7ef9f0e3c567b78bf6627d6147b4f7b7f0f": {
+      "source_url": "https://eprint.iacr.org/2026/2010",
+      "object_zh": "轮数最优、恶意安全的格 VOPRF 原型。",
+      "problem_zh": "证明格 PRF 被正确求值的零知识成本阻碍实际实现。",
+      "method_zh": "作者按批处理输入位推广 PRF 计算，用 ring-switching sumcheck 与专门算术化替换原证明方式。",
+      "result_zh": "摘要报告单核 AVX2：完整客户端请求和 NIZK 生成 520 ms、服务器验证 15.3 ms、客户端通信 109 KB，其中证明 75.4 KB。为作者测量。",
+      "assumptions_zh": "这是具体原型与作者的标准格假设安全主张；未独立核验恶意安全归约、参数或计时条件。",
+      "significance_zh": "把格协议的主要证明开销落到具体实现和通信成本，便于区分代数接口与系统代价。",
+      "verification_questions_zh": [
+        "安全证明涵盖哪些恶意客户端与服务器行为？",
+        "完整请求、证明、网络通信的测量边界如何划分？"
+      ]
+    },
+    "8f0c98685afad98ad7a1088c8cdc49d4512350aaf46dea073dc7ff2f64536e87": {
+      "source_url": "https://eprint.iacr.org/2026/2009",
+      "object_zh": "完全简洁的不可区分混淆与 PV 可证等价程序。",
+      "problem_zh": "希望混淆大小只随秘密程序部分增长，摆脱公开描述与输入规模。",
+      "method_zh": "作者先构造 fully succinct pv-IO，再在附加简洁 witness encryption 或唯一证明 SNARG 条件下提升安全。",
+      "result_zh": "摘要提出大小依赖与应用构造；没有可据此推断的实际实现速度。未独立核验充分性或必要性证明。",
+      "assumptions_zh": "起点涉及超多项式困难的电路 IO 与 LWE；提升路线还有额外原语及 PV 可证正确性要求。不能归纳为仅基于普通 LWE 的通用混淆。",
+      "significance_zh": "格假设是复杂构造链的一部分；需分开看大小简洁性与完整安全所需条件。",
+      "verification_questions_zh": [
+        "各提升步骤分别需要什么假设强度与可证正确性？",
+        "秘密部分与公开部分的分割如何进入大小界？"
+      ]
+    },
+    "bee196ebf55e57ae48ddb0436d11e88fd402a93f8f844ae674b8b8ddb644fab0": {
+      "source_url": "https://eprint.iacr.org/2026/2134",
+      "object_zh": "annular NTRU trapdoor 与带 abort 的 Fiat–Shamir 身份基签名。",
+      "problem_zh": "把身份映射得到的短关系见证接入可验证且具有受控签名长度的签名层。",
+      "method_zh": "作者用带计数哈希寻找可逆 syndrome，将抽取关系规范化为固定目标双响应方程，并逐个处理挑战单项式以进行迭代 rejection。",
+      "result_zh": "摘要报告三组签名层参数对齐 NIST 类别 2、3、5，签名分别为 8486、11309、12727 字节。属于作者参数主张。",
+      "assumptions_zh": "摘要未充分给出身份抽取安全归约、trapdoor 分布与 Gaussian 参数条件。参数对齐不能等同于独立安全认证。",
+      "significance_zh": "把 NTRU trapdoor 接口与 rejection sampling 的具体签名成本联系起来。",
+      "verification_questions_zh": [
+        "身份映射的可逆性与抽取分布如何进入安全证明？",
+        "短见证、Gaussian 宽度与拒绝概率的参数条件是否同时满足？"
+      ]
+    },
+    "f4eba36fa225932648c116dffe5e044c92d7a1eda9533f38cbdd7b032a577ceb": {
+      "source_url": "https://eprint.iacr.org/2026/2136",
+      "object_zh": "Learning With Quantization 的非结构格 KEM MAMBA-Frost。",
+      "problem_zh": "LWR 舍入噪声相关性限制紧致、保样本的标准 LWE 归约；目标是利用量化压缩。",
+      "method_zh": "作者选择缩放整数格与对齐的二次幂模数，推导有限支撑误差分布及 split samples 与 normal-form LWE 的双射，并使用 E8 消息编码。",
+      "result_zh": "摘要报告 level-1 公钥加密文总尺寸较 FrodoKEM-640 减少约 40%，并提供 AVX2 实现。属于作者比较，未独立核验安全等价性或性能。",
+      "assumptions_zh": "归约及正确性依赖特定模数、量化与消息编码条件；NIST level 参数标签不是独立安全证明。",
+      "significance_zh": "连接非结构 LWE 安全路线与量化压缩、二次幂算术的工程折衷。",
+      "verification_questions_zh": [
+        "公开 dithered quantization 的精确分布条件是什么？",
+        "比较中正确性失败率、安全成本模型和实现配置是否一致？"
+      ]
+    },
+    "a090238f2dfaecfabf64f904579fb223fc3ab70800da6ceebc7c8c166435fb48": {
+      "source_url": "https://eprint.iacr.org/2026/2137",
+      "object_zh": "ML-KEM 密钥生成的单条功耗轨迹、CBD 与 NTT 互补泄漏。",
+      "problem_zh": "新鲜随机性阻止跨次平均，但小支撑秘密在 sampler 与 NTT 中可能泄露互补信息。",
+      "method_zh": "作者结合 CBD 符号泄漏与 NTT 幅值泄漏作为 primal 格攻击提示，并在 sampler 内使用非零 q 倍数随机代表元。",
+      "result_zh": "摘要报告：pqm4 Cortex-M4 的泄漏使 ML-KEM-768 估算 BKZ 块大小从 624 降至 129；q-randomization 后升至 611。均为作者估计或实验，不是独立实测完整 BKZ 攻击成本。",
+      "assumptions_zh": "core-SVP 位数是成本模型估计；特定平台功耗攻击不表示 ML-KEM 数学假设被破解。对策未据此获得所有物理攻击安全保证。",
+      "significance_zh": "展示采样表示、物理泄漏与格攻击估计之间的联系，同时要求严格区别泄漏测量与工作因子估算。",
+      "verification_questions_zh": [
+        "噪声、设备迁移与 profiling 条件怎样影响提示可靠性？",
+        "随机代表元会否引入溢出、其他泄漏或分布偏差？"
+      ]
+    },
+    "a3af63dabdf81d6d3c3e92002f95753e11420faf65608f96a301e0536adde44f": {
+      "source_url": "https://eprint.iacr.org/2026/2151",
+      "object_zh": "Ring-LWE 到 Middle-Product LWE 的非一致 trace 归约。",
+      "problem_zh": "希望改善数域上 trace 归约的损失，并明确适用素数与定义多项式条件。",
+      "method_zh": "作者分析有界系数 monic 不可约多项式，构造多项式大小描述的 multiplier 作为 advice，并研究满足 index 条件的素数覆盖。",
+      "result_zh": "摘要给出 primal 与 dual 损失界及覆盖比例定理，还比较相同参数下线性噪声放大。属于作者定理主张，未独立核验。",
+      "assumptions_zh": "依赖系数界 B、素数不整除 order index 等条件；multiplier 是非一致 advice，不能自动解释为高效统一构造。",
+      "significance_zh": "把结构 LWE 假设间的参数损失与数论条件显式连接，帮助理解归约链的实际适用域。",
+      "verification_questions_zh": [
+        "advice 的存在性、描述长度与可计算性分别证明到什么程度？",
+        "噪声界比较是否保持相同 Ring-LWE 变体与 MP-LWE 参数？"
+      ]
+    },
+    "9e8bff2915c18f8085e4959f06f1804335eb1653349a7de588df8f79949073d9": {
+      "source_url": "https://eprint.iacr.org/2026/2228",
+      "object_zh": "数域 module lattice 的 adelic LLL 推广。",
+      "problem_zh": "将经典 LLL 的严格质量与复杂度保证扩展到数域模格，而不依赖启发式。",
+      "method_zh": "作者使用数域 adele ring 上 GL(n) 的约简理论，导出 module-(H)SVP 到 ideal-HSVP 的归约层级。",
+      "result_zh": "摘要主张算法具有严格输出质量和复杂度界，并给出某些随数域次数次指数的运行时间与近似因子。未独立核验定理。",
+      "assumptions_zh": "不能从次指数近似因子和运行时间主张直接推断具体参数的密钥恢复，亦不能等同于实际 BKZ 加速。",
+      "significance_zh": "直接研究结构格约简与数域 Diophantine approximation 的关系，属于格数学基础进展。",
+      "verification_questions_zh": [
+        "复杂度关于模块秩、域次数和输入位长分别如何变化？",
+        "输出近似质量与密码分析所需近似因子之间有何差距？"
+      ]
+    }
+  }
+}

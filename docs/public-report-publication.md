@@ -1,5 +1,55 @@
 # Public literature report contract v1
 
+## Reviewed V4 / readable-v2 migration
+
+New exports use public-literature-v2 / public-readable-v2 and
+schemas/public-report-v2.schema.json. Existing v1 reports remain readable and
+their deterministic Markdown stays unchanged. The one-way same-authority
+readability correction requires identical canonical pair hashes, input evidence,
+event identities/dates/kinds/evidence tiers and coverage state. Other changed
+same-authority candidates remain blocked. The ordinary Git correction commit
+records the reason and retains the former report; it does not rewrite history.
+
+config/public_technical_cards.json contains reviewed Chinese public-abstract
+summaries indexed by SHA-256 of whitespace-normalized abstracts and bound to an
+exact public identifier URL. They describe objects, bottlenecks, methods,
+author-reported results, conditions, significance and neutral verification
+questions. They contain no user project advice. An absent or changed source
+abstract yields TECHNICAL_DETAIL_PENDING_PRIMARY_SOURCE. No paid generation
+backend, inferred theorem, full abstract dump or arbitrary canonical prose is
+used. New cards require primary-source review and factual entailment review;
+existing hash-bound cards must not silently change after publication.
+
+V2 exposes only allowlisted execution clocks. UNKNOWN remains UNKNOWN; date-only
+paper events remain date-only. Actual scheduler event, process start, collection
+start/end, nominal target and retrieval cutoff are separate. First-public and
+revision availability require Git history/delivery receipts; neither is inferred
+from a paper's timestamp. Topic discussion does not add events. Scientific domain
+labels are descriptive source-title/topic groupings, not proof or security status.
+
+scientific-publication-v4-v3 recognizes an explicit FHE implementation relation
+for programmable/functional bootstrapping, without hardcoding paper titles.
+scientific_scope_v1.py and scientific_scope_v2.py freeze prior event semantics.
+Existing Daily pairs are not rewritten. An already collected source record newly
+recognized by the V4 scope rule may appear in a separate noncounting retrospective
+scope-correction section. This is not an original-time discovery or a new primary
+event. ML-DSA application-only cases still require independent scope review.
+
+The existing cloud Daily workflow has only its current isolated canonical Daily
+and the limited public archive. Weekly/Monthly builders require independently
+verified canonical Daily pairs and provenance, which cannot be reconstructed from
+that public archive. Cloud period catch-up is therefore UNSUPPORTED by this
+release; no extra schedule/workflow or fabricated fallback is introduced. A later
+implementation requires an approved, source-backed input contract first.
+
+The existing three local tasks retain their IDs and delivery path. Monthly is
+configured for the first day at 12:00 Asia/Singapore. Actual scheduler invocation
+and remote delivery receipts, not configuration or manual runs, establish
+scheduled success. V1 delivery states remain compatible; new receipts also record
+per-state observation times, operation status and a named remote delivery chain.
+Receipt times describe validation/publication, not when canonical sources were
+originally retrieved. A verified no-op is separately labeled, never a new push.
+
 This contract governs reviewed safe publication. Code remains on main; only sanitized literature outputs enter public-digests. The P1 operator authorization permits reviewed fast-forward releases and this exact publication stage; it does not permit history rewriting or new schedulers.
 
 ## Authority and gates

@@ -1,0 +1,423 @@
+{
+  "$defs": {
+    "PublicInputEvidence": {
+      "additionalProperties": false,
+      "properties": {
+        "date": {
+          "pattern": "^\\d{4}-\\d{2}-\\d{2}$",
+          "title": "Date",
+          "type": "string"
+        },
+        "json_sha256": {
+          "anyOf": [
+            {
+              "pattern": "^[a-f0-9]{64}$",
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Json Sha256"
+        },
+        "markdown_sha256": {
+          "anyOf": [
+            {
+              "pattern": "^[a-f0-9]{64}$",
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Markdown Sha256"
+        },
+        "event_evidence": {
+          "enum": [
+            "VERIFIED_CURRENT_SCHEMA_EVENT",
+            "DERIVED_HISTORICAL_EVENT_CANDIDATE",
+            "NONCONTRIBUTING_HISTORICAL_INPUT",
+            "MISSING_CANONICAL_INPUT"
+          ],
+          "title": "Event Evidence",
+          "type": "string"
+        }
+      },
+      "required": [
+        "date",
+        "event_evidence"
+      ],
+      "title": "PublicInputEvidence",
+      "type": "object"
+    },
+    "PublicObservation": {
+      "additionalProperties": false,
+      "properties": {
+        "title": {
+          "title": "Title",
+          "type": "string"
+        },
+        "source_url": {
+          "title": "Source Url",
+          "type": "string"
+        },
+        "observation_status": {
+          "enum": [
+            "RETROSPECTIVE_SCOPE_CORRECTION_NONCOUNTING",
+            "LATE_OBSERVED_NONCOUNTING"
+          ],
+          "title": "Observation Status",
+          "type": "string"
+        },
+        "technical_detail": {
+          "additionalProperties": true,
+          "title": "Technical Detail",
+          "type": "object"
+        },
+        "source_topics": {
+          "items": {
+            "type": "string"
+          },
+          "title": "Source Topics",
+          "type": "array"
+        }
+      },
+      "required": [
+        "title",
+        "source_url",
+        "observation_status",
+        "technical_detail",
+        "source_topics"
+      ],
+      "title": "PublicObservation",
+      "type": "object"
+    },
+    "PublicPaperV2": {
+      "additionalProperties": false,
+      "properties": {
+        "title": {
+          "maxLength": 600,
+          "minLength": 1,
+          "title": "Title",
+          "type": "string"
+        },
+        "source_url": {
+          "title": "Source Url",
+          "type": "string"
+        },
+        "public_identifier": {
+          "title": "Public Identifier",
+          "type": "string"
+        },
+        "public_canonical_id": {
+          "title": "Public Canonical Id",
+          "type": "string"
+        },
+        "authors": {
+          "items": {
+            "type": "string"
+          },
+          "maxItems": 100,
+          "title": "Authors",
+          "type": "array"
+        },
+        "event_kind": {
+          "enum": [
+            "primary_publication_events",
+            "revision_events",
+            "new_critical_verify_events"
+          ],
+          "title": "Event Kind",
+          "type": "string"
+        },
+        "event_id": {
+          "pattern": "^[a-f0-9]{64}$",
+          "title": "Event Id",
+          "type": "string"
+        },
+        "verified_date": {
+          "title": "Verified Date",
+          "type": "string"
+        },
+        "date_precision": {
+          "enum": [
+            "DATE_ONLY",
+            "TIMESTAMP"
+          ],
+          "title": "Date Precision",
+          "type": "string"
+        },
+        "date_timezone": {
+          "enum": [
+            "UNSPECIFIED_BY_SOURCE",
+            "SOURCE_OFFSET"
+          ],
+          "title": "Date Timezone",
+          "type": "string"
+        },
+        "event_evidence": {
+          "enum": [
+            "VERIFIED_CURRENT_SCHEMA_EVENT",
+            "DERIVED_HISTORICAL_EVENT_CANDIDATE"
+          ],
+          "title": "Event Evidence",
+          "type": "string"
+        },
+        "evidence_grade": {
+          "enum": [
+            "E2",
+            "E3"
+          ],
+          "title": "Evidence Grade",
+          "type": "string"
+        },
+        "lattice_category": {
+          "enum": [
+            "A",
+            "B",
+            "C"
+          ],
+          "title": "Lattice Category",
+          "type": "string"
+        },
+        "source_topics": {
+          "items": {
+            "type": "string"
+          },
+          "maxItems": 8,
+          "title": "Source Topics",
+          "type": "array"
+        },
+        "technical_guide_zh": {
+          "title": "Technical Guide Zh",
+          "type": "string"
+        },
+        "limitations_zh": {
+          "items": {
+            "type": "string"
+          },
+          "title": "Limitations Zh",
+          "type": "array"
+        },
+        "technical_detail": {
+          "additionalProperties": true,
+          "title": "Technical Detail",
+          "type": "object"
+        },
+        "scientific_domain": {
+          "enum": [
+            "DIRECT_LATTICE_MATH",
+            "LATTICE_CRYPTANALYSIS",
+            "LATTICE_PRIMITIVE",
+            "LATTICE_IMPLEMENTATION",
+            "LATTICE_APPLICATION",
+            "ADJACENT_PQC",
+            "NON_LATTICE",
+            "VERIFY_FIRST"
+          ],
+          "title": "Scientific Domain",
+          "type": "string"
+        }
+      },
+      "required": [
+        "title",
+        "source_url",
+        "public_identifier",
+        "public_canonical_id",
+        "authors",
+        "event_kind",
+        "event_id",
+        "verified_date",
+        "date_precision",
+        "date_timezone",
+        "event_evidence",
+        "evidence_grade",
+        "lattice_category",
+        "source_topics",
+        "technical_guide_zh",
+        "limitations_zh",
+        "technical_detail",
+        "scientific_domain"
+      ],
+      "title": "PublicPaperV2",
+      "type": "object"
+    }
+  },
+  "additionalProperties": false,
+  "properties": {
+    "public_schema_version": {
+      "const": "public-literature-v2",
+      "title": "Public Schema Version",
+      "type": "string"
+    },
+    "readable_contract_version": {
+      "const": "public-readable-v2",
+      "title": "Readable Contract Version",
+      "type": "string"
+    },
+    "report_type": {
+      "enum": [
+        "daily",
+        "weekly",
+        "monthly"
+      ],
+      "title": "Report Type",
+      "type": "string"
+    },
+    "report_period": {
+      "title": "Report Period",
+      "type": "string"
+    },
+    "period_start": {
+      "title": "Period Start",
+      "type": "string"
+    },
+    "period_end": {
+      "title": "Period End",
+      "type": "string"
+    },
+    "title": {
+      "title": "Title",
+      "type": "string"
+    },
+    "quality": {
+      "enum": [
+        "VERIFIED_AUTHORITATIVE",
+        "VALID_DEGRADED_AUTHORITATIVE",
+        "PROVISIONAL_PUBLIC"
+      ],
+      "title": "Quality",
+      "type": "string"
+    },
+    "source_coverage_state": {
+      "enum": [
+        "AUTHORITATIVE_COMPLETE",
+        "AUTHORITATIVE_DEGRADED",
+        "PARTIAL_VERIFY_FIRST",
+        "INCOMPLETE_DO_NOT_INTERPRET_AS_NO_NEWS"
+      ],
+      "title": "Source Coverage State",
+      "type": "string"
+    },
+    "source_policy_version": {
+      "enum": [
+        "scientific-publication-v4-v3",
+        "scientific-publication-v3-v2",
+        "scientific-publication-p0-v1",
+        "period-event-evidence-v1"
+      ],
+      "title": "Source Policy Version",
+      "type": "string"
+    },
+    "input_evidence": {
+      "items": {
+        "$ref": "#/$defs/PublicInputEvidence"
+      },
+      "title": "Input Evidence",
+      "type": "array"
+    },
+    "source_generation_ids": {
+      "items": {
+        "type": "string"
+      },
+      "title": "Source Generation Ids",
+      "type": "array"
+    },
+    "canonical_pair_sha256": {
+      "additionalProperties": {
+        "type": "string"
+      },
+      "title": "Canonical Pair Sha256",
+      "type": "object"
+    },
+    "public_generation_id": {
+      "title": "Public Generation Id",
+      "type": "string"
+    },
+    "entry_count": {
+      "maximum": 2000,
+      "minimum": 0,
+      "title": "Entry Count",
+      "type": "integer"
+    },
+    "historical_candidate_count": {
+      "maximum": 2000,
+      "minimum": 0,
+      "title": "Historical Candidate Count",
+      "type": "integer"
+    },
+    "event_count": {
+      "maximum": 2000,
+      "minimum": 0,
+      "title": "Event Count",
+      "type": "integer"
+    },
+    "omitted_event_count": {
+      "minimum": 0,
+      "title": "Omitted Event Count",
+      "type": "integer"
+    },
+    "papers": {
+      "items": {
+        "$ref": "#/$defs/PublicPaperV2"
+      },
+      "maxItems": 2000,
+      "title": "Papers",
+      "type": "array"
+    },
+    "limitations_zh": {
+      "items": {
+        "type": "string"
+      },
+      "title": "Limitations Zh",
+      "type": "array"
+    },
+    "temporal_evidence": {
+      "additionalProperties": true,
+      "title": "Temporal Evidence",
+      "type": "object"
+    },
+    "revision_reason": {
+      "const": "SOURCE_GROUNDED_READABILITY_AND_CLOCK_DISCLOSURE_V2",
+      "title": "Revision Reason",
+      "type": "string"
+    },
+    "noncounting_observations": {
+      "items": {
+        "$ref": "#/$defs/PublicObservation"
+      },
+      "maxItems": 2000,
+      "title": "Noncounting Observations",
+      "type": "array"
+    }
+  },
+  "required": [
+    "public_schema_version",
+    "readable_contract_version",
+    "report_type",
+    "report_period",
+    "period_start",
+    "period_end",
+    "title",
+    "quality",
+    "source_coverage_state",
+    "source_policy_version",
+    "input_evidence",
+    "source_generation_ids",
+    "canonical_pair_sha256",
+    "public_generation_id",
+    "entry_count",
+    "historical_candidate_count",
+    "event_count",
+    "omitted_event_count",
+    "papers",
+    "limitations_zh",
+    "temporal_evidence",
+    "revision_reason",
+    "noncounting_observations"
+  ],
+  "title": "PublicReportV2",
+  "type": "object"
+}

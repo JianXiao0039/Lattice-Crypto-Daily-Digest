@@ -240,6 +240,7 @@
     },
     "source_policy_version": {
       "enum": [
+        "scientific-publication-v4-v3",
         "scientific-publication-v3-v2",
         "scientific-publication-p0-v1",
         "period-event-evidence-v1"

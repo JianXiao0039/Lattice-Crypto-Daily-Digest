@@ -17,8 +17,9 @@ from lattice_digest.promotion_history import identity_keys, authoritative_versio
 from lattice_digest.scientific_scope import evaluate_scope
 
 LEGACY_POLICY_VERSION = 'scientific-publication-p0-v1'
-POLICY_VERSION = 'scientific-publication-v3-v2'
-SUPPORTED_POLICIES = {LEGACY_POLICY_VERSION, POLICY_VERSION}
+PREVIOUS_POLICY_VERSION = 'scientific-publication-v3-v2'
+POLICY_VERSION = 'scientific-publication-v4-v3'
+SUPPORTED_POLICIES = {LEGACY_POLICY_VERSION, PREVIOUS_POLICY_VERSION, POLICY_VERSION}
 
 def scope_evaluator_for_policy(policy):
     if policy == LEGACY_POLICY_VERSION:
@@ -26,6 +27,9 @@ def scope_evaluator_for_policy(policy):
         return frozen
     if policy == POLICY_VERSION:
         return evaluate_scope
+    if policy == PREVIOUS_POLICY_VERSION:
+        from lattice_digest.scientific_scope_v2 import evaluate_scope as frozen
+        return frozen
     raise ValueError('UNSUPPORTED_PUBLICATION_POLICY: '+str(policy))
 COLLECTIONS = ('primary_publication_events','revision_events','new_critical_verify_events',
                'background_updates','historical_library_observations')

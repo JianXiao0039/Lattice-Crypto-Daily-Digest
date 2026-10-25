@@ -26,6 +26,8 @@ def build_manifest(root: Path = ROOT) -> dict:
                            'config/query_portfolio_v3.yaml', 'CHANGELOG.md', 'docs/releases/v0.4.1.md']
         if name in ('REPORT_REPAIR', 'EXPORT_FIELD_REPAIR', 'PUBLIC_DELIVERY'):
             non_python += ['config/taxonomy.yaml', 'config/keywords.yaml', 'config/negative_keywords.yaml']
+        if name == 'PUBLIC_DELIVERY':
+            non_python += ['config/public_technical_cards.json']
         if name.startswith('MONTHLY'):
             branches = {'src/lattice_digest/public_monthly.py': {'args.exports': name != 'MONTHLY'},
                         'src/lattice_digest/monthly_downstream.py': {'obsidian': name == 'MONTHLY_OBSIDIAN'}}
