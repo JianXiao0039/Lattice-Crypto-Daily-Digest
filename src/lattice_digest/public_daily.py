@@ -7,6 +7,7 @@ from lattice_digest.public_contract import public_preflight, record_entry_failur
 from lattice_digest.workflow import doctor_report
 from lattice_digest import run
 from lattice_digest.period_delivery import writer_lock
+from lattice_digest.delivery_receipt import validate_generated
 from datetime import datetime
 from zoneinfo import ZoneInfo
 
@@ -30,7 +31,18 @@ def main(argv: list[str] | None = None) -> int:
             return run.main(argv, preflight_proof=proof)
         key=str(args.target_date or args.date or datetime.now(ZoneInfo('Asia/Singapore')).date())
         with writer_lock(paths,'DAILY',key):
-            return run.main(argv, preflight_proof=proof)
+            result = run.main(argv, preflight_proof=proof)
+        if result:
+            return result
+        # The independent gate must run after the writer lock is released. A
+        # generated pair, including a saved PASS label, is only a candidate.
+        stage = 'POST_GENERATION_VALIDATION'
+        receipt = validate_generated(paths.canonical_root, 'daily', key)
+        print(json.dumps({'gate': 'POST_GENERATION_VALIDATION',
+                          'status': receipt['status'],
+                          'code': receipt.get('error_code'),
+                          'delivery_verified': False, 'publish_pending': False}))
+        return 0 if receipt['scientific_validation_verified'] else 2
     except (OSError,ValueError) as exc:
         print(str(exc))
         receipt = record_entry_failure('DAILY', exc, stage=stage, proof=proof, arguments=argv)

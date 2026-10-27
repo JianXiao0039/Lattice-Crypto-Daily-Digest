@@ -14,6 +14,7 @@ from lattice_digest.source_roles import serialized_source_roles
 
 POLICY_VERSION = 'daily-correctness-v1'
 INCOMPLETE_ZERO_TEXT = '本次运行未形成满足严格入选条件的论文，但部分必需来源覆盖不完整，因此不能据此判断该时间窗口内没有值得关注的新研究。'
+HISTORY_INCOMPLETE_ZERO_TEXT = '历史身份与事件归属证据不完整；本候选不能授权新的首发事件，零个获准事件不代表该窗口没有新论文。'
 INCOMPLETE = 'INCOMPLETE_DO_NOT_INTERPRET_AS_NO_NEWS'
 COMPLETE = 'AUTHORITATIVE_COMPLETE'
 DEGRADED = 'AUTHORITATIVE_DEGRADED'
@@ -35,7 +36,7 @@ def source_complete(row: dict[str, Any]) -> bool:
     return isinstance(total, int) and isinstance(success, int) and total >= 0 and success == total
 
 
-def derive_authority(records: list[Any], source_health: list[dict[str, Any]] | None, *, source_configs: list[dict[str, Any]] | None = None) -> dict[str, Any]:
+def derive_authority(records: list[Any], source_health: list[dict[str, Any]] | None, *, source_configs: list[dict[str, Any]] | None = None, promotion_history: dict | None = None) -> dict[str, Any]:
     configs = configured_sources() if source_configs is None else source_configs
     health = {str(r.get('source')): r for r in (source_health or []) if isinstance(r, dict)}
     required, optional, incomplete, degraded = [], [], [], []
@@ -51,12 +52,15 @@ def derive_authority(records: list[Any], source_health: list[dict[str, Any]] | N
             if required_here:
                 incomplete.append(name)
     coverage_complete = bool(required) and not incomplete
+    history_blocked = bool(promotion_history and promotion_history.get('schema_version') == 'history-evidence-v41' and promotion_history.get('complete') is not True)
     rows = [r if isinstance(r, dict) else r.model_dump() for r in records if isinstance(r, dict) or hasattr(r, 'model_dump')]
     from lattice_digest.publication_events import CORE_EVENTS
     event_contract=any(r.get('publication_event_type') for r in rows)
     selected = [r for r in rows if r.get('publication_event_type') in CORE_EVENTS] if event_contract else [r for r in rows if r.get('relevance_label') in {'A', 'B', 'C'}]
     decisive = any(r.get('security_impact_severity') == 'CRITICAL' and (r.get('freshness_bucket') == 'CRITICAL_NEWLY_OBSERVED_VERIFY_FIRST' or r.get('evidence_confidence') not in {'HIGH', 'high', 'verified'} or r.get('cross_day_event') == 'IDENTITY_UNCERTAIN') for r in selected)
-    if decisive:
+    if history_blocked:
+        authority = INCOMPLETE
+    elif decisive:
         authority = PARTIAL
     elif not coverage_complete and not selected:
         authority = INCOMPLETE
@@ -70,7 +74,7 @@ def derive_authority(records: list[Any], source_health: list[dict[str, Any]] | N
         'authority_state': authority,
         'source_coverage': {'complete': coverage_complete, 'required_sources': sorted(required), 'optional_sources': sorted(optional), 'incomplete_required_sources': sorted(incomplete), 'degraded_sources': sorted(degraded)},
         'selection_counts': {'selected': len(selected), 'primary_new': sum(r.get('primary_today_new_eligible') is True for r in selected)},
-        'render_branch': ('ZERO_SELECTED_COMPLETE' if coverage_complete else 'ZERO_SELECTED_INCOMPLETE') if not selected else 'POSITIVE_SELECTED',
+        'render_branch': ('ZERO_SELECTED_COMPLETE' if coverage_complete and not history_blocked else 'ZERO_SELECTED_INCOMPLETE') if not selected else 'POSITIVE_SELECTED',
         'translation_status': 'TRANSLATION_BACKEND_SELECTION_REQUIRED',
         'bilingual_release_status': 'BILINGUAL_RELEASE_NOT_YET_AVAILABLE',
     }
@@ -80,7 +84,7 @@ def semantic_qa(payload: dict[str, Any], markdown: str | None, *, source_configs
     records = payload.get('records')
     meta = payload.get('metadata') if isinstance(payload.get('metadata'), dict) else {}
     health = payload.get('source_health') or meta.get('source_health') or []
-    decision = derive_authority(records if isinstance(records, list) else [], health, source_configs=source_configs)
+    decision = derive_authority(records if isinstance(records, list) else [], health, source_configs=source_configs, promotion_history=meta.get('promotion_history'))
     issues: list[str] = []
     unknown: list[str] = []
     if not isinstance(records, list) or any(not isinstance(r, dict) for r in records):
@@ -111,11 +115,12 @@ def semantic_qa(payload: dict[str, Any], markdown: str | None, *, source_configs
         if decision['render_branch'] == 'ZERO_SELECTED_INCOMPLETE':
             # Structured branch is the first line of defence. This detects
             # contradictory prose anywhere, including later empty sections.
-            sanitized = markdown.replace(INCOMPLETE_ZERO_TEXT, '').replace('最近 36 小时的检索覆盖不完整，当前不能据此断言没有相关新论文。', '')
+            sanitized = markdown.replace(INCOMPLETE_ZERO_TEXT, '').replace(HISTORY_INCOMPLETE_ZERO_TEXT, '').replace('最近 36 小时的检索覆盖不完整，当前不能据此断言没有相关新论文。', '')
             patterns = [r'可跳过', r'(?i)\b(?:safe to skip|nothing relevant today|no papers worth reading)\b', r'今[天日](?:未发现|没有|无)[^\n。]{0,60}(?:论文|新研究|研究进展)', r'(?i)no (?:relevant|new|worthwhile) (?:papers|research)']
             if any(re.search(p, sanitized) for p in patterns):
                 issues.append('incomplete_zero_negative_or_skip_claim')
-            if INCOMPLETE_ZERO_TEXT not in markdown:
+            expected_caveat = HISTORY_INCOMPLETE_ZERO_TEXT if meta.get('promotion_history', {}).get('schema_version') == 'history-evidence-v41' and meta['promotion_history'].get('complete') is not True else INCOMPLETE_ZERO_TEXT
+            if expected_caveat not in markdown:
                 issues.append('incomplete_zero_caveat_missing')
             if any(s not in markdown for s in decision['source_coverage']['incomplete_required_sources']):
                 issues.append('incomplete_sources_not_visible')

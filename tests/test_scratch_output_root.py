@@ -116,7 +116,9 @@ def test_output_root_writes_scratch_artifacts_without_overwriting_authoritative_
     assert item["selected_date_basis"] == "publication_date"
     assert item["freshness_bucket"] == "primary_today_new"
     assert item["freshness_reason"]
-    assert item["primary_today_new_eligible"] is True
+    assert item["primary_today_new_eligible"] is False
+    assert not payload['metadata']['promotion_history']['complete']
+    assert 'HISTORY_EVIDENCE_UNUSABLE' in item['publication_event_reason']
     assert item["venue"] == "arXiv"
     assert item["venue_type"] == "preprint"
     assert item["CCF_rank"] == "N/A"
@@ -126,11 +128,11 @@ def test_output_root_writes_scratch_artifacts_without_overwriting_authoritative_
     assert item["conclusion_zh"].startswith("TODO_VERIFY: TODO_VERIFY_TRANSLATION:")
     assert item["recommendation_level"] == "Medium"
     assert item["recommendation_score"] <= item["research_value_score"]
-    assert item["source_health"] == "green"
-    assert item["source_health_provenance"]["arxiv"]["status"] == "green"
+    assert item["source_health"] == "yellow"
+    assert item["source_health_provenance"]["arxiv"]["status"] == "yellow"
     assert "LWE/RLWE/MLWE" in item["recommendation_reason"]
     assert item["user_relevance_tags"]
-    assert item["suggested_action"] == "Read today"
+    assert item["suggested_action"] == "Save for background"
 
 
 def test_default_output_root_remains_project_root(tmp_path: Path, monkeypatch) -> None:

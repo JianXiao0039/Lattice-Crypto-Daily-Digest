@@ -182,6 +182,9 @@ def test_daily_lock_key_accepts_real_string_date_and_default_types(tmp_path,monk
     monkeypatch.setattr(public_daily,'doctor_report',lambda **kw:(0,{}))
     monkeypatch.setattr(public_daily,'writer_lock',lock)
     monkeypatch.setattr(public_daily.run,'main',lambda *a,**kw:0)
+    # This unit case only checks date-to-lock-key conversion. Post-generation
+    # acceptance is independently exercised by test_v41_delivery_states.
+    monkeypatch.setattr(public_daily,'validate_generated',lambda *a,**kw:{'scientific_validation_verified':True,'status':'CANONICAL_VALIDATED_PUBLICATION_NOT_ATTEMPTED'})
     monkeypatch.setenv('LATTICE_DIGEST_PUBLIC_AUTOMATION','0')
     assert public_daily.main(arguments)==0
     assert captured==[('DAILY',expected)]

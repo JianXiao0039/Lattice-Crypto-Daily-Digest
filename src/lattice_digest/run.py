@@ -689,6 +689,12 @@ def main(argv: list[str] | None = None, *, preflight_proof: dict | None = None, 
             *r.publication_event_blockers,'LOW_EVIDENCE_ENRICHMENT_ONLY_REJECTED']))})
         if (r.paper_id or r.source_url) in blocked_ids else r for r in ranked_before_coverage])
     prior_promotions, history_evidence = load_promotion_history(output_root / "data", digest_date)
+    if cloud_context:
+        # Public ownership proves an existing owner, never comprehensive local
+        # scientific history or permission to promote an unknown identity.
+        prior_promotions.extend(cloud_context.get('prior_public_ownership') or [])
+        metadata['public_ownership_evidence'] = cloud_context.get('public_ownership_evidence')
+    metadata["promotion_history"] = history_evidence
     ordered = apply_promotion_history(ordered, prior_promotions)
     from lattice_digest.publication_events import attach_events, POLICY_VERSION as EVENT_POLICY
     ordered,event_ledger=attach_events(ordered,metadata,prior_promotions)
@@ -710,7 +716,7 @@ def main(argv: list[str] | None = None, *, preflight_proof: dict | None = None, 
         if item.get("runtime_state") == "partial" or item.get("health_status") in {"yellow", "red"}
     ]
     metadata["completion_state"] = "degraded_complete" if degraded_sources else "complete"
-    metadata.update(derive_authority(ordered, source_health, source_configs=source_configs))
+    metadata.update(derive_authority(ordered, source_health, source_configs=source_configs, promotion_history=history_evidence))
     metadata["selection_counts"] = event_ledger["counts"]
     metadata["degraded_sources"] = degraded_sources
     metadata["runtime_journal"] = str(context.runtime_journal_path)
@@ -783,7 +789,7 @@ def main(argv: list[str] | None = None, *, preflight_proof: dict | None = None, 
                                              source_health, context.warnings, since_window, metadata,
                                              force=args.force or (bool(supersedes) and not args.coverage_start), source_configs=source_configs))
         except (ValueError, OSError) as exc:
-            print(f"Daily canonical promotion failed: {exc}")
+            print('Daily canonical promotion failed: SCIENTIFIC_QA_INCOMPLETE' if cloud else f"Daily canonical promotion failed: {exc}")
             return 2
     written.append(write_sqlite(ordered, output_root / "papers.db"))
     context.checkpoint('RUN_FINISHED', schedule_telemetry(run_datetime, datetime.now(ZoneInfo('Asia/Singapore'))))

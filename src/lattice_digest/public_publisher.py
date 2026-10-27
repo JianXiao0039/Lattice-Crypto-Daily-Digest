@@ -198,6 +198,7 @@ def main(argv=None):
         return 0
     except (GateError, OSError, ValueError, subprocess.SubprocessError) as exc:
         print(json.dumps({'gate':'REMOTE_PUBLICATION_GATE','status':'FAIL',
+            'delivery_state':'REMOTE_PUBLICATION_BLOCKED','publish_pending':False,
             'code':exc.code if isinstance(exc,GateError) else 'REMOTE_PUBLICATION_FAILED'}))
         return 2
 

@@ -5,7 +5,7 @@ import json
 import re
 from urllib.parse import urlsplit
 from lattice_digest.publication_events import COLLECTIONS
-from lattice_digest.authority import INCOMPLETE_ZERO_TEXT
+from lattice_digest.authority import INCOMPLETE_ZERO_TEXT, HISTORY_INCOMPLETE_ZERO_TEXT
 from lattice_digest.scientific_contribution import abstract_guide, contribution_view, role_summary
 
 
@@ -93,8 +93,10 @@ def render_scientific_daily(payload: dict) -> str:
     lines = lines[:4] + [f"本次建立 {counts['event_count']} 个格密码事件，其中真正新增 {counts['primary_new']} 篇；权威状态：{meta['authority_state']}。",
         '阅读分类采用 scientific-contribution-v3.1，区分数学基础、算法、密码分析、原语、实现、应用与邻接 PQC；不改写 A/B/C/D 冻结评分。', '']
     if not events:
+        history_blocked=meta.get('promotion_history',{}).get('schema_version') == 'history-evidence-v41' and meta['promotion_history'].get('complete') is not True
+        if history_blocked:lines += [HISTORY_INCOMPLETE_ZERO_TEXT,'']
         if not meta['source_coverage']['complete']:lines += [INCOMPLETE_ZERO_TEXT,'']
-        else:lines += ['今日未发现值得记录的格密码相关新论文。','']
+        elif not history_blocked:lines += ['今日未发现值得记录的格密码相关新论文。','']
     else:
         lines += [f"阅读计划覆盖 {len(events)} 个真实事件；详读预算 {detail_budget} 项，其余保留完整简明索引。",'']
     for name,heading in zip(COLLECTIONS[:3],('2. 真正新增格密码论文','3. 真正内容修订','4. 新关键安全核验提醒')):

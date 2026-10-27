@@ -27,6 +27,8 @@ META={'collector':'local_codex','quality_status':'authoritative','run_mode':'dai
 @pytest.fixture
 def canonical(tmp_path):
     root=tmp_path/'canonical'
+    from tests.v41_history_fixture import seed_empty_history
+    seed_empty_history(root,DAY)
     row=bind_source_evidence(make_paper_record(**CANARIES[0]['source_record']))
     publish_daily_pair([row],root,DAY,source_health=health(degraded=True),metadata=META)
     return root
@@ -60,7 +62,7 @@ def test_real_frozen_paper_safe_projection_deterministic_and_degraded(canonical,
     (lambda p:p['metadata'].update(markdown_sha256='0'*64),'PAIR_HASH_MISMATCH'),
     (lambda p:p['metadata'].update(publication_policy_version='unknown-v99'),'SCHEMA_VERSION_UNSUPPORTED'),
     (lambda p:p['metadata'].update(publication_state='IN_PROGRESS'),'DURABLE_QA_INVALID'),
-    (lambda p:p['publication_event_ledger']['counts'].update(primary_new=999),'EVENT_OWNERSHIP_INVALID'),
+    (lambda p:p['publication_event_ledger']['counts'].update(primary_new=999),'EVENT_OWNERSHIP_CONFLICT'),
 ])
 def test_canonical_failures_have_codes(canonical,change,code):
     rewrite(canonical,change)
@@ -189,6 +191,8 @@ def test_real_concurrent_fast_forward_reconciliation(canonical,tmp_path,monkeypa
     from lattice_digest import public_publisher as publisher
     output=tmp_path/'public';export(canonical,'daily',str(DAY),output)
     other=tmp_path/'other-canonical';other_day=date(2026,9,23)
+    from tests.v41_history_fixture import seed_empty_history
+    seed_empty_history(other,other_day)
     publish_daily_pair([],other,other_day,source_health=health(degraded=True),metadata={**META,
         'target_date':str(other_day),'coverage_start':'2026-09-21T21:00:00+08:00','coverage_end':'2026-09-23T09:00:00+08:00'})
     export(other,'daily',str(other_day),tmp_path/'other-public')
@@ -242,7 +246,7 @@ def test_independent_canonical_history_rejects_omitted_prior(canonical):
     prior_day=date(2026,9,21)
     row=bind_source_evidence(make_paper_record(**CANARIES[0]['source_record']))
     publish_daily_pair([row],canonical,prior_day,source_health=health(),metadata={**META,
-        'target_date':str(prior_day),'coverage_start':'2026-09-19T21:00:00+08:00','coverage_end':'2026-09-21T09:00:00+08:00'})
+        'target_date':str(prior_day),'coverage_start':'2026-09-19T21:00:00+08:00','coverage_end':'2026-09-21T09:00:00+08:00'},force=True)
     with pytest.raises(GateError,match='already observed'):verify(canonical,'daily',str(DAY))
 
 
@@ -252,6 +256,8 @@ def test_cloud_cross_period_primary_identity_inflation_rejected(tmp_path):
     remote=bare(tmp_path)
     for number in (22,23):
         day=date(2026,9,number);root=tmp_path/('root'+str(number))
+        from tests.v41_history_fixture import seed_empty_history
+        seed_empty_history(root,day)
         from datetime import timedelta
         publish_daily_pair([bind_source_evidence(make_paper_record(**raw))],root,day,
             source_health=health(degraded=True),metadata={**META,'collector':'github_actions','quality_status':'provisional',
@@ -279,6 +285,8 @@ def test_authority_upgrade_preserves_history_and_is_independent_of_coverage(cano
     authoritative=tmp_path/'authoritative';export(canonical,'daily',str(DAY),authoritative)
     # A source-complete cloud report is still provisional execution authority.
     cloud=tmp_path/'complete-cloud'
+    from tests.v41_history_fixture import seed_empty_history
+    seed_empty_history(cloud,DAY)
     publish_daily_pair([bind_source_evidence(make_paper_record(**CANARIES[0]['source_record']))],cloud,DAY,
         source_health=health(),metadata={**META,'collector':'github_actions','quality_status':'provisional'})
     provisional=tmp_path/'provisional';export(cloud,'daily',str(DAY),provisional)
@@ -327,6 +335,8 @@ def test_official_weekly_monthly_replay_and_public_export(nested_repo,tmp_path):
     from datetime import timedelta
     code,canonical,_=nested_repo
     first=date(2026,9,1)
+    from tests.v41_history_fixture import seed_empty_history
+    seed_empty_history(canonical,first)
     original=CANARIES[0]['source_record']
     remote=bare(tmp_path)
     for i in range(30):
@@ -366,6 +376,8 @@ def test_cloud_provisional_generation_and_safe_export(tmp_path,monkeypatch,capsy
     monkeypatch.setattr('lattice_digest.iacr_mail.optional_daily_stage',lambda *a,**k:pytest.fail('cloud must not access Gmail'))
     context=resolve_target('2026-09-22T06:00:00Z','2026-09-22T06:01:00Z','schedule')
     root=tmp_path/'cloud'
+    from tests.v41_history_fixture import seed_empty_history
+    seed_empty_history(root,DAY)
     assert run.main(['--target-date','2026-09-22','--since','36h','--collector','github_actions',
         '--quality-status','provisional','--run-mode','daily','--send','none','--output-root',str(root)],cloud_context=context)==0
     console=capsys.readouterr().out
@@ -382,11 +394,14 @@ def test_e2_and_late_arrival_and_adjacent_negative(tmp_path):
     core=deepcopy(CANARIES[0]['source_record']);core['abstract']=''
     row=bind_source_evidence(make_paper_record(**core))
     root=tmp_path/'e2'
+    from tests.v41_history_fixture import seed_empty_history
+    seed_empty_history(root,DAY)
     publish_daily_pair([row],root,DAY,source_health=health(),metadata=META)
     report=project(verify(root,'daily',str(DAY)))
     assert report['papers'] and report['papers'][0]['evidence_grade']=='E2'
     assert '不能据此确认方法' in report['papers'][0]['limitations_zh'][0]
     late=tmp_path/'late';late_day=date(2026,9,27)
+    seed_empty_history(late,late_day)
     negative=next(c['source_record'] for c in CANARIES if not c['expected_qualified'])
     rows=[bind_source_evidence(make_paper_record(**CANARIES[0]['source_record'])),
           bind_source_evidence(make_paper_record(**negative))]

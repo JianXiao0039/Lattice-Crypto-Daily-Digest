@@ -110,8 +110,10 @@ def test_date_targeted_run_filters_records_and_writes_exact_date(tmp_path: Path,
     payload = json.loads(json_path.read_text(encoding="utf-8"))
     assert {record["title"] for record in payload["records"]} == {"Inside target date", "Outside target date"}
     events = payload["publication_event_ledger"]["collections"]["primary_publication_events"]
-    assert len(events) == 1
-    assert payload["records"][events[0]["row_index"]]["title"] == "Inside target date"
+    assert events == []
+    assert not payload['metadata']['promotion_history']['complete']
+    inside_row = next(r for r in payload['records'] if r['title']=='Inside target date')
+    assert 'HISTORY_EVIDENCE_UNUSABLE' in inside_row['publication_event_reason']
     outside_row = next(r for r in payload["records"] if r["title"] == "Outside target date")
     assert outside_row["publication_event_type"] == "historical_library_observations"
     assert "DATE_UNCERTAIN" in outside_row["publication_event_reason"]

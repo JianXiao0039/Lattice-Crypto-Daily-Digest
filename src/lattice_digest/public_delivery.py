@@ -4,12 +4,17 @@ import argparse
 import json
 import os
 import subprocess
+import tempfile
 from datetime import datetime, timezone
 from pathlib import Path
 from lattice_digest.report_gate import verify, encoded, GateError, fail, period_bounds
 from lattice_digest.public_report import project, export, inspect_tree
 from lattice_digest.public_publisher import publish
 from lattice_digest.public_contract import public_preflight, _reject_redirects
+from lattice_digest.delivery_receipt import (
+    CANONICAL_CREATED_VALIDATION_PENDING, CANONICAL_VALIDATED,
+    DELIVERY_VERIFIED, REMOTE_PUBLICATION_BLOCKED, failure_state,
+)
 
 REMOTE = 'https://github.com/JianXiao0039/Lattice-Crypto-Daily-Digest.git'
 
@@ -27,21 +32,37 @@ def deliver(root: Path, kind: str, period: str, *, remote: str = REMOTE,
     except FileExistsError: fail('PUBLISH_CONFLICT','active or stale public delivery writer; inspect before recovery')
     receipt = {'schema_version':'public-delivery-v1','report_type':kind,'report_period':period,
                'states':[],'status':'STARTED', 'started_at':datetime.now(timezone.utc).isoformat(),
-               'state_times':{}, 'trigger_kind':os.environ.get('LATTICE_DIGEST_TRIGGER_KIND','UNKNOWN')}
+               'state_times':{}, 'trigger_kind':os.environ.get('LATTICE_DIGEST_TRIGGER_KIND','UNKNOWN'),
+               'delivery_status':CANONICAL_CREATED_VALIDATION_PENDING,
+               'delivery_states':[CANONICAL_CREATED_VALIDATION_PENDING],
+               'publication_verified':False,'delivery_verified':False,'publish_pending':False}
+    stage = 'SCIENTIFIC'
+    def delivery_state(name):
+        receipt['delivery_status'] = name
+        receipt['delivery_states'].append(name)
     def state(name):
         receipt['states'].append(name)
         receipt['state_times'][name]=datetime.now(timezone.utc).isoformat()
     def save():
-        target=directory/'receipt.json';staged=directory/'receipt.staged'
-        _reject_redirects(target);_reject_redirects(staged)
-        with staged.open('w',encoding='utf-8') as stream:
-            stream.write(encoded(receipt).decode());stream.flush();os.fsync(stream.fileno())
-        os.replace(staged,target)
+        target=directory/'receipt.json'
+        _reject_redirects(target)
+        staged=None
+        try:
+            with tempfile.NamedTemporaryFile(dir=directory,prefix='.receipt-',delete=False) as stream:
+                staged=Path(stream.name)
+                stream.write(encoded(receipt)+b'\n');stream.flush();os.fsync(stream.fileno())
+            _reject_redirects(target)
+            os.replace(staged,target)
+        finally:
+            if staged is not None:staged.unlink(missing_ok=True)
     try:
         with owner:
             owner.write(str(os.getpid()));owner.flush();os.fsync(owner.fileno())
+            save()
             pair=verify(root,kind,period)
             state('CANONICAL_GENERATED');state('CANONICAL_QA_VERIFIED')
+            delivery_state(CANONICAL_VALIDATED)
+            stage = 'EXPORT'
             public=project(pair)
             generation=public['public_generation_id']
             candidate=directory/generation
@@ -56,12 +77,23 @@ def deliver(root: Path, kind: str, period: str, *, remote: str = REMOTE,
             receipt.update(source_generation_id=pair.payload['metadata']['generation_id'],
                            public_generation_id=generation, canonical_pair_sha256=public['canonical_pair_sha256'])
             state('PUBLIC_EXPORT_VERIFIED');state('PRIVACY_QA_VERIFIED')
-            receipt['status']='PUBLISH_PENDING';save()
+            receipt['status']='PUBLIC_EXPORT_VERIFIED';save()
+            stage = 'REMOTE'
             try:
                 result=publish(candidate,remote,approved=True,use_windows_credentials=windows_credentials,
                                accept_superseded=True)
             except (GateError,OSError,ValueError,subprocess.SubprocessError) as exc:
                 receipt['error_code']=exc.code if isinstance(exc,GateError) else 'REMOTE_PUBLICATION_FAILED'
+                # Preserve v1 retry compatibility only for reviewed valid
+                # candidates with a retryable transport outcome. Ownership and
+                # scientific failures can never become pending publications.
+                retryable = (isinstance(exc, subprocess.TimeoutExpired) or
+                             receipt['error_code'] == 'REMOTE_PERMISSION_OR_TRANSPORT_DENIED')
+                receipt['status']='PUBLISH_PENDING' if retryable else REMOTE_PUBLICATION_BLOCKED
+                receipt['publish_pending']=retryable
+                receipt['retryable']=retryable
+                delivery_state(REMOTE_PUBLICATION_BLOCKED)
+                receipt['finished_at']=datetime.now(timezone.utc).isoformat()
                 save()
                 return receipt
             if result['remote_readback']!='PASS':
@@ -72,10 +104,20 @@ def deliver(root: Path, kind: str, period: str, *, remote: str = REMOTE,
             receipt['delivery_state_machine']=['CANONICAL_GENERATED','CANONICAL_QA_VERIFIED',
                 'PUBLIC_EXPORT_VERIFIED','PRIVACY_QA_VERIFIED','REMOTE_PUBLISHED','REMOTE_READBACK_VERIFIED']
             receipt['remote_delivery_operation']=result['status']
+            delivery_state(DELIVERY_VERIFIED)
+            receipt.update(publication_verified=True,delivery_verified=True,publish_pending=False)
             receipt['finished_at']=datetime.now(timezone.utc).isoformat()
             receipt.update(status=result['status'],remote_commit=result['commit'],publication=result)
             save()
             return receipt
+    except (GateError,OSError,ValueError,KeyError,TypeError,subprocess.SubprocessError) as exc:
+        code=exc.code if isinstance(exc,GateError) else 'SCIENTIFIC_QA_INCOMPLETE' if stage=='SCIENTIFIC' else 'PUBLIC_DELIVERY_FAILED'
+        blocked=failure_state(code,stage=stage)
+        delivery_state(blocked)
+        receipt.update(status=blocked,error_code=code,publish_pending=False,retryable=False,
+                       finished_at=datetime.now(timezone.utc).isoformat())
+        save()
+        return receipt
     finally:
         lock.unlink(missing_ok=True)
 
@@ -116,7 +158,7 @@ def main(argv=None):
         results=[deliver(paths.canonical_root,args.type,period,approved=True,
                          windows_credentials=args.use_windows_credentials) for period in targets]
         print(json.dumps({'runtime_head':proof['runtime_provenance']['runtime_git_head'],'deliveries':results}))
-        return 2 if any(r['status']=='PUBLISH_PENDING' for r in results) else 0
+        return 2 if any(not r.get('delivery_verified') for r in results) else 0
     except (GateError,OSError,ValueError,KeyError,TypeError,subprocess.SubprocessError) as exc:
         print(json.dumps({'gate':'PUBLIC_EXPORT_AND_PUBLISH','status':'FAIL',
             'code':exc.code if isinstance(exc,GateError) else 'PUBLIC_DELIVERY_FAILED'}))

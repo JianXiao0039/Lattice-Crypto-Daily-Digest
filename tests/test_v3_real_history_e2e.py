@@ -140,6 +140,19 @@ sys.exit(main(ARGS))
         # Original immutable history remains untouched; prove all input hashes again.
         receipt['input_hash_qa']='PASS' if all(sha(Path(x['source']))==x['sha256'] for x in inputs) else 'FAIL'
     (E/f'{kind}-real-receipt.json').write_text(json.dumps(receipt,ensure_ascii=False,indent=2),encoding='utf-8')
+    if kind in ('daily','weekly'):
+        # Daily's October 17 input has no original observations. The Weekly
+        # fixture has only its bounded period corpus, not prior-day ownership
+        # history. Both can create diagnostic pairs but cannot establish delivery.
+        validation=json.loads((canonical/f'audits/generation-validation/{kind}/{target}/receipt.json').read_bytes())
+        assert result.returncode==2,result.stdout+result.stderr
+        assert validation['status']=='HISTORY_EVIDENCE_BLOCKED'
+        assert validation['error_code']=='HISTORY_EVIDENCE_UNUSABLE'
+        assert not validation['scientific_validation_verified']
+        assert not validation['publish_pending'] and not validation['delivery_verified']
+        assert len(receipt['files'])==2
+        assert all(sha(Path(x['source']))==x['sha256'] for x in inputs)
+        return
     assert result.returncode==0,result.stdout+result.stderr
     assert len(receipt['files'])==2
     assert receipt['input_hash_qa']=='PASS'

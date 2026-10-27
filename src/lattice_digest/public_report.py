@@ -607,11 +607,15 @@ def validate_catalog(manifest: dict, files: dict[str, bytes]) -> None:
         for paper in report['papers']:
             if paper['event_kind']!='primary_publication_events':
                 continue
-            url=paper['source_url'].lower()
-            url_identity=re.sub(r'v\d+$','',url) if url.startswith('https://arxiv.org/') else url
-            for identity in (url_identity,paper['public_canonical_id']):
+            from lattice_digest.promotion_history import identity_keys
+            namespace, value = paper['public_canonical_id'].split(':', 1)
+            row = {'source_url': paper['source_url']}
+            if namespace in ('doi', 'arxiv', 'eprint'):
+                row[{'doi': 'doi', 'arxiv': 'arxiv_id', 'eprint': 'eprint_id'}[namespace]] = value
+            aliases = identity_keys(row) | {'event:' + paper['event_id']}
+            for identity in aliases:
                 if identity in owners and owners[identity]!=key:
-                    fail('EVENT_OWNERSHIP_INVALID','public Daily identity already belongs to another period')
+                    fail('EVENT_OWNERSHIP_CONFLICT','public Daily identity already belongs to another period')
                 owners[identity]=key
 
 

@@ -1,0 +1,3 @@
+# 格密码公开文献报告
+
+- [daily:2026-10-26](daily/2026/2026-10-26.md) — VALID_DEGRADED_AUTHORITATIVE

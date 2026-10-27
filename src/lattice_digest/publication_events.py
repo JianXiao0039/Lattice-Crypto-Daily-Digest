@@ -13,7 +13,7 @@ import json
 import re
 from typing import Any
 
-from lattice_digest.promotion_history import identity_keys, authoritative_version, content_fingerprint
+from lattice_digest.promotion_history import identity_keys, authoritative_version, authoritative_version_conflicted, content_fingerprint
 from lattice_digest.scientific_scope import evaluate_scope
 
 LEGACY_POLICY_VERSION = 'scientific-publication-p0-v1'
@@ -80,12 +80,42 @@ def coverage(metadata: dict, target: date) -> tuple[datetime,datetime]:
     return start,end
 
 
-def canonical_identity(row: dict) -> str:
-    keys=identity_keys(row)
+def canonical_identity(row: dict, *, key_resolver=identity_keys) -> str:
+    keys=key_resolver(row)
     for prefix in ('doi:','arxiv:','eprint:','url:'):
         values=sorted(k for k in keys if k.startswith(prefix))
         if values:return values[0]
     return 'uncertain:'+hashlib.sha256(str(row.get('title') or '').encode()).hexdigest()
+
+
+def _legacy_identity_keys(record):
+    """Frozen pre-V41 ledger projection, never the independent ownership gate.
+
+    Reinterpreting source URL aliases would change archived event IDs and make
+    untouched period inputs fail semantic replay. New candidates use V41 keys;
+    the independent gate always uses the current stable aliases for its veto.
+    """
+    keys=set()
+    for field,prefix in [('doi','doi'),('arxiv_id','arxiv'),('eprint_id','eprint')]:
+        value=str(record.get(field) or '').strip().lower()
+        value=re.sub(r'^https?://(?:dx\.)?doi\.org/','',value)
+        if value:keys.add(prefix+':'+(re.sub(r'v\d+$','',value) if prefix=='arxiv' else value))
+    for value in [record.get('source_url'),record.get('paper_id'),*(record.get('source_urls') or [])]:
+        text=str(value or '').strip().lower()
+        arxiv=re.search(r'(?:arxiv:|arxiv\.org/(?:abs|pdf)/)(\d{4}\.\d{4,5}|[a-z.-]+/\d{7})(?:v\d+)?',text)
+        eprint=re.search(r'(?:eprint:|eprint\.iacr\.org/)(\d{4}/\d+)',text)
+        if arxiv:keys.add('arxiv:'+arxiv[1])
+        elif eprint:keys.add('eprint:'+eprint[1])
+        elif text.startswith(('http://','https://')):keys.add('url:'+re.sub(r'^http:','https:',text).rstrip('/'))
+    return keys
+
+
+def _legacy_version(record):
+    versions=set()
+    for value in [record.get('arxiv_id'),record.get('source_url'),record.get('paper_id')]:
+        match=re.search(r'(?:\d{4}\.\d{4,5}|/\d{7})(v\d+)(?:[?#/]|$)',str(value or ''))
+        if match:versions.add(match[1])
+    return next(iter(versions)) if len(versions)==1 else ''
 
 
 def event_id(identity: str, kind: str, evidence: str) -> str:
@@ -108,21 +138,27 @@ def build_event_ledger(records: list[dict], metadata: dict, prior: list[dict] = 
     evaluator=scope_evaluator_for_policy(policy)
     target=date.fromisoformat(str(metadata['target_date'])[:10])
     start,end=coverage(metadata,target)
+    history = metadata.get('promotion_history') or {}
+    history_blocked = history.get('schema_version') == 'history-evidence-v41' and history.get('complete') is not True
+    v41 = history.get('schema_version') == 'history-evidence-v41'
+    resolve = identity_keys if v41 else _legacy_identity_keys
+    source_version = authoritative_version if v41 else _legacy_version
+    canonical = lambda row: canonical_identity(row,key_resolver=resolve)
     collections={k:[] for k in COLLECTIONS}
     watches=[]; decisions=[]; seen_events=set(); observed_by_key={}; selected_by_key={}; qualified_identities=set()
     prior_by_key={}
     for position,p in enumerate(prior):
-        for key in identity_keys(p):prior_by_key.setdefault(key,set()).add(position)
+        for key in resolve(p):prior_by_key.setdefault(key,set()).add(position)
     for index,row in enumerate(records):
         scientific=evaluator(row)
-        identity=canonical_identity(row); keys=identity_keys(row)
+        identity=canonical(row); keys=resolve(row)
         positions=set().union(*(prior_by_key.get(key,set()) for key in keys)) if keys else set()
         matches=[prior[p] for p in sorted(positions)]
-        conflicting=any(any({k for k in keys if k.startswith(ns)} and {k for k in identity_keys(p) if k.startswith(ns)} and
-            {k for k in keys if k.startswith(ns)}.isdisjoint({k for k in identity_keys(p) if k.startswith(ns)})
+        conflicting=(v41 and (authoritative_version_conflicted(row) or any(len({k for k in keys if k.startswith(ns)}) > 1 for ns in ('doi:','arxiv:','eprint:')))) or any(any({k for k in keys if k.startswith(ns)} and {k for k in resolve(p) if k.startswith(ns)} and
+            {k for k in keys if k.startswith(ns)}.isdisjoint({k for k in resolve(p) if k.startswith(ns)})
             for ns in ('doi:','arxiv:','eprint:')) for p in matches)
         # Preserve an already known representative when DOI/source aliases change.
-        representatives=[canonical_identity(p) for p in matches]
+        representatives=[canonical(p) for p in matches]
         representatives.extend(observed_by_key[k] for k in keys if k in observed_by_key)
         if representatives:identity=sorted(representatives)[0]
         for key in keys:observed_by_key[key]=identity
@@ -135,15 +171,16 @@ def build_event_ledger(records: list[dict], metadata: dict, prior: list[dict] = 
         ann=row.get('announcement_timestamp') or row.get('announcement_date')
         revision=row.get('source_version_timestamp') or row.get('update_timestamp') or row.get('update_date')
         new_pub=pub if pub_kind=='AUTHORITATIVE_PUBLICATION_DATE' and _in_window(pub,start,end) else ann if row.get('announcement_date_kind','AUTHORITATIVE_ANNOUNCEMENT_DATE')=='AUTHORITATIVE_ANNOUNCEMENT_DATE' and _in_window(ann,start,end) else ''
-        version=authoritative_version(row)
-        older_versions=[authoritative_version(p) for p in matches if authoritative_version(p)]
+        version=source_version(row)
+        older_versions=[source_version(p) for p in matches if source_version(p)]
         new_version=bool(version and older_versions and int(version[1:])>max(int(v[1:]) for v in older_versions))
         content_changed=bool(matches and fingerprint and all(content_fingerprint(p) and fingerprint!=content_fingerprint(p) for p in matches))
-        revision_in_window=row.get('update_date_kind','AUTHORITATIVE_CONTENT_REVISION_DATE')=='AUTHORITATIVE_CONTENT_REVISION_DATE' and _in_window(revision,start,end)
+        revision_in_window=row.get('update_date_kind',None if v41 else 'AUTHORITATIVE_CONTENT_REVISION_DATE')=='AUTHORITATIVE_CONTENT_REVISION_DATE' and _in_window(revision,start,end)
         # An unseen v2 alone does not prove a new revision. Timestamp must differ
         # from first publication; prior evidence closes the content/version route.
         distinct_revision=timestamp(revision)!=timestamp(pub)
-        genuinely_revised=revision_in_window and (new_version or content_changed or
+        revision_matches_verified = all(p.get('_history_verified', True) is True for p in matches)
+        genuinely_revised=revision_in_window and revision_matches_verified and (new_version or content_changed or
             (not matches and version and int(version[1:])>1 and distinct_revision))
         date_uncertain=(not timestamp(pub) and not timestamp(ann) and not timestamp(revision)) or (bool(pub) and timestamp(pub) is None and not new_pub and not genuinely_revised)
         future_only=timestamp(pub) is not None and timestamp(pub)>=end and not new_pub and not genuinely_revised
@@ -156,6 +193,8 @@ def build_event_ledger(records: list[dict], metadata: dict, prior: list[dict] = 
             reason='DATE_UNCERTAIN: future/absent authoritative event date; TODO_VERIFY'
         elif row.get('publication_event_blockers'):
             reason='SOURCE_ROLE_POLICY: '+','.join(row['publication_event_blockers'])
+        elif qualified and new_pub and not matches and history_blocked:
+            reason='HISTORY_EVIDENCE_UNUSABLE: first-publication ownership cannot be established'
         elif qualified and new_pub and not matches:
             kind='primary_publication_events';basis=str(new_pub);reason='source publication/announcement in coverage; identity not previously observed'
         elif qualified and genuinely_revised:
@@ -178,7 +217,7 @@ def build_event_ledger(records: list[dict], metadata: dict, prior: list[dict] = 
         prior_changes={change_signature(e) for p in matches for e in [*(p.get('critical_verification_events') or []),*source_correction_events(p)]}
         changes=[e for e in changes if change_signature(e) not in prior_changes]
         first_seen=row.get('first_seen_at') or row.get('first_seen_date')
-        if (critical and kind not in CORE_EVENTS and not conflicting and not future_only and not row.get('publication_event_blockers') and
+        if (critical and kind not in CORE_EVENTS and not conflicting and not future_only and not history_blocked and revision_matches_verified and not row.get('publication_event_blockers') and
             (changes or (not same_content and not matches and _in_window(first_seen,start,end)))):
             kind='new_critical_verify_events';basis=str(changes[0]['change_date'] if changes else first_seen);reason='new critical source evidence; verify proof, parameters and reduction direction'
         evidence='|'.join([fingerprint,version,basis,json.dumps(changes,sort_keys=True) if kind=='new_critical_verify_events' else ''])
@@ -331,6 +370,7 @@ def normalize_period_inputs(loaded):
 
 def period_views(loaded):
     collections={k:{} for k in COLLECTIONS}
+    primary_owners={};ownership_conflicts=[]
     evidence_inputs=[]
     verified=set();derived=set();unassessed=set()
     for day,payload in loaded:
@@ -347,13 +387,40 @@ def period_views(loaded):
         if status in {'FAIL','UNKNOWN'}:continue
         ledger=payload.get('_period_event_ledger',payload.get('publication_event_ledger',{}))
         for name,entries in ledger.get('collections',{}).items():
+            accepted=[]
             if name in collections:
-                for entry in entries:collections[name][entry['event_id']]=entry
+                for entry in entries:
+                    if name == 'primary_publication_events':
+                        index=entry.get('row_index')
+                        rows=payload.get('records',[])
+                        aliases=identity_keys(rows[index]) if isinstance(index,int) and 0 <= index < len(rows) else set()
+                        aliases.update(identity_keys({'paper_id':entry.get('canonical_identity')}))
+                        aliases.add('event:'+entry['event_id'])
+                        previous=next((primary_owners[k] for k in aliases if k in primary_owners),None)
+                        if previous is not None and previous != day.isoformat():
+                            ownership_conflicts.append({'input_date':day.isoformat(),'owner_date':previous,
+                                'event_id':entry['event_id'],'code':'EVENT_OWNERSHIP_CONFLICT'})
+                            # The same immutable event can acquire a stronger
+                            # evidence tier without acquiring another owner or
+                            # increasing counts. A changed ID gets no such tier.
+                            if entry['event_id'] in collections[name]:
+                                accepted.append(entry)
+                            continue
+                        for alias in aliases:primary_owners[alias]=day.isoformat()
+                    if name == 'primary_publication_events':
+                        collections[name].setdefault(entry['event_id'],entry)
+                    else:
+                        # Preserve the deployed period projection for repeated
+                        # background/observation/revision evidence. Only first-
+                        # publication ownership selects the earliest owner.
+                        collections[name][entry['event_id']]=entry
+                    accepted.append(entry)
             if name in CORE_EVENTS:
                 target=derived if reconstructed else verified if current and status=='PASS' else unassessed
-                target.update(entry['event_id'] for entry in entries)
+                target.update(entry['event_id'] for entry in accepted)
     late,late_warnings=_period_late_supplement(loaded,collections)
     return {'collections':{k:list(v.values()) for k,v in collections.items()},
+            **({'ownership_conflicts':ownership_conflicts} if ownership_conflicts else {}),
             **({'late_discoveries':late,'late_discovery_warnings':late_warnings} if late or late_warnings else {}),
             'counts':{k:len(v) for k,v in collections.items()},
             'evidence_provenance':{

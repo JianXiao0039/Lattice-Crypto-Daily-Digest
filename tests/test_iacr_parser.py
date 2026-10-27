@@ -286,7 +286,9 @@ sources:
     assert by_id["2026/1117"]["relevance_score"] == 90
     assert set(by_id) == {"2026/1115", "2026/1116", "2026/1117", "2026/1118"}
     events = payload["publication_event_ledger"]["collections"]["primary_publication_events"]
-    assert {payload["records"][e["row_index"]]["eprint_id"] for e in events} == {"2026/1117"}
+    assert events == []
+    assert not payload['metadata']['promotion_history']['complete']
+    assert 'HISTORY_EVIDENCE_UNUSABLE' in by_id['2026/1117']['publication_event_reason']
     assert all(by_id[key]["relevance_label"] == "D" for key in ("2026/1115", "2026/1116", "2026/1118"))
     assert payload["source_health"][0]["latest_feed_status"] == "manual_latest_retry"
     assert payload["source_health"][0]["latest_feed_records"] == 4

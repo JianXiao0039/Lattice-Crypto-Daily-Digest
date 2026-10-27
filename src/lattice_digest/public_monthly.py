@@ -40,6 +40,10 @@ def main(argv: list[str] | None = None) -> int:
             payload['metadata'].update(schedule_telemetry(started))
             payload['metadata']['runtime_paths'] = paths.as_dict()
             publish_period(payload,paths,write_monthly_outputs)
+        from lattice_digest.delivery_receipt import validate_generated
+        receipt = validate_generated(paths.canonical_root, 'monthly', month)
+        if not receipt['scientific_validation_verified']:
+            return 2
         if args.exports:
             from lattice_digest.monthly_downstream import run_downstream
             run_downstream(paths, first.isoformat(), (following - timedelta(days=1)).isoformat(), obsidian=args.obsidian)

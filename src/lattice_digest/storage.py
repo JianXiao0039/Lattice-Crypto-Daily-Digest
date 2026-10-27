@@ -37,7 +37,8 @@ def build_daily_payload(
     event_metadata={**(metadata or {}), 'target_date':digest_date.isoformat()}
     prior = event_metadata.pop('_publication_prior', None)
     if prior is None:
-        prior,_=load_promotion_history(output_dir,digest_date)
+        prior,history=load_promotion_history(output_dir,digest_date)
+        event_metadata['promotion_history']=history
     records=[enrich_record_for_daily_radar(record,digest_date) for record in records]
     records,ledger=attach_events(records,event_metadata,prior)
     enriched_records = []
@@ -84,6 +85,8 @@ def build_daily_payload(
     }
     if metadata:
         payload_metadata.update(metadata)
+    if event_metadata.get('promotion_history'):
+        payload_metadata['promotion_history']=event_metadata['promotion_history']
     payload_metadata["target_date"] = str(payload_metadata.get("target_date") or digest_date.isoformat())
     payload_metadata["since_window"] = since_window
     payload_metadata["total_records"] = len(records)
@@ -92,7 +95,7 @@ def build_daily_payload(
     payload_metadata.pop('_publication_prior',None)
     payload_metadata['publication_policy_version']=ledger['policy_version']
     payload_metadata['selection_counts']=ledger['counts']
-    payload_metadata.update(derive_authority(enriched_records, source_health, source_configs=source_configs))
+    payload_metadata.update(derive_authority(enriched_records, source_health, source_configs=source_configs, promotion_history=payload_metadata.get('promotion_history')))
     payload_metadata['selection_counts']=ledger['counts']
     payload_metadata.setdefault('semantic_qa', {'status': 'UNKNOWN'})
     payload_metadata.setdefault('structural_qa', {'status': 'NOT_RUN'})
@@ -111,7 +114,12 @@ def build_daily_payload(
         "publication_history_evidence":[{k:p.get(k) for k in (
             'doi','arxiv_id','eprint_id','source_url','paper_id','source_urls','abstract','publication_timestamp',
             'publication_date','update_timestamp','update_date','update_date_kind','publication_event_id',
-            'critical_verification_events')} for p in prior],
+            'critical_verification_events','title','authors','venue','source',
+            'publication_date_kind','preprint_first_posted_at','announcement_timestamp',
+            'announcement_date','announcement_date_kind','source_version_timestamp',
+            'first_seen_at','first_seen_date','source_observed_at','source_metadata_correction_date',
+            '_promotion_date','_history_verified','_history_source_sha256','_history_generation_id',
+            '_public_primary_owner','_public_event_id') if k in p} for p in prior],
         "metadata": payload_metadata,
         "records": enriched_records,
         "source_health": source_health or [],
@@ -173,15 +181,19 @@ def _publish_daily_pair_locked(records, output_root, digest_date, filtered_count
     This is NOT crash-atomic across two paths. Generation and content hashes
     make interrupted promotion fail closed in readers. No background writer.
     """
-    from lattice_digest.promotion_history import load_promotion_history, classify_event
+    from lattice_digest.promotion_history import load_promotion_history, classify_event, history_identity_index, indexed_history_matches
     json_path = daily_data_path(digest_date, output_root / 'data')
     md_path = daily_digest_path(digest_date, output_root / 'digests')
     if not force and (json_path.exists() or md_path.exists()):
         raise FileExistsError('canonical pair already exists; explicit force required')
     from lattice_digest.evidence_contract import propagate_source_health
     records = propagate_source_health(records, source_health or [])
-    prior,_ = load_promotion_history((history_root or output_root) / 'data', digest_date)
-    payload = build_daily_payload(records, output_root / 'data', digest_date, source_health, warnings, since_window, {**(metadata or {}), '_publication_prior':prior}, source_configs=source_configs)
+    prior,history = load_promotion_history((history_root or output_root) / 'data', digest_date)
+    # Cloud public ownership is a one-way constraint. It cannot fill missing
+    # scientific history or establish a revision without source evidence.
+    public_prior = [p for p in (metadata or {}).get('_publication_prior', []) if p.get('_public_primary_owner')]
+    prior.extend(public_prior)
+    payload = build_daily_payload(records, output_root / 'data', digest_date, source_health, warnings, since_window, {**(metadata or {}), '_publication_prior':prior, 'promotion_history':history}, source_configs=source_configs)
     generation = uuid4().hex
     payload['metadata']['generation_id'] = generation
     md = generate_markdown(records, digest_date, filtered_count, source_health, warnings, since_window, {**payload['metadata'], '_publication_payload':payload}, source_configs=source_configs)
@@ -190,21 +202,25 @@ def _publish_daily_pair_locked(records, output_root, digest_date, filtered_count
     structural = isinstance(payload['records'], list) and md.startswith('# ') and payload['metadata']['target_date'] == digest_date.isoformat()
     payload['metadata']['structural_qa'] = {'status': 'PASS' if structural else 'FAIL'}
     qa = semantic_qa(payload, md, candidate=True, source_configs=source_configs)
-    prior, history = load_promotion_history((history_root or output_root) / 'data', digest_date)
     cross_errors = []
     cross_details = []
+    prior_index = history_identity_index(prior)
     # Never silently repair an explicitly forged primary flag supplied by a caller.
     for index,record in enumerate(records):
-        event,_ = classify_event(record.model_dump(),prior)
-        if record.primary_today_new_eligible and event != 'NEW_DISTINCT_PAPER' and payload['records'][index].get('publication_event_type')!='primary_publication_events':
+        matches = indexed_history_matches(record.model_dump(), prior, prior_index)
+        event,_ = classify_event(record.model_dump(),matches)
+        known_identity = bool(matches)
+        if record.primary_today_new_eligible and event != 'NEW_DISTINCT_PAPER' and (known_identity or payload['records'][index].get('publication_event_type') != 'primary_publication_events'):
             cross_errors.append('cross_day_false_primary')
             cross_details.append({'issue_code':'cross_day_false_primary','record_index':index,'event':event})
     for index, row in enumerate(payload['records']):
-        event, _ = classify_event(row, prior)
-        if row.get('primary_today_new_eligible') and event != 'NEW_DISTINCT_PAPER' and row.get('publication_event_type')!='primary_publication_events':
+        matches = indexed_history_matches(row, prior, prior_index)
+        event, _ = classify_event(row, matches)
+        if row.get('primary_today_new_eligible') and event != 'NEW_DISTINCT_PAPER' and (matches or row.get('publication_event_type') != 'primary_publication_events'):
             cross_errors.append('cross_day_false_primary')
             cross_details.append({'issue_code': 'cross_day_false_primary', 'record_index': index, 'event': event})
     payload['metadata']['cross_day_qa'] = {'status': 'FAIL' if cross_errors else 'PASS', 'issues': cross_errors, 'history': history}
+    payload['metadata']['delivery_validation_status'] = 'CANONICAL_CREATED_VALIDATION_PENDING'
     payload['metadata']['semantic_qa'] = {k: v for k, v in qa.items() if k != 'derived_authority'}
     if not structural or qa['status'] != 'PASS' or cross_errors:
         from lattice_digest.publication_diagnostics import reject_daily_candidate

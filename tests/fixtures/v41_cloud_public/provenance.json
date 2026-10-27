@@ -1,0 +1,66 @@
+{
+  "run_id": 40459959448,
+  "artifact_id": 12714510776,
+  "base_commit": "4617d53e9de6e973e594cda741d51083e2188fb6",
+  "public_source_ref": "3dfa6cc5ec3c6850138459b4740b65b79fad4f5d",
+  "artifact_zip_sha256": "d2d6188ddb67bacec8eec3203166258a3d8d9c48344c8e9a00ecf93d9f0661b3",
+  "public26_json_sha256": "bf60323dfcf5f1b0b63165a7df36b190b6e5c7bd1f09f3f7c9ae0e2eae73a850",
+  "public27_json_sha256": "f0f58eaf4b4e24f7c35a88f9ec6a9196c4722ab266535d4f8eb5470509d44d34",
+  "public26_source": "preserved_local_public_export_matched_to_immutable_remote_manifest",
+  "public27_source": "downloaded_original_GitHub_Actions_artifact",
+  "cloud_canonical_pair_sha256": {
+    "json": "f59975328743de314257f2461f9d443f1c01d581e384b9a1fb7030fe5838bb0c",
+    "markdown": "4b5c85ae8f1be45f8c7d66b1cad7a010a33c0e74d24faf41dcf54c8bd136bf1b"
+  },
+  "cloud_source_generation_ids": [
+    "8425a2b3bbe7424a82753e6713c5a944"
+  ],
+  "cloud_window": {
+    "start": "2026-10-25T21:17:00+08:00",
+    "end": "2026-10-27T09:17:00+08:00"
+  },
+  "candidate_trace": [
+    {
+      "identity": "eprint:2026/2640",
+      "event_id": "5157f5a73ce82c2024bab562c3432291a9338285b97df519557eb8913c145de1",
+      "kind": "primary_publication_events",
+      "already_owned": false,
+      "owner_period": null,
+      "same_event_id": null,
+      "same_abstract_sha256": null
+    },
+    {
+      "identity": "doi:10.21203/rs.3.rs-11270790/v1",
+      "event_id": "b587afe451d8a061baab91575e388e6f8ad811b6be77702262e88fa4d412fc9c",
+      "kind": "primary_publication_events",
+      "already_owned": true,
+      "owner_period": "2026-10-26",
+      "same_event_id": true,
+      "same_abstract_sha256": true
+    },
+    {
+      "identity": "eprint:2026/2643",
+      "event_id": "cbc03bdd10424d84be21bb22cd661d84c255083cd724f948f495cfd7f5fac621",
+      "kind": "primary_publication_events",
+      "already_owned": false,
+      "owner_period": null,
+      "same_event_id": null,
+      "same_abstract_sha256": null
+    },
+    {
+      "identity": "eprint:2026/2638",
+      "event_id": "d0cb9775cad69033273ebd9eca67c7f4fac8d96592398874c619fe5cf696c549",
+      "kind": "primary_publication_events",
+      "already_owned": false,
+      "owner_period": null,
+      "same_event_id": null,
+      "same_abstract_sha256": null
+    }
+  ],
+  "original_catalog_failure_code": "EVENT_OWNERSHIP_INVALID",
+  "patched_catalog_failure_code": "EVENT_OWNERSHIP_CONFLICT",
+  "local_cloud_conflated": false,
+  "network_fresh_collection_used": false,
+  "replay_is_published": false,
+  "full_catalog_snapshot_available": false
+}

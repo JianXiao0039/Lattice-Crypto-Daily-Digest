@@ -33,6 +33,8 @@ def health(degraded=False):
 
 
 def generate_daily(root, canonical, day, rows, degraded=False):
+    from tests.v41_history_fixture import seed_empty_history
+    seed_empty_history(canonical, day)
     # Only the discovery transport is replaced. Public preflight, live Git
     # authority, ranking, freshness, publication, SQLite and QA actually execute.
     script = f'''
@@ -119,14 +121,23 @@ def test_public_daily_frozen_real_lwe_source_snapshot(nested_repo):
 
 
 def seed_days(canonical, start, days, degraded_day=None, overlap=False, legacy_days=0):
+    from tests.v41_history_fixture import seed_empty_history
+    seed_empty_history(canonical, start)
+    code = canonical / '.ops/runtime/published'
+    runtime = {}
+    if code.is_dir():
+        preflight = invoke(code, canonical, 'lattice_digest.public_daily', ['--preflight','--since','36h'])
+        assert preflight.returncode == 0, preflight.stdout + preflight.stderr
+        runtime = json.loads(preflight.stdout)['runtime_provenance']
     first = row(start)
     for index in range(days):
         day = start + timedelta(days=index)
         records = [bind_source_evidence(make_paper_record(**first))] if index == 0 or overlap else []
         jp, mp = publish_daily_pair(records,canonical,day,source_health=health(index==degraded_day),
-            metadata={'target_date':str(day),'quality_status':'authoritative',
-                      'coverage_start':f'{day-timedelta(days=1)}T00:00:00Z',
-                      'coverage_end':f'{day}T23:59:59Z'})
+            metadata={**runtime,'target_date':str(day),'quality_status':'authoritative',
+                      'collector':'local_codex','run_mode':'daily',
+                      'coverage_start':f'{day-timedelta(days=1)}T00:00:00+08:00',
+                      'coverage_end':f'{day}T23:59:59+08:00'})
         if index < legacy_days:
             # Exercise the supported pre-P0 schema using its real legacy renderer
             # and independently computed QA, never a forged stored PASS.
@@ -137,7 +148,8 @@ def seed_days(canonical, start, days, degraded_day=None, overlap=False, legacy_d
             for record in payload['records']:
                 for field in ('publication_event_type', 'publication_event_id'):
                     record.pop(field, None)
-            metadata.update(derive_authority(payload['records'], payload['source_health']))
+            metadata.update(derive_authority(payload['records'], payload['source_health'],
+                                            promotion_history=metadata.get('promotion_history')))
             metadata.pop('markdown_sha256', None)
             metadata.pop('semantic_qa', None)
             md = generate_markdown([PaperRecord(**{key:value for key,value in record.items()
@@ -149,7 +161,7 @@ def seed_days(canonical, start, days, degraded_day=None, overlap=False, legacy_d
             metadata['semantic_qa'] = {key:value for key,value in qa.items() if key != 'derived_authority'}
             metadata['markdown_sha256'] = hashlib.sha256(md.encode('utf-8')).hexdigest()
             jp.write_text(json.dumps(payload, ensure_ascii=False), encoding='utf-8')
-            mp.write_text(md, encoding='utf-8')
+            mp.write_bytes(md.encode('utf-8'))
             assert semantic_qa(payload, md)['status'] == 'PASS'
 
 
@@ -212,6 +224,25 @@ def test_public_monthly_full_generation_and_authorized_downstream(nested_repo,da
     assert (canonical/'state/reading-queue.json').is_file()
     assert list((canonical/'exports/obsidian-paper-notes/Papers').glob('*.md'))
     assert not (root/'exports').exists()
+    if days == 31 and degraded is None:
+        # The optional production profiles pass the same independent gate;
+        # an unreviewed profile must still fail even with a valid payload hash.
+        from lattice_digest.report_gate import verify, GateError, sha, encoded
+        original = jp.read_bytes()
+        try:
+            for profile in ('MONTHLY', 'MONTHLY_EXPORTS', 'MONTHLY_OBSIDIAN', 'UNKNOWN_PROFILE'):
+                payload['metadata']['runtime_command_profile'] = profile
+                payload['metadata'].pop('payload_content_sha256')
+                payload['metadata']['payload_content_sha256'] = sha(encoded(payload))
+                jp.write_bytes(encoded(payload))
+                if profile == 'UNKNOWN_PROFILE':
+                    with pytest.raises(GateError) as rejected:
+                        verify(canonical, 'monthly', '2025-12')
+                    assert rejected.value.code == 'RUNTIME_MODE_INVALID'
+                else:
+                    verify(canonical, 'monthly', '2025-12')
+        finally:
+            jp.write_bytes(original)
 
 
 def test_public_monthly_mixed_inputs_and_weekly_context_never_double_count(nested_repo):

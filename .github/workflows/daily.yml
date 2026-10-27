@@ -35,7 +35,7 @@ jobs:
         run: python -m pip install -e ".[dev]"
       - name: Production smoke gate
         run: >-
-          python -m pytest tests/test_public_report_pipeline.py --basetemp=.pytest_tmp
+          python -m pytest tests/test_public_report_pipeline.py tests/test_v41_cloud_ownership.py tests/test_v41_delivery_states.py --basetemp=.pytest_tmp
           -k "not local and not lower_authority and not permission and not official"
       - name: Resolve verified GitHub event clock
         env:
@@ -54,10 +54,14 @@ jobs:
         env:
           TARGET_DATE: ${{ inputs.target_date }}
           SEMANTIC_SCHOLAR_API_KEY: ${{ secrets.SEMANTIC_SCHOLAR_API_KEY }}
+          GH_TOKEN: ${{ github.token }}
         run: |
+          set -euo pipefail
           args=()
           if [ -n "$TARGET_DATE" ]; then args+=(--target-date "$TARGET_DATE"); fi
-          python -m lattice_digest.cloud_daily --event-created-at "$VERIFIED_EVENT_CREATED_AT" --trigger "$GITHUB_EVENT_NAME" --output-root "$RUNNER_TEMP/cloud-canonical" --public-output "$RUNNER_TEMP/public-candidate" "${args[@]}"
+          python -m lattice_digest.cloud_public_history --repository "$GITHUB_REPOSITORY" --output "$RUNNER_TEMP/public-history" --receipt "$RUNNER_TEMP/public-history-receipt.json" | tee "$RUNNER_TEMP/public-history-gate.json"
+          public_ref=$(python -c 'import json,os; print(json.load(open(os.path.join(os.environ["RUNNER_TEMP"],"public-history-receipt.json")))["source_ref"])')
+          python -m lattice_digest.cloud_daily --event-created-at "$VERIFIED_EVENT_CREATED_AT" --trigger "$GITHUB_EVENT_NAME" --output-root "$RUNNER_TEMP/cloud-canonical" --public-output "$RUNNER_TEMP/public-candidate" --public-history-root "$RUNNER_TEMP/public-history" --public-history-ref "$public_ref" "${args[@]}" | tee "$RUNNER_TEMP/cloud-generation-gate.json"
       - name: Independent production report and public privacy gates
         run: |
           python - <<'PY'
@@ -71,6 +75,16 @@ jobs:
           inspect_tree(root/'public-candidate')
           print('PRODUCTION_REPORT_GATE PASS; PUBLIC_PRIVACY_GATE PASS; REMOTE_PUBLICATION_GATE CANDIDATE_READY')
           PY
+      - name: Retain sanitized failure diagnostics
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: public-digest-diagnostics
+          path: |
+            ${{ runner.temp }}/public-history-gate.json
+            ${{ runner.temp }}/cloud-generation-gate.json
+          if-no-files-found: ignore
+          retention-days: 30
       - name: Retain only reviewed-shape public candidate
         uses: actions/upload-artifact@v4
         with:
@@ -107,6 +121,7 @@ jobs:
           set -euo pipefail
           python -m lattice_digest.public_publisher --candidate "$RUNNER_TEMP/public-candidate" --remote "https://github.com/$GITHUB_REPOSITORY.git" --approve-reviewed-publication --use-gh-credentials --accept-superseded | tee "$RUNNER_TEMP/publication-receipt.json"
       - name: Retain public publication receipt
+        if: always()
         uses: actions/upload-artifact@v4
         with:
           name: public-publication-receipt

@@ -174,25 +174,41 @@ def verify(root: Path, kind: str, period: str) -> VerifiedPair:
                 raise ValueError
         except (KeyError, ValueError, AttributeError, TypeError):
             fail('PERIOD_IDENTITY_INVALID', 'invalid explicit Daily collection interval')
-        from lattice_digest.authority import semantic_qa
-        qa = semantic_qa(payload, md)
-        if qa['status'] != 'PASS' or meta.get('cross_day_qa', {}).get('status') != 'PASS':
-            fail('EVENT_OWNERSHIP_INVALID', 'independent Daily semantic/event QA rejected the pair')
         rows = payload.get('records', [])
         events = [e for e in payload['publication_event_ledger']['decisions'] if e['collection'] in CORE_EVENTS]
         # Independently consult durable prior identities, not just the saved QA label.
         # This also catches a candidate that omitted its own historical observations.
-        from lattice_digest.promotion_history import identity_keys, HISTORY_DAYS
-        prior_identities = set()
-        for offset in range(1,HISTORY_DAYS+1):
-            prior_path = ap.daily_data_path(first-timedelta(days=offset),root/'data')
-            if prior_path.exists() or prior_path.is_symlink():
-                prior_payload = strict_json(safe_file(root,prior_path,32*1024*1024))
-                if isinstance(prior_payload,dict) and prior_payload.get('metadata',{}).get('quality_status') in ('authoritative','authoritative_backfill'):
-                    for row in prior_payload.get('records',[]):
-                        if isinstance(row,dict):prior_identities.update(identity_keys(row))
+        from lattice_digest.promotion_history import identity_keys, load_promotion_history, authoritative_version_conflicted
+        for event in events:
+            row=rows[event['row_index']]
+            keys=identity_keys(row)
+            if (not keys or authoritative_version_conflicted(row) or
+                    any(len({k for k in keys if k.startswith(ns)})>1 for ns in ('doi:','arxiv:','eprint:'))):
+                fail('SCIENTIFIC_QA_INCOMPLETE','counted event has unresolved conflicting source identities or versions')
+        prior_rows, history = load_promotion_history(root/'data', first)
+        prior_identities = set().union(*(identity_keys(row) for row in prior_rows)) if prior_rows else set()
         if any(e['collection']=='primary_publication_events' and identity_keys(rows[e['row_index']]) & prior_identities for e in events):
-            fail('EVENT_OWNERSHIP_INVALID', 'primary identity already observed in durable canonical history')
+            fail('CROSS_DAY_DUPLICATE_PRIMARY', 'primary identity already observed in durable canonical history')
+        if history.get('complete') is not True:
+            codes = {e.get('code') for e in history.get('unusable', [])}
+            code = ('HISTORY_INDEX_SOURCE_MISMATCH' if 'HISTORY_INDEX_SOURCE_MISMATCH' in codes else
+                    'HISTORY_RESOURCE_LIMIT' if 'HISTORY_RESOURCE_LIMIT' in codes else 'HISTORY_EVIDENCE_UNUSABLE')
+            fail(code, 'bounded independent history evidence is incomplete; publication is blocked')
+        # Detect source changes after generation; saved metadata is not a trusted
+        # index and cannot substitute for freshly read, source-bound evidence.
+        saved_history = meta.get('promotion_history') or {}
+        expected_hashes = {p.get('date'):p.get('sha256') for p in saved_history.get('loaded', [])}
+        current_hashes = {p.get('date'):p.get('sha256') for p in history.get('loaded', [])}
+        if any(current_hashes.get(day) != digest for day,digest in expected_hashes.items()):
+            fail('HISTORY_INDEX_SOURCE_MISMATCH', 'historical source binding changed since generation')
+        from lattice_digest.publication_events import build_event_ledger
+        independently_rebuilt = build_event_ledger(rows, meta, prior_rows)
+        if independently_rebuilt != payload['publication_event_ledger']:
+            fail('EVENT_OWNERSHIP_CONFLICT', 'saved event ledger differs from independently source-bound historical replay')
+        from lattice_digest.authority import semantic_qa
+        qa = semantic_qa(payload, md)
+        if qa['status'] != 'PASS' or meta.get('cross_day_qa', {}).get('status') != 'PASS':
+            fail('SCIENTIFIC_QA_INCOMPLETE', 'independent Daily semantic/event QA rejected the pair')
         state = qa['derived_authority']['authority_state']
         start_text, end_text = start.isoformat(), end.isoformat()
         cloud = meta['quality_status'] == 'provisional'
@@ -223,7 +239,8 @@ def verify(root: Path, kind: str, period: str) -> VerifiedPair:
             fail('EVENT_OWNERSHIP_INVALID', 'period input authority differs from independent replay')
         if meta.get('runtime_code_state') not in ('PUBLISHED_CLEAN_RUNTIME', 'PUBLISHED_RUNTIME_WITH_UNRELATED_DIRTY_WORKTREE'):
             fail('RUNTIME_MODE_INVALID', 'period requires published runtime provenance')
-        if meta.get('runtime_command_profile') != kind.upper():
+        allowed_profiles = {'MONTHLY','MONTHLY_EXPORTS','MONTHLY_OBSIDIAN'} if kind == 'monthly' else {'WEEKLY'}
+        if meta.get('runtime_command_profile') not in allowed_profiles:
             fail('RUNTIME_MODE_INVALID', 'period runtime command profile mismatch')
         events, rows = [], []
         from lattice_digest.weekly_synthesis import load_daily_json

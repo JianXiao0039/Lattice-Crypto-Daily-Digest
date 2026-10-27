@@ -38,7 +38,9 @@ def main(argv: list[str] | None = None) -> int:
             payload['metadata']['runtime_paths'] = paths.as_dict()
             publish_period(payload,paths,write_weekly_outputs)
         finish_telemetry(paths, 'WEEKLY', started, proof['runtime_provenance'])
-        return 0
+        from lattice_digest.delivery_receipt import validate_generated
+        receipt = validate_generated(paths.canonical_root, 'weekly', key)
+        return 0 if receipt['scientific_validation_verified'] else 2
     except (OSError,ValueError) as exc:
         print(str(exc))
         receipt = record_entry_failure('WEEKLY', exc, stage=stage, proof=proof, arguments=argv)

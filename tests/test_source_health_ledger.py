@@ -140,7 +140,9 @@ def test_main_writes_source_health_ledger_for_successful_source() -> None:
         payload = json.loads(ledger_path.read_text(encoding="utf-8"))
     assert payload["sources"][0]["source"] == "fake_source"
     assert payload["sources"][0]["status"] == "green"
-    assert payload["sources"][0]["final_count"] == 1
+    # Discovery succeeded, but this isolated run has no verified ownership
+    # history and therefore cannot select a first-publication event.
+    assert payload["sources"][0]["final_count"] == 0
 
 
 def test_main_writes_source_health_ledger_for_failed_source() -> None:

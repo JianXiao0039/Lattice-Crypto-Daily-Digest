@@ -21,6 +21,15 @@ META={'target_date':str(DAY),'coverage_start':'2026-10-07T21:00:00+08:00',
 CANARIES=json.loads((Path(__file__).parent/'fixtures/scientific_publication_p0_canaries.json').read_text(encoding='utf-8'))
 
 
+@pytest.fixture(autouse=True)
+def complete_simulated_history(request):
+    # This module tests scientific selection with known history. Incomplete
+    # history is independently exercised by the V41 source-backed incident tests.
+    if 'tmp_path' in request.fixturenames:
+        from tests.v41_history_fixture import seed_empty_history
+        seed_empty_history(request.getfixturevalue('tmp_path'), DAY)
+
+
 def record(**kwargs):
     fields={'title':'ML-KEM implementation security','abstract':'We study side-channel leakage of ML-KEM.',
         'source':'arxiv','source_url':'https://arxiv.org/abs/2610.10000v1','arxiv_id':'2610.10000v1',

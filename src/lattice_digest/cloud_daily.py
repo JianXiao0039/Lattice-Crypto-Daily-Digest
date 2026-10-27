@@ -72,10 +72,16 @@ def main(argv=None):
     parser.add_argument('--target-date')
     parser.add_argument('--output-root',type=Path,required=True)
     parser.add_argument('--public-output',type=Path,required=True)
+    parser.add_argument('--public-history-root', type=Path, required=True)
+    parser.add_argument('--public-history-ref', required=True)
     args = parser.parse_args(argv)
     try:
         actual = datetime.now(timezone.utc).isoformat()
         target = resolve_target(args.event_created_at,actual,args.trigger,args.target_date)
+        from lattice_digest.cloud_public_history import ownership_history
+        owners, ownership = ownership_history(args.public_history_root, args.public_history_ref, target['target_date'])
+        target['prior_public_ownership'] = owners
+        target['public_ownership_evidence'] = ownership
         from lattice_digest.config import project_root
         from lattice_digest.public_contract import _reject_redirects
         root=args.output_root.absolute()
@@ -88,6 +94,9 @@ def main(argv=None):
             '--send','none','--collector','github_actions','--quality-status','provisional','--run-mode','daily',
             '--output-root',str(root)],cloud_context=target)
         if code:
+            print(json.dumps({'gate':'CLOUD_DELIVERY_GATE','status':'FAIL',
+                'code':'SCIENTIFIC_QA_INCOMPLETE','delivery_state':'HISTORY_EVIDENCE_BLOCKED',
+                'public_export_eligible':False,'publish_pending':False}))
             return code
         from lattice_digest.report_gate import paths_for, safe_file, strict_json
         canonical_json,_=paths_for(root,'daily',target['target_date'])
@@ -105,6 +114,8 @@ def main(argv=None):
     except (GateError, OSError, ValueError, TypeError, KeyError) as exc:
         print(json.dumps({'gate':'PUBLIC_PRIVACY_GATE' if isinstance(exc,GateError) and exc.code.startswith('PUBLIC_') else 'PRODUCTION_REPORT_GATE','status':'FAIL',
             'code':exc.code if isinstance(exc,GateError) else 'CLOUD_GENERATION_FAILED',
+            'delivery_state':'HISTORY_EVIDENCE_BLOCKED' if isinstance(exc,GateError) and exc.code.startswith('HISTORY_') else 'PUBLIC_EXPORT_INELIGIBLE',
+            'public_export_eligible':False,'publish_pending':False,
             'diagnostic':str(exc) if isinstance(exc,GateError) else 'details redacted'}))
         return 2
 
