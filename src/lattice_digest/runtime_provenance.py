@@ -9,6 +9,7 @@ import sys
 from datetime import datetime
 from typing import Mapping
 from lattice_digest.runtime_dependencies import MANIFEST_PATH, profile_paths, safe_path
+from lattice_digest.remote_authority import live_remote, APPROVED_ORIGIN
 
 ALLOWED_PUBLIC_STATES = {'PUBLISHED_CLEAN_RUNTIME', 'PUBLISHED_RUNTIME_WITH_UNRELATED_DIRTY_WORKTREE'}
 
@@ -21,6 +22,11 @@ def runtime_provenance(root: Path, command: str = 'DAILY', *, verify_remote: boo
               'runtime_provenance_observation': 'LIVE_REMOTE' if verify_remote else 'LOCAL_GIT_REFS_NO_FETCH',
               'runtime_python_executable': sys.executable,
               'runtime_package_directory': str(Path(__file__).resolve().parent)}
+    result.update(authority_mode='AUTHORITY_UNVERIFIED', local_code_integrity='UNVERIFIED',
+                  release_authorization='UNVERIFIED', remote_freshness='UNVERIFIED',
+                  offline_approval='DISABLED_NO_PREEXISTING_AUTHENTICATED_TRUST_ROOT',
+                  source_retrieval='NOT_ATTEMPTED', scientific_validation='NOT_RUN',
+                  public_upload='NOT_ATTEMPTED')
     def git(*args):
         return subprocess.check_output(['git', *args], cwd=root, stderr=subprocess.DEVNULL, timeout=30)
     try:
@@ -30,11 +36,11 @@ def runtime_provenance(root: Path, command: str = 'DAILY', *, verify_remote: boo
             raise ValueError('runtime must have its own independent Git checkout')
         head = git('rev-parse', 'HEAD').decode().strip()
         origin = git('rev-parse', 'refs/remotes/origin/main').decode().strip()
+        result.update(runtime_git_head=head)
         if verify_remote:
-            lines = git('ls-remote', '--heads', 'origin', 'refs/heads/main').decode().splitlines()
-            if len(lines) != 1 or len(lines[0].split()) != 2:
-                raise ValueError('remote main is unresolved')
-            origin = lines[0].split()[0]
+            # Integrity is evaluated against immutable HEAD blobs first. A local
+            # tracking ref is never substituted for a failed live observation.
+            origin = head
         result.update(runtime_git_head=head, runtime_origin_main=origin)
         if head != origin:
             result['runtime_code_state'] = 'UNPUBLISHED_RUNTIME_COMMIT'
@@ -74,17 +80,47 @@ def runtime_provenance(root: Path, command: str = 'DAILY', *, verify_remote: boo
                       runtime_code_manifest_sha256=hashlib.sha256(json.dumps(hashes, sort_keys=True).encode()).hexdigest())
         if code_dirty:
             result['runtime_code_state'] = 'DIRTY_RUNTIME_DEPENDENCY'
+            result['local_code_integrity'] = 'FAILED'
+            result['runtime_failure_category'] = 'LOCAL_RUNTIME_INTEGRITY_FAILURE'
             return result
         profile_paths(root, manifest, command)
+        result['local_code_integrity'] = 'VERIFIED'
+        if verify_remote:
+            result['runtime_origin_main'] = None
+            origin_url = git('remote', 'get-url', 'origin').decode().strip()
+            if origin_url != APPROVED_ORIGIN:
+                result.update(runtime_failure_category='REMOTE_ORIGIN_MISMATCH',
+                              runtime_provenance_error='REMOTE_ORIGIN_MISMATCH')
+                return result
+            remote = live_remote(root, origin_url)
+            result['remote_verification'] = remote
+            if remote['status'] != 'VERIFIED':
+                result.update(runtime_failure_category=remote['error_code'],
+                              runtime_provenance_error=remote['error_code'])
+                return result
+            origin = remote['sha']
+            result.update(runtime_origin_main=origin, remote_freshness='VERIFIED')
+            if origin != head:
+                result.update(runtime_code_state='UNPUBLISHED_RUNTIME_COMMIT',
+                              runtime_failure_category='REMOTE_RUNTIME_SHA_MISMATCH')
+                return result
+            result.update(authority_mode='LIVE_REMOTE_VERIFIED', release_authorization='VERIFIED')
         dirty = bool(git('status', '--porcelain', '--untracked-files=normal'))
         result['runtime_code_state'] = 'PUBLISHED_RUNTIME_WITH_UNRELATED_DIRTY_WORKTREE' if dirty else 'PUBLISHED_CLEAN_RUNTIME'
     except (OSError, subprocess.SubprocessError, UnicodeError, ValueError, KeyError, TypeError, SyntaxError) as exc:
-        result['runtime_provenance_error'] = type(exc).__name__ + ': ' + str(exc)
+        # Git/config/parse failures can contain secret or remote-controlled text.
+        detail = ('independent Git checkout required'
+                  if str(exc) == 'runtime must have its own independent Git checkout'
+                  else 'LOCAL_RUNTIME_CHECK_FAILED')
+        result['runtime_provenance_error'] = type(exc).__name__ + ': ' + detail
+        result['runtime_failure_category'] = 'LOCAL_RUNTIME_INTEGRITY_FAILURE'
     return result
 
 
 def public_runtime_allowed(provenance: dict, *, public_automation: bool) -> bool:
-    return not public_automation or provenance['runtime_code_state'] in ALLOWED_PUBLIC_STATES
+    return not public_automation or (
+        provenance.get('authority_mode') == 'LIVE_REMOTE_VERIFIED'
+        and provenance['runtime_code_state'] in ALLOWED_PUBLIC_STATES)
 
 
 def schedule_telemetry(started: datetime, finished: datetime | None = None,

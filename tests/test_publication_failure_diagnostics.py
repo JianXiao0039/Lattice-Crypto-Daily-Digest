@@ -32,7 +32,7 @@ def runtime_gate(monkeypatch):
     # Unit fixture only; the unchanged public gate is independently exercised in
     # test_runtime_isolation_v2 with real clean Git repositories and subprocesses.
     monkeypatch.setattr('lattice_digest.runtime_provenance.runtime_provenance', lambda *args, **kwargs: {
-        'runtime_code_state': 'PUBLISHED_CLEAN_RUNTIME', 'runtime_git_head': 'fixture-head',
+        'runtime_code_state': 'PUBLISHED_CLEAN_RUNTIME', 'authority_mode':'LIVE_REMOTE_VERIFIED', 'runtime_git_head': 'fixture-head',
         'runtime_code_manifest_sha256': 'fixture-manifest'})
 
 

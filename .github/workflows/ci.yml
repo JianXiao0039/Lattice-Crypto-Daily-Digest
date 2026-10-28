@@ -12,7 +12,7 @@ permissions:
 
 jobs:
   test:
-    name: Test (${{ matrix.os }})
+    name: Test (${{ matrix.os }}, Python ${{ matrix.python-version }})
     runs-on: ${{ matrix.os }}
     timeout-minutes: 20
 
@@ -24,6 +24,7 @@ jobs:
           - windows-latest
         python-version:
           - "3.11"
+          - "3.13"
 
     steps:
       - uses: actions/checkout@v4

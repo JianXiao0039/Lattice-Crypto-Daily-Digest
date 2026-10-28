@@ -18,7 +18,7 @@ END = '2026-10-07T09:04:26.631541+08:00'
 
 
 @pytest.fixture
-def published_repo(tmp_path):
+def published_repo(tmp_path, monkeypatch):
     root = tmp_path / 'code'
     root.mkdir()
     manifest = json.loads((ROOT / MANIFEST_PATH).read_text(encoding='utf-8'))
@@ -28,6 +28,16 @@ def published_repo(tmp_path):
         target = root / name
         target.parent.mkdir(parents=True, exist_ok=True)
         shutil.copyfile(ROOT / name, target)
+    # A compiled test-only authority policy in the disposable copied source.
+    # Production has no env/CLI override accepting arbitrary local refs.
+    authority = tmp_path / 'test-authority.git'
+    policy = root / 'src/lattice_digest/remote_authority.py'
+    marker = "APPROVED_ORIGIN = 'https://github.com/JianXiao0039/Lattice-Crypto-Daily-Digest.git'"
+    content = policy.read_text(encoding='utf-8')
+    assert content.count(marker) == 1
+    policy.write_text(content.replace(marker, f'APPROVED_ORIGIN = {str(authority)!r}'), encoding='utf-8')
+    import lattice_digest.runtime_provenance as runtime_module
+    monkeypatch.setattr(runtime_module, 'APPROVED_ORIGIN', str(authority))
     def git(*args):
         return subprocess.check_output(['git', *args], cwd=root, stderr=subprocess.DEVNULL)
     git('init', '-b', 'main')
@@ -38,7 +48,6 @@ def published_repo(tmp_path):
     git('update-ref', 'refs/remotes/origin/main', 'HEAD')
     # TEST AUTHORITY only. A bare remote permits fixture publication without
     # mutating a checked-out branch or relaxing receive.denyCurrentBranch.
-    authority = tmp_path / 'test-authority.git'
     subprocess.check_output(['git', 'clone', '--bare', str(root), str(authority)],
                             stderr=subprocess.STDOUT)
     git('remote', 'add', 'origin', str(authority))
@@ -107,7 +116,7 @@ def test_real_dirty_path_execution_profiles(published_repo, profile, path, block
     assert initial['runtime_code_state'] == 'PUBLISHED_CLEAN_RUNTIME'
     with (root / path).open('a', encoding='utf-8') as stream:
         stream.write('\n# unrelated fixture edit\n')
-    actual = runtime_provenance(root, profile)
+    actual = runtime_provenance(root, profile, verify_remote=True)
     assert actual['runtime_code_state'] == ('DIRTY_RUNTIME_DEPENDENCY' if blocking else 'PUBLISHED_RUNTIME_WITH_UNRELATED_DIRTY_WORKTREE')
     assert public_runtime_allowed(actual, public_automation=True) == (not blocking)
     assert (actual['runtime_code_manifest_sha256'] == initial['runtime_code_manifest_sha256']) == (not blocking)
@@ -272,7 +281,7 @@ def test_exact_recovery_scratch_qa_precedes_canonical_directories_and_preserves_
     metadata.update(target_date='2026-10-07',coverage_start=START,coverage_end=END,run_mode='backfill',
                     runtime_git_head='fixture-head',runtime_code_manifest_sha256='fixture-hash')
     monkeypatch.setattr('lattice_digest.runtime_provenance.runtime_provenance',lambda *args,**kwargs:{
-        'runtime_code_state':'PUBLISHED_CLEAN_RUNTIME','runtime_git_head':'fixture-head',
+        'runtime_code_state':'PUBLISHED_CLEAN_RUNTIME','authority_mode':'LIVE_REMOTE_VERIFIED','runtime_git_head':'fixture-head',
         'runtime_code_manifest_sha256':'fixture-hash'})
     def fail_scratch(*args,**kwargs):
         assert args[1] != tmp_path and kwargs['history_root'] == tmp_path
@@ -298,7 +307,7 @@ def test_exact_existing_target_stops_before_discovery_and_never_auto_supersedes(
     path.write_text(original,encoding='utf-8')
     monkeypatch.setattr(run,'project_root',lambda:tmp_path)
     monkeypatch.setattr('lattice_digest.runtime_provenance.runtime_provenance',
-                        lambda root:{'runtime_code_state':'PUBLISHED_CLEAN_RUNTIME'})
+                        lambda root:{'runtime_code_state':'PUBLISHED_CLEAN_RUNTIME','authority_mode':'LIVE_REMOTE_VERIFIED'})
     monkeypatch.setattr(run,'load_config_bundle',lambda *args:pytest.fail('existing exact target must stop before discovery configuration'))
     monkeypatch.setattr(run,'_collect_records',lambda *args:pytest.fail('discovery must not start'))
     assert run.main(['--run-mode','backfill','--target-date','2025-01-07',

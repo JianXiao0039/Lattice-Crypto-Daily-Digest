@@ -49,7 +49,7 @@ def _run_in_temp_root(root: Path, args: list[str], records: list | None = None) 
         run_module.rank_records = lambda incoming, taxonomy, keywords, negative: list(incoming)
         # These are isolated artifact-policy fixtures, not executable Git trees.
         # Runtime publication enforcement has dedicated real-Git regression tests.
-        runtime_module.runtime_provenance = lambda _: {'runtime_code_state': 'PUBLISHED_CLEAN_RUNTIME'}
+        runtime_module.runtime_provenance = lambda _: {'runtime_code_state': 'PUBLISHED_CLEAN_RUNTIME', 'authority_mode':'LIVE_REMOTE_VERIFIED'}
         return run_module.main(args)
     finally:
         run_module.project_root = original_project_root

@@ -511,6 +511,10 @@ def main(argv: list[str] | None = None, *, preflight_proof: dict | None = None, 
                          or bool(args.coverage_start)
                          or (output_root == root and args.run_mode == 'daily'
                              and code_provenance['runtime_code_state'] in {'UNPUBLISHED_RUNTIME_CODE', 'UNPUBLISHED_RUNTIME_COMMIT', 'DIRTY_RUNTIME_DEPENDENCY'}))
+    if public_automation and not cloud and code_provenance.get('authority_mode') == 'AUTHORITY_UNVERIFIED':
+        # Do not replace the public entry's live observation with a local-ref
+        # observation in scientific metadata. Recheck at the collection boundary.
+        code_provenance = runtime_provenance(root, verify_remote=True)
     allowed = public_runtime_allowed(code_provenance, public_automation=public_automation)
     if cloud:
         # Cloud provenance is deliberately not the local published-runtime contract.
@@ -605,7 +609,14 @@ def main(argv: list[str] | None = None, *, preflight_proof: dict | None = None, 
     )
 
     source_configs = _enabled_source_configs(configs["sources"])
+    metadata['source_collection_started_at'] = datetime.now(timezone.utc).isoformat()
+    context.checkpoint('SOURCE_COLLECTION_STARTED',
+                       {'actual_started_at': metadata['source_collection_started_at']})
     records = _collect_records(source_configs, context)
+    metadata['source_collection_finished_at'] = datetime.now(timezone.utc).isoformat()
+    context.checkpoint('SOURCE_COLLECTION_COMPLETE',
+                       {'actual_finished_at': metadata['source_collection_finished_at'],
+                        'observed_records': len(records)})
     from lattice_digest.iacr_mail import optional_daily_stage
     if cloud:
         metadata['gmail_iacr'] = {'status':'NOT_AVAILABLE_CLOUD_PUBLIC_SOURCES_ONLY'}

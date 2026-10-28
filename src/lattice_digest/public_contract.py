@@ -175,6 +175,14 @@ def record_entry_failure(profile: str, exc: Exception, *, stage: str, proof: dic
             try: runtime = json.loads(message.split(': ', 1)[1])
             except (ValueError, TypeError): pass
         details = redact({'schema_version': 1, 'status': 'REPORT_NOT_GENERATED_OPERATIONAL_FAILURE',
+            'operational_states': {
+                'PREFLIGHT_BLOCKED': stage == 'PREFLIGHT',
+                'SOURCE_COLLECTION_STARTED': False if stage == 'PREFLIGHT' else 'UNKNOWN',
+                'SOURCE_COLLECTION_COMPLETE': False if stage == 'PREFLIGHT' else 'UNKNOWN',
+                'CANONICAL_CREATED': False if stage == 'PREFLIGHT' else 'UNKNOWN',
+                'SCIENTIFIC_QA_PASS': False, 'PUBLIC_PRIVACY_PASS': False,
+                'REMOTE_PUBLISH_VERIFIED': False},
+            'schedule_telemetry': schedule_telemetry(datetime.now(ZoneInfo('Asia/Singapore'))),
             'command_profile': profile, 'execution_stage': stage,
             'recorded_at': datetime.now(ZoneInfo('Asia/Singapore')).isoformat(),
             'target': proof.get('period', requested.get('target_date', requested.get('month', default_target))),

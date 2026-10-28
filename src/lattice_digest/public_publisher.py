@@ -12,16 +12,33 @@ import re
 import shutil
 import subprocess
 import tempfile
+import time
 
 from lattice_digest.public_report import inspect_tree, index_bytes, validate_catalog, QUALITY
 from lattice_digest.report_gate import encoded, fail, GateError, sha
+from lattice_digest.remote_authority import APPROVED_ORIGIN, failure_category, windows_proxy
 
 
 def git(root: Path, *args: str, check: bool = True):
+    started = time.monotonic()
     env = {k:v for k,v in os.environ.items() if not k.startswith(('GIT_', 'SMTP_', 'DIGEST_EMAIL_', 'GMAIL_', 'GOOGLE_'))}
     env.update(GIT_CONFIG_NOSYSTEM='1', GIT_CONFIG_GLOBAL=os.devnull, GIT_TERMINAL_PROMPT='0')
-    result = subprocess.run(['git', '-c', 'core.hooksPath=' + os.devnull, *args], cwd=root,
-        env=env, stdout=subprocess.PIPE, stderr=subprocess.PIPE, timeout=60)
+    options = ['-c', 'core.hooksPath=' + os.devnull, '-c', 'http.sslVerify=true']
+    env.pop('GIT_SSL_NO_VERIFY', None)
+    result = subprocess.run(['git', *options, *args], cwd=root,
+        env=env, stdout=subprocess.PIPE, stderr=subprocess.PIPE, timeout=48)
+    # A failed push is reconciled by publish() against the remote catalog. Do
+    # not blindly retry a write after an ambiguous acknowledgement. Only reads
+    # may retry transport here; a later push can reuse the validated static
+    # Windows route on its initial attempt via the public-delivery process env.
+    if (result.returncode and args and args[0] in {'ls-remote', 'fetch'}
+            and APPROVED_ORIGIN in args
+            and failure_category(result.stderr) == 'PROXY_ENDPOINT_UNREACHABLE'):
+        proxy = windows_proxy()
+        remaining = 60 - (time.monotonic() - started)
+        if proxy and remaining > 0:
+            result = subprocess.run(['git', *options, '-c', f'http.{APPROVED_ORIGIN}.proxy={proxy}', *args],
+                cwd=root, env=env, stdout=subprocess.PIPE, stderr=subprocess.PIPE, timeout=min(12, remaining))
     if check and result.returncode:
         # Git output may contain credential URLs or remote-controlled text. Never echo it.
         fail('REMOTE_PUBLICATION_FAILED', 'Git command failed; diagnostic content redacted')
@@ -102,6 +119,12 @@ def publish(candidate: Path, remote: str, *, approved: bool = False, attempts: i
         git(work, 'init', '--quiet')
         git(work, 'config', 'user.name', 'Public Literature Publisher')
         git(work, 'config', 'user.email', 'publisher@example.invalid')
+        if remote == APPROVED_ORIGIN:
+            proxy = windows_proxy()
+            if proxy:
+                # Temporary isolated publisher only: preserve the existing OS
+                # route without importing global Git config or changing it.
+                git(work, 'config', f'http.{APPROVED_ORIGIN}.proxy', proxy)
         if use_gh_credentials:
             # Explicit opt-in after publication approval; no token in argv, URLs or output.
             # The helper uses the operator's gh authentication and is never copied to a branch.
