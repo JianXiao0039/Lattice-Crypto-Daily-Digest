@@ -1,0 +1,24 @@
+# V43 history and noncounting publication contract
+
+Task: CODEX-V43-STABILIZATION. Base: 59e77dd9a0dd5a2a41fa5c253fcaf69bc048f3bf.
+Scope: source adapters, bounded history, independent event replay, public export/delivery and period assessment. Original canonical evidence is read-only. No private projects, Gemini outputs, credential changes or additional scheduler are inputs.
+
+A source pair binding proves the bytes and generation association. Durable QA proves its recorded local contract. Neither is an independent acceptance receipt or remote delivery proof. The history reader explicitly reports these separate capabilities; it never trusts a writable sidecar to create event ownership. Safely parsed observations may veto duplicates. They do not become published owners.
+
+October 17 is a missing-observation placeholder created retrospectively, not a production run whose only defect is absent modern QA. Its original execution, window and provider snapshot are unknown. The correct tier is UNVERIFIED_OR_MISSING despite a valid placeholder byte binding. Missing modern QA on a bound normal pair receives HISTORY_ORIGINAL_QA_UNCONFIRMED, independently from corrupted pairs, redirects, locks and resource limits.
+
+A fully evidenced counted-event report retains independent source-bound ownership and semantic verification. Incomplete history cannot grant a new Primary event. The separate zero-count path permits only PROVISIONAL_PUBLIC after independent replay and current pair QA. Integrity mismatches, unsafe input, changed source projections and scientific conflicts remain blocking. The public v3 contract forbids papers, counted events and omitted counted events. Source and history gaps are visible; zero authorized events is not a statement that no papers appeared.
+
+Counted events also require an explicit source time and timezone inside the exact collection window. A frozen ledger's UTC interpretation of DATE_ONLY or naive time is not source proof. Without independent temporal evidence these reports are blocked as EVENT_TIME_PRECISION_UNPROVEN; the original ledger and its candidates remain intact. Precise after-cutoff events remain noncounting. In particular, the public SOURCE_OFFSET label cannot be manufactured from an absent timezone.
+
+Rejected historical candidates with only an unusable date/code and no saved source hash remain HISTORY_PROJECTION_UNBOUND. They need an explicitly authorized, source-preserving derived candidate; an in-place PASS would invent the original binding. The independent gate rehashes the freshly projected history sources after scientific replay and rechecks current and period-input bytes before accepting. Bounded reads reject redirects, escaped paths, oversized inputs and concurrent changes. These checks close the interval between projection and acceptance; they do not claim that a writable sidecar authenticates a historical execution.
+
+Cloud public ownership is a pinned partial known-owner set. It can veto an existing owner; absence never proves a new publication. Verification reloads the independent snapshot and compares its immutable ref, manifest and owner projection. Local canonical history remains a different capability. No local fourteen-day complete-history claim is inferred from the public catalog.
+
+The fixed public schema exposes only reviewed clocks, source states, gap dates and counts. Raw canonical JSON, database, mailbox data and internal audit files remain private. Same-authority overwrite still requires the existing reviewed correction policy; higher-authority reports are protected. SUPERSEDED_BY_HIGHER_AUTHORITY means an existing report was read back, not that this candidate was delivered.
+
+An authority upgrade must preserve every previously published VERIFIED_CURRENT_SCHEMA_EVENT identity, event ID, date and kind. Removing or rewriting one requires a separate reviewed event-correction policy and is blocked by this release. Existing local and cloud provisional reports have the same authority; differing reports for the same period cannot overwrite each other merely because one ran locally.
+
+Source retrieval recovery is independent of publication eligibility. Malformed DBLP or Semantic Scholar results cannot become successful empty queries. Existing retry budgets, IACR once/day guard, TLS and source limitations remain in force. Semantic Scholar remains required under the existing role configuration; this patch does not claim that secondary coverage replaces IACR/arXiv.
+
+All revalidation runs must pin the release src import path and record module.__file__. This machine has an editable installation pointing at the original dirty checkout. Test transport or prototype replay is not authenticated production runtime evidence. Manual recovery must preserve original collection clocks and separately record its actual recovery clock.

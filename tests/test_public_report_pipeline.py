@@ -1,4 +1,9 @@
-"""Privacy and publication adversarial tests; every Git mutation is a local fixture."""
+"""Privacy/publisher transport tests; every Git mutation is a local fixture.
+
+Frozen titles, abstracts, identities and date-only source dates remain intact.
+Positive publisher transport adds explicitly TEST_ONLY synthetic exact times;
+these are not primary-source timestamps or historical production acceptance.
+"""
 from copy import deepcopy
 from datetime import date
 import json
@@ -21,7 +26,18 @@ CANARIES=json.loads((ROOT/'tests/fixtures/scientific_publication_p0_canaries.jso
 DAY=date(2026,9,22)
 META={'collector':'local_codex','quality_status':'authoritative','run_mode':'daily',
       'target_date':str(DAY),'coverage_start':'2026-09-20T21:00:00+08:00','coverage_end':'2026-09-22T09:00:00+08:00',
-      'runtime_code_state':'PUBLISHED_CLEAN_RUNTIME'}
+      'runtime_code_state':'PUBLISHED_CLEAN_RUNTIME',
+      'test_evidence':'TEST_ONLY_PUBLISHER_TRANSPORT_SYNTHETIC_EXACT_TIME_NOT_PRIMARY_SOURCE_FACT'}
+
+
+def source_with_test_time(raw=None, *, publication_date=None):
+    """Synthetic timing for plumbing only; never mutate frozen source fixtures."""
+    row=deepcopy(CANARIES[0]['source_record'] if raw is None else raw)
+    if publication_date is not None:
+        # The duplicate-window adversary intentionally perturbs timing.
+        row['publication_date']=publication_date
+    row['publication_timestamp']=row['publication_date']+'T00:00:00Z'
+    return row
 
 
 @pytest.fixture
@@ -29,7 +45,7 @@ def canonical(tmp_path):
     root=tmp_path/'canonical'
     from tests.v41_history_fixture import seed_empty_history
     seed_empty_history(root,DAY)
-    row=bind_source_evidence(make_paper_record(**CANARIES[0]['source_record']))
+    row=bind_source_evidence(make_paper_record(**source_with_test_time()))
     publish_daily_pair([row],root,DAY,source_health=health(degraded=True),metadata=META)
     return root
 
@@ -40,7 +56,7 @@ def rewrite(root, change):
     path.write_text(json.dumps(p,ensure_ascii=False),encoding='utf-8')
 
 
-def test_real_frozen_paper_safe_projection_deterministic_and_degraded(canonical,tmp_path):
+def test_frozen_content_synthetic_timing_safe_projection_deterministic_and_degraded(canonical,tmp_path):
     pair=verify(canonical,'daily',str(DAY))
     assert pair.diagnostics==['SOURCE_COVERAGE_DEGRADED']
     public=project(pair)
@@ -168,11 +184,34 @@ def test_local_bare_remote_publication_readback_and_noop(canonical,tmp_path):
     assert set(names)==set(inspect_tree(output)[1])
 
 
+
+def publisher_tier_fixture(output, quality):
+    """Test-only authority perturbation of independently accepted public bytes.
+
+    This exercises publisher ordering, never grants cloud scientific acceptance.
+    """
+    from lattice_digest.public_report import index_bytes
+    manifest,files=inspect_tree(output)
+    key,entry=next(iter(manifest['reports'].items()))
+    public=strict_json(files[entry['json']])
+    public['quality']=quality
+    public['public_generation_id']=''
+    public['public_generation_id']=sha(encoded(public))
+    public=validate_public(public)
+    jb=encoded(public)+b'\n';mb=render(public)
+    (output/entry['json']).write_bytes(jb);(output/entry['markdown']).write_bytes(mb)
+    entry.update(quality=quality,json_sha256=sha(jb),markdown_sha256=sha(mb),
+                 public_generation_id=public['public_generation_id'])
+    (output/'manifest.json').write_bytes(encoded(manifest)+b'\n')
+    (output/'index.md').write_bytes(index_bytes(manifest))
+    inspect_tree(output)
+
+
 def test_lower_authority_cannot_overwrite(canonical,tmp_path):
     output=tmp_path/'authoritative';export(canonical,'daily',str(DAY),output)
     remote=bare(tmp_path);publish(output,remote,approved=True)
-    rewrite(canonical,lambda p:p['metadata'].update(collector='github_actions',quality_status='provisional'))
     export(canonical,'daily',str(DAY),tmp_path/'provisional')
+    publisher_tier_fixture(tmp_path/'provisional','PROVISIONAL_PUBLIC')
     with pytest.raises(GateError,match='lower-authority'):publish(tmp_path/'provisional',remote,approved=True)
 
 
@@ -244,7 +283,7 @@ def test_private_candidate_file_is_rejected_before_git_index(canonical,tmp_path,
 
 def test_independent_canonical_history_rejects_omitted_prior(canonical):
     prior_day=date(2026,9,21)
-    row=bind_source_evidence(make_paper_record(**CANARIES[0]['source_record']))
+    row=bind_source_evidence(make_paper_record(**source_with_test_time()))
     publish_daily_pair([row],canonical,prior_day,source_health=health(),metadata={**META,
         'target_date':str(prior_day),'coverage_start':'2026-09-19T21:00:00+08:00','coverage_end':'2026-09-21T09:00:00+08:00'},force=True)
     with pytest.raises(GateError,match='already observed'):verify(canonical,'daily',str(DAY))
@@ -252,7 +291,7 @@ def test_independent_canonical_history_rejects_omitted_prior(canonical):
 
 def test_cloud_cross_period_primary_identity_inflation_rejected(tmp_path):
     # Synthetic timing perturbation of frozen public source fields, not a paper-date claim.
-    raw={**CANARIES[0]['source_record'],'publication_date':'2026-09-22'}
+    raw=source_with_test_time(publication_date='2026-09-22')
     remote=bare(tmp_path)
     for number in (22,23):
         day=date(2026,9,number);root=tmp_path/('root'+str(number))
@@ -260,10 +299,11 @@ def test_cloud_cross_period_primary_identity_inflation_rejected(tmp_path):
         seed_empty_history(root,day)
         from datetime import timedelta
         publish_daily_pair([bind_source_evidence(make_paper_record(**raw))],root,day,
-            source_health=health(degraded=True),metadata={**META,'collector':'github_actions','quality_status':'provisional',
+            source_health=health(degraded=True),metadata={**META,
                 'target_date':str(day),'coverage_start':f'{day-timedelta(days=2)}T21:00:00+08:00',
                 'coverage_end':f'{day}T09:00:00+08:00'})
         output=tmp_path/('public'+str(number));export(root,'daily',str(day),output)
+        publisher_tier_fixture(output,'PROVISIONAL_PUBLIC')
         if number==22:publish(output,remote,approved=True)
         else:
             with pytest.raises(GateError,match='already belongs'):publish(output,remote,approved=True)
@@ -283,13 +323,15 @@ def test_remote_auth_is_explicit_and_never_needed_for_local_fixtures(canonical,t
 
 def test_authority_upgrade_preserves_history_and_is_independent_of_coverage(canonical,tmp_path):
     authoritative=tmp_path/'authoritative';export(canonical,'daily',str(DAY),authoritative)
-    # A source-complete cloud report is still provisional execution authority.
+    # TEST_ONLY publisher tier perturbation: coverage and authority ordering are
+    # independent. This transport does not assert cloud scientific acceptance.
     cloud=tmp_path/'complete-cloud'
     from tests.v41_history_fixture import seed_empty_history
     seed_empty_history(cloud,DAY)
-    publish_daily_pair([bind_source_evidence(make_paper_record(**CANARIES[0]['source_record']))],cloud,DAY,
-        source_health=health(),metadata={**META,'collector':'github_actions','quality_status':'provisional'})
+    publish_daily_pair([bind_source_evidence(make_paper_record(**source_with_test_time()))],cloud,DAY,
+        source_health=health(),metadata=META)
     provisional=tmp_path/'provisional';export(cloud,'daily',str(DAY),provisional)
+    publisher_tier_fixture(provisional,'PROVISIONAL_PUBLIC')
     public=strict_json((provisional/'daily/2026/2026-09-22.json').read_bytes())
     assert public['source_coverage_state']=='AUTHORITATIVE_COMPLETE' and public['quality']=='PROVISIONAL_PUBLIC'
     remote=bare(tmp_path)
@@ -325,7 +367,9 @@ def test_local_official_daily_entry_export(nested_repo,tmp_path):
     row=deepcopy(CANARIES[0]['source_record'])
     generate_daily(code,canonical,DAY,[row],degraded=True)
     export(canonical,'daily',str(DAY),tmp_path/'public')
-    assert inspect_tree(tmp_path/'public')[0]['reports']['daily:2026-09-22']['quality']=='VALID_DEGRADED_AUTHORITATIVE'
+    assert inspect_tree(tmp_path/'public')[0]['reports']['daily:2026-09-22']['quality']=='PROVISIONAL_PUBLIC'
+    p=json.loads((tmp_path/'public/daily/2026/2026-09-22.json').read_bytes())
+    assert p['event_count']==0 and p['history_evidence']['contract']=='SOURCE_DEGRADED_NO_PROMOTION'
     remote=bare(tmp_path)
     assert publish(tmp_path/'public',remote,approved=True)['remote_readback']=='PASS'
     assert publish(tmp_path/'public',remote,approved=True)['status']=='NO_OP'
@@ -337,7 +381,7 @@ def test_official_weekly_monthly_replay_and_public_export(nested_repo,tmp_path):
     first=date(2026,9,1)
     from tests.v41_history_fixture import seed_empty_history
     seed_empty_history(canonical,first)
-    original=CANARIES[0]['source_record']
+    original=source_with_test_time()
     remote=bare(tmp_path)
     for i in range(30):
         day=first+timedelta(days=i)
@@ -353,9 +397,10 @@ def test_official_weekly_monthly_replay_and_public_export(nested_repo,tmp_path):
         public=tmp_path/('public-'+kind)
         export(canonical,kind,period,public)
         manifest,files=inspect_tree(public)
-        assert manifest['reports'][kind+':'+period]['quality']=='VALID_DEGRADED_AUTHORITATIVE'
+        assert manifest['reports'][kind+':'+period]['quality']=='PROVISIONAL_PUBLIC'
         report=strict_json(next(v for k,v in files.items() if k.endswith('.json') and k!='manifest.json'))
         assert report['event_count']==1
+        assert any(i['date']=='2026-09-23' and i['event_evidence']=='NONCOUNTING_PARTIAL_INPUT' for i in report['input_evidence'])
         assert publish(public,remote,approved=True)['remote_readback']=='PASS'
         assert publish(public,remote,approved=True)['status']=='NO_OP'
 
@@ -376,22 +421,33 @@ def test_cloud_provisional_generation_and_safe_export(tmp_path,monkeypatch,capsy
     monkeypatch.setattr('lattice_digest.iacr_mail.optional_daily_stage',lambda *a,**k:pytest.fail('cloud must not access Gmail'))
     context=resolve_target('2026-09-22T06:00:00Z','2026-09-22T06:01:00Z','schedule')
     root=tmp_path/'cloud'
-    from tests.v41_history_fixture import seed_empty_history
-    seed_empty_history(root,DAY)
+    # An empty pinned public catalog is a known-owner set, never complete history.
+    from lattice_digest.public_report import index_bytes
+    from lattice_digest.cloud_public_history import ownership_history
+    snapshot=tmp_path/'pinned-public';snapshot.mkdir()
+    manifest={'schema_version':'public-manifest-v1','reports':{}}
+    (snapshot/'manifest.json').write_bytes(encoded(manifest)+b'\n')
+    (snapshot/'index.md').write_bytes(index_bytes(manifest))
+    ref='a'*40
+    owners,evidence=ownership_history(snapshot,ref,str(DAY))
+    context.update(prior_public_ownership=owners,public_ownership_evidence=evidence)
     assert run.main(['--target-date','2026-09-22','--since','36h','--collector','github_actions',
         '--quality-status','provisional','--run-mode','daily','--send','none','--output-root',str(root)],cloud_context=context)==0
     console=capsys.readouterr().out
     assert 'PRIVATE_SOURCE_QUERY_CANARY' not in console and 'papers.db' not in console
-    export(root,'daily','2026-09-22',tmp_path/'public-cloud')
+    export(root,'daily','2026-09-22',tmp_path/'public-cloud',public_history_root=snapshot,public_history_ref=ref)
     manifest,_=inspect_tree(tmp_path/'public-cloud')
     assert manifest['reports']['daily:2026-09-22']['quality']=='PROVISIONAL_PUBLIC'
+    public=json.loads((tmp_path/'public-cloud/daily/2026/2026-09-22.json').read_bytes())
+    assert public['event_count']==0 and not public['history_evidence']['history_complete']
+    assert public['history_evidence']['capability']=='CLOUD_PINNED_PUBLIC_OWNERSHIP'
     remote=bare(tmp_path)
     assert publish(tmp_path/'public-cloud',remote,approved=True)['remote_readback']=='PASS'
     assert publish(tmp_path/'public-cloud',remote,approved=True)['status']=='NO_OP'
 
 
 def test_e2_and_late_arrival_and_adjacent_negative(tmp_path):
-    core=deepcopy(CANARIES[0]['source_record']);core['abstract']=''
+    core=source_with_test_time();core['abstract']=''
     row=bind_source_evidence(make_paper_record(**core))
     root=tmp_path/'e2'
     from tests.v41_history_fixture import seed_empty_history

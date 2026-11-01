@@ -322,7 +322,7 @@ def _source_health_summary(daily_payloads: list[tuple[date, dict[str, Any]]]) ->
     return {"available": True, "sources": sources, "status_counts": dict(sorted(status_counts.items())), "records": rows}
 
 
-def load_daily_json(data_dir: Path, selected_days: list[date]) -> tuple[list[tuple[date, dict[str, Any]]], list[str]]:
+def load_daily_json(data_dir: Path, selected_days: list[date], *, assessment_policy=None) -> tuple[list[tuple[date, dict[str, Any]]], list[str]]:
     loaded: list[tuple[date, dict[str, Any]]] = []
     missing: list[str] = []
     for day in selected_days:
@@ -336,7 +336,7 @@ def load_daily_json(data_dir: Path, selected_days: list[date]) -> tuple[list[tup
         if used_legacy:
             print(f"Warning: using legacy daily JSON fallback: {path}")
         from lattice_digest.daily_inputs import assess_daily_input
-        loaded.append((day, assess_daily_input(path, day, data_dir, used_legacy)))
+        loaded.append((day, assess_daily_input(path, day, data_dir, used_legacy, **({'assessment_policy': assessment_policy} if assessment_policy else {}))))
     return loaded, missing
 
 
@@ -714,15 +714,16 @@ def build_weekly_synthesis(
     from_date: date,
     to_date: date,
     generated_at: datetime | None = None,
+    *, assessment_policy=None,
 ) -> dict[str, Any]:
     selected_days = _date_range(from_date, to_date)
-    loaded_payloads, missing_days = load_daily_json(data_dir, selected_days)
+    loaded_payloads, missing_days = load_daily_json(data_dir, selected_days, **({'assessment_policy': assessment_policy} if assessment_policy else {}))
     loaded_payloads = normalize_period_inputs(loaded_payloads)
     records = aggregate_records(loaded_payloads)
     sections = _section_map(records)
     report_buckets = _report_bucket_map(records)
     event_occurrences = sum(len(period_event_rows(payload)) for _, payload in loaded_payloads)
-    event_views=period_views(loaded_payloads)
+    event_views=period_views(loaded_payloads, assessment_policy=assessment_policy)
     has_event_contract=any(p.get('publication_event_ledger') or p.get('_period_event_ledger') for _,p in loaded_payloads)
     total_records = sum(event_views['counts'][k] for k in ('primary_publication_events','revision_events','new_critical_verify_events')) if has_event_contract else event_occurrences
     from lattice_digest.daily_inputs import summarize_daily_inputs
@@ -733,7 +734,8 @@ def build_weekly_synthesis(
     generated = generated_at or datetime.now(timezone.utc)
     return {
         **classification,
-        "publication_event_views": period_views(loaded_payloads),
+        "publication_event_views": event_views,
+        **({'metadata': {'period_input_policy': assessment_policy}} if assessment_policy else {}),
         "schema_version": 1,
         "week_id": _week_id(to_date),
         "from_date": from_date.isoformat(),
@@ -902,7 +904,7 @@ def render_markdown(payload: dict[str, Any]) -> str:
         "",
         "- 本周执行摘要 / Executive week decision:",
         (
-            f"- 本周去重后 {coverage['unique_records']} 篇：安全 primary-new {primary_count} 篇，"
+            f"- 本周去重后 {coverage['unique_records']} 篇：{'待独立验收 primary-new 候选' if payload.get('metadata', {}).get('period_input_policy') == 'period-input-evidence-v43' else '安全 primary-new'} {primary_count} 篇，"
             f"高价值/背景 backfill {backfill_count} 篇，verify-first {verify_count} 篇。"
         ),
         f"- Weekly confidence: **{confidence}** ({confidence_reason}).",

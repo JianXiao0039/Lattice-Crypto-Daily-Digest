@@ -39,8 +39,14 @@ class SemanticScholarSource(SourceAdapter):
                 context.finish_query_attempt(attempt_id, status="failed", raw_candidates=None, error_category=health.error_type())
                 health.query_groups_failed += 1
                 continue
+            items = data.get("data")
+            if not isinstance(items, list) or any(not isinstance(item, dict) for item in items):
+                context.add_warning(f'{self.name}: invalid JSON search data shape', self.name)
+                context.note_request_result(self.name, ok=False, failure_category='malformed_response')
+                context.finish_query_attempt(attempt_id, status='failed', raw_candidates=None, error_category='malformed_response')
+                health.query_groups_failed += 1
+                continue
             health.query_groups_success += 1
-            items = data.get("data", [])
             context.finish_query_attempt(attempt_id, status="success", raw_candidates=len(items))
             raw_count += len(items)
             for item in items:

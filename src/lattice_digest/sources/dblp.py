@@ -40,14 +40,21 @@ class DblpSource(SourceAdapter):
                 continue
             result = data.get('result')
             hits_object = result.get('hits') if isinstance(result, dict) else None
-            if not isinstance(hits_object, dict):
-                context.add_warning(f'{self.name}: malformed response: DBLP result.hits object missing', self.name)
+            hits = hits_object.get('hit', []) if isinstance(hits_object, dict) else None
+            # A provider envelope is not a successful empty result. In
+            # particular, a positive total without hit rows is truncated data.
+            if isinstance(hits, dict):
+                hits = [hits]
+            valid_hits = (isinstance(hits_object, dict) and isinstance(hits, list)
+                          and all(isinstance(hit, dict) and isinstance(hit.get('info'), dict) for hit in hits)
+                          and (bool(hits) or str(hits_object.get('@total')) == '0'))
+            if not valid_hits:
+                context.add_warning(f'{self.name}: invalid JSON DBLP result.hits shape or missing rows', self.name)
                 context.note_request_result(self.name, ok=False, failure_category='malformed_response')
                 context.finish_query_attempt(attempt_id, status='failed', raw_candidates=None, error_category='malformed_response')
                 health.query_groups_failed += 1
                 continue
             health.query_groups_success += 1
-            hits = data.get("result", {}).get("hits", {}).get("hit", [])
             context.finish_query_attempt(attempt_id, status="success", raw_candidates=len(hits))
             raw_count += len(hits)
             for hit in hits:

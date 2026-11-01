@@ -34,6 +34,8 @@ def test_daily_workflow_has_no_broad_force_add() -> None:
 def test_daily_workflow_validates_before_upload() -> None:
     workflow = (ROOT / ".github/workflows/daily.yml").read_text(encoding="utf-8")
     assert workflow.index("Independent production report and public privacy gates") < workflow.index("actions/upload-artifact@v4")
-    assert "verify(root/'cloud-canonical', 'daily', context['target_date'])" in workflow
+    assert "verify(root/'cloud-canonical', 'daily', context['target_date']," in workflow
+    assert "public_history_root=root/'public-history'" in workflow
+    assert "public_history_ref=context['public_ownership_evidence']['source_ref']" in workflow
     assert "inspect_tree(root/'public-candidate')" in workflow
     assert "date +" not in workflow and "grep -q" not in workflow

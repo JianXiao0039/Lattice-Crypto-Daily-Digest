@@ -10,3 +10,6 @@
 *.bat text eol=crlf
 *.cmd text eol=crlf
 *.ps1 text eol=crlf
+
+# Preserve the original incident JSON byte hash (including CRLF).
+tests/fixtures/v43_oct17/2026-10-17.json -text whitespace=blank-at-eol,blank-at-eof,space-before-tab,cr-at-eol

@@ -7,7 +7,7 @@ import subprocess
 import tempfile
 from datetime import datetime, timezone
 from pathlib import Path
-from lattice_digest.report_gate import verify, encoded, GateError, fail, period_bounds
+from lattice_digest.report_gate import verify, encoded, GateError, fail, period_bounds, safe_file, strict_json
 from lattice_digest.public_report import project, export, inspect_tree
 from lattice_digest.public_publisher import publish
 from lattice_digest.public_contract import public_preflight, _reject_redirects
@@ -98,6 +98,16 @@ def deliver(root: Path, kind: str, period: str, *, remote: str = REMOTE,
                 return receipt
             if result['remote_readback']!='PASS':
                 fail('REMOTE_READBACK_FAILED','publisher did not supply verified remote evidence')
+            if result['status'] == 'SUPERSEDED_BY_HIGHER_AUTHORITY':
+                state('REMOTE_READBACK_VERIFIED')
+                receipt.update(status=result['status'], remote_delivery_operation=result['status'],
+                    remote_commit=result['commit'], publication=result, publication_verified=False,
+                    delivery_verified=False, remote_readback_verified=True, publish_pending=False,
+                    finished_at=datetime.now(timezone.utc).isoformat())
+                receipt['delivery_status'] = result['status']
+                receipt['delivery_states'].append(result['status'])
+                save()
+                return receipt
             state('GITHUB_PUSH_VERIFIED');state('REMOTE_READBACK_VERIFIED')
             # v1 states remain compatible. This explicitly named v2 state chain
             # distinguishes real remote publication from tests/configuration.
@@ -129,9 +139,10 @@ def pending(root: Path, kind: str) -> list[str]:
     for position,path in enumerate(sorted(directory.glob('*/receipt.json'),reverse=True)):
         if position>=64: break
         _reject_redirects(path)
-        if path.stat().st_size>16384: fail('PAYLOAD_SIZE_INVALID','delivery receipt exceeds bound')
         period=path.parent.name;period_bounds(kind,period)
-        value=json.loads(path.read_bytes())
+        value=strict_json(safe_file(root,path,16384))
+        if not isinstance(value,dict):
+            fail('SCHEMA_INVALID','pending receipt must be a mapping')
         if value.get('report_type')!=kind or value.get('report_period')!=period:
             fail('PERIOD_IDENTITY_INVALID','pending receipt identity mismatch')
         if value.get('status')=='PUBLISH_PENDING': result.append(period)

@@ -84,7 +84,8 @@ def load_promotion_history(data_dir: Path, target: date, *, days: int = HISTORY_
     rows = []
     evidence: dict[str, Any] = {'schema_version': 'history-evidence-v41', 'days': days, 'loaded': [], 'missing': [], 'unusable': [],
         'state': 'COMPLETE', 'complete': True, 'primary_ownership_eligible': True,
-        'compact_accounted_bytes': 0, 'reader_version': 'bounded-history-v41-1'}
+        'compact_accounted_bytes': 0, 'reader_version': 'bounded-history-v41-1', 'history_capability': 'LOCAL_CANONICAL_HISTORY',
+        'positive_event_ownership': False}
     for offset in range(1, days + 1):
         day = target - timedelta(days=offset)
         path = daily_data_path(day, data_dir)
@@ -106,7 +107,7 @@ def load_promotion_history(data_dir: Path, target: date, *, days: int = HISTORY_
             if size and evidence['compact_accounted_bytes'] + size <= MAX_TOTAL_COMPACT_BYTES:
                 evidence['compact_accounted_bytes'] += size
                 rows.extend({**r, '_history_unverified': True, '_history_verified': False} for r in exc.rows)
-            evidence['unusable'].append({'date': day.isoformat(), 'code': exc.code, 'reason': exc.code})
+            evidence['unusable'].append({'date': day.isoformat(), 'code': exc.code, 'reason': exc.code, 'source_receipt': receipt})
     if evidence['missing'] or evidence['unusable']:
         evidence.update(state='HISTORY_EVIDENCE_BLOCKED', complete=False, primary_ownership_eligible=False,
                         diagnostic='HISTORY_EVIDENCE_UNUSABLE')

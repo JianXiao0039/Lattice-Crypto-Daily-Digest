@@ -48,6 +48,8 @@ def test_cloud_zero_new_export_when_duplicate_owned_and_history_explicitly_compl
     manifest,files=inspect_tree(tmp_path/'public')
     public=json.loads(files['daily/2026/2026-10-27.json'])
     assert public['quality']=='PROVISIONAL_PUBLIC' and public['event_count']==0
+    assert public['history_evidence']['capability']=='LOCAL_CANONICAL_HISTORY'
+    assert public['history_evidence']['history_complete'] is True
     assert public['source_coverage_state']=='INCOMPLETE_DO_NOT_INTERPRET_AS_NO_NEWS'
     assert '今日未发现值得记录的格密码相关新论文。'.encode() not in files['daily/2026/2026-10-27.md']
     assert b'runtime_paths' not in b''.join(files.values())

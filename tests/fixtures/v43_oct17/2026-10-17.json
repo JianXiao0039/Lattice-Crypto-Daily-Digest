@@ -1,0 +1,79 @@
+{
+  "records": [],
+  "metadata": {
+    "target_date": "2026-10-17",
+    "target_date_basis": "CANONICAL_FILENAME",
+    "legacy_schema_restatement": "SOURCE_PRESERVING_UNKNOWN_WINDOW",
+    "coverage_start": null,
+    "coverage_end": null,
+    "run_date": null,
+    "run_mode": null,
+    "quality_status": null,
+    "publication_policy_version": null,
+    "generation_id": "0d393fc74ee64478920a4bd1941388e3",
+    "repair_executed_at": "2026-10-19T01:28:57.033039+00:00",
+    "publication_event_semantics": "UNRESOLVED_LEGACY_ARCHIVE_NOT_CURRENT_EVENT_FACT",
+    "scientific_claim_verification": "UNRESOLVED_EVIDENCE",
+    "authority_policy_version": "daily-correctness-v1",
+    "authority_scope": "configured-source Daily correctness; excludes gated bilingual release",
+    "authority_state": "INCOMPLETE_DO_NOT_INTERPRET_AS_NO_NEWS",
+    "source_coverage": {
+      "complete": false,
+      "required_sources": [
+        "arxiv",
+        "iacr_eprint",
+        "openalex",
+        "semantic_scholar"
+      ],
+      "optional_sources": [
+        "crossref",
+        "dblp"
+      ],
+      "incomplete_required_sources": [
+        "arxiv",
+        "iacr_eprint",
+        "openalex",
+        "semantic_scholar"
+      ],
+      "degraded_sources": [
+        "arxiv",
+        "crossref",
+        "dblp",
+        "iacr_eprint",
+        "openalex",
+        "semantic_scholar"
+      ]
+    },
+    "selection_counts": {
+      "selected": 0,
+      "primary_new": 0
+    },
+    "render_branch": "ZERO_SELECTED_INCOMPLETE",
+    "translation_status": "TRANSLATION_BACKEND_SELECTION_REQUIRED",
+    "bilingual_release_status": "BILINGUAL_RELEASE_NOT_YET_AVAILABLE",
+    "semantic_qa": {
+      "status": "PASS",
+      "semantic_valid": true,
+      "issues": [],
+      "unknown": []
+    },
+    "markdown_sha256": "da0435aef4ec9f56e768665815f72035134fe9bb6cbe2676e5073fce0d48bfba",
+    "historical_missing_report": "ORIGINAL_WINDOW_AND_OBSERVATIONS_UNKNOWN",
+    "original_failed_discovery_counts": "N/A",
+    "original_execution_status": "UNKNOWN_NO_SUCCESS_PAIR",
+    "source_snapshot_kind": "NO_RECOVERABLE_ORIGINAL_PROVIDER_SNAPSHOT",
+    "recovery_executed_at": "2026-10-19T01:28:57.074147+00:00"
+  },
+  "source_health": [
+    {
+      "source": "UNKNOWN_LEGACY_PROVIDER_HEALTH",
+      "health_status": "unknown",
+      "runtime_state": "NOT_RECORDED",
+      "evidence_state": "UNRESOLVED_EVIDENCE",
+      "requests_attempted": "N/A"
+    }
+  ],
+  "warnings": [
+    "历史来源重述；未重新采集，缺失原时窗口与提供者健康。"
+  ]
+}

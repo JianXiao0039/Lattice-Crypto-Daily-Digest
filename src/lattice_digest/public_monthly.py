@@ -35,7 +35,7 @@ def main(argv: list[str] | None = None) -> int:
             return 0
         stage = 'REPORT_GENERATION'
         with writer_lock(paths,'MONTHLY',month):
-            payload = build_monthly_synthesis(paths.data_root, month)
+            payload = build_monthly_synthesis(paths.data_root, month, assessment_policy='period-input-evidence-v43')
             payload.setdefault('metadata', {}).update(proof['runtime_provenance'])
             payload['metadata'].update(schedule_telemetry(started))
             payload['metadata']['runtime_paths'] = paths.as_dict()

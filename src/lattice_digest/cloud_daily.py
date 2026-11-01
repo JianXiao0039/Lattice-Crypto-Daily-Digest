@@ -103,7 +103,7 @@ def main(argv=None):
         timing=execution_receipt(target,strict_json(safe_file(root,canonical_json))['metadata'])
         print(json.dumps({'event':'CLOUD_CANONICAL_GENERATED','execution':timing}))
         from lattice_digest.public_report import export
-        export(root,'daily',target['target_date'],args.public_output)
+        export(root,'daily',target['target_date'],args.public_output, public_history_root=args.public_history_root, public_history_ref=args.public_history_ref)
         receipt=root/'audits'/'cloud-target.json'
         receipt.parent.mkdir(parents=True,exist_ok=True)
         receipt.write_bytes(encoded(target)+b'\n')

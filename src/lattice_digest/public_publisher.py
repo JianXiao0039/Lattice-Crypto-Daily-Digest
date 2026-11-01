@@ -146,6 +146,19 @@ def publish(candidate: Path, remote: str, *, approved: bool = False, attempts: i
                 if old == entry:
                     return {'status':'NO_OP', 'remote_readback':'PASS', 'commit':base, 'attempts':attempt, 'remote_kind':kind,
                             'report':key, 'public_artifacts':{name:sha(raw) for name,raw in files.items()}}
+                if QUALITY[old['quality']] < QUALITY[entry['quality']]:
+                    # A stronger report may add independently verified evidence,
+                    # but authority ordering is not permission to erase or rewrite
+                    # an already counted event. Such corrections need a separate
+                    # reviewed version policy, even when aggregate quality rises.
+                    from lattice_digest.report_gate import strict_json
+                    before = strict_json(files[old['json']])
+                    after = strict_json(source_files[entry['json']])
+                    def counted(p):
+                        return {(r['event_id'], r['public_canonical_id'], r['verified_date'], r['event_kind'])
+                                for r in p['papers'] if r['event_evidence'] == 'VERIFIED_CURRENT_SCHEMA_EVENT'}
+                    if not counted(before).issubset(counted(after)):
+                        fail('EVENT_HISTORY_REWRITE_REQUIRES_REVIEW', 'authority upgrade cannot remove or rewrite accepted counted events')
                 if QUALITY[old['quality']] == QUALITY[entry['quality']]:
                     # The reviewed one-way v1 -> v2 readability migration must
                     # preserve the exact canonical pair and every counted event.

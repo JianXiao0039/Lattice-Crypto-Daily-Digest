@@ -43,7 +43,8 @@ ROW_FIELDS = frozenset(('title', 'authors', 'venue', 'abstract', 'doi', 'arxiv_i
 META_FIELDS = frozenset(('target_date', 'generation_id', 'markdown_sha256',
     'quality_status', 'publication_state', 'structural_qa', 'semantic_qa',
     'publication_policy_version', 'authority_policy_version', 'generated_at',
-    'report_generated_at', 'run_date', 'coverage_start', 'coverage_end'))
+    'report_generated_at', 'run_date', 'coverage_start', 'coverage_end',
+    'historical_missing_report', 'original_execution_status', 'source_snapshot_kind'))
 
 
 class HistoryEvidenceError(ValueError):
@@ -263,11 +264,8 @@ def load_verified_history_pair(data_dir: Path, day: date) -> tuple[list[dict[str
                        _history_generation_id=receipt['generation_id'])
         generation = meta.get('generation_id')
         if (not isinstance(generation, str) or not re.fullmatch('[a-f0-9]{32}', generation)
-                or meta.get('target_date') != str(day)
-                or meta.get('quality_status') not in {'authoritative', 'authoritative_backfill'}
-                or meta.get('publication_state') != 'QA_PASSED'
-                or any(not isinstance(meta.get(k), dict) or meta[k].get('status') != 'PASS' for k in ('structural_qa', 'semantic_qa'))):
-            raise HistoryEvidenceError('HISTORY_EVIDENCE_UNUSABLE', rows, receipt)
+                or meta.get('target_date') != str(day)):
+            raise HistoryEvidenceError('HISTORY_PAIR_METADATA_INVALID', rows, receipt)
         md_stream, md_before = _safe_open(mp, MAX_MARKDOWN_BYTES)
         with md_stream:
             # Markdown is independently capped at 16 MiB. Decode once, bound its
@@ -282,12 +280,112 @@ def load_verified_history_pair(data_dir: Path, day: date) -> tuple[list[dict[str
         if (markdown_sha != meta.get('markdown_sha256')
                 or markdown.decode('utf-8').count('<!-- generation:' + generation + ' -->') != 1):
             raise HistoryEvidenceError('HISTORY_INDEX_SOURCE_MISMATCH', rows, receipt)
+        receipt.update(markdown_sha256=markdown_sha, source_pair_binding='SOURCE_PAIR_VALID',
+                       independent_report_acceptance='UNKNOWN', delivery_state='UNKNOWN',
+                       positive_event_ownership=False)
+        # A recovery placeholder is evidence of a gap, never a legacy run.
+        if meta.get('historical_missing_report') or meta.get('original_execution_status') == 'UNKNOWN_NO_SUCCESS_PAIR':
+            receipt.update(history_trust_tier='UNVERIFIED_OR_MISSING', durable_qa_state='NOT_ORIGINAL_EXECUTION')
+            raise HistoryEvidenceError('HISTORY_ORIGINAL_OBSERVATIONS_UNKNOWN', rows, receipt)
+        durable = (meta.get('quality_status') in {'authoritative', 'authoritative_backfill'}
+            and meta.get('publication_state') == 'QA_PASSED'
+            and all(isinstance(meta.get(k), dict) and meta[k].get('status') == 'PASS'
+                    for k in ('structural_qa', 'semantic_qa')))
+        if not durable:
+            # Pair integrity does not recreate old execution or modern QA.
+            receipt.update(history_trust_tier='LEGACY_INTEGRITY_VERIFIED',
+                durable_qa_state='UNCONFIRMED', verified=False)
+            raise HistoryEvidenceError('HISTORY_ORIGINAL_QA_UNCONFIRMED', rows, receipt)
         for row in rows:
             row['_history_verified'] = True
-        receipt.update(markdown_sha256=markdown_sha, verified=True,
+            row['_history_independent_accepted'] = False
+            row['_history_positive_event_owner'] = False
+        receipt.update(verified=True, history_trust_tier='CURRENT_PAIR_QA_VERIFIED',
+                       durable_qa_state='DURABLE_QA_VALID',
                        verification='SOURCE_PAIR_BINDING_AND_DURABLE_QA_NOT_RECURSIVE_SCIENTIFIC_ACCEPTANCE')
         return rows, receipt
     except HistoryEvidenceError:
         raise
     except (OSError, UnicodeError, ValueError, TypeError, AttributeError):
         raise HistoryEvidenceError('HISTORY_EVIDENCE_UNUSABLE') from None
+
+
+def verify_history_source_bindings(data_dir: Path, evidence: dict) -> None:
+    """Rehash a fresh projection's canonical sources before scientific acceptance.
+
+    This is a bounded snapshot recheck, not a receipt trust root or a parser.
+    Callers supply freshly computed load_promotion_history evidence and must have
+    independently checked its scientific content. No sidecar is consulted.
+    """
+    import os
+    from lattice_digest.artifact_paths import daily_data_path, daily_digest_path
+    data_dir = Path(data_dir).absolute()
+    def mismatch():
+        raise HistoryEvidenceError('HISTORY_INDEX_SOURCE_MISMATCH')
+    def day_value(value):
+        if not isinstance(value, str): mismatch()
+        parsed = date.fromisoformat(value)
+        if str(parsed) != value: mismatch()
+        return parsed
+    def locks(day):
+        jp = daily_data_path(day, data_dir)
+        for lock in (data_dir.parent/'audits'/'writer-locks'/f'DAILY-{day}.lock',
+                     jp.with_name(f'.{day}.publication.lock')):
+            _reject_redirects(lock)
+            if lock.exists() or lock.is_symlink(): mismatch()
+    def stamp(info):
+        return (info.st_dev, info.st_ino, info.st_size, info.st_mtime_ns)
+    def check_file(path, maximum, expected_hash, expected_size=None):
+        if not isinstance(expected_hash, str) or not re.fullmatch('[a-f0-9]{64}', expected_hash): mismatch()
+        if expected_size is not None and (type(expected_size) is not int or not 0 < expected_size <= maximum): mismatch()
+        stream, before = _safe_open(path, maximum)
+        digest = hashlib.sha256(); total = 0
+        with stream:
+            while True:
+                chunk = stream.read(CHUNK_CHARS)
+                if not chunk: break
+                total += len(chunk)
+                if total > maximum: mismatch()
+                digest.update(chunk)
+            opened_after = os.fstat(stream.fileno())
+            _reject_redirects(path)
+            after = path.stat()
+            if stamp(before) != stamp(opened_after) or stamp(before) != stamp(after): mismatch()
+        if (total != before.st_size or (expected_size is not None and total != expected_size)
+                or digest.hexdigest() != expected_hash): mismatch()
+    try:
+        if not isinstance(evidence, dict): mismatch()
+        days = evidence.get('days')
+        if type(days) is not int or not 1 <= days <= 14: mismatch()
+        loaded, unusable, missing = (evidence.get(k) for k in ('loaded', 'unusable', 'missing'))
+        if any(not isinstance(items, list) for items in (loaded, unusable, missing)): mismatch()
+        if len(loaded) + len(unusable) + len(missing) != days: mismatch()
+        seen = set()
+        for entries, rejected in ((loaded, False), (unusable, True)):
+            for entry in entries:
+                if not isinstance(entry, dict): mismatch()
+                day = day_value(entry.get('date'))
+                if day in seen: mismatch()
+                seen.add(day)
+                receipt = entry.get('source_receipt') if rejected else entry
+                if (not isinstance(receipt, dict) or receipt.get('date') != str(day)
+                        or type(receipt.get('source_bytes')) is not int): mismatch()
+                locks(day)
+                check_file(daily_data_path(day, data_dir), MAX_HISTORY_BYTES,
+                           receipt.get('sha256'), receipt.get('source_bytes'))
+                md_hash = receipt.get('markdown_sha256')
+                if md_hash is not None:
+                    check_file(daily_digest_path(day, data_dir.parent/'digests'), MAX_MARKDOWN_BYTES, md_hash)
+                elif receipt.get('source_pair_binding') == 'SOURCE_PAIR_VALID':
+                    mismatch()
+                locks(day)
+        for value in missing:
+            day = day_value(value)
+            if day in seen: mismatch()
+            seen.add(day)
+            locks(day)
+            path = daily_data_path(day, data_dir)
+            _reject_redirects(path)
+            if path.exists() or path.is_symlink(): mismatch()
+    except (HistoryEvidenceError, OSError, UnicodeError, ValueError, TypeError, AttributeError, KeyError):
+        raise HistoryEvidenceError('HISTORY_INDEX_SOURCE_MISMATCH') from None

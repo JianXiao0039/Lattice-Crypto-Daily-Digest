@@ -32,7 +32,7 @@ def main(argv: list[str] | None = None) -> int:
         stage = 'REPORT_GENERATION'
         key=f'{start.isocalendar().year}-W{start.isocalendar().week:02d}'
         with writer_lock(paths,'WEEKLY',key):
-            payload = build_weekly_synthesis(paths.data_root, start, end)
+            payload = build_weekly_synthesis(paths.data_root, start, end, assessment_policy='period-input-evidence-v43')
             payload.setdefault('metadata', {}).update(proof['runtime_provenance'])
             payload['metadata'].update(schedule_telemetry(started))
             payload['metadata']['runtime_paths'] = paths.as_dict()

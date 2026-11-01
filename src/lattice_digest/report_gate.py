@@ -9,10 +9,13 @@ import argparse
 import calendar
 from dataclasses import dataclass, field
 from datetime import date, datetime, timedelta
+from email.utils import parsedate_to_datetime
 import hashlib
 import json
+import os
 from pathlib import Path
 import re
+import stat
 
 from lattice_digest import artifact_paths as ap
 from lattice_digest.public_contract import _reject_redirects
@@ -48,7 +51,7 @@ def strict_json(raw: bytes):
     try:
         return json.loads(raw.decode('utf-8'), object_pairs_hook=pairs,
                           parse_constant=lambda _: fail('SCHEMA_INVALID', 'non-finite JSON number'))
-    except (UnicodeError, json.JSONDecodeError):
+    except (UnicodeError, json.JSONDecodeError, RecursionError):
         fail('SCHEMA_INVALID', 'JSON must be valid UTF-8')
 
 
@@ -76,18 +79,32 @@ def paths_for(root: Path, kind: str, period: str) -> tuple[Path, Path]:
 
 
 def safe_file(root: Path, path: Path, maximum: int = 64 * 1024 * 1024) -> bytes:
+    root, path = Path(root).absolute(), Path(path).absolute()
+    def stamp(info):
+        return info.st_dev, info.st_ino, info.st_size, info.st_mtime_ns
     try:
         _reject_redirects(root)
         _reject_redirects(path)
-    except ValueError:
+        if not path.resolve().is_relative_to(root.resolve()):
+            fail('ARTIFACT_PATH_MISMATCH', 'artifact escapes selected root')
+        before = path.stat()
+        if not stat.S_ISREG(before.st_mode):
+            fail('ARTIFACT_PATH_MISMATCH', 'canonical input is not a regular file')
+        if not 0 < before.st_size <= maximum:
+            fail('PAYLOAD_SIZE_INVALID', 'artifact empty or oversized')
+        with path.open('rb') as stream:
+            if stamp(os.fstat(stream.fileno())) != stamp(before):
+                fail('PAIR_HASH_MISMATCH', 'artifact changed while opening')
+            raw = stream.read(maximum + 1)
+            _reject_redirects(path)
+            if (stamp(os.fstat(stream.fileno())) != stamp(before)
+                    or stamp(path.stat()) != stamp(before) or len(raw) != before.st_size):
+                fail('PAIR_HASH_MISMATCH', 'artifact changed during bounded read')
+        return raw
+    except GateError:
+        raise
+    except (ValueError, OSError):
         fail('ARTIFACT_PATH_MISMATCH', 'redirected artifact path')
-    if not path.absolute().is_relative_to(root.absolute()):
-        fail('ARTIFACT_PATH_MISMATCH', 'artifact escapes selected root')
-    if not path.is_file():
-        fail('ARTIFACT_PATH_MISMATCH', 'canonical pair missing; legacy paths are not eligible')
-    if not 0 < path.stat().st_size <= maximum:
-        fail('PAYLOAD_SIZE_INVALID', 'artifact empty or oversized')
-    return path.read_bytes()
 
 
 @dataclass
@@ -107,7 +124,7 @@ class VerifiedPair:
     input_provenance: list[dict] = field(default_factory=list)
 
 
-def verify(root: Path, kind: str, period: str) -> VerifiedPair:
+def verify(root: Path, kind: str, period: str, *, public_history_root: Path | None = None, public_history_ref: str | None = None) -> VerifiedPair:
     root = Path(root).absolute()
     if ap.legacy_fallback_allowed():
         fail('ARTIFACT_PATH_MISMATCH', 'public validation requires canonical-only input resolution; disable legacy compatibility')
@@ -147,6 +164,7 @@ def verify(root: Path, kind: str, period: str) -> VerifiedPair:
     diagnostics = []
     input_provenance = []
     derived_history = False
+    noncounting_partial = False
     if kind == 'daily':
         if meta.get('publication_policy_version') not in SUPPORTED_POLICIES or meta.get('authority_policy_version') != 'daily-correctness-v1':
             fail('SCHEMA_VERSION_UNSUPPORTED', 'unsupported Daily publication/authority policy tuple')
@@ -186,30 +204,93 @@ def verify(root: Path, kind: str, period: str) -> VerifiedPair:
                     any(len({k for k in keys if k.startswith(ns)})>1 for ns in ('doi:','arxiv:','eprint:'))):
                 fail('SCIENTIFIC_QA_INCOMPLETE','counted event has unresolved conflicting source identities or versions')
         prior_rows, history = load_promotion_history(root/'data', first)
+        if meta.get('collector') == 'github_actions' and meta.get('public_ownership_evidence') is not None:
+            if public_history_root is None or public_history_ref is None:
+                fail('HISTORY_EVIDENCE_UNUSABLE', 'cloud verification requires independent pinned public snapshot')
+            from lattice_digest.cloud_public_history import ownership_history
+            public_rows, public_evidence = ownership_history(public_history_root, public_history_ref, period)
+            saved_public = meta['public_ownership_evidence']
+            for field in ('source_ref', 'manifest_sha256', 'ownership_rows_sha256', 'report_count', 'owner_count'):
+                if saved_public.get(field) != public_evidence[field]:
+                    fail('HISTORY_INDEX_SOURCE_MISMATCH', 'cloud public ownership source binding changed')
+            prior_rows.extend(public_rows)
+
         prior_identities = set().union(*(identity_keys(row) for row in prior_rows)) if prior_rows else set()
         if any(e['collection']=='primary_publication_events' and identity_keys(rows[e['row_index']]) & prior_identities for e in events):
             fail('CROSS_DAY_DUPLICATE_PRIMARY', 'primary identity already observed in durable canonical history')
+        if meta.get('collector') == 'github_actions' and events and not meta.get('public_ownership_evidence'):
+            fail('HISTORY_EVIDENCE_UNUSABLE', 'cloud counted events require pinned ownership evidence')
         if history.get('complete') is not True:
+            saved = meta.get('promotion_history') or {}
+            if (saved.get('schema_version') != history.get('schema_version')
+                    or saved.get('complete') is not False
+                    or set(saved.get('missing', [])) != set(history.get('missing', [])) or
+                    {r['date'] for r in saved.get('unusable', [])} != {r['date'] for r in history.get('unusable', [])}):
+                fail('HISTORY_INDEX_SOURCE_MISMATCH', 'historical gap projection changed since generation')
             codes = {e.get('code') for e in history.get('unusable', [])}
             code = ('HISTORY_INDEX_SOURCE_MISMATCH' if 'HISTORY_INDEX_SOURCE_MISMATCH' in codes else
                     'HISTORY_RESOURCE_LIMIT' if 'HISTORY_RESOURCE_LIMIT' in codes else 'HISTORY_EVIDENCE_UNUSABLE')
-            fail(code, 'bounded independent history evidence is incomplete; publication is blocked')
+            # Integrity faults block even a noncounting report. Missing original
+            # observations cannot authorize promotions, but need not suppress a
+            # scientifically checked observation-only report indefinitely.
+            if codes & {'HISTORY_INDEX_SOURCE_MISMATCH', 'HISTORY_RESOURCE_LIMIT',
+                        'HISTORY_EVIDENCE_UNUSABLE', 'HISTORY_PAIR_METADATA_INVALID'} or events:
+                fail(code, 'history cannot authorize these events or has an integrity fault')
+            # Old rejected candidates sometimes recorded only the gap date/code.
+            # Absence of a saved source hash is not proof that today's source is
+            # the original one. Only approved source-preserving revalidation may
+            # create a newly bound candidate; never bless the unbound old pair.
+            if any(not re.fullmatch(r'[a-f0-9]{64}', str(r.get('source_receipt', {}).get('sha256') or ''))
+                   for r in saved.get('unusable', [])):
+                fail('HISTORY_PROJECTION_UNBOUND', 'historical gap source lacks saved byte binding; source-preserving revalidation required')
+            noncounting_partial = True
+            diagnostics.extend(['HISTORY_DEGRADED_NO_PROMOTION', 'NO_AUTHORIZED_EVENTS_OBSERVED'])
         # Detect source changes after generation; saved metadata is not a trusted
         # index and cannot substitute for freshly read, source-bound evidence.
         saved_history = meta.get('promotion_history') or {}
         expected_hashes = {p.get('date'):p.get('sha256') for p in saved_history.get('loaded', [])}
         current_hashes = {p.get('date'):p.get('sha256') for p in history.get('loaded', [])}
+        expected_hashes.update({p.get('date'):p['source_receipt']['sha256']
+            for p in saved_history.get('unusable', []) if p.get('source_receipt', {}).get('sha256')})
+        current_hashes.update({p.get('date'):p['source_receipt']['sha256']
+            for p in history.get('unusable', []) if p.get('source_receipt', {}).get('sha256')})
         if any(current_hashes.get(day) != digest for day,digest in expected_hashes.items()):
             fail('HISTORY_INDEX_SOURCE_MISMATCH', 'historical source binding changed since generation')
         from lattice_digest.publication_events import build_event_ledger
         independently_rebuilt = build_event_ledger(rows, meta, prior_rows)
         if independently_rebuilt != payload['publication_event_ledger']:
             fail('EVENT_OWNERSHIP_CONFLICT', 'saved event ledger differs from independently source-bound historical replay')
+        # Frozen ledgers may interpret a date or naive time as UTC. That is not
+        # source evidence for an intra-day cutoff or a SOURCE_OFFSET claim.
+        # Preserve the candidate; never delete its uncertain events to pass QA.
+        for event in events:
+            value = event.get('event_date')
+            try:
+                if not isinstance(value, str) or re.fullmatch(r'\d{4}-\d{2}-\d{2}', value):
+                    raise ValueError
+                try:
+                    instant = datetime.fromisoformat(value.replace('Z', '+00:00'))
+                except ValueError:
+                    instant = parsedate_to_datetime(value)
+                if instant.tzinfo is None:
+                    raise ValueError
+            except (ValueError, TypeError, IndexError):
+                fail('EVENT_TIME_PRECISION_UNPROVEN', 'counted event lacks an explicit source time and timezone')
+            if not start <= instant < end:
+                fail('EVENT_TIME_WINDOW_UNPROVEN', 'counted event source time is outside the exact collection window')
         from lattice_digest.authority import semantic_qa
         qa = semantic_qa(payload, md)
         if qa['status'] != 'PASS' or meta.get('cross_day_qa', {}).get('status') != 'PASS':
             fail('SCIENTIFIC_QA_INCOMPLETE', 'independent Daily semantic/event QA rejected the pair')
+        from lattice_digest.history_resources import verify_history_source_bindings, HistoryEvidenceError
+        try:
+            verify_history_source_bindings(root/'data', history)
+        except HistoryEvidenceError:
+            fail('HISTORY_INDEX_SOURCE_MISMATCH', 'historical source changed after independent projection')
         state = qa['derived_authority']['authority_state']
+        if not events and qa['derived_authority'].get('source_coverage', {}).get('complete') is not True:
+            noncounting_partial = True
+            diagnostics.extend(['SOURCE_DEGRADED_NO_PROMOTION', 'NO_AUTHORIZED_EVENTS_OBSERVED'])
         start_text, end_text = start.isoformat(), end.isoformat()
         cloud = meta['quality_status'] == 'provisional'
     else:
@@ -229,8 +310,11 @@ def verify(root: Path, kind: str, period: str) -> VerifiedPair:
         # Rebuild event views from the canonical Daily evidence. Never trust saved counts.
         from lattice_digest.weekly_synthesis import build_weekly_synthesis
         from lattice_digest.monthly_synthesis import build_monthly_synthesis
-        rebuilt = (build_weekly_synthesis(root / 'data', first, last) if kind == 'weekly'
-                   else build_monthly_synthesis(root / 'data', period))
+        assessment_policy = meta.get('period_input_policy')
+        if assessment_policy not in (None, 'period-input-evidence-v43'):
+            fail('SCHEMA_VERSION_UNSUPPORTED', 'unknown period input assessment policy')
+        rebuilt = (build_weekly_synthesis(root / 'data', first, last, **({'assessment_policy': assessment_policy} if assessment_policy else {})) if kind == 'weekly'
+                   else build_monthly_synthesis(root / 'data', period, **({'assessment_policy': assessment_policy} if assessment_policy else {})))
         if rebuilt.get('publication_event_views') != payload.get('publication_event_views'):
             fail('EVENT_OWNERSHIP_INVALID', 'period event views differ from independent canonical replay')
         quality = payload.get('coverage') or payload.get('input_quality') or {}
@@ -246,7 +330,7 @@ def verify(root: Path, kind: str, period: str) -> VerifiedPair:
         from lattice_digest.weekly_synthesis import load_daily_json
         from lattice_digest.publication_events import normalize_period_inputs
         days = [first + timedelta(days=i) for i in range((last-first).days+1)]
-        loaded, missing = load_daily_json(root/'data', days)
+        loaded, missing = load_daily_json(root/'data', days, **({'assessment_policy': assessment_policy} if assessment_policy else {}))
         for cursor, source_payload in normalize_period_inputs(loaded):
             source_j, source_m = paths_for(root, 'daily', str(cursor))
             source_jb, source_mb = safe_file(root, source_j), safe_file(root, source_m)
@@ -264,7 +348,10 @@ def verify(root: Path, kind: str, period: str) -> VerifiedPair:
             if source_meta.get('publication_policy_version'):
                 daily = verify(root, 'daily', str(cursor))
                 source_rows, selected = daily.source_rows, daily.events
-                tier = 'VERIFIED_CURRENT_SCHEMA_EVENT'
+                tier = 'VERIFIED_CURRENT_SCHEMA_EVENT' if daily.quality != 'PROVISIONAL_PUBLIC' else 'NONCOUNTING_PARTIAL_INPUT'
+                if daily.quality == 'PROVISIONAL_PUBLIC':
+                    derived_history = True
+                    diagnostics.append('PARTIAL_DAILY_INPUT_NOT_NO_NEWS')
             elif selected:
                 # A bounded historical source-window reconstruction remains a candidate.
                 # This does not invent current-schema durable QA or runtime provenance.
@@ -312,9 +399,22 @@ def verify(root: Path, kind: str, period: str) -> VerifiedPair:
         state = quality['authority_state']
         start_text, end_text = str(first), str(last)
         cloud = False
+        # The aggregation may take long enough for an earlier Daily input to
+        # change. Bind the final decision to the same input bytes, not merely to
+        # hashes retained by an earlier load.
+        for source in input_provenance:
+            sj, sm = paths_for(root, 'daily', source['date'])
+            if source['event_evidence'] == 'MISSING_CANONICAL_INPUT':
+                if sj.exists() or sj.is_symlink():
+                    fail('HISTORY_INDEX_SOURCE_MISMATCH', 'period input appeared after projection')
+            elif (sha(safe_file(root, sj)) != source['json_sha256']
+                    or sha(safe_file(root, sm, 16 * 1024 * 1024)) != source['markdown_sha256']):
+                fail('HISTORY_INDEX_SOURCE_MISMATCH', 'period input changed after projection')
+    if sha(safe_file(root, j)) != sha(jb) or sha(safe_file(root, m, 16 * 1024 * 1024)) != sha(mb):
+        fail('PAIR_HASH_MISMATCH', 'canonical pair changed before independent acceptance')
     if state != 'AUTHORITATIVE_COMPLETE':
         diagnostics.append('SOURCE_COVERAGE_DEGRADED')
-    quality = ('PROVISIONAL_PUBLIC' if cloud or derived_history else 'VERIFIED_AUTHORITATIVE' if state == 'AUTHORITATIVE_COMPLETE'
+    quality = ('PROVISIONAL_PUBLIC' if cloud or derived_history or noncounting_partial else 'VERIFIED_AUTHORITATIVE' if state == 'AUTHORITATIVE_COMPLETE'
                else 'VALID_DEGRADED_AUTHORITATIVE')
     return VerifiedPair(kind, period, payload, sha(jb), sha(mb), diagnostics, rows, events,
                         start_text, end_text, state, quality, input_provenance)
@@ -325,9 +425,11 @@ def main(argv=None):
     parser.add_argument('--root', required=True, type=Path)
     parser.add_argument('--type', required=True, choices=('daily', 'weekly', 'monthly'))
     parser.add_argument('--period', required=True)
+    parser.add_argument('--public-history-root', type=Path)
+    parser.add_argument('--public-history-ref')
     args = parser.parse_args(argv)
     try:
-        pair = verify(args.root, args.type, args.period)
+        pair = verify(args.root, args.type, args.period, public_history_root=args.public_history_root, public_history_ref=args.public_history_ref)
         print(json.dumps({'gate': 'PRODUCTION_REPORT_GATE', 'status': 'PASS', 'report_type': pair.kind,
                           'report_period': pair.period, 'diagnostics': pair.diagnostics,
                           'json_sha256': pair.json_sha256, 'markdown_sha256': pair.markdown_sha256}))

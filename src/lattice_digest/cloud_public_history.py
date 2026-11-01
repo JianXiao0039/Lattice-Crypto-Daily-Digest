@@ -74,7 +74,8 @@ def ownership_history(root: Path, source_ref: str, target: str) -> tuple[list[di
             rows.append(row)
     evidence = {'schema_version': 'public-ownership-history-v1', 'source_ref': source_ref,
                 'manifest_sha256': sha(files['manifest.json']), 'report_count': len(manifest['reports']),
-                'owner_count': len(rows), 'history_complete': False,
+                'owner_count': len(rows), 'history_complete': False, 'capability': 'CLOUD_PINNED_PUBLIC_OWNERSHIP',
+                'positive_promotion_authority': False,
                 'state': 'HISTORY_EVIDENCE_UNUSABLE', 'ownership_rows_sha256': sha(encoded(rows))}
     return rows, evidence
 

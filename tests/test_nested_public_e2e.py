@@ -32,7 +32,7 @@ def health(degraded=False):
         for s in configured_sources() if s.get('enabled')]
 
 
-def generate_daily(root, canonical, day, rows, degraded=False):
+def generate_daily(root, canonical, day, rows, degraded=False, *, expected_exit=0):
     from tests.v41_history_fixture import seed_empty_history
     seed_empty_history(canonical, day)
     # Only the discovery transport is replaced. Public preflight, live Git
@@ -60,7 +60,7 @@ sys.exit(main(['--target-date',{str(day)!r},'--since','36h','--output','markdown
     result = subprocess.run([os.environ.get('LATTICE_DIGEST_TEST_PUBLIC_PYTHON', sys.executable),
                             '-c',script],cwd=root,env=env,
                             capture_output=True,text=True,encoding='utf-8')
-    assert result.returncode == 0, result.stdout + result.stderr
+    assert result.returncode == expected_exit, result.stdout + result.stderr
     path = daily_data_path(day,canonical/'data')
     payload = json.loads(path.read_text(encoding='utf-8'))
     md = daily_digest_path(day,canonical/'digests').read_text(encoding='utf-8')
@@ -106,14 +106,22 @@ def test_public_daily_degraded_generation_is_conservative(nested_repo, has_paper
     assert expected in md
 
 
-def test_public_daily_frozen_real_lwe_source_snapshot(nested_repo):
+def test_public_daily_frozen_real_lwe_source_snapshot_requires_source_time(nested_repo):
     root, canonical, _ = nested_repo
     fixtures = json.loads((Path(__file__).parent/'fixtures/scientific_publication_p0_canaries.json')
                           .read_text(encoding='utf-8'))
     frozen = next(item for item in fixtures if item['source_record']['eprint_id'] == '2026/2261')
     # Actual saved source fields and original publication date; no live provider claim.
     source = frozen['source_record']
-    payload, md = generate_daily(root, canonical, date.fromisoformat(source['publication_date']), [source])
+    target = source['publication_date']
+    # The actual saved fixture has only a source DATE_ONLY. Do not fabricate an
+    # exact instant to make this real-source regression a positive transport.
+    payload, md = generate_daily(root, canonical, date.fromisoformat(target), [source], expected_exit=2)
+    receipt = json.loads((canonical/f'audits/generation-validation/daily/{target}/receipt.json').read_bytes())
+    assert receipt['error_code'] == 'EVENT_TIME_PRECISION_UNPROVEN'
+    assert receipt['scientific_validation_verified'] is False
+    assert payload['records'][0]['publication_date'] == source['publication_date']
+    assert payload['records'][0].get('publication_timestamp') is None
     assert payload['metadata']['selection_counts']['primary_new'] == 1
     assert payload['records'][0]['source_url'] == source['source_url']
     assert source['title'] in md

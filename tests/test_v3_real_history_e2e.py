@@ -140,14 +140,28 @@ sys.exit(main(ARGS))
         # Original immutable history remains untouched; prove all input hashes again.
         receipt['input_hash_qa']='PASS' if all(sha(Path(x['source']))==x['sha256'] for x in inputs) else 'FAIL'
     (E/f'{kind}-real-receipt.json').write_text(json.dumps(receipt,ensure_ascii=False,indent=2),encoding='utf-8')
-    if kind in ('daily','weekly'):
-        # Daily's October 17 input has no original observations. The Weekly
-        # fixture has only its bounded period corpus, not prior-day ownership
-        # history. Both can create diagnostic pairs but cannot establish delivery.
+    if kind == 'daily':
+        # V43 explicitly accepts the independently replayed zero-count report
+        # under low authority. Original gap/partial source coverage is retained;
+        # generation success still does not claim remote delivery.
+        validation=json.loads((canonical/f'audits/generation-validation/{kind}/{target}/receipt.json').read_bytes())
+        assert result.returncode == 0, result.stdout + result.stderr
+        from lattice_digest.report_gate import verify
+        pair=verify(canonical,'daily',target)
+        assert pair.quality == 'PROVISIONAL_PUBLIC' and pair.events == []
+        assert 'HISTORY_DEGRADED_NO_PROMOTION' in pair.diagnostics
+        assert validation['scientific_validation_verified']
+        assert not validation['publish_pending'] and not validation['delivery_verified']
+        assert all(sha(Path(x['source']))==x['sha256'] for x in inputs)
+        return
+    if kind == 'weekly':
+        # This bounded corpus omits prior source hashes recorded in its inputs.
+        # Precise source-binding failure must remain blocked, even for a partial
+        # synthesis; it cannot be reclassified as an empty research week.
         validation=json.loads((canonical/f'audits/generation-validation/{kind}/{target}/receipt.json').read_bytes())
         assert result.returncode==2,result.stdout+result.stderr
         assert validation['status']=='HISTORY_EVIDENCE_BLOCKED'
-        assert validation['error_code']=='HISTORY_EVIDENCE_UNUSABLE'
+        assert validation['error_code']=='HISTORY_INDEX_SOURCE_MISMATCH'
         assert not validation['scientific_validation_verified']
         assert not validation['publish_pending'] and not validation['delivery_verified']
         assert len(receipt['files'])==2

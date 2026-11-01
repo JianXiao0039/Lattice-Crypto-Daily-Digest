@@ -368,7 +368,11 @@ def normalize_period_inputs(loaded):
     return normalized
 
 
-def period_views(loaded):
+def period_views(loaded, *, assessment_policy=None):
+    from lattice_digest.daily_inputs import PERIOD_INPUT_POLICY_V43
+    if assessment_policy not in (None, PERIOD_INPUT_POLICY_V43):
+        raise ValueError('UNSUPPORTED_PERIOD_INPUT_POLICY')
+    pending_acceptance = assessment_policy == PERIOD_INPUT_POLICY_V43
     collections={k:{} for k in COLLECTIONS}
     primary_owners={};ownership_conflicts=[]
     evidence_inputs=[]
@@ -379,7 +383,7 @@ def period_views(loaded):
         reconstructed=payload.get('_period_reconciliation')=='SOURCE_WINDOW_REPLAY_OF_PRE_P0_CONTROLLED_DAILY'
         tier=('UNRESOLVED_DAILY_INPUT' if status in {'FAIL','UNKNOWN'} else
               'DERIVED_HISTORICAL_EVENT_CANDIDATE' if reconstructed else
-              'VERIFIED_CURRENT_SCHEMA_EVENT' if current and status=='PASS' else
+              ('SEMANTICALLY_VALID_EVENT_CANDIDATE' if pending_acceptance else 'VERIFIED_CURRENT_SCHEMA_EVENT') if current and status=='PASS' else
               'UNASSESSED_CURRENT_SCHEMA_EVENT' if current else 'UNRESOLVED_LEGACY_ARCHIVE')
         evidence_inputs.append({'date':day.isoformat(),'evidence_tier':tier,
                                 'semantic_status':status or 'UNASSESSED',
@@ -416,7 +420,7 @@ def period_views(loaded):
                         collections[name][entry['event_id']]=entry
                     accepted.append(entry)
             if name in CORE_EVENTS:
-                target=derived if reconstructed else verified if current and status=='PASS' else unassessed
+                target=derived if reconstructed else verified if current and status=='PASS' and not pending_acceptance else unassessed
                 target.update(entry['event_id'] for entry in accepted)
     late,late_warnings=_period_late_supplement(loaded,collections)
     return {'collections':{k:list(v.values()) for k,v in collections.items()},
@@ -424,7 +428,10 @@ def period_views(loaded):
             **({'late_discoveries':late,'late_discovery_warnings':late_warnings} if late or late_warnings else {}),
             'counts':{k:len(v) for k,v in collections.items()},
             'evidence_provenance':{
-                'policy_version':'period-event-evidence-v1',
+                'policy_version':'period-event-evidence-v43' if pending_acceptance else 'period-event-evidence-v1',
+                **({'internal_counts_authorization':'PENDING_INDEPENDENT_REPORT_GATE',
+                    'independent_acceptance':'UNKNOWN_NOT_EVALUATED',
+                    'pending_independent_event_candidate_count':len(unassessed | derived)} if pending_acceptance else {}),
                 'verified_current_schema_event_count':len(verified),
                 'derived_historical_event_candidate_count':len(derived-verified),
                 'unassessed_event_count':len(unassessed-verified-derived),
@@ -539,6 +546,10 @@ def period_evidence_caveat(views):
     evidence=views.get('evidence_provenance')
     if not evidence:
         return '- 事件证据等级：旧报告未记录；不得将档案人口解释为已核验出版事件。'
+    if evidence.get('policy_version') == 'period-event-evidence-v43':
+        return (f"- 事件证据等级：待独立验收候选 {evidence['pending_independent_event_candidate_count']}；"
+                '已获独立授权计数 UNKNOWN。当前仅核验输入语义，所有内部事件数均为候选聚合，'
+                '须经独立报告门禁核验；候选和身份冲突完整保留。输入齐全不等于来源覆盖完整，未观察不等于没有新论文。')
     return (f"- 事件证据等级：当前模式已核验事件 {evidence['verified_current_schema_event_count']}；"
             f"旧日报重建候选 {evidence['derived_historical_event_candidate_count']}；"
             f"未核验事件 {evidence['unassessed_event_count']}。"

@@ -71,7 +71,7 @@ jobs:
           from lattice_digest.public_report import inspect_tree
           root = Path(os.environ['RUNNER_TEMP'])
           context = json.loads((root/'cloud-canonical/audits/cloud-target.json').read_text('utf-8'))
-          verify(root/'cloud-canonical', 'daily', context['target_date'])
+          verify(root/'cloud-canonical', 'daily', context['target_date'], public_history_root=root/'public-history', public_history_ref=context['public_ownership_evidence']['source_ref'])
           inspect_tree(root/'public-candidate')
           print('PRODUCTION_REPORT_GATE PASS; PUBLIC_PRIVACY_GATE PASS; REMOTE_PUBLICATION_GATE CANDIDATE_READY')
           PY

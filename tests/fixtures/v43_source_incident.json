@@ -1,0 +1,92 @@
+{
+  "source_json_sha256": "089b64fd52f953ea7f73fe2a69bba86a5e7cb30f19aa3c5c8c4c59d7edc36778",
+  "generation_id": "986360ba78fe4bd8ab7306b5c907062d",
+  "projection": "exact bounded source_health diagnostics; body_preview is a prefix, never a full response",
+  "sources": [
+    {
+      "source": "dblp",
+      "runtime_state": "partial",
+      "runtime_reason_code": "SOURCE_CIRCUIT_OPEN",
+      "requests_attempted": 3,
+      "requests_skipped": 13,
+      "query_groups_success": 0,
+      "query_groups_failed": 16,
+      "request_diagnostics": [
+        {
+          "attempt_id": "attempt-000046",
+          "http_status": 202,
+          "content_type": "text/html; charset=utf-8",
+          "effective_url": "https://dblp.org/search/publ/api?q=%22dihedral+coset+problem%22&format=json&h=25",
+          "redirect_chain": null,
+          "body_preview": "<!doctype html><html lang=\"en\"><head><title>Making sure you&#39;re not a bot!</title><link rel=\"stylesheet\" href=\"/.within.website/x/xess/xess.min.css?cachebuster=v1.27.0\"><meta name=\"viewport\" content=\"width=device-width, initial-scale=1.0\"><meta name=\"robots\" content=\"noindex,nofollow\"><style>\n        body,\n        html {\n            height: 100%;\n            display: flex;\n            justify-content: center;\n            align-items: center;\n            margin-left: auto;\n            margin-r",
+          "from_cache": false
+        },
+        {
+          "attempt_id": "attempt-000047",
+          "http_status": 202,
+          "content_type": "text/html; charset=utf-8",
+          "effective_url": "https://dblp.org/search/publ/api?q=%22dihedral+hidden+subgroup+problem%22&format=json&h=25",
+          "redirect_chain": null,
+          "body_preview": "<!doctype html><html lang=\"en\"><head><title>Making sure you&#39;re not a bot!</title><link rel=\"stylesheet\" href=\"/.within.website/x/xess/xess.min.css?cachebuster=v1.27.0\"><meta name=\"viewport\" content=\"width=device-width, initial-scale=1.0\"><meta name=\"robots\" content=\"noindex,nofollow\"><style>\n        body,\n        html {\n            height: 100%;\n            display: flex;\n            justify-content: center;\n            align-items: center;\n            margin-left: auto;\n            margin-r",
+          "from_cache": false
+        },
+        {
+          "attempt_id": "attempt-000048",
+          "http_status": 202,
+          "content_type": "text/html; charset=utf-8",
+          "effective_url": "https://dblp.org/search/publ/api?q=%22extrapolated+dihedral+coset+problem%22&format=json&h=25",
+          "redirect_chain": null,
+          "body_preview": "<!doctype html><html lang=\"en\"><head><title>Making sure you&#39;re not a bot!</title><link rel=\"stylesheet\" href=\"/.within.website/x/xess/xess.min.css?cachebuster=v1.27.0\"><meta name=\"viewport\" content=\"width=device-width, initial-scale=1.0\"><meta name=\"robots\" content=\"noindex,nofollow\"><style>\n        body,\n        html {\n            height: 100%;\n            display: flex;\n            justify-content: center;\n            align-items: center;\n            margin-left: auto;\n            margin-r",
+          "from_cache": false
+        }
+      ]
+    },
+    {
+      "source": "iacr_eprint",
+      "runtime_state": "failed",
+      "runtime_reason_code": "IACR_FEED_FETCH_FAILED",
+      "requests_attempted": 1,
+      "requests_skipped": 0,
+      "query_groups_success": 0,
+      "query_groups_failed": 0,
+      "request_diagnostics": [
+        {
+          "attempt_id": "attempt-000001",
+          "http_status": null,
+          "content_type": null,
+          "effective_url": "https://eprint.iacr.org/rss/rss.xml",
+          "redirect_chain": null,
+          "body_preview": null,
+          "from_cache": false
+        },
+        {
+          "kind": "source_coverage_v1",
+          "coverage_state": "SOURCE_UNAVAILABLE",
+          "reason_code": "IACR_FEED_FETCH_FAILED",
+          "requested_since": "2026-10-28T15:27:20.160057+00:00",
+          "observed_items": null
+        }
+      ]
+    },
+    {
+      "source": "semantic_scholar",
+      "runtime_state": "partial",
+      "runtime_reason_code": "PROVIDER_RETRY_AFTER_DEFERRED",
+      "requests_attempted": 1,
+      "requests_skipped": 9,
+      "query_groups_success": 0,
+      "query_groups_failed": 10,
+      "request_diagnostics": [
+        {
+          "attempt_id": "attempt-000090",
+          "http_status": 429,
+          "content_type": "application/json",
+          "effective_url": "https://api.semanticscholar.org/graph/v1/paper/search?query=%28%22dihedral+coset+problem%22+OR+%22dihedral+hidden+subgroup+problem%22+OR+%22extrapolated+dihedral+coset+problem%22%29&limit=10&fields=paperId%2Ctitle%2Cabstract%2Cauthors%2Cvenue%2Cyear%2CpublicationDate%2CexternalIds%2Curl%2CopenAccessPdf",
+          "redirect_chain": null,
+          "body_preview": "{\"message\": \"Too Many Requests. Please wait and try again or apply for a key for higher rate limits. https://www.semanticscholar.org/product/api#api-key-form\", \"code\": \"429\"}",
+          "from_cache": false
+        }
+      ]
+    }
+  ]
+}

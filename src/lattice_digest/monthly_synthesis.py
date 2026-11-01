@@ -92,8 +92,9 @@ def month_days(start: date, end: date) -> list[date]:
     return [start + timedelta(days=offset) for offset in range(days + 1)]
 
 
-def read_json(path: Path) -> dict[str, Any]:
-    payload = json.loads(path.read_text(encoding="utf-8"))
+def read_json(path: Path, *, root: Path | None = None) -> dict[str, Any]:
+    from lattice_digest.report_gate import safe_file, strict_json
+    payload = strict_json(safe_file(root or path.parent, path))
     if isinstance(payload, dict):
         return payload
     if isinstance(payload, list):
@@ -351,7 +352,7 @@ def _weekly_files_for_month(data_dir: Path, start: date, end: date) -> list[str]
                 continue
             seen.add(path)
             try:
-                payload = read_json(path)
+                payload = read_json(path, root=data_dir.parent)
             except (OSError, json.JSONDecodeError):
                 continue
             from_date = str(payload.get("from_date") or "")
@@ -371,6 +372,7 @@ def build_monthly_synthesis(
     month: str,
     *,
     generated_at: datetime | None = None,
+    assessment_policy=None,
 ) -> dict[str, Any]:
     start, end = parse_month(month)
     loaded: list[tuple[date, dict[str, Any]]] = []
@@ -386,7 +388,7 @@ def build_monthly_synthesis(
             continue
         if used_legacy:
             print(f"Warning: using legacy daily JSON fallback: {path}")
-        loaded.append((day, assess_daily_input(path, day, data_dir, used_legacy)))
+        loaded.append((day, assess_daily_input(path, day, data_dir, used_legacy, **({'assessment_policy': assessment_policy} if assessment_policy else {}))))
         input_daily_files.append(path.as_posix())
     loaded = normalize_period_inputs(loaded)
     records = aggregate_records(loaded)
@@ -411,7 +413,8 @@ def build_monthly_synthesis(
     generated = generated_at or datetime.now(timezone.utc)
     return {
         **classification,
-        "publication_event_views": period_views(loaded),
+        "publication_event_views": period_views(loaded, assessment_policy=assessment_policy),
+        **({'metadata': {'period_input_policy': assessment_policy}} if assessment_policy else {}),
         "schema_version": SCHEMA_VERSION,
         "month": month,
         "generated_at": generated.isoformat(),
@@ -480,7 +483,7 @@ def render_markdown(payload: dict[str, Any]) -> str:
         "",
         "## Executive Summary",
         "",
-        f"- total unique papers: {payload['total_unique_records']}",
+        f"- {'total unique candidate observations (pending independent acceptance)' if payload.get('metadata', {}).get('period_input_policy') == 'period-input-evidence-v43' else 'total unique papers'}: {payload['total_unique_records']}",
         f"- Input authority: {payload.get('input_quality', {}).get('authority_state', 'UNKNOWN')}; fully valid Daily={len(payload.get('input_quality', {}).get('fully_valid_days', []))}",
         f"- Daily semantic failures: {payload.get('input_quality', {}).get('semantic_failed_days', [])}; unknown: {payload.get('input_quality', {}).get('semantic_unknown_days', [])}",
         period_evidence_caveat(payload.get('publication_event_views',{})),

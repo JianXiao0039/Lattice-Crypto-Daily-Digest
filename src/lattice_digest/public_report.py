@@ -138,7 +138,7 @@ class PublicInputEvidence(Strict):
     json_sha256: str | None = Field(default=None, pattern=r'^[a-f0-9]{64}$')
     markdown_sha256: str | None = Field(default=None, pattern=r'^[a-f0-9]{64}$')
     event_evidence: Literal['VERIFIED_CURRENT_SCHEMA_EVENT', 'DERIVED_HISTORICAL_EVENT_CANDIDATE',
-                            'NONCONTRIBUTING_HISTORICAL_INPUT', 'MISSING_CANONICAL_INPUT']
+                            'NONCONTRIBUTING_HISTORICAL_INPUT', 'MISSING_CANONICAL_INPUT', 'NONCOUNTING_PARTIAL_INPUT']
 
 
 class PublicReport(Strict):
@@ -185,6 +185,32 @@ class PublicReportV2(PublicReport):
     temporal_evidence: dict
     revision_reason: Literal['SOURCE_GROUNDED_READABILITY_AND_CLOCK_DISCLOSURE_V2']
     noncounting_observations: list[PublicObservation] = Field(max_length=2000)
+
+
+class PublicHistoryCapability(Strict):
+    contract: Literal['HISTORY_DEGRADED_NO_PROMOTION', 'SOURCE_DEGRADED_NO_PROMOTION']
+    outcome: Literal['NO_AUTHORIZED_EVENTS_OBSERVED']
+    capability: Literal['LOCAL_CANONICAL_HISTORY', 'CLOUD_PINNED_PUBLIC_OWNERSHIP', 'UNAVAILABLE_HISTORY']
+    history_complete: bool
+    unresolved_dates: list[str] = Field(max_length=14)
+    pending_noncounting_candidates: int = Field(ge=0, le=10000)
+
+
+class PublicSourceCoverage(Strict):
+    source: Literal['arxiv', 'iacr_eprint', 'crossref', 'dblp', 'openalex', 'semantic_scholar']
+    health: Literal['green', 'yellow', 'red', 'unknown']
+    runtime_state: Literal['complete', 'partial', 'failed', 'unknown']
+
+
+class PublicReportV3(PublicReportV2):
+    public_schema_version: Literal['public-literature-v3']
+    readable_contract_version: Literal['public-readable-v3']
+    history_evidence: PublicHistoryCapability
+    source_coverage: list[PublicSourceCoverage] = Field(max_length=6)
+
+
+NO_AUTHORIZED_EVENTS_NOTICE = ('No authorized new publication events were established from the available evidence. '
+    'Source and/or historical coverage is incomplete; this does not imply that no new papers appeared.')
 
 
 def temporal_evidence(meta):
@@ -372,13 +398,52 @@ def project(pair: VerifiedPair, *, readable_version: int = 2) -> dict:
                     public['noncounting_observations'].append(dict(title=title,source_url=url,source_topics=topics,
                         observation_status=status,
                         technical_detail=detail(abstract,url,topics)))
+    if {'HISTORY_DEGRADED_NO_PROMOTION', 'SOURCE_DEGRADED_NO_PROMOTION'} & set(pair.diagnostics):
+        if pair.kind != 'daily' or pair.quality != 'PROVISIONAL_PUBLIC' or pair.events:
+            fail('EVENT_OWNERSHIP_INVALID', 'noncounting contract cannot authorize events')
+        if readable_version != 2:
+            fail('SCHEMA_VERSION_UNSUPPORTED', 'degraded history requires public v3')
+        evidence = meta.get('promotion_history', {})
+        # Collection location is not a history capability. A cloud runner may
+        # explicitly possess canonical pairs; a local runner may possess none.
+        # These receipts have already been independently source-bound by verify.
+        canonical_receipts = list(evidence.get('loaded', [])) + [
+            item.get('source_receipt', {}) for item in evidence.get('unusable', [])]
+        has_canonical_sources = any(
+            isinstance(receipt, dict)
+            and re.fullmatch(r'[a-f0-9]{64}', str(receipt.get('sha256') or ''))
+            and type(receipt.get('source_bytes')) is int
+            and receipt['source_bytes'] > 0 for receipt in canonical_receipts)
+        history_capability = (
+            'CLOUD_PINNED_PUBLIC_OWNERSHIP'
+            if meta.get('collector') == 'github_actions' and meta.get('public_ownership_evidence') is not None
+            else 'LOCAL_CANONICAL_HISTORY' if has_canonical_sources else 'UNAVAILABLE_HISTORY')
+        missing = evidence.get('missing', [])
+        unusable = evidence.get('unusable', [])
+        unresolved = sorted(set(missing + [i['date'] for i in unusable]))
+        source_coverage = []
+        for item in pair.payload.get('source_health', []):
+            source = item.get('source')
+            if source not in PUBLIC_ADAPTERS:
+                fail('PUBLIC_PRIVACY_GATE_FAILED', 'unreviewed source coverage adapter')
+            health = item.get('health_status', 'unknown')
+            state = item.get('runtime_state', 'unknown')
+            source_coverage.append(dict(source=source,
+                health=health if health in ('green', 'yellow', 'red') else 'unknown',
+                runtime_state=state if state in ('complete', 'partial', 'failed') else 'unknown'))
+        decisions = pair.payload.get('publication_event_ledger', {}).get('decisions', [])
+        pending = sum('HISTORY_' in str(d.get('reason', '')) for d in decisions)
+        public.update(public_schema_version='public-literature-v3', readable_contract_version='public-readable-v3',
+            source_coverage=source_coverage, history_evidence=dict(contract='HISTORY_DEGRADED_NO_PROMOTION' if 'HISTORY_DEGRADED_NO_PROMOTION' in pair.diagnostics else 'SOURCE_DEGRADED_NO_PROMOTION', outcome='NO_AUTHORIZED_EVENTS_OBSERVED',
+                capability=history_capability,
+                history_complete=evidence.get('complete') is True, unresolved_dates=unresolved, pending_noncounting_candidates=pending))
     public['public_generation_id'] = sha(encoded(public))
     return validate_public(public)
 
 
 def validate_public(public: dict) -> dict:
     try:
-        model = PublicReportV2 if public.get('public_schema_version') == 'public-literature-v2' else PublicReport
+        model = {'public-literature-v3': PublicReportV3, 'public-literature-v2': PublicReportV2}.get(public.get('public_schema_version'), PublicReport)
         validated = model.model_validate(public).model_dump()
     except (ValidationError, ValueError):
         fail('PUBLIC_PRIVACY_GATE_FAILED', 'public schema rejected fields or content; details redacted')
@@ -427,7 +492,7 @@ def validate_public(public: dict) -> dict:
             'AUTHORITATIVE_COMPLETE','AUTHORITATIVE_DEGRADED','PARTIAL_VERIFY_FIRST','INCOMPLETE_DO_NOT_INTERPRET_AS_NO_NEWS'):
         fail('PUBLIC_PRIVACY_GATE_FAILED', 'unreviewed report title or coverage state')
     for paper in validated['papers']:
-        if validated['public_schema_version'] == 'public-literature-v2':
+        if validated['public_schema_version'] in ('public-literature-v2', 'public-literature-v3'):
             from lattice_digest.public_technical import check_detail, domain
             try: check_detail(paper['technical_detail'], paper['source_url'], paper['source_topics'])
             except (ValueError, KeyError, TypeError):
@@ -454,8 +519,29 @@ def validate_public(public: dict) -> dict:
     if validated['limitations_zh'] != ['来源覆盖受限时，报告不能用于断言该时期没有相关新论文。',
             '公开导出只覆盖通过来源与隐私门禁的事件；不代表全部检索记录或领域总体趋势。']:
         fail('PUBLIC_PRIVACY_GATE_FAILED', 'unreviewed public limitations extension')
+    if validated['public_schema_version'] == 'public-literature-v3':
+        history = validated['history_evidence']
+        if history['contract'] == 'HISTORY_DEGRADED_NO_PROMOTION' and history['history_complete']:
+            fail('EVENT_OWNERSHIP_INVALID', 'degraded history cannot claim completeness')
+        if history['capability'] != 'LOCAL_CANONICAL_HISTORY' and history['history_complete']:
+            fail('EVENT_OWNERSHIP_INVALID', 'partial or unavailable ownership cannot prove complete historical coverage')
+        if history['contract'] == 'SOURCE_DEGRADED_NO_PROMOTION' and (not history['history_complete'] or history['unresolved_dates'] or validated['source_coverage_state'] == 'AUTHORITATIVE_COMPLETE'):
+            fail('EVENT_OWNERSHIP_INVALID', 'source-only degradation requires complete history')
+        if len({i['source'] for i in validated['source_coverage']}) != len(validated['source_coverage']):
+            fail('PUBLIC_PRIVACY_GATE_FAILED', 'duplicate source coverage')
+        if (validated['report_type'] != 'daily' or validated['quality'] != 'PROVISIONAL_PUBLIC'
+                or validated['papers'] or validated['event_count'] or validated['entry_count']
+                or validated['historical_candidate_count'] or validated['omitted_event_count']):
+            fail('EVENT_OWNERSHIP_INVALID', 'history-degraded report must remain strictly noncounting')
+        try:
+            dates = history['unresolved_dates']
+            from datetime import timedelta
+            if dates != sorted(set(dates)) or any(not first-timedelta(days=14) <= date.fromisoformat(d) < first for d in dates):
+                raise ValueError
+        except (ValueError, TypeError):
+            fail('EVENT_OWNERSHIP_INVALID', 'invalid unresolved history dates')
     original = dict(validated, public_generation_id='')
-    if validated['public_schema_version'] == 'public-literature-v2':
+    if validated['public_schema_version'] in ('public-literature-v2', 'public-literature-v3'):
         from lattice_digest.public_technical import check_detail
         seen=set()
         for row in validated['noncounting_observations']:
@@ -495,7 +581,7 @@ def render(public: dict) -> bytes:
     p = validate_public(public)
     def escape(value):
         return re.sub(r'([\\`*_[\]{}()#!|>])', r'\\\1', html.escape(value))
-    v2 = p['public_schema_version'] == 'public-literature-v2'
+    v2 = p['public_schema_version'] in ('public-literature-v2', 'public-literature-v3')
     lines = [f"# {p['title']}", '', '<!-- '+p['readable_contract_version']+' -->',
         f"报告：{p['report_type']} / {p['report_period']}", f"执行质量：{p['quality']}",
         f"来源覆盖：{p['source_coverage_state']}", f"公开条目：{p['entry_count']}；当前模式已核验事件：{p['event_count']}；历史重建候选：{p['historical_candidate_count']}；未导出条目：{p['omitted_event_count']}", '',
@@ -527,8 +613,17 @@ def render(public: dict) -> bytes:
         if p['report_type'] != 'daily':
             lines.append('本期仅按已验证来源组织技术线索；未核实方法、假设与指标可比时，不给出跨论文性能排名或趋势性结论。')
     if p['input_evidence']:
-        gaps=[i['date'] for i in p['input_evidence'] if i['event_evidence'] in ('MISSING_CANONICAL_INPUT','NONCONTRIBUTING_HISTORICAL_INPUT')]
+        gaps=[i['date'] for i in p['input_evidence'] if i['event_evidence'] in ('MISSING_CANONICAL_INPUT','NONCONTRIBUTING_HISTORICAL_INPUT','NONCOUNTING_PARTIAL_INPUT')]
         if gaps: lines.extend(['来源输入限制日期：'+ '、'.join(gaps), '这些日期未通过当前模式事件核验；不能解释为没有新论文。'])
+    if p['public_schema_version'] == 'public-literature-v3':
+        h = p['history_evidence']
+        lines.extend(['', '### 历史证据与非计数授权', NO_AUTHORIZED_EVENTS_NOTICE,
+            '本次未从现有证据建立获准计数的新发表事件。来源或历史覆盖不完整；这不意味着没有新论文出现。',
+            '科学接受契约：'+h['contract']+' / NO_AUTHORIZED_EVENTS_OBSERVED',
+            '历史能力：'+h['capability']+'；历史完整：'+str(h['history_complete']).lower(),
+            '未闭合历史日期：'+('、'.join(h['unresolved_dates']) or '未建立完整本地历史窗口'),
+            '历史待核验候选（不计数）：'+str(h['pending_noncounting_candidates']),
+            *[f"- {item['source']}：{item['health']} / {item['runtime_state']}" for item in p['source_coverage']]])
     if not p['papers']:
         lines.append('本报告没有可公开列出的已验证事件；请结合来源覆盖状态解读。')
     for row in p['papers']:
@@ -569,22 +664,23 @@ def report_paths(public: dict) -> tuple[str, str]:
     return stem + '.json', stem + '.md'
 
 
-def export(root: Path, kind: str, period: str, output: Path) -> dict:
+def export(root: Path, kind: str, period: str, output: Path, *, public_history_root: Path | None = None, public_history_ref: str | None = None) -> dict:
     from lattice_digest.public_contract import _reject_redirects
-    public = project(verify(root, kind, period))
+    public = project(verify(root, kind, period, public_history_root=public_history_root, public_history_ref=public_history_ref))
     j, m = report_paths(public)
     _reject_redirects(output.absolute())
     # A candidate directory is create-only. A failed promotion leaves an ineligible tree.
     if output.exists():
         fail('PUBLISH_CONFLICT', 'candidate directory already exists')
     output.mkdir(parents=True)
-    for name, content in ((j, encoded(public) + b'\n'), (m, render(public))):
+    json_bytes, markdown_bytes = encoded(public) + b'\n', render(public)
+    for name, content in ((j, json_bytes), (m, markdown_bytes)):
         target = output / name
         target.parent.mkdir(parents=True, exist_ok=True)
         target.write_bytes(content)
     manifest = {'schema_version': 'public-manifest-v1', 'reports': {kind + ':' + period: {
-        'json': j, 'markdown': m, 'json_sha256': sha((output/j).read_bytes()),
-        'markdown_sha256': sha((output/m).read_bytes()), 'quality': public['quality'],
+        'json': j, 'markdown': m, 'json_sha256': sha(json_bytes),
+        'markdown_sha256': sha(markdown_bytes), 'quality': public['quality'],
         'public_generation_id': public['public_generation_id']}}}
     (output/'manifest.json').write_bytes(encoded(manifest)+b'\n')
     (output/'index.md').write_bytes(index_bytes(manifest))
@@ -620,10 +716,11 @@ def validate_catalog(manifest: dict, files: dict[str, bytes]) -> None:
 
 
 def inspect_tree(root: Path) -> tuple[dict, dict[str, bytes]]:
-    manifest = strict_json(safe_file(root, root/'manifest.json', MAX_PUBLIC_BYTES))
+    manifest_bytes = safe_file(root, root/'manifest.json', MAX_PUBLIC_BYTES)
+    manifest = strict_json(manifest_bytes)
     if not isinstance(manifest, dict) or set(manifest) != {'schema_version', 'reports'} or manifest['schema_version'] != 'public-manifest-v1' or not isinstance(manifest['reports'], dict):
         fail('PUBLIC_PRIVACY_GATE_FAILED', 'invalid public manifest')
-    files = {'manifest.json': (root/'manifest.json').read_bytes(), 'index.md': safe_file(root, root/'index.md', MAX_PUBLIC_BYTES)}
+    files = {'manifest.json': manifest_bytes, 'index.md': safe_file(root, root/'index.md', MAX_PUBLIC_BYTES)}
     if files['index.md'] != index_bytes(manifest):
         fail('PAIR_HASH_MISMATCH', 'index differs from deterministic manifest')
     for key, entry in manifest['reports'].items():
@@ -657,6 +754,8 @@ def inspect_tree(root: Path) -> tuple[dict, dict[str, bytes]]:
     if actual != set(files):
         fail('PUBLIC_PRIVACY_GATE_FAILED', 'unexpected file in public tree')
     validate_catalog(manifest,files)
+    if safe_file(root, root/'manifest.json', MAX_PUBLIC_BYTES) != manifest_bytes:
+        fail('PAIR_HASH_MISMATCH', 'public manifest changed during inspection')
     return manifest, files
 
 

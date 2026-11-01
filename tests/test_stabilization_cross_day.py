@@ -42,7 +42,7 @@ def test_missing_preceding_daily_searches_bounded_history(tmp_path):
     assert '2026-09-02' in evidence['missing']
     assert classify_event(paper().model_dump(),history)[0] == 'UNCHANGED_CROSS_DAY_DUPLICATE'
     assert len(evidence['missing']) + len(evidence['loaded']) + len(evidence['unusable']) == 14
-    assert not evidence['complete'] and evidence['unusable'][0]['code']=='HISTORY_EVIDENCE_UNUSABLE'
+    assert not evidence['complete'] and evidence['unusable'][0]['code']=='HISTORY_PAIR_METADATA_INVALID'
     with pytest.raises(ValueError):
         load_promotion_history(tmp_path,date(2026,9,3),days=1000)
 
@@ -58,7 +58,7 @@ def test_evidence_rich_archive_above_old_limit_preserves_overlapping_event_ident
     # The old fixture has no paired Markdown or generation proof. Its safely
     # decoded identity can veto a repeat, but cannot authorize any publication.
     assert not evidence['loaded']
-    assert evidence['unusable'][0]['code']=='HISTORY_EVIDENCE_UNUSABLE'
+    assert evidence['unusable'][0]['code']=='HISTORY_PAIR_METADATA_INVALID'
     assert not evidence['primary_ownership_eligible']
     assert classify_event(prior, history)[0] == 'UNCHANGED_CROSS_DAY_DUPLICATE'
     metadata = {'target_date': '2026-09-03', 'coverage_start': '2026-09-01T21:00:00Z',
@@ -75,7 +75,7 @@ def test_history_still_rejects_archive_above_new_bounded_limit(tmp_path):
         stream.truncate(MAX_HISTORY_BYTES + 1)
     history, evidence = load_promotion_history(tmp_path, date(2026,9,3))
     assert not history
-    assert evidence['unusable'] == [{'date': '2026-09-02', 'code': 'HISTORY_RESOURCE_LIMIT', 'reason': 'HISTORY_RESOURCE_LIMIT'}]
+    assert evidence['unusable'] == [{'date': '2026-09-02', 'code': 'HISTORY_RESOURCE_LIMIT', 'reason': 'HISTORY_RESOURCE_LIMIT', 'source_receipt': {}}]
 
 
 def test_real_september_canary():

@@ -1,20 +1,34 @@
 """Shared Daily input quality assessment for period aggregators."""
 from __future__ import annotations
-import json
 from pathlib import Path
 from lattice_digest.artifact_paths import daily_digest_path, legacy_daily_digest_candidates, resolve_existing
 from lattice_digest.authority import semantic_qa, COMPLETE, DEGRADED, INCOMPLETE, PARTIAL
 
 
-def assess_daily_input(path: Path, day, data_dir: Path, used_legacy: bool = False):
+PERIOD_INPUT_POLICY_V43 = 'period-input-evidence-v43'
+
+
+def assess_daily_input(path: Path, day, data_dir: Path, used_legacy: bool = False, *, assessment_policy=None):
+    if assessment_policy not in (None, PERIOD_INPUT_POLICY_V43):
+        raise ValueError('UNSUPPORTED_PERIOD_INPUT_POLICY')
+    # Import lazily: the independent gate also calls the period synthesizers.
+    # Byte and path limits must precede JSON decoding and semantic evaluation.
+    from lattice_digest.report_gate import safe_file, strict_json
+    canonical_root = Path(data_dir).absolute().parent
+    read_defects = []
     try:
-        raw = json.loads(path.read_text(encoding='utf-8'))
+        raw = strict_json(safe_file(canonical_root, Path(path).absolute(), 64 * 1024 * 1024))
         payload = raw if isinstance(raw, dict) else {'records': raw, 'metadata': {}} if isinstance(raw, list) else {}
         structural = isinstance(payload.get('records'), list) and all(isinstance(r, dict) for r in payload['records'])
-    except (OSError, ValueError):
+    except (OSError, ValueError, RecursionError):
         payload, structural = {'records': []}, False
+        read_defects.append('PERIOD_INPUT_JSON_UNAVAILABLE')
     md_path, legacy_md = resolve_existing(daily_digest_path(day, data_dir.parent / 'digests'), legacy_daily_digest_candidates(day, data_dir.parent / 'digests'))
-    md = md_path.read_text(encoding='utf-8') if md_path.exists() else None
+    try:
+        md = safe_file(canonical_root, md_path.absolute(), 16 * 1024 * 1024).decode('utf-8')
+    except (OSError, ValueError):
+        md = None
+        read_defects.append('PERIOD_INPUT_MARKDOWN_UNAVAILABLE')
     # Coverage/publication integrity and classification quality are orthogonal.
     # A historical B/80 conflict is exposed without changing a PASS pair into
     # a source-coverage failure. The default public verifier still rejects it.
@@ -27,9 +41,19 @@ def assess_daily_input(path: Path, day, data_dir: Path, used_legacy: bool = Fals
         'source_degraded': not qa['derived_authority']['source_coverage']['complete'],
         'legacy_fallback': used_legacy or legacy_md,
         'authority_state': qa['derived_authority']['authority_state'],
-        'defects': qa['issues'] + qa['unknown'],
+        'defects': qa['issues'] + qa['unknown'] + read_defects,
     }
+    if read_defects:
+        quality.update(semantic_valid=False,
+                       semantic_status='FAIL' if qa['status'] == 'FAIL' else 'UNKNOWN',
+                       authority_state=INCOMPLETE)
     quality['fully_valid'] = structural and quality['semantic_valid'] and not quality['source_degraded'] and not quality['legacy_fallback']
+    if assessment_policy == PERIOD_INPUT_POLICY_V43:
+        # This bounded reader checks semantics, not independent scientific
+        # acceptance or delivery. Self-reported QA never supplies that authority.
+        quality.update(assessment_policy=assessment_policy,
+                       independent_acceptance='UNKNOWN_NOT_EVALUATED',
+                       internal_counts_authorization='PENDING_INDEPENDENT_REPORT_GATE')
     payload['_daily_input_quality'] = quality
     if not isinstance(payload.get('records'), list):
         payload['records'] = []
