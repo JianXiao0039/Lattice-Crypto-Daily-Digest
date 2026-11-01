@@ -55,6 +55,10 @@ sources:
     default_query_intent: DISCOVERY
     query_cost_rate_limit_risk: LOW
     url: "https://eprint.iacr.org/rss/rss.xml"
+    historical_catchup_enabled: true
+    historical_catchup_days: 31
+    retry_failed_after_seconds: 21600
+    max_transport_attempts_per_day: 2
     max_per_day: 1
     max_requests_per_day: 1
     cache_ttl_hours: 24
@@ -68,7 +72,7 @@ sources:
       - ML-KEM
       - ML-DSA
       - Falcon
-    note: "IACR ePrint is the highest-priority source and must not be requested more than once per day."
+    note: "IACR ePrint is the highest-priority source and one successful snapshot per day; at most two failed transport attempts separated by six hours."
 
   - name: arxiv
     type: arxiv
@@ -81,7 +85,14 @@ sources:
     default_query_intent: DISCOVERY
     query_native_syntax: arxiv
     query_cost_rate_limit_risk: HIGH
+    native_batch:
+      enabled: true
+      categories: [cs.CR, cs.CC, cs.DS, math.NT, math.CO, quant-ph]
+      page_size: 100
+      max_pages: 4
     categories:
+      - cs.CC
+      - quant-ph
       - cs.CR
       - cs.IT
       - math.NT

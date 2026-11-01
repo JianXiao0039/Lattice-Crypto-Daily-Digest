@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 import re
+import hashlib
 import urllib.parse
 import xml.etree.ElementTree as ET
 from collections import deque
@@ -156,6 +157,21 @@ class ArxivSource(SourceAdapter):
         ]
         requests = critical_query_requests(self.config, syntax="arxiv") + legacy_requests
         requests = fair_query_schedule(requests, rotation=context.since.date().toordinal())
+        # Layer A precedes keyword discovery. Official API submittedDate is a
+        # submission-index window, NOT an announcement or revision ledger.
+        native = self.config.get("native_batch", {})
+        if native.get("enabled", False):
+            start = context.since.astimezone(timezone.utc).strftime("%Y%m%d%H%M")
+            end = datetime.now(timezone.utc).strftime("%Y%m%d%H%M")
+            native_categories = native.get("categories", ["cs.CR", "cs.CC", "cs.DS", "math.NT", "math.CO", "quant-ph"])
+            if any(not re.fullmatch(r"[a-z]+(?:-[a-z]+)?(?:\.[A-Z]{2})?", c) for c in native_categories):
+                raise ValueError("invalid native arXiv category")
+            native_requests = [QueryRequest(
+                f"native_arxiv_submission_batch_{category}",
+                f"cat:{category} AND submittedDate:[{start} TO {end}]",
+                source_family=self.name, native_syntax="arxiv", compatibility_version="v44")
+                for category in native_categories]
+            requests = native_requests + requests
         context.checkpoint('QUERY_SCHEDULE', {'source': self.name, 'policy': 'PRODUCTION_FAMILY_ROUND_ROBIN',
                                            'query_ids': [r.query_id for r in requests]})
         health = context.health(self.name)
@@ -178,7 +194,7 @@ class ArxivSource(SourceAdapter):
         while pending:
             state = pending.popleft()
             request, attempt_id = state["request"], state["attempt_id"]
-            if state["pages"] >= per_query_pages:
+            if state["pages"] >= (min(8, max(1, int(native.get("max_pages", 4)))) if request.family_id.startswith("native_arxiv_submission_batch_") else per_query_pages):
                 coverage_partial = True
                 record_source_coverage(context, self.name, state="SOURCE_PARTIAL", reason="ARXIV_QUERY_PAGE_BUDGET_EXHAUSTED",
                                        query_id=request.query_id, pages=state["pages"], observed_items=None)
@@ -194,13 +210,16 @@ class ArxivSource(SourceAdapter):
                                                  error_category="page_budget")
                 break
             term_query = request.query_text
-            search_query = f"({category_query}) AND ({term_query})" if category_query else term_query
+            is_native = request.family_id.startswith("native_arxiv_submission_batch_")
+            page_limit = min(8, max(1, int(native.get("max_pages", 4)))) if is_native else per_query_pages
+            page_size = min(200, max(1, int(native.get("page_size", 100)))) if is_native else per_group_results
+            search_query = term_query if is_native else f"({category_query}) AND ({term_query})" if category_query else term_query
             params = urllib.parse.urlencode(
                 {
                     "search_query": search_query,
-                    "sortBy": "lastUpdatedDate",
-                    "sortOrder": "descending",
-                    "max_results": per_group_results,
+                    "sortBy": "submittedDate" if is_native else "lastUpdatedDate",
+                    "sortOrder": "ascending" if is_native else "descending",
+                    "max_results": page_size,
                     "start": state["start"],
                 }
             )
@@ -234,6 +253,13 @@ class ArxivSource(SourceAdapter):
                                              raw_candidates=state["raw"] if state["pages"] else None, error_category="parse_error")
                 continue
             raw_count += group_raw_count
+            if is_native:
+                context.checkpoint("SOURCE_NATIVE_BATCH_PAGE", {
+                    "source": self.name, "query_id": request.query_id,
+                    "expression": request.query_text, "start": state["start"],
+                    "snapshot_sha256": hashlib.sha256(xml_text.encode("utf-8")).hexdigest(),
+                    "observed_at": datetime.now(timezone.utc).isoformat(),
+                    "semantics": "SUBMISSION_INDEX_NOT_ANNOUNCEMENT_OR_REVISION"})
             state["pages"] += 1
             state["raw"] += group_raw_count
             for record in group_records:
@@ -250,6 +276,11 @@ class ArxivSource(SourceAdapter):
                 )
                 record = record.model_copy(
                     update={
+                        # API published is a submission timestamp. A native
+                        # submittedDate discovery query does not establish when
+                        # the paper first became publicly available. Preserve
+                        # the literal value, but withhold publication permission.
+                        **({"publication_date_kind": "AUTHORITATIVE_SUBMISSION_DATE"} if is_native else {}),
                         "source_query_family": request.family_id,
                         "source_query_text": request.query_text,
                         "retrieval_timestamp": datetime.now(timezone.utc).isoformat(),
@@ -259,6 +290,8 @@ class ArxivSource(SourceAdapter):
                 )
                 context.record_normalized_candidate(occurrence_id, record)
                 key = record.arxiv_id or record.source_url or record.title.lower()
+                # Layer A is visited first. Keyword/cross-list duplicates must
+                # not overwrite its conservative submission-time semantics.
                 normalized_by_key.setdefault(key, record)
             total, coverage_reason = arxiv_page_bounds(root, requested_start=state["start"], entries=group_raw_count)
             if state["total"] is not None and total != state["total"]:
@@ -281,10 +314,18 @@ class ArxivSource(SourceAdapter):
                                        query_id=request.query_id, pages=state["pages"], observed_items=state["raw"], total_results=total)
                 continue
             if state["start"] + group_raw_count >= total:
+                if is_native:
+                    # This proves only exhaustion of the saved query response;
+                    # mutable indexes/maintenance preclude an announcement watermark.
+                    context.checkpoint("SOURCE_NATIVE_QUERY_EXHAUSTED", {
+                        "source": self.name, "query": request.query_text,
+                        "observed_items": state["raw"], "total_results": total,
+                        "coverage_confidence": "PARTIAL_BOUNDED_OBSERVATION",
+                        "announcement_watermark_advanced": False})
                 exhausted_queries += 1
                 health.query_groups_success += 1
                 context.finish_query_attempt(attempt_id, status="success", raw_candidates=state["raw"])
-            elif state["pages"] >= per_query_pages:
+            elif state["pages"] >= page_limit:
                 coverage_partial = True
                 health.query_groups_success += 1
                 context.finish_query_attempt(attempt_id, status="partial", raw_candidates=state["raw"], error_category="page_budget")
@@ -292,7 +333,7 @@ class ArxivSource(SourceAdapter):
                                        query_id=request.query_id, pages=state["pages"], observed_items=state["raw"], total_results=total)
             else:
                 state["start"] += group_raw_count
-                pending.append(state)
+                pending.appendleft(state) if is_native else pending.append(state)
         normalized = list(normalized_by_key.values())
         context.set_source_counts(
             self.name,

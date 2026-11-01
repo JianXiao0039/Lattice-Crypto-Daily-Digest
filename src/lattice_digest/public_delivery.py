@@ -81,7 +81,7 @@ def deliver(root: Path, kind: str, period: str, *, remote: str = REMOTE,
             stage = 'REMOTE'
             try:
                 result=publish(candidate,remote,approved=True,use_windows_credentials=windows_credentials,
-                               accept_superseded=True)
+                               accept_superseded=True,canonical_root=root)
             except (GateError,OSError,ValueError,subprocess.SubprocessError) as exc:
                 receipt['error_code']=exc.code if isinstance(exc,GateError) else 'REMOTE_PUBLICATION_FAILED'
                 # Preserve v1 retry compatibility only for reviewed valid

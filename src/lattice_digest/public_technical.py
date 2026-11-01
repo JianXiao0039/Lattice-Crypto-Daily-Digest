@@ -57,6 +57,13 @@ def detail(abstract, url, topics):
 
 def check_detail(value, url, topics):
     from lattice_digest.public_report import text
+    if value.get('status') == 'SOURCE_GROUNDED_ABSTRACT_V44':
+        excerpt = value.get('source_excerpt', '')
+        text(excerpt, 500)
+        expected = grounded_detail(excerpt, url, topics)
+        if value != expected:
+            raise ValueError('unsupported source-grounded technical claim')
+        return value
     if set(value) != {'status', 'abstract_sha256', *FIELDS}:
         raise ValueError('unknown technical detail field')
     if not re.fullmatch('[a-f0-9]{64}', value['abstract_sha256']):
@@ -78,3 +85,28 @@ def check_detail(value, url, topics):
             for question in value[k]: text(question, 250)
         else: text(value[k], 600)
     return value
+
+
+def grounded_detail(abstract, url, topics):
+    """Bounded literal evidence; E2 means abstract read, never full-text verified.
+
+    This is deliberately extractive. Author statements remain quotations, not
+    independently established results. No model, API key or hand-written card.
+    The calling projection must bind the input to its verified source row.
+    """
+    normalized = ' '.join(abstract.split())
+    bounded = ' '.join(normalized.split()[:24])
+    excerpt = bounded[:500]
+    if len(bounded) > 500:
+        excerpt = excerpt.rsplit(' ', 1)[0]
+    return dict(status='SOURCE_GROUNDED_ABSTRACT_V44',
+        extraction_contract='literal-official-abstract-v1', evidence_level='E2',
+        source_excerpt=excerpt, source_excerpt_sha256=abstract_hash(excerpt),
+        object_zh='、'.join(topics) or '数学对象需对照下列作者摘要核验',
+        problem_zh='作者摘要摘录给出问题与动机；未独立核验全文。',
+        method_zh='方法仅以下列作者原文摘录为依据；未补充来源未述的算法。',
+        result_zh='作者报告（原文有界摘录）：'+excerpt,
+        assumptions_zh='摘要不能穷尽假设；安全模型、参数与定理条件须核对全文。',
+        significance_zh='用于科研阅读定位；不构成独立证明、性能比较或标准安全裁决。',
+        verification_questions_zh=['全文的问题、方法及结论是否支持摘要表述？',
+                                   '最近工作、参数、基线与局限分别是什么？'])

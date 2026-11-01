@@ -1,9 +1,10 @@
 from __future__ import annotations
 
 import html
+import json
 import re
 import xml.etree.ElementTree as ET
-from datetime import datetime, timezone
+from datetime import datetime, timezone, timedelta
 
 from lattice_digest.models import PaperRecord, make_paper_record
 from lattice_digest.sources.base import FetchContext, SourceAdapter, fetch_text, normalize_date
@@ -105,6 +106,22 @@ def parse_iacr_feed(xml_text: str, source_url: str = "https://eprint.iacr.org/rs
 
 class IacrEprintSource(SourceAdapter):
     def fetch(self, context: FetchContext) -> list[PaperRecord]:
+        latest = self._fetch_latest(context)
+        if context.dry_run or not self.config.get("historical_catchup_enabled", False):
+            return latest
+        from lattice_digest.source_batch_iacr import fetch_iacr_days
+        historical = fetch_iacr_days(context, self.config, fetch_text)
+        # Stable ID dedup; both raw source occurrences remain in the trace.
+        by_id = {record.eprint_id or record.paper_id: record for record in latest}
+        for record in historical:
+            by_id.setdefault(record.eprint_id or record.paper_id, record)
+        combined = list(by_id.values())
+        context.set_source_counts(self.name,
+            raw=context.health(self.name).raw_candidates + len(historical),
+            normalized=len(combined), observability=len(combined), date_filtered=0)
+        return combined
+
+    def _fetch_latest(self, context: FetchContext) -> list[PaperRecord]:
         url = self.config["url"]
         request = native_feed_query_request(self.config, family_id="native_iacr_latest_feed", expression=url)
         attempt_id = context.begin_query_attempt(self.name, request)
@@ -120,65 +137,62 @@ class IacrEprintSource(SourceAdapter):
         cache_path = context.cache_dir / f"iacr_eprint_{today}.xml"
         attempt_path = context.cache_dir / f"iacr_eprint_{today}.attempt"
         latest_feed_status = "fetched"
-
+        now = datetime.now(timezone.utc)
+        attempt_count = 0
+        retry_at = None
+        marker_unknown = False
+        if attempt_path.exists():
+            marker = attempt_path.read_text(encoding="utf-8")
+            try:
+                saved = json.loads(marker)
+                attempt_count = max(1, int(saved["attempts"]))
+                retry_at = datetime.fromisoformat(saved["next_eligible_retry"])
+                if retry_at.tzinfo is None:
+                    raise ValueError("naive marker")
+            except (ValueError, TypeError, KeyError):
+                # Legacy markers without reliable timing require explicit retry.
+                attempt_count = 1
+                marker_unknown = True
         if cache_path.exists():
             xml_text = cache_path.read_text(encoding="utf-8")
             latest_feed_status = "cache_hit"
             observed_at = datetime.fromtimestamp(cache_path.stat().st_mtime, tz=timezone.utc).isoformat()
-        elif attempt_path.exists():
-            if not (context.retry_failed_sources or context.include_latest_sources):
-                context.finish_query_attempt(attempt_id, status="skipped_by_guard", raw_candidates=None)
-                context.set_latest_feed_state(
-                    self.name,
-                    status="skipped_by_guard",
-                    reachable=None,
-                    parsed=False,
-                    records=0,
-                    skipped_by_guard=True,
-                )
-                context.add_warning("IACR ePrint already requested today; skipped to honor max once per day", self.name)
-                record_source_coverage(context, self.name, state="SOURCE_UNAVAILABLE", reason="IACR_DAILY_GUARD_NO_SNAPSHOT",
-                                       requested_since=context.since.isoformat(), observed_items=None)
-                return []
-            latest_feed_status = "manual_latest_retry" if context.include_latest_sources else "manual_retry"
-            context.add_warning(
-                "manual retry enabled for IACR ePrint after previous failed same-day attempt",
-                self.name,
-            )
-            attempt_path.write_text(datetime.now(timezone.utc).isoformat(), encoding="utf-8")
-            xml_text = fetch_text(context, url, source_name=self.name)
-            if xml_text is None:
-                context.finish_query_attempt(attempt_id, status="failed", raw_candidates=None, error_category=context.health(self.name).error_type())
-                context.set_latest_feed_state(
-                    self.name,
-                    status="failed",
-                    reachable=False,
-                    parsed=False,
-                    records=0,
-                    skipped_by_guard=False,
-                )
-                record_source_coverage(context, self.name, state="SOURCE_UNAVAILABLE", reason="IACR_FEED_FETCH_FAILED",
-                                       requested_since=context.since.isoformat(), observed_items=None)
-                return []
-            cache_path.write_text(xml_text, encoding="utf-8")
-            observed_at = datetime.now(timezone.utc).isoformat()
         else:
-            attempt_path.write_text(datetime.now(timezone.utc).isoformat(), encoding="utf-8")
+            manual = context.retry_failed_sources or context.include_latest_sources
+            maximum = min(2, max(1, int(self.config.get("max_transport_attempts_per_day", 2))))
+            retry_enabled = "retry_failed_after_seconds" in self.config
+            eligible = attempt_count < maximum and (not attempt_count or manual or
+                        (retry_enabled and not marker_unknown and retry_at is not None and now >= retry_at))
+            if not eligible:
+                context.finish_query_attempt(attempt_id, status="skipped_by_guard", raw_candidates=None)
+                context.set_latest_feed_state(self.name, status="skipped_by_guard", reachable=None,
+                                              parsed=False, records=0, skipped_by_guard=True)
+                context.add_warning("IACR ePrint already requested today; failed-attempt guard defers retry; no successful snapshot", self.name)
+                record_source_coverage(context, self.name, state="SOURCE_UNAVAILABLE",
+                    reason="IACR_DAILY_GUARD_NO_SNAPSHOT", requested_since=context.since.isoformat(),
+                    next_eligible_retry=retry_at.isoformat() if retry_at else None,
+                    attempts=attempt_count, observed_items=None)
+                return []
+            latest_feed_status = ("manual_latest_retry" if context.include_latest_sources else "manual_retry") if attempt_count else "fetched"
+            if attempt_count and manual:
+                context.add_warning("manual retry enabled for IACR ePrint after previous failed same-day attempt", self.name)
+            delay = max(21600, int(self.config.get("retry_failed_after_seconds", 21600)))
+            receipt = {"schema_version": "iacr-attempt-v44", "attempts": attempt_count + 1,
+                       "attempt_time": now.isoformat(), "requested_interval": [context.since.isoformat(), now.isoformat()],
+                       "next_eligible_retry": (now + timedelta(seconds=delay)).isoformat(),
+                       "response_status": "ATTEMPT_IN_PROGRESS", "error_reason": None,
+                       "unverified_interval": [context.since.isoformat(), now.isoformat()]}
+            attempt_path.write_text(json.dumps(receipt), encoding="utf-8")
             xml_text = fetch_text(context, url, source_name=self.name)
             if xml_text is None:
-                context.finish_query_attempt(attempt_id, status="failed", raw_candidates=None, error_category=context.health(self.name).error_type())
-                context.set_latest_feed_state(
-                    self.name,
-                    status="failed",
-                    reachable=False,
-                    parsed=False,
-                    records=0,
-                    skipped_by_guard=False,
-                )
+                receipt.update(response_status="TRANSPORT_FAILED", error_reason=context.health(self.name).error_type())
+                attempt_path.write_text(json.dumps(receipt), encoding="utf-8")
+                context.finish_query_attempt(attempt_id, status="failed", raw_candidates=None,
+                                             error_category=context.health(self.name).error_type())
+                context.set_latest_feed_state(self.name, status="failed", reachable=False, parsed=False, records=0)
                 record_source_coverage(context, self.name, state="SOURCE_UNAVAILABLE", reason="IACR_FEED_FETCH_FAILED",
-                                       requested_since=context.since.isoformat(), observed_items=None)
+                    requested_since=context.since.isoformat(), next_eligible_retry=receipt["next_eligible_retry"], observed_items=None)
                 return []
-            cache_path.write_text(xml_text, encoding="utf-8")
             observed_at = datetime.now(timezone.utc).isoformat()
 
         try:
@@ -188,12 +202,20 @@ class IacrEprintSource(SourceAdapter):
             atom_entries = [element for element in root.iter() if _local_name(element.tag) == "entry"]
             raw_count = len(rss_items or atom_entries)
         except (ET.ParseError, ValueError) as exc:
+            if latest_feed_status != "cache_hit":
+                receipt.update(response_status="PARSE_FAILED", error_reason=str(exc))
+                attempt_path.write_text(json.dumps(receipt), encoding="utf-8")
             context.finish_query_attempt(attempt_id, status="failed", raw_candidates=None, error_category="parse_error")
             context.set_latest_feed_state(self.name, status="parse_failed", reachable=True, parsed=False)
             context.add_warning(f"IACR ePrint feed parse failed: {exc}", self.name)
             record_source_coverage(context, self.name, state="SOURCE_UNAVAILABLE", reason="IACR_FEED_PARSE_FAILED",
                                    requested_since=context.since.isoformat(), observed_items=None)
             return []
+        if latest_feed_status != "cache_hit":
+            # Never promote malformed HTML/XML into a successful daily cache.
+            cache_path.write_text(xml_text, encoding="utf-8")
+            receipt.update(response_status="SUCCESS_BOUNDED_LATEST", error_reason=None)
+            attempt_path.write_text(json.dumps(receipt), encoding="utf-8")
         context.finish_query_attempt(attempt_id, status="success", raw_candidates=raw_count)
         traced: list[PaperRecord] = []
         for record in normalized:

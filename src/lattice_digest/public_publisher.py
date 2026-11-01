@@ -100,7 +100,8 @@ def remote_files(root: Path, remote: str) -> tuple[str | None, dict[str, bytes],
 
 def publish(candidate: Path, remote: str, *, approved: bool = False, attempts: int = 3,
             use_gh_credentials: bool = False, use_windows_credentials: bool = False,
-            accept_superseded: bool = False) -> dict:
+            accept_superseded: bool = False, canonical_root: Path | None = None,
+            public_history_root: Path | None = None, public_history_ref: str | None = None) -> dict:
     if not approved:
         fail('PUBLICATION_NOT_APPROVED', 'explicit reviewed-publication approval is required')
     kind = remote_kind(remote)
@@ -114,6 +115,21 @@ def publish(candidate: Path, remote: str, *, approved: bool = False, attempts: i
     if len(incoming['reports']) != 1:
         fail('PUBLIC_PRIVACY_GATE_FAILED', 'one reviewed report per transaction; no historical bulk upload')
     key, entry = next(iter(incoming['reports'].items()))
+    # Literal extraction is not authenticated by its own hash. Require a fresh
+    # source-bound rebuild for the new contract before any remote operation.
+    from lattice_digest.report_gate import strict_json, verify
+    from lattice_digest.public_report import project
+    report = strict_json(source_files[entry['json']])
+    rows = [*report.get('papers', []), *report.get('noncounting_observations', [])]
+    source_rebound = False
+    if any(row.get('technical_detail', {}).get('status') == 'SOURCE_GROUNDED_ABSTRACT_V44' for row in rows):
+        if canonical_root is None:
+            fail('PUBLIC_SOURCE_REBIND_REQUIRED', 'source-grounded excerpts require independent canonical projection')
+        expected = project(verify(canonical_root, report['report_type'], report['report_period'],
+            public_history_root=public_history_root, public_history_ref=public_history_ref))
+        if encoded(expected) != encoded(report):
+            fail('PUBLIC_SOURCE_REBIND_MISMATCH', 'public scientific text differs from the verified source projection')
+        source_rebound = True
     with tempfile.TemporaryDirectory(prefix='public-publisher-') as temporary:
         work = Path(temporary)
         git(work, 'init', '--quiet')
@@ -174,6 +190,16 @@ def publish(candidate: Path, remote: str, *, approved: bool = False, attempts: i
                         before['input_evidence']==after['input_evidence'] and identity(before)==identity(after) and
                         before['papers']==[{k:v for k,v in p.items() if k in PublicPaper.model_fields} for p in after['papers']] and
                         before['source_coverage_state']==after['source_coverage_state'])
+                    # One-way, source-rebuilt noncounting correction. Everything
+                    # outside the radar and its revision marker is byte-stable in
+                    # canonical JSON. Existing counted owners cannot change.
+                    ignored = {'noncounting_observations', 'revision_reason', 'public_generation_id'}
+                    radar_upgrade = (source_rebound and
+                        before.get('revision_reason') == 'SOURCE_GROUNDED_READABILITY_AND_CLOCK_DISCLOSURE_V2' and
+                        after.get('revision_reason') == 'SOURCE_GROUNDED_NONCOUNTING_RADAR_V44' and
+                        {k:v for k,v in before.items() if k not in ignored} ==
+                        {k:v for k,v in after.items() if k not in ignored})
+                    upgrade = upgrade or radar_upgrade
                     if not upgrade:
                         fail('PUBLISH_CONFLICT', 'same-authority changed report requires a separate reviewed version policy')
             merged = {'schema_version':'public-manifest-v1', 'reports':{**manifest['reports'], key:entry}}
@@ -225,11 +251,16 @@ def main(argv=None):
     parser.add_argument('--use-gh-credentials',action='store_true',help='Explicitly use an installed gh credential helper after approval')
     parser.add_argument('--use-windows-credentials',action='store_true')
     parser.add_argument('--accept-superseded',action='store_true',help='Return verified higher-authority existing output without changing it')
+    parser.add_argument('--canonical-root', type=Path)
+    parser.add_argument('--public-history-root', type=Path)
+    parser.add_argument('--public-history-ref')
     args = parser.parse_args(argv)
     try:
         print(json.dumps(publish(args.candidate,args.remote,approved=args.approve_reviewed_publication,
                                  use_gh_credentials=args.use_gh_credentials,
                                  use_windows_credentials=args.use_windows_credentials,
+                                 canonical_root=args.canonical_root, public_history_root=args.public_history_root,
+                                 public_history_ref=args.public_history_ref,
                                  accept_superseded=args.accept_superseded)))
         return 0
     except (GateError, OSError, ValueError, subprocess.SubprocessError) as exc:

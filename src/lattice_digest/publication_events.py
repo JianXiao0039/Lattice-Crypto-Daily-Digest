@@ -423,7 +423,9 @@ def period_views(loaded, *, assessment_policy=None):
                 target=derived if reconstructed else verified if current and status=='PASS' and not pending_acceptance else unassessed
                 target.update(entry['event_id'] for entry in accepted)
     late,late_warnings=_period_late_supplement(loaded,collections)
+    from lattice_digest.period_event_time import period_time_diagnostics
     return {'collections':{k:list(v.values()) for k,v in collections.items()},
+            **({'period_time_proofs':period_time_diagnostics(loaded,collections)} if pending_acceptance else {}),
             **({'ownership_conflicts':ownership_conflicts} if ownership_conflicts else {}),
             **({'late_discoveries':late,'late_discovery_warnings':late_warnings} if late or late_warnings else {}),
             'counts':{k:len(v) for k,v in collections.items()},

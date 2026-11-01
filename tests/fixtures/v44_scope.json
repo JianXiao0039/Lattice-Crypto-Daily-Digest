@@ -1,0 +1,718 @@
+[
+  {
+    "paper_id": "arxiv:2610.39211",
+    "title": "Mathematics and Efficiency of Song's CVP Hardness Reduction",
+    "abstract": "Song (2026) proves that, for every fixed $0<\\epsilon<1$, the closest codeword problem (CCP) for binary linear codes under Hamming distance is NP-hard to approximate within $N^{1-\\epsilon}$, where $N$ is the code length, under deterministic polynomial-time many-one reductions. The code-to-lattice construction gives hardness within $N^{1/2-\\epsilon/2}$ for Euclidean CVP, with the same $N$ aslattice rank. This reaches every fixed Euclidean hardness exponent below one half. Aharonov and Regev (2005), with the constant refined by Gao (2026), place GapCVP at factor $cN^{1/2}$ in $\\mathrm{NP}\\cap\\mathrm{coNP}$ for every fixed $c>2/(\\pi\\sqrt3)\\approx0.3676$. NP-hardness at that scale would imply $\\mathrm{NP}=\\mathrm{coNP}$. This paper has two goals: to explain Song's theorem and its mathematics for graduate students, and to make the reduction more efficient. The reduction turns satisfiability into a system of quadratic equations and then into CCP for binary linear codes, and recovers assignments from recurrence relations of algebraic moments. We adapt the method to linear codes over any fixed finite field of characteristic $p$. A common recurrence for each block column gives a moment window $L=c_p(\\kappa-1)+1$, where $c_p=\\max\\{2,p-1\\}$ and $\\kappa$ is the rank cutoff. Together with ordinary digit products and flexible sampling, this reduces interpolation degrees and output lengths. For CCP gap $N^{1-\\epsilon}$, our explicit schedule gives code length and lattice rank at most $n^{4/\\epsilon^2+O(1/\\epsilon)}$; Song's prescribed binary schedule gives $n^{8/\\epsilon^2+O(1/\\epsilon)}$. Here $n$ counts variables in a common quadratic system, equal to the number of original variables plus clauses for 3SAT. These are dimension bounds, not optimality claims or running-time exponents. The limiting hardness exponents remain Song's.",
+    "source_url": "https://arxiv.org/abs/2610.39211",
+    "expected_qualified": true,
+    "abstract_sha256": "f0e4f17ec40102f601528d4aaa5273bd83902af2922317312ab7f8349d9d594b",
+    "review_basis": "Manual review of actual official abstract; E2, no theorem validation",
+    "official_evidence": {
+      "url": "https://arxiv.org/abs/2610.39211",
+      "status": 200,
+      "observed_at": "2026-11-01T17:38:34.916713+00:00",
+      "sha256": "b97fbd179d7cc3ff5e1827cc4652752a5bebb00342e99ddbaca73f6ae230a450",
+      "bytes": 41965
+    }
+  },
+  {
+    "paper_id": "arxiv:2610.38262",
+    "title": "Rosemary: Efficient and Adaptable In-Storage Acceleration for Fully Homomorphic Encryption",
+    "abstract": "Fully Homomorphic Encryption (FHE) enables computation on encrypted data and is promising for privacy-preserving computing. However, FHE deployment remains constrained due to massive computational, memory, and data-movement overheads. Existing acceleration strategies often overlook the storage I/O bottleneck caused by the enormous size of FHE data in large-scale applications, as most prior works focus on small benchmarks that fit in main memory. Our studies show that state-of-the-art FHE systems spend 71\\% to 85\\% of their execution time moving data between storage and compute units rather than performing useful computation. To address the I/O bottleneck, we present Rosemary, a heterogeneous FHE acceleration system that incorporates a novel in-storage processing (ISP) architecture with compiler-level and algorithmic optimizations. Our key innovations include 1) an adaptable hardware-aware FHE engine inside a NAND flash-based solid-state drive (SSD) for efficient and cost-effective in-storage FHE processing, 2) a Throughput-Data-Aware Program Allocator (TDAP) that partitions FHE workloads into heterogeneous programs, and 3) a Compiler-Level Ciphertext-Aware Optimizer (CLCAO) that exploits ISP-friendly FHE kernels for low-cost ISP execution. Across a diverse set of FHE workloads, including encrypted deep learning inference and cloud database queries, Rosemary achieves geometric-mean speedups of $185.7\\times$ over state-of-the-art CPU/GPU implementations and $3.7\\times$ over prior FHE accelerators, while improving energy efficiency by up to $3.9\\times$ and Energy-Delay-Area-Product (EDAP) by up to $16.5\\times$.",
+    "source_url": "https://arxiv.org/abs/2610.38262",
+    "expected_qualified": true,
+    "abstract_sha256": "0c255482818794a0eded226574eeca196178a50ccbda1227e190df6f0600fb18",
+    "review_basis": "Manual review of actual official abstract; E2, no theorem validation",
+    "official_evidence": {
+      "url": "https://arxiv.org/abs/2610.38262",
+      "status": 200,
+      "observed_at": "2026-11-01T17:38:38.032091+00:00",
+      "sha256": "c0bee209dccbced551b924f732d32b22d7d4292e2b9db28cc9eee4baedc3ea6c",
+      "bytes": 42919
+    }
+  },
+  {
+    "paper_id": "arxiv:2610.40481",
+    "title": "Lattice moments and quantum designs",
+    "abstract": "We show that the ensemble of unimodular Gottesman$-$Kitaev$-$Preskill distributions fails to form a rigged quantum $3$-design and quantify the replica defect that determines this failure. This is established by rederiving a second moment formula for symplectic lattices in a self-contained manner.",
+    "source_url": "https://arxiv.org/abs/2610.40481",
+    "expected_qualified": false,
+    "abstract_sha256": "3e11b8e8ad7d7ecd05eb677762e127449560efb390e130cf9995557b7b903fae",
+    "review_basis": "Manual review of actual official abstract; E2, no theorem validation",
+    "official_evidence": {
+      "url": "https://arxiv.org/abs/2610.40481",
+      "status": 200,
+      "observed_at": "2026-11-01T17:38:41.127151+00:00",
+      "sha256": "6b6b006ea8a961e51f051afcf1be3a226204d337c304e488b7e22fca490e394c",
+      "bytes": 37772
+    }
+  },
+  {
+    "paper_id": "arxiv:2610.38632",
+    "title": "The use of post-quantum cryptography in the automotive context",
+    "abstract": "This study comparatively evaluates post-quantum cryptography (PQC) in automotive communication scenarios, considering the threat posed by quantum algorithms such as Shor's and Grover's algorithms. The simulations use OMNeT++, Veins, INET, and SUMO on two hardware platforms and examine ML-KEM/CRYSTALS-Kyber, ML-DSA/CRYSTALS-Dilithium, and FALCON. ML-KEM and ML-DSA are finalized NIST standards, whereas FALCON is a NIST-selected candidate pending final standardization. The evaluation considers a rural V2V scenario and an urban V2X scenario supported by a roadside unit. Kyber exhibits low {key encapsulation mechanism (KEM)}\\color{black} operation latency, Dilithium provides balanced signature performance, and FALCON has high key-generation and signing costs but efficient verification. The results are interpreted as a comparative assessment among the evaluated PQC schemes under the reported simulation conditions; {a conventional ECDSA/ECDH baseline measured in the same simulation setup is also reported for reference.}\\color{black} The resulting dataset can support future studies of cryptographic selection in automotive systems.",
+    "source_url": "https://arxiv.org/abs/2610.38632",
+    "expected_qualified": false,
+    "abstract_sha256": "dcaa2c09ff835b569c56b39efcbbed214328777f26880c3c746de3599e2c6b60",
+    "review_basis": "Manual review of actual official abstract; E2, no theorem validation",
+    "official_evidence": {
+      "url": "https://arxiv.org/abs/2610.38632",
+      "status": 200,
+      "observed_at": "2026-11-01T17:38:44.216184+00:00",
+      "sha256": "b97d08008738863d5e260280c1fbdf3dcf0776a79e5bdca2e045529c8b54a816",
+      "bytes": 40998
+    }
+  },
+  {
+    "paper_id": "arxiv:2610.33525",
+    "title": "Pacifo: An Efficient Fully Homomorphic Encryption-based Lightweight ResNet for Trustworthy Machine Learning as a Service",
+    "abstract": "Machine Learning as a Service (MLaaS) has become a popular paradigm for deploying AI applications. However, it raises significant privacy concerns that the raw client data needs to be uploaded to the server for inference services. Private inference using Fully Homomorphic Encryption (FHE) offers a solution by allowing computations directly on encrypted data, with only the final results decrypted on a client side. However, current practical implementations still suffer from large computational overhead and high latency due to the cost of FHE operations. In this paper, we propose Pacifo, a framework that adapts customized fine-tuning strategies to efficiently evaluate the ResNet20 model in the context of FHE. Specifically, Pacifo introduces a public-private layer partitioning scheme and an efficient ReLU approximation, significantly reducing the number of private layers and costly FHE operations during inference. It also offers flexible security configurations to accommodate varying client privacy requirements. Compared to state-of-the-art FHE implementations of ResNet20, Pacifo achieves a speedup of $3.7-21.7\\times$ in runtime while effectively preserving $95\\%-99\\%$ of the original plaintext model accuracy across downstream tasks. Pacifo is open-sourced at https://github.com/BryceYangLi/Pacifo.",
+    "source_url": "https://arxiv.org/abs/2610.33525",
+    "expected_qualified": true,
+    "abstract_sha256": "169cf556da0543cf0651d80dbb6c85b56975841475753e318d37720067c2a020",
+    "review_basis": "Manual review of actual official abstract; E2, no theorem validation",
+    "official_evidence": {
+      "url": "https://arxiv.org/abs/2610.33525",
+      "status": 200,
+      "observed_at": "2026-11-01T17:38:47.312581+00:00",
+      "sha256": "7162b28693c02dfe559abcc7d8397a1616fa1d6684b299cb4a75720211c90f55",
+      "bytes": 41683
+    }
+  },
+  {
+    "paper_id": "arxiv:2610.30383",
+    "title": "Rank Ceiling for Twiddle-Perturbation Faults on the Forward NTT",
+    "abstract": "ML-KEM and ML-DSA compute forward number-theoretic transforms on secret polynomials. Their fixed multipliers, or twiddles, are a documented fault-attack target. This paper characterises the linear map from a secret polynomial to the difference between correct and faulted transform outputs. Each selected twiddle takes a fixed changed field value at every use during one call; zero and nonzero replacements are covered. For one replacement, rank equals the number of butterflies sharing its twiddle, halving by layer from 128 to 2 for ML-KEM and to 1 for ML-DSA. With one replacement per layer, known fault positions, replacement values and a raw transform difference determine every coefficient except the constant and linear coefficients for ML-KEM, or the constant for ML-DSA. Lean 4 certifies this result for both 256-coefficient shapes over fields of characteristic other than two, with nonzero original twiddles. Those coefficients cancel from the difference for every allowed fault set and replacement choice. Seed storage motivates comparing a known correct public key with a released faulty key from the same seed. If only one ML-KEM secret-polynomial transform is affected and all other computations are unchanged, the decoded key difference is a known matrix column times the transform difference. An invertible column entry reconstructs the latter. For ML-DSA, reconstruction and exact candidate counts from paired compressed keys remain unestablished.",
+    "source_url": "https://arxiv.org/abs/2610.30383",
+    "expected_qualified": true,
+    "abstract_sha256": "f975c71261731ed6907c971b1c650c33898e7f1e76c83cc5bbaa9b4e98f9c64b",
+    "review_basis": "Manual review of actual official abstract; E2, no theorem validation",
+    "official_evidence": {
+      "url": "https://arxiv.org/abs/2610.30383",
+      "status": 200,
+      "observed_at": "2026-11-01T17:38:50.405194+00:00",
+      "sha256": "5724942e1de04d96a376cd3bf877cd35198c5db934e6923e2e560b253101a6b2",
+      "bytes": 43371
+    }
+  },
+  {
+    "paper_id": "arxiv:2610.36731",
+    "title": "Beyond LWE: Post-Quantum Assumptions under a Counterfactual Break of the Dihedral Coset Problem",
+    "abstract": "A refuted 2026 claim of an efficient quantum algorithm for the Dihedral Coset Problem (DCP) motivates this survey of the consequences of a genuine breakthrough. We distinguish a noiseless cyclic coset-state solver, a solver with a prescribed failure exponent, and an extrapolated-state solver. Regev's rare-corruption observation already makes the first hypothesis sufficient for lattice algorithms at some polynomial approximation factors; the witnessing algorithm determines the quantitative bounds. We compose unstructured reductions with explicit sample, state-preparation and success conditions, and compare their sufficient guarantees with more than thirty lattice and non-lattice assumptions. We restate the structured state conversion of Wen and Zheng and audit its forward parameter certificate; the printed bound supplies no certificate at the ML-KEM ring and modulus. We use an explicit affine embedding for heuristic gap estimates, explain the lossiness connection from decision NTRU to search Ring-LWE, and distinguish ordinary from module uniqueness. Chen's withdrawn 2024 quantum algorithm for LWE and a proposed repair of its post-processing would, if correct, reach only a many-sample, small-noise LWE regime that the failure-exponent hypothesis already covers for exponents below $1/2$, and no deployed parameter set. Tables separate rigorous consequences, heuristic comparisons and unverified applications, and distinguish solving a proof assumption from attacking a scheme. Classical structural attacks on Classic McEliece, which do not involve DCP but put the concrete security of the scheme under revision, are summarised here and analysed in detail in a companion paper. The survey closes with open questions and a scenario-planning checklist that requires a complete efficient reduction.",
+    "source_url": "https://arxiv.org/abs/2610.36731",
+    "expected_qualified": true,
+    "abstract_sha256": "cdc3c1e4ddf48560fc5b70e9e8bcb811dfa2e7b0393f7f4f5c95f68d5d7361f3",
+    "review_basis": "Manual review of actual official abstract; E2, no theorem validation",
+    "official_evidence": {
+      "url": "https://arxiv.org/abs/2610.36731",
+      "status": 200,
+      "observed_at": "2026-11-01T17:38:53.496904+00:00",
+      "sha256": "6d61132ae8633c7c6e64d8f8bad9ffc92e010deae31d62487a9bbf195af49c6b",
+      "bytes": 42235
+    }
+  },
+  {
+    "paper_id": "arxiv:2610.32065",
+    "title": "SPA: Structure-Preserving Approximation of Gated Activations under FHE",
+    "abstract": "Nonlinear activation evaluation remains a major bottleneck in neural inference under fully homomorphic encryption (FHE). FHE supports efficient addition and multiplication, but lacks native operations for exponential functions, reciprocals, and value-dependent selection. High-degree polynomial approximations on fixed intervals are therefore commonly used to replace nonlinear activations. They can achieve small errors but often incur substantial multiplicative depth and latency. We observe that several widely used nonlinear activations share the algebraic structure $A(x)=xg(x)$ with $g(-x)=1-g(x)$. This class includes GELU, SiLU, fixed-parameter Swish, and the scalar nonlinear branches of GEGLU/SwiGLU. We propose \\SPA{} (\\emph{Structure-Preserving Approximation}) to exploit this shared structure. \\SPA{} retains the exact odd component $x/2$ and approximates only the even residual as a polynomial in $x^2$, yielding a comparison-free arithmetic kernel. This construction removes redundant odd degrees of freedom and enables lower-cost polynomial evaluation at a given error target. Plaintext experiments with Gemma-4-E2B and Llama-3.2-3B show that SPA largely preserves downstream task performance without weight updates. Fixed-interval CKKS benchmarks show favorable error--latency trade-offs. On $[-5,5]$, \\SPA{}-balanced achieves a $3.25\\times$ speedup over MOAI (ICLR'~26) for erf-GELU with comparable error. On the same interval, \\SPA{}-accurate achieves $79.22\\%$ lower root mean squared error (RMSE) and a $10.40\\times$ speedup over Euston (S\\&P'~26) for QuickGELU. For SiLU, \\SPA{}-accurate achieves $19.02\\%$ lower RMSE and a $2.06\\times$ speedup over THOR (CCS'~25).",
+    "source_url": "https://arxiv.org/abs/2610.32065",
+    "expected_qualified": true,
+    "abstract_sha256": "ed8a0c10e5e82d0ed97df6f371a11122aeee26bb5c43b22802133c115d06c984",
+    "review_basis": "Manual review of actual official abstract; E2, no theorem validation",
+    "official_evidence": {
+      "url": "https://arxiv.org/abs/2610.32065",
+      "status": 200,
+      "observed_at": "2026-11-01T17:38:56.591496+00:00",
+      "sha256": "008dd0b093aa6b3c609a51f588f43e34a93c12734f06a6fb91681ad8c9b54527",
+      "bytes": 41933
+    }
+  },
+  {
+    "paper_id": "arxiv:2610.21127",
+    "title": "Reaction Attack on CKKS Deployments with Asymptotically Optimal Query Complexity",
+    "abstract": "We study a protocol-level reaction leakage in CKKS deployments where public coefficient-to-slot (C2S) evaluation keys are combined with a client's 1-bit validity response. Under this deployment surface, a malicious evaluator can recover a ternary secret key using asymptotically optimal $O(H)$ reaction queries, where $H$ is the entropy of the secret key. The attack does not break RLWE or CKKS IND-CPA security. Instead, it exploits the interaction between client-side validity reactions and public homomorphic linear transformations. A shift of a public encryption key yields a ciphertext whose plaintext is a function of the secret key; the public ${\\sf C2S}$ layer then repacks this information to construct a ciphertext whose validity depends strictly on whether a targeted secret coefficient matches a guessed value. Furthermore, each submitted query is independently randomized with a fresh encryption of zero, so that each resulting malicious ciphertext appears entirely distinct, thereby allowing the attack to simply evade trivial detection mechanisms on the client side. We implemented the full end-to-end attack in Lattigo v6.2.0 and recovered the full secret key across four parameter sets drawn from standard CKKS presets. For uniform ternary secrets, the attack uses $O(N)$ queries and is within a factor $2/\\log_2 3 < 2$ of the oracle-only entropy lower bound. For sparse ternary secrets, a tailored variant further reduces the number of queries in practice. Our results show that observable validity reactions form a practical key-recovery channel in CKKS deployments exposing this surface, even when the underlying cryptographic assumptions remain intact.",
+    "source_url": "https://arxiv.org/abs/2610.21127",
+    "expected_qualified": true,
+    "abstract_sha256": "7aeff0826b8d7af0cf1c9a0cc663b2ca8523513496ac354bb8798cace41f5463",
+    "review_basis": "Manual review of actual official abstract; E2, no theorem validation",
+    "official_evidence": {
+      "url": "https://arxiv.org/abs/2610.21127",
+      "status": 200,
+      "observed_at": "2026-11-01T17:38:59.690818+00:00",
+      "sha256": "d1d5bc23be28c5560e8aafde55c3ece28b6ef9bdb1799b656a9f15b3910810a1",
+      "bytes": 42211
+    }
+  },
+  {
+    "paper_id": "iacr:2026/1139",
+    "title": "Exploiting the complexity of Lattice Isomorphism Problem via Irreducible Decomposition",
+    "abstract": "The Lattice Isomorphism Problem (LIP) is a computational problem that has recently been introduced into cryptography and is believed to be hard. Its search version, Search Lattice Isomorphism Problem (SLIP), is considered even harder than the Shortest Vector Problem (SVP), yet its complexity is still not well understood. Haviv and Regev (SODA 2014) showed that the decisional version (DLIP) lies in a statistical zero-knowledge class and is therefore unlikely to be NP-hard. This result does not apply to the search version, which motivates the question of whether NP can reduce to SLIP. Our main result answers this question negatively. We show that every language reducible to SLIP lies in AM and coAM, by analyzing the direct-sum structure of irreducible lattices. Consequently, NP cannot reduce to SLIP unless the polynomial hierarchy collapses, and there is no reduction from SVP to SLIP unless the polynomial hierarchy collapses. We also study several problems closely related to LIP and establish reductions between its search, counting, and decisional variants. These connections mirror known relationships for graph isomorphism. Finally, we propose a new algorithm that uses a KZ basis to compute an orthogonal decomposition of a lattice.",
+    "source_url": "https://eprint.iacr.org/2026/1139",
+    "expected_qualified": true,
+    "abstract_sha256": "d594314e34cc54c9afd1a5c63044d3ec4e290d30947739161c8bfdc6f6f8f52a",
+    "review_basis": "Manual review of actual official abstract; E2, no theorem validation",
+    "official_evidence": {
+      "batch_receipt": {
+        "name": "iacr_days",
+        "url": "https://eprint.iacr.org/days/31",
+        "attempt_time": "2026-11-01T17:39:52.613532+00:00",
+        "status": 200,
+        "bytes": 306660,
+        "sha256": "36605b1d7fea36f135ac86de94742cca1a95f5025ef5593f1c7223bf859f5bdb",
+        "snapshot": "audits\\v44\\iacr_days.snapshot",
+        "content_type": "text/html; charset=utf-8"
+      },
+      "per_paper_transport": {
+        "batch_receipt": {
+          "name": "iacr_days",
+          "url": "https://eprint.iacr.org/days/31",
+          "attempt_time": "2026-11-01T17:39:52.613532+00:00",
+          "status": 200,
+          "bytes": 306660,
+          "sha256": "36605b1d7fea36f135ac86de94742cca1a95f5025ef5593f1c7223bf859f5bdb",
+          "snapshot": "audits\\v44\\iacr_days.snapshot",
+          "content_type": "text/html; charset=utf-8"
+        },
+        "per_paper_transport": {
+          "batch_receipt": {
+            "name": "iacr_days",
+            "url": "https://eprint.iacr.org/days/31",
+            "attempt_time": "2026-11-01T17:39:52.613532+00:00",
+            "status": 200,
+            "bytes": 306660,
+            "sha256": "36605b1d7fea36f135ac86de94742cca1a95f5025ef5593f1c7223bf859f5bdb",
+            "snapshot": "audits\\v44\\iacr_days.snapshot",
+            "content_type": "text/html; charset=utf-8"
+          },
+          "per_paper_transport": {
+            "url": "https://eprint.iacr.org/2026/1139",
+            "status": 403,
+            "observed_at": "2026-11-01T17:39:03.330818+00:00",
+            "sha256": "a764eba7e345c7eb10173d552a0eccce1fb4139be8a03ec6749169433fee0164",
+            "bytes": 4566
+          }
+        }
+      }
+    }
+  },
+  {
+    "paper_id": "iacr:2026/2562",
+    "title": "A New Approach to Reducing Modulus Requirements in Homomorphic Computation: Precision Allocation in CKKS",
+    "abstract": "Fully homomorphic encryption (FHE) enables computation over encrypted data subject to the prescribed security and precision requirements (allowable deviations from ideal results). Among all FHE schemes, CKKS is a representative scheme for approximate arithmetic, allowing the same operation on multiple values packed into a single RLWE ciphertext. Reducing ciphertext modulus \\(Q\\) for given output precision requirements under RLWE security constraints is a central challenge in homomorphic computation. However, despite advances in plaintext and ciphertext representations, algorithmic optimizations, and modulus management, the budget in most existing approaches remains dependent on the highest required precision and cannot reduce the baseline modulus cost to overcome encryption noise. In this work, we make average rather than maximum precision requirements govern the modulus budget and achieve savings in the baseline cost. Under decryption correctness constraints, we make these possible by allocating arbitrary output precision among independent values and quantify the modulus savings arising from differences in their precision requirements. As a bonus, our construction preserves the standard CKKS ciphertext format, which helps maintain compatibility with existing optimizations. And the construction inherits the IND-CPA security of CKKS without additional cryptographic assumptions. In a repeated squaring experiment, we use 67% fewer initial modulus bits and one quarter of the ring dimension of standard CKKS, while meeting the same precision and security requirements.",
+    "source_url": "https://eprint.iacr.org/2026/2562",
+    "expected_qualified": true,
+    "abstract_sha256": "10e227831840cf2d8b968af3b9b68b3702d5aa83e1b533ff7409d625d3e0df8d",
+    "review_basis": "Manual review of actual official abstract; E2, no theorem validation",
+    "official_evidence": {
+      "batch_receipt": {
+        "name": "iacr_days",
+        "url": "https://eprint.iacr.org/days/31",
+        "attempt_time": "2026-11-01T17:39:52.613532+00:00",
+        "status": 200,
+        "bytes": 306660,
+        "sha256": "36605b1d7fea36f135ac86de94742cca1a95f5025ef5593f1c7223bf859f5bdb",
+        "snapshot": "audits\\v44\\iacr_days.snapshot",
+        "content_type": "text/html; charset=utf-8"
+      },
+      "per_paper_transport": {
+        "batch_receipt": {
+          "name": "iacr_days",
+          "url": "https://eprint.iacr.org/days/31",
+          "attempt_time": "2026-11-01T17:39:52.613532+00:00",
+          "status": 200,
+          "bytes": 306660,
+          "sha256": "36605b1d7fea36f135ac86de94742cca1a95f5025ef5593f1c7223bf859f5bdb",
+          "snapshot": "audits\\v44\\iacr_days.snapshot",
+          "content_type": "text/html; charset=utf-8"
+        },
+        "per_paper_transport": {
+          "batch_receipt": {
+            "name": "iacr_days",
+            "url": "https://eprint.iacr.org/days/31",
+            "attempt_time": "2026-11-01T17:39:52.613532+00:00",
+            "status": 200,
+            "bytes": 306660,
+            "sha256": "36605b1d7fea36f135ac86de94742cca1a95f5025ef5593f1c7223bf859f5bdb",
+            "snapshot": "audits\\v44\\iacr_days.snapshot",
+            "content_type": "text/html; charset=utf-8"
+          },
+          "per_paper_transport": {
+            "url": "https://eprint.iacr.org/2026/2562",
+            "status": 403,
+            "observed_at": "2026-11-01T17:39:09.583351+00:00",
+            "sha256": "addc3308e2d1d4e90bf9441c80e80f3dfb228e97fd948bd523c46d95810996cb",
+            "bytes": 4566
+          }
+        }
+      }
+    }
+  },
+  {
+    "paper_id": "iacr:2026/2575",
+    "title": "RDK-CKKS: A Framework for Rigorous Error Analysis of CKKS Computation",
+    "abstract": "The CKKS scheme allows approximate arithmetic on encrypted data, and has found widespread use in privacy-preserving computation. A rigorous control of its homomorphic error is critical for both precision and security guarantees. In particular, in some settings such as IND-CPA^D or threshold settings, the latter computation error should be hidden at the time of decryption. This is achieved by noise flooding techniques, which require a precise upper bound on the computational error magnitude. When dealing with discrete data and a single decryptor, this is addressed by ensuring statistical correctness, which also requires a precise error management. Yet, current approaches to CKKS error analysis provide either rigorous worst-case bounds that are far off empirical measures, or average-case bounds that rely on various heuristics and do not provide strong enough guarantees for security. In this work, we develop a framework based on so-called randomization keys (RDKs), which are encryptions of zero injected at key-switching and rescaling steps to render the homomorphic error amenable to rigorous probabilistic analysis. Combined with tail bounds, this yields, to our knowledge, the first fully rigorous error analysis framework for CKKS computations. Our framework is modular: RDKs make the error of each elementary operation amenable to rigorous bounds, after which the error of a circuit follows by standard numerical error propagation. Our rigorous bounds are comparable to heuristic ones and closely match empirical measures, but cost additional evaluation material (RDKs) generated by the secret key holder. In the context of rigorous bootstrapping, this induces a communication overhead of 27% over the bootstrapping keys for a single evaluation, and of a further 8% for each additional evaluation. We show that, when a circuit is evaluated repeatedly, most of these keys can be reused across evaluations. As our main application, we derive a complete and rigorous analysis of binary CKKS bootstrapping, and a full, rigorous, parameter set for the bootstrap-and-clean technique. Compared to a standard Gaussian-type heuristic approach, our parameters only require a modulus increase for bootstrapping of $\\approx 3\\%$, while providing rigorous precision estimates.",
+    "source_url": "https://eprint.iacr.org/2026/2575",
+    "expected_qualified": true,
+    "abstract_sha256": "666aff99a6efc41b9af926b7cfd0bfe8466b85814a94a495540fc61aa30ba3b8",
+    "review_basis": "Manual review of actual official abstract; E2, no theorem validation",
+    "official_evidence": {
+      "batch_receipt": {
+        "name": "iacr_days",
+        "url": "https://eprint.iacr.org/days/31",
+        "attempt_time": "2026-11-01T17:39:52.613532+00:00",
+        "status": 200,
+        "bytes": 306660,
+        "sha256": "36605b1d7fea36f135ac86de94742cca1a95f5025ef5593f1c7223bf859f5bdb",
+        "snapshot": "audits\\v44\\iacr_days.snapshot",
+        "content_type": "text/html; charset=utf-8"
+      },
+      "per_paper_transport": {
+        "batch_receipt": {
+          "name": "iacr_days",
+          "url": "https://eprint.iacr.org/days/31",
+          "attempt_time": "2026-11-01T17:39:52.613532+00:00",
+          "status": 200,
+          "bytes": 306660,
+          "sha256": "36605b1d7fea36f135ac86de94742cca1a95f5025ef5593f1c7223bf859f5bdb",
+          "snapshot": "audits\\v44\\iacr_days.snapshot",
+          "content_type": "text/html; charset=utf-8"
+        },
+        "per_paper_transport": {
+          "batch_receipt": {
+            "name": "iacr_days",
+            "url": "https://eprint.iacr.org/days/31",
+            "attempt_time": "2026-11-01T17:39:52.613532+00:00",
+            "status": 200,
+            "bytes": 306660,
+            "sha256": "36605b1d7fea36f135ac86de94742cca1a95f5025ef5593f1c7223bf859f5bdb",
+            "snapshot": "audits\\v44\\iacr_days.snapshot",
+            "content_type": "text/html; charset=utf-8"
+          },
+          "per_paper_transport": {
+            "url": "https://eprint.iacr.org/2026/2575",
+            "status": 403,
+            "observed_at": "2026-11-01T17:39:15.823131+00:00",
+            "sha256": "f9b32bfbfbd7f25ea7d38878cb91cb2dc9b35e906bf9537c7bf101b41665799c",
+            "bytes": 4566
+          }
+        }
+      }
+    }
+  },
+  {
+    "paper_id": "iacr:2026/2618",
+    "title": "Efficient (Functional) Bootstrapping for CKKS over the Conjugate-Invariant Ring",
+    "abstract": "The CKKS fully homomorphic encryption scheme enables efficient encrypted computation over complex-valued data. In many real-world cases, however, the computation only involves real data, and storing them inside complex slots wastes the encoding ability. This motivated the design of conjugate-invariant CKKS (CI-CKKS) instantiated over the conjugate-invariant ring (CIR), which provides the same number of real slots while halving the RLWE dimension. Despite its better efficiency in handling real data, CI-CKKS cannot be bootstrapped directly in CIR, since the CoeffToSlot and SlotToCoeff linear transformations used in bootstrapping require storing complex values in both plaintexts and ciphertexts. Existing methods bootstrap CI-CKKS ciphertexts via conversion to standard CKKS, perform bootstrapping there, and convert back. For example, Lattigo bootstraps two CI-CKKS ciphertexts by combining them into a CKKS ciphertext with doubled ring dimension, while Bae et al. convert a single CI-CKKS ciphertext to a CKKS ciphertext in the same dimension. The former is efficient only for batched inputs and suffers from limited flexibility, while the latter consumes additional layers in packing. Another issue with CI-CKKS is that many existing functional bootstrapping methods encode intermediate values using complex roots of unity, whereas CI-CKKS provides only real-valued slots. Our first contribution is a real FFT algorithm over the conjugate-invariant ring, thereby enabling native bootstrapping in CI-CKKS. Our second contribution investigates functional bootstrapping over CI-CKKS. We adapt the real-valued AKP interpolant with radial correction and develop a single-cosine Hermite interpolation method using a single real ciphertext. We show existing complex-valued interpolation methods can be implemented using two real ciphertexts to simulate complex arithmetic. We also study the numerical behavior of real-valued interpolation and evaluate the tradeoffs between computational efficiency and precision. We implement our methods in Lattigo. Our native CI-CKKS bootstrapping achieves a $1.14$--$12.86\\times$ speedup in single-ciphertext bootstrapping across different baseline methods and total linear transformation depths. Compared with state-of-the-art functional bootstrapping methods over standard CKKS, our methods achieve $1.16$--$1.68\\times$ higher throughput.",
+    "source_url": "https://eprint.iacr.org/2026/2618",
+    "expected_qualified": true,
+    "abstract_sha256": "b9aa69bd966bb7bbc84e4cac11e7fa66cd88c41c2921b902deb054f28fe50d1a",
+    "review_basis": "Manual review of actual official abstract; E2, no theorem validation",
+    "official_evidence": {
+      "batch_receipt": {
+        "name": "iacr_days",
+        "url": "https://eprint.iacr.org/days/31",
+        "attempt_time": "2026-11-01T17:39:52.613532+00:00",
+        "status": 200,
+        "bytes": 306660,
+        "sha256": "36605b1d7fea36f135ac86de94742cca1a95f5025ef5593f1c7223bf859f5bdb",
+        "snapshot": "audits\\v44\\iacr_days.snapshot",
+        "content_type": "text/html; charset=utf-8"
+      },
+      "per_paper_transport": {
+        "batch_receipt": {
+          "name": "iacr_days",
+          "url": "https://eprint.iacr.org/days/31",
+          "attempt_time": "2026-11-01T17:39:52.613532+00:00",
+          "status": 200,
+          "bytes": 306660,
+          "sha256": "36605b1d7fea36f135ac86de94742cca1a95f5025ef5593f1c7223bf859f5bdb",
+          "snapshot": "audits\\v44\\iacr_days.snapshot",
+          "content_type": "text/html; charset=utf-8"
+        },
+        "per_paper_transport": {
+          "batch_receipt": {
+            "name": "iacr_days",
+            "url": "https://eprint.iacr.org/days/31",
+            "attempt_time": "2026-11-01T17:39:52.613532+00:00",
+            "status": 200,
+            "bytes": 306660,
+            "sha256": "36605b1d7fea36f135ac86de94742cca1a95f5025ef5593f1c7223bf859f5bdb",
+            "snapshot": "audits\\v44\\iacr_days.snapshot",
+            "content_type": "text/html; charset=utf-8"
+          },
+          "per_paper_transport": {
+            "url": "https://eprint.iacr.org/2026/2618",
+            "status": 403,
+            "observed_at": "2026-11-01T17:39:22.057514+00:00",
+            "sha256": "75c1e78472b8aef00618ab5b5e97db53a82badbcdf2cd47f6f1d131dd49856d3",
+            "bytes": 4566
+          }
+        }
+      }
+    }
+  },
+  {
+    "paper_id": "iacr:2026/2654",
+    "title": "When Algebraic Structure Meets Too Many Hints",
+    "abstract": "The hint framework of Dachman-Soled, Ducas, Gong, and Rossi (CRYPTO 2020), together with the later too-many-hints analyses from May and Nowakowski (ASIACRYPT 2023) and Cao, Jiang, and Cheng (CRYPTO 2025), gives a classification of secret-dependent hints and LLL-breaking hint thresholds for LWE schemes. These values are now frequently adopted as the default benchmark for side-channel security evaluation. We show that applying them as a security metric is problematic. DDGR categorizes hints based only on their local algebraic form, while the threshold analyses assume uniformly sampled hint vectors. Neither captures how the specific algebraic form of a hint governs the geometry of the resulting sparsified lattice. A hint’s class label and the corresponding uniform threshold therefore cannot, on their own, capture its real cryptanalytic power. We illustrate this mismatch with two forms of structured leakage that naturally appear in ring and module lattice implementations, validated via synthetic experiments on Kyber-512. NTT-domain residues qualify formally as mod-$q$ hints, yet they recover the full Kyber-512 secret with roughly half as many hints as the uniform mod-$q$ bound predicts. Finite-precision FFT samples fall into the weaker approximate-hint class, and still only need $25\\%$--$55\\%$ of the hint budget required for uniform perfect hints. The gap stems from algebraic structure: these hint families carry additional ring structure that enables tailored lattice recovery strategies, a distinction invisible under the uniform-sampling model. We do not propose new attack optimizations. Our findings indicate that DDGR hint classes and too-many-hints thresholds are syntactic descriptions, not standalone security metrics for real leakage traces. Evaluating a side-channel leak requires considering the algebraic structure of the hint vectors, not just their category and quantity.",
+    "source_url": "https://eprint.iacr.org/2026/2654",
+    "expected_qualified": true,
+    "abstract_sha256": "057321632b73b66cc493082b52acdd8ede0a6bf94ae47480194469d2669e3153",
+    "review_basis": "Manual review of actual official abstract; E2, no theorem validation",
+    "official_evidence": {
+      "batch_receipt": {
+        "name": "iacr_days",
+        "url": "https://eprint.iacr.org/days/31",
+        "attempt_time": "2026-11-01T17:39:52.613532+00:00",
+        "status": 200,
+        "bytes": 306660,
+        "sha256": "36605b1d7fea36f135ac86de94742cca1a95f5025ef5593f1c7223bf859f5bdb",
+        "snapshot": "audits\\v44\\iacr_days.snapshot",
+        "content_type": "text/html; charset=utf-8"
+      },
+      "per_paper_transport": {
+        "batch_receipt": {
+          "name": "iacr_days",
+          "url": "https://eprint.iacr.org/days/31",
+          "attempt_time": "2026-11-01T17:39:52.613532+00:00",
+          "status": 200,
+          "bytes": 306660,
+          "sha256": "36605b1d7fea36f135ac86de94742cca1a95f5025ef5593f1c7223bf859f5bdb",
+          "snapshot": "audits\\v44\\iacr_days.snapshot",
+          "content_type": "text/html; charset=utf-8"
+        },
+        "per_paper_transport": {
+          "batch_receipt": {
+            "name": "iacr_days",
+            "url": "https://eprint.iacr.org/days/31",
+            "attempt_time": "2026-11-01T17:39:52.613532+00:00",
+            "status": 200,
+            "bytes": 306660,
+            "sha256": "36605b1d7fea36f135ac86de94742cca1a95f5025ef5593f1c7223bf859f5bdb",
+            "snapshot": "audits\\v44\\iacr_days.snapshot",
+            "content_type": "text/html; charset=utf-8"
+          },
+          "per_paper_transport": {
+            "url": "https://eprint.iacr.org/2026/2654",
+            "status": 403,
+            "observed_at": "2026-11-01T17:40:57.344144+00:00",
+            "sha256": "eaecac69b77c59a4bebf7b301db2ba135aaecbd9bb5e011992a9d700f470960b",
+            "bytes": 4566
+          }
+        }
+      }
+    }
+  },
+  {
+    "paper_id": "iacr:2026/2656",
+    "title": "Falcon Key Recovery from Joint Sampler Leakages",
+    "abstract": "Falcon and the forthcoming FN-DSA standard based on it generate signatures via discrete Gaussian sampling, during which power consumption leaks information about secret-dependent intermediate values. While prior attacks exploit sampler leakages individually or in pairs, we present a unified key-recovery framework that fuses three observations from each SamplerZ call: the signed-exponent class e(k) of the integer center, the random-sign bit b, and a multi-class proposal magnitude z0. These fused observations define magnitude-preserving intervals or rays for accepted sampler outputs. Leveraging an exact public linear relation that holds in the absence of modular wraparound, we map these candidate sets directly into slab and halfspace constraints on the secret key. The resulting system is solved via smooth softplus interval regression and bounded integer reconstruction with public-key validation, entirely bypassing computationally intensive lattice reductions such as LLL or BKZ. For PQClean Falcon-512 running at-O3 on an ARM Cortex-M4, our 17-class center classifier achieves 99.34% call-level accuracy on held-out test signatures from the profiling keys. The resulting attack recovers all 50 disjoint evaluation keys using at most 34 signatures (median 11), with a median post-classification key-recovery runtime of 17.54s per key. Furthermore, on c-fn-dsa, where center conversion relies on a single constant-time CLZ instruction, a reduced-resolution 7-class classifier combined with proposal leakage still recovers 38 of 50 keys within 200 signatures. These findings demonstrate that instruction-level normalization alone cannot prevent key recovery, underscoring that side-channel countermeasures for FN-DSA must protect all sampler leakage channels jointly.",
+    "source_url": "https://eprint.iacr.org/2026/2656",
+    "expected_qualified": true,
+    "abstract_sha256": "3e982ee6ec411d272fbb32f304186dc901b0044d3f3372809de5f2289f0b9d39",
+    "review_basis": "Manual review of actual official abstract; E2, no theorem validation",
+    "official_evidence": {
+      "batch_receipt": {
+        "name": "iacr_days",
+        "url": "https://eprint.iacr.org/days/31",
+        "attempt_time": "2026-11-01T17:39:52.613532+00:00",
+        "status": 200,
+        "bytes": 306660,
+        "sha256": "36605b1d7fea36f135ac86de94742cca1a95f5025ef5593f1c7223bf859f5bdb",
+        "snapshot": "audits\\v44\\iacr_days.snapshot",
+        "content_type": "text/html; charset=utf-8"
+      },
+      "per_paper_transport": {
+        "batch_receipt": {
+          "name": "iacr_days",
+          "url": "https://eprint.iacr.org/days/31",
+          "attempt_time": "2026-11-01T17:39:52.613532+00:00",
+          "status": 200,
+          "bytes": 306660,
+          "sha256": "36605b1d7fea36f135ac86de94742cca1a95f5025ef5593f1c7223bf859f5bdb",
+          "snapshot": "audits\\v44\\iacr_days.snapshot",
+          "content_type": "text/html; charset=utf-8"
+        },
+        "per_paper_transport": {
+          "batch_receipt": {
+            "name": "iacr_days",
+            "url": "https://eprint.iacr.org/days/31",
+            "attempt_time": "2026-11-01T17:39:52.613532+00:00",
+            "status": 200,
+            "bytes": 306660,
+            "sha256": "36605b1d7fea36f135ac86de94742cca1a95f5025ef5593f1c7223bf859f5bdb",
+            "snapshot": "audits\\v44\\iacr_days.snapshot",
+            "content_type": "text/html; charset=utf-8"
+          },
+          "per_paper_transport": {
+            "url": "https://eprint.iacr.org/2026/2656",
+            "status": 403,
+            "observed_at": "2026-11-01T17:41:00.458443+00:00",
+            "sha256": "bf78eacd1c433ffce40eeecd78c0fdb04eaa1c183eb76008ba06056a127d8bf9",
+            "bytes": 4566
+          }
+        }
+      }
+    }
+  },
+  {
+    "paper_id": "iacr:2026/2658",
+    "title": "Unshuffling Fisher-Yates: Practical Recovery of Length-128 Permutations and Application to ML-DSA",
+    "abstract": "Shuffling is a standard hiding countermeasure against (single-trace) side-channel attacks on the number-theoretic transform (NTT) of lattice-based post-quantum schemes, such as ML-DSA. The Fisher-Yates algorithm can be used to generate the underlying random permutation. Recovering this permutation itself from a single trace has so far only been studied for short sequences. We present a practical attack on a software implementation of Fisher-Yates for sequences of length 128, the number of butterfly operations in one layer of ML-DSA’s NTT. We identify the exploitable leakage of the algorithm, detect and remove the timing variations caused by rejection sampling and extract Hamming weight and identity leakage from a single trace per shuffle. We encode these hints as a constraint-programming problem with a soft objective function and enumerate the most likely permutations in order of descending likelihood. Applied to a shuffled ML-DSA-44 NTT, the recovered permutations are used to re-order the butterfly leakage, and recover the secret polynomial s1 either directly or up to a few coefficients that are enumerated directly. Protecting ML-DSA’s NTT with Fisher-Yates-based shuffling does, therefore, not, by itself, prevent side-channel-assisted key recovery.",
+    "source_url": "https://eprint.iacr.org/2026/2658",
+    "expected_qualified": true,
+    "abstract_sha256": "318b3e489721dfb875b11454c974aa90d190fa2da63ea50cb2e8d24aa641e2ef",
+    "review_basis": "Manual review of actual official abstract; E2, no theorem validation",
+    "official_evidence": {
+      "batch_receipt": {
+        "name": "iacr_days",
+        "url": "https://eprint.iacr.org/days/31",
+        "attempt_time": "2026-11-01T17:39:52.613532+00:00",
+        "status": 200,
+        "bytes": 306660,
+        "sha256": "36605b1d7fea36f135ac86de94742cca1a95f5025ef5593f1c7223bf859f5bdb",
+        "snapshot": "audits\\v44\\iacr_days.snapshot",
+        "content_type": "text/html; charset=utf-8"
+      },
+      "per_paper_transport": {
+        "batch_receipt": {
+          "name": "iacr_days",
+          "url": "https://eprint.iacr.org/days/31",
+          "attempt_time": "2026-11-01T17:39:52.613532+00:00",
+          "status": 200,
+          "bytes": 306660,
+          "sha256": "36605b1d7fea36f135ac86de94742cca1a95f5025ef5593f1c7223bf859f5bdb",
+          "snapshot": "audits\\v44\\iacr_days.snapshot",
+          "content_type": "text/html; charset=utf-8"
+        },
+        "per_paper_transport": {
+          "batch_receipt": {
+            "name": "iacr_days",
+            "url": "https://eprint.iacr.org/days/31",
+            "attempt_time": "2026-11-01T17:39:52.613532+00:00",
+            "status": 200,
+            "bytes": 306660,
+            "sha256": "36605b1d7fea36f135ac86de94742cca1a95f5025ef5593f1c7223bf859f5bdb",
+            "snapshot": "audits\\v44\\iacr_days.snapshot",
+            "content_type": "text/html; charset=utf-8"
+          },
+          "per_paper_transport": {
+            "url": "https://eprint.iacr.org/2026/2658",
+            "status": 403,
+            "observed_at": "2026-11-01T17:41:06.705713+00:00",
+            "sha256": "433ce6cd40ff719611243cf19b170b027f56050bd986fbe55656be64ab2a5a15",
+            "bytes": 4566
+          }
+        }
+      }
+    }
+  },
+  {
+    "paper_id": "iacr:2026/2664",
+    "title": "Rerandomizable Garbling Beyond BHHO-KMHE and a Construction from LWE",
+    "abstract": "Rerandomizable garbling schemes (RGS) are a fundamental primitive enabling advanced cryptographic constructions such as multi-hop homomorphic encryption (Gentry, Halevi, Vaikuntanathan, CRYPTO 2010), iO-combiners (Ananth, Jain, Naor, Sahai, Yogev, CRYPTO 2016), and YOSO-style MPC (Acharya, Hazay, Kolesnikov, Prabhakaran, TCC 2022 and CRYPTO 2024). All known RGS instantiations rely on discrete-logarithm-type assumptions, concretely via the BHHO scheme (Boneh, Halevi, Hamburg, Ostrovsky, CRYPTO 2008) and its recent pairing-based variant (Heitjohann, von der Heyden, Jager, CRYPTO 2025). This reliance stems from the use of key-and-message homomorphic encryption (KMHE) that supports rerandomization and strong \"key-privacy under leakage\", which hides the applied homomorphic transformations and is currently only achievable using BHHO-style bitwise encryption in combination with permutation-based homomorphisms. Our first main contribution is a new garbling technique that shifts the burden of hiding homomorphic transformations from the encryption scheme to the garbling itself. This allows us to construct RGS from KMHE schemes with substantially weaker properties, avoiding the need for bitwise encryption and permutation-based homomorphisms, and enabling the construction of RGS from KMHE with other homomorphisms, such as additively-homomorphic ones. As a second contribution, we give a concrete lattice-based instantiation of the required KMHE primitive, based on LWE. This construction is a variant of the GSW FHE scheme (Gentry, Sahai, Waters, CRYPTO 2013), which uses new techniques for rerandomization and is tailored to the requirements of our new garbling scheme by supporting a \"homomorphic\"/\"lossy\" mode. This yields the first RGS construction that does not rely on discrete-logarithm assumptions and may provide post-quantum security.",
+    "source_url": "https://eprint.iacr.org/2026/2664",
+    "expected_qualified": true,
+    "abstract_sha256": "be57ddae912cb1f7cc5719e2cbdd0e7df4fa258e6f7320fe1dff50e09c0daa6a",
+    "review_basis": "Manual review of actual official abstract; E2, no theorem validation",
+    "official_evidence": {
+      "batch_receipt": {
+        "name": "iacr_days",
+        "url": "https://eprint.iacr.org/days/31",
+        "attempt_time": "2026-11-01T17:39:52.613532+00:00",
+        "status": 200,
+        "bytes": 306660,
+        "sha256": "36605b1d7fea36f135ac86de94742cca1a95f5025ef5593f1c7223bf859f5bdb",
+        "snapshot": "audits\\v44\\iacr_days.snapshot",
+        "content_type": "text/html; charset=utf-8"
+      },
+      "per_paper_transport": {
+        "batch_receipt": {
+          "name": "iacr_days",
+          "url": "https://eprint.iacr.org/days/31",
+          "attempt_time": "2026-11-01T17:39:52.613532+00:00",
+          "status": 200,
+          "bytes": 306660,
+          "sha256": "36605b1d7fea36f135ac86de94742cca1a95f5025ef5593f1c7223bf859f5bdb",
+          "snapshot": "audits\\v44\\iacr_days.snapshot",
+          "content_type": "text/html; charset=utf-8"
+        },
+        "per_paper_transport": {
+          "batch_receipt": {
+            "name": "iacr_days",
+            "url": "https://eprint.iacr.org/days/31",
+            "attempt_time": "2026-11-01T17:39:52.613532+00:00",
+            "status": 200,
+            "bytes": 306660,
+            "sha256": "36605b1d7fea36f135ac86de94742cca1a95f5025ef5593f1c7223bf859f5bdb",
+            "snapshot": "audits\\v44\\iacr_days.snapshot",
+            "content_type": "text/html; charset=utf-8"
+          },
+          "per_paper_transport": {
+            "url": "https://eprint.iacr.org/2026/2664",
+            "status": 403,
+            "observed_at": "2026-11-01T17:41:09.835469+00:00",
+            "sha256": "1ca29ff97b1f5590a9fe70be0698cfab92635e98693195bf6f8c52e725aa8d5d",
+            "bytes": 4566
+          }
+        }
+      }
+    }
+  },
+  {
+    "paper_id": "iacr:2026/2666",
+    "title": "Efficient SIMD SHAKE through Cost-Aware Permutation Scheduling",
+    "abstract": "Lattice-based cryptography uses SHAKE to expand seeds into byte strings for matrix generation and sampling. SIMD Keccak implementations process multiple hash streams in parallel. Differences in stream lengths and input dependencies can prevent full SIMD utilization. We present a cost-aware method for scheduling Keccak permutations across hash streams during a single execution of a cryptographic algorithm. The method groups ready streams and divides long streams into segments for regrouping. A model of permutation calls, state movement, initialization, and input preparation guides the selection of stream groups, segment lengths, and state placements. We evaluate ML-KEM and HAETAE on an Apple M5, a Cortex-A72, and an Intel Core i5-11500, using Keccak kernels that process two, four, or eight streams per call. ML-KEM achieves speedups of up to $1.31\\times$ for encapsulation and $1.44\\times$ for decapsulation, while HAETAE achieves up to $1.28\\times$ for signing and $1.26\\times$ for verification.",
+    "source_url": "https://eprint.iacr.org/2026/2666",
+    "expected_qualified": true,
+    "abstract_sha256": "cdd55844f7a983c3101235a4c4c87893b82fceed769456094b0f652e704348a2",
+    "review_basis": "Manual review of actual official abstract; E2, no theorem validation",
+    "official_evidence": {
+      "batch_receipt": {
+        "name": "iacr_days",
+        "url": "https://eprint.iacr.org/days/31",
+        "attempt_time": "2026-11-01T17:39:52.613532+00:00",
+        "status": 200,
+        "bytes": 306660,
+        "sha256": "36605b1d7fea36f135ac86de94742cca1a95f5025ef5593f1c7223bf859f5bdb",
+        "snapshot": "audits\\v44\\iacr_days.snapshot",
+        "content_type": "text/html; charset=utf-8"
+      },
+      "per_paper_transport": {
+        "batch_receipt": {
+          "name": "iacr_days",
+          "url": "https://eprint.iacr.org/days/31",
+          "attempt_time": "2026-11-01T17:39:52.613532+00:00",
+          "status": 200,
+          "bytes": 306660,
+          "sha256": "36605b1d7fea36f135ac86de94742cca1a95f5025ef5593f1c7223bf859f5bdb",
+          "snapshot": "audits\\v44\\iacr_days.snapshot",
+          "content_type": "text/html; charset=utf-8"
+        },
+        "per_paper_transport": {
+          "batch_receipt": {
+            "name": "iacr_days",
+            "url": "https://eprint.iacr.org/days/31",
+            "attempt_time": "2026-11-01T17:39:52.613532+00:00",
+            "status": 200,
+            "bytes": 306660,
+            "sha256": "36605b1d7fea36f135ac86de94742cca1a95f5025ef5593f1c7223bf859f5bdb",
+            "snapshot": "audits\\v44\\iacr_days.snapshot",
+            "content_type": "text/html; charset=utf-8"
+          },
+          "per_paper_transport": {
+            "url": "https://eprint.iacr.org/2026/2666",
+            "status": 403,
+            "observed_at": "2026-11-01T17:41:12.961305+00:00",
+            "sha256": "0cf387cea042f86203f93783796ad9aa3ecf2050da175d45ba25a3f6cb5e46a5",
+            "bytes": 4566
+          }
+        }
+      }
+    }
+  },
+  {
+    "paper_id": "iacr:2026/2675",
+    "title": "High Precision Noise Cleaning for CKKS with Application to Asynchronous Threshold CKKS",
+    "abstract": "Noise cleaning in discrete CKKS uses Hermite interpolation to reduce the input error while preserving the encrypted discrete message. Cryptographic applications based on noise flooding require the error after cleaning to be sufficiently small for the added noise to provide statistical hiding without preventing exact recovery. This requirement is more stringent than decryption correctness alone, but the achievable noise reduction is limited by errors introduced during homomorphic evaluation. In particular, key switching and rescaling can dominate the output error even when a higher interpolation order substantially reduces the polynomial residual. We propose a high precision noise cleaning method for CKKS that preserves encrypted integer messages while attaining a prescribed bound on normalized output noise. We jointly select the cleaning polynomials and evaluation parameters according to a complete error bound that accounts for the input noise and the errors introduced during homomorphic evaluation. By composing Hermite polynomials of lower degree, we can achieve the same output noise bound with a smaller ciphertext modulus and lower evaluation cost than a single higher degree polynomial. In addition, to reduce the ciphertext tensor degree, we construct polynomial representations with noisy auxiliary powers that cancel selected auxiliary error terms. For integer messages, we extract the bits through multi-value functional bootstrapping, then clean and recombine them into a single ciphertext. Finally, we apply high precision noise cleaning to construct an asynchronous threshold CKKS scheme that achieves strong simulation security in the random oracle model. We implement binary and integer noise cleaning in OpenFHE. For binary messages and a normalized output noise target of $2^{-300}$, the selected composition reduces cleaning time from $9.63$ to $1.54$ seconds compared with a single Hermite evaluation under the same input error bound and security requirements. The composition also requires a smaller input ciphertext modulus and less evaluation key storage. We also evaluate the complete construction on 8 bit integers packed into all $32{,}768$ slots. The maximum measured normalized output noise is below $2^{-300}$ with either leveled digit extraction or functional bootstrapping.",
+    "source_url": "https://eprint.iacr.org/2026/2675",
+    "expected_qualified": true,
+    "abstract_sha256": "c0f0aec1b5e4db3272caddb44078e864017992625ab82c09028253da56dbb17f",
+    "review_basis": "Manual review of actual official abstract; E2, no theorem validation",
+    "official_evidence": {
+      "batch_receipt": {
+        "name": "iacr_days",
+        "url": "https://eprint.iacr.org/days/31",
+        "attempt_time": "2026-11-01T17:39:52.613532+00:00",
+        "status": 200,
+        "bytes": 306660,
+        "sha256": "36605b1d7fea36f135ac86de94742cca1a95f5025ef5593f1c7223bf859f5bdb",
+        "snapshot": "audits\\v44\\iacr_days.snapshot",
+        "content_type": "text/html; charset=utf-8"
+      },
+      "per_paper_transport": {
+        "batch_receipt": {
+          "name": "iacr_days",
+          "url": "https://eprint.iacr.org/days/31",
+          "attempt_time": "2026-11-01T17:39:52.613532+00:00",
+          "status": 200,
+          "bytes": 306660,
+          "sha256": "36605b1d7fea36f135ac86de94742cca1a95f5025ef5593f1c7223bf859f5bdb",
+          "snapshot": "audits\\v44\\iacr_days.snapshot",
+          "content_type": "text/html; charset=utf-8"
+        },
+        "per_paper_transport": {
+          "batch_receipt": {
+            "name": "iacr_days",
+            "url": "https://eprint.iacr.org/days/31",
+            "attempt_time": "2026-11-01T17:39:52.613532+00:00",
+            "status": 200,
+            "bytes": 306660,
+            "sha256": "36605b1d7fea36f135ac86de94742cca1a95f5025ef5593f1c7223bf859f5bdb",
+            "snapshot": "audits\\v44\\iacr_days.snapshot",
+            "content_type": "text/html; charset=utf-8"
+          },
+          "per_paper_transport": {
+            "url": "https://eprint.iacr.org/2026/2675",
+            "status": 403,
+            "observed_at": "2026-11-01T17:41:16.072915+00:00",
+            "sha256": "573fd4fd7454acab3c355ebad3cb2094d067c1ae0fd4323615c7ed505f88ce91",
+            "bytes": 4566
+          }
+        }
+      }
+    }
+  },
+  {
+    "paper_id": "iacr:2026/2685",
+    "title": "Quasi-polynomial time algorithms for block basis reduction of linear codes",
+    "abstract": "The block code basis reduction algorithm (BKZ) proposed by Ghentiyala and Stephens-Davidowitz requires an exponential number of calls to the minimum weight codeword (MWC) oracle according to the weak complexity bounds established in the original paper. In almost all cases these bounds are worse than plain enumeration of codewords, despite the fact that in practice the algorithm works much better. In this work we propose block code basis reduction algorithms with polynomial and quasi-polynomial complexity for fixed $\\beta$. Our algorithms are relaxations and modifications of the original algorithm. First, we show that the truncated version of the BKZ algorithm requires heuristic quasi-polynomial time of calls to MWC-oracle with the same basis quality as in the full BKZ algorithm. Second, we add some weak restrictions on the code basis that enables the algorithm to run in polynomial number of calls to the oracle. Third, we introduce the DeepBKZ algorithm which is adapted from lattice reduction. Under some relaxations (analogs of PotBKZ from the lattices) it also runs in quasi-polynomial number of calls to the MWC-oracle. We provide an implementation of proposed algorithms which is capable to process block sizes $2-24$ and more. Based on this implementation, we provide concrete complexity estimates and an analysis of the approximation factors achieved for the low-weight codeword problem on random linear codes.",
+    "source_url": "https://eprint.iacr.org/2026/2685",
+    "expected_qualified": false,
+    "abstract_sha256": "44b7838792ddeb5df8d77ca78fa3910e9725fb3174fb6fcbf5da9d604ceb5898",
+    "review_basis": "Manual review of actual official abstract; E2, no theorem validation",
+    "official_evidence": {
+      "batch_receipt": {
+        "name": "iacr_days",
+        "url": "https://eprint.iacr.org/days/31",
+        "attempt_time": "2026-11-01T17:39:52.613532+00:00",
+        "status": 200,
+        "bytes": 306660,
+        "sha256": "36605b1d7fea36f135ac86de94742cca1a95f5025ef5593f1c7223bf859f5bdb",
+        "snapshot": "audits\\v44\\iacr_days.snapshot",
+        "content_type": "text/html; charset=utf-8"
+      },
+      "per_paper_transport": {
+        "batch_receipt": {
+          "name": "iacr_days",
+          "url": "https://eprint.iacr.org/days/31",
+          "attempt_time": "2026-11-01T17:39:52.613532+00:00",
+          "status": 200,
+          "bytes": 306660,
+          "sha256": "36605b1d7fea36f135ac86de94742cca1a95f5025ef5593f1c7223bf859f5bdb",
+          "snapshot": "audits\\v44\\iacr_days.snapshot",
+          "content_type": "text/html; charset=utf-8"
+        },
+        "per_paper_transport": {
+          "batch_receipt": {
+            "name": "iacr_days",
+            "url": "https://eprint.iacr.org/days/31",
+            "attempt_time": "2026-11-01T17:39:52.613532+00:00",
+            "status": 200,
+            "bytes": 306660,
+            "sha256": "36605b1d7fea36f135ac86de94742cca1a95f5025ef5593f1c7223bf859f5bdb",
+            "snapshot": "audits\\v44\\iacr_days.snapshot",
+            "content_type": "text/html; charset=utf-8"
+          },
+          "per_paper_transport": {
+            "url": "https://eprint.iacr.org/2026/2685",
+            "status": 403,
+            "observed_at": "2026-11-01T17:41:19.197466+00:00",
+            "sha256": "0ac06ed2b3e2a69d05222dcb9a44fa0c839b9d375f6054c3309a71fd45d45604",
+            "bytes": 4566
+          }
+        }
+      }
+    }
+  }
+]

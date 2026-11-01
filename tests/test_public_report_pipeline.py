@@ -371,8 +371,8 @@ def test_local_official_daily_entry_export(nested_repo,tmp_path):
     p=json.loads((tmp_path/'public/daily/2026/2026-09-22.json').read_bytes())
     assert p['event_count']==0 and p['history_evidence']['contract']=='SOURCE_DEGRADED_NO_PROMOTION'
     remote=bare(tmp_path)
-    assert publish(tmp_path/'public',remote,approved=True)['remote_readback']=='PASS'
-    assert publish(tmp_path/'public',remote,approved=True)['status']=='NO_OP'
+    assert publish(tmp_path/'public',remote,approved=True,canonical_root=canonical)['remote_readback']=='PASS'
+    assert publish(tmp_path/'public',remote,approved=True,canonical_root=canonical)['status']=='NO_OP'
 
 
 def test_official_weekly_monthly_replay_and_public_export(nested_repo,tmp_path):
@@ -442,8 +442,10 @@ def test_cloud_provisional_generation_and_safe_export(tmp_path,monkeypatch,capsy
     assert public['event_count']==0 and not public['history_evidence']['history_complete']
     assert public['history_evidence']['capability']=='CLOUD_PINNED_PUBLIC_OWNERSHIP'
     remote=bare(tmp_path)
-    assert publish(tmp_path/'public-cloud',remote,approved=True)['remote_readback']=='PASS'
-    assert publish(tmp_path/'public-cloud',remote,approved=True)['status']=='NO_OP'
+    assert publish(tmp_path/'public-cloud',remote,approved=True,canonical_root=root,
+                   public_history_root=snapshot,public_history_ref=ref)['remote_readback']=='PASS'
+    assert publish(tmp_path/'public-cloud',remote,approved=True,canonical_root=root,
+                   public_history_root=snapshot,public_history_ref=ref)['status']=='NO_OP'
 
 
 def test_e2_and_late_arrival_and_adjacent_negative(tmp_path):

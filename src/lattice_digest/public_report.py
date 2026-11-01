@@ -173,7 +173,8 @@ class PublicPaperV2(PublicPaper):
 class PublicObservation(Strict):
     title: str
     source_url: str
-    observation_status: Literal['RETROSPECTIVE_SCOPE_CORRECTION_NONCOUNTING','LATE_OBSERVED_NONCOUNTING']
+    observation_status: Literal['RETROSPECTIVE_SCOPE_CORRECTION_NONCOUNTING','LATE_OBSERVED_NONCOUNTING',
+                                'SOURCE_VERIFIED_RESEARCH_NONCOUNTING_V44']
     technical_detail: dict
     source_topics: list[str]
 
@@ -183,7 +184,8 @@ class PublicReportV2(PublicReport):
     readable_contract_version: Literal['public-readable-v2']
     papers: list[PublicPaperV2] = Field(max_length=2000)
     temporal_evidence: dict
-    revision_reason: Literal['SOURCE_GROUNDED_READABILITY_AND_CLOCK_DISCLOSURE_V2']
+    revision_reason: Literal['SOURCE_GROUNDED_READABILITY_AND_CLOCK_DISCLOSURE_V2',
+                             'SOURCE_GROUNDED_NONCOUNTING_RADAR_V44']
     noncounting_observations: list[PublicObservation] = Field(max_length=2000)
 
 
@@ -349,7 +351,7 @@ def project(pair: VerifiedPair, *, readable_version: int = 2) -> dict:
         papers=papers, limitations_zh=['来源覆盖受限时，报告不能用于断言该时期没有相关新论文。',
             '公开导出只覆盖通过来源与隐私门禁的事件；不代表全部检索记录或领域总体趋势。'])
     if readable_version == 2:
-        from lattice_digest.public_technical import detail, domain
+        from lattice_digest.public_technical import detail, domain, grounded_detail
         by_event = {e['event_id']: pair.source_rows[e['row_index']] for e in pair.events}
         for paper in papers:
             paper['scientific_domain']=domain(paper['title'],paper['source_topics'])
@@ -360,9 +362,14 @@ def project(pair: VerifiedPair, *, readable_version: int = 2) -> dict:
             revision_reason='SOURCE_GROUNDED_READABILITY_AND_CLOCK_DISCLOSURE_V2', noncounting_observations=[])
         # Correct recognition without silently rebuilding a frozen source ledger.
         if pair.kind == 'daily':
+            # The two-job cloud publisher intentionally receives only sanitized
+            # public artifacts, never raw canonical JSON. New literal extraction
+            # requires an independent canonical rebuild, currently available to
+            # local public_delivery only. Preserve the reviewed cloud contract.
+            grounded_radar = meta.get('collector') == 'local_codex'
             from lattice_digest.publication_events import scope_evaluator_for_policy, POLICY_VERSION
             old_policy=meta.get('publication_policy_version')
-            from lattice_digest.scientific_scope import evaluate_scope
+            from lattice_digest.scientific_scope_v44 import evaluate_scope
             selected={p['source_url'] for p in papers}
             candidates={}
             if old_policy and old_policy != POLICY_VERSION:
@@ -379,10 +386,32 @@ def project(pair: VerifiedPair, *, readable_version: int = 2) -> dict:
                     fail('EVENT_OWNERSHIP_INVALID','late input source identity mismatch')
                 if evaluate_scope(pair.source_rows[i])['lattice_relevance_qualified']:
                     candidates.setdefault(i,'LATE_OBSERVED_NONCOUNTING')
+            # Discovery is a separate permission from publication-event counting.
+            # Only verified pair rows from reviewed primary adapters, with an
+            # actual abstract and qualified source-only scope, can enter radar.
+            # Budgets limit reading display, never mutate the event ledger.
+            radar = []
+            from lattice_digest.research_radar import identity_gate
+            from lattice_digest.promotion_history import identity_keys
+            for i, row in enumerate(pair.source_rows):
+                if (not grounded_radar or not identity_gate(row)[0] or
+                        not str(row.get('abstract') or '').strip() or
+                        not evaluate_scope(row)['lattice_relevance_qualified']):
+                    continue
+                radar.append((i, source_scope_score(row, scope_evaluator=evaluate_scope)[1]))
+            for i, _ in sorted(radar, key=lambda item: (-item[1], canonical_identity(pair.source_rows[item[0]])))[:20]:
+                candidates.setdefault(i, 'SOURCE_VERIFIED_RESEARCH_NONCOUNTING_V44')
+            selected_identities = {canonical_identity(by_event[p['event_id']]) for p in papers}
+            selected_aliases = set().union(*(identity_keys(by_event[p['event_id']]) for p in papers))
             for i,status in sorted(candidates.items()):
                     row=pair.source_rows[i]
-                    if row.get('source_url') in selected: continue
+                    identity = canonical_identity(row)
+                    aliases = identity_keys(row)
+                    if (not identity_gate(row)[0] or row.get('source_url') in selected or
+                            identity in selected_identities or aliases & selected_aliases): continue
                     selected.add(row.get('source_url'))
+                    selected_identities.add(identity)
+                    selected_aliases.update(aliases)
                     # Apply the same input safety checks even for noncounting text.
                     if set(row)-known_rows:
                         fail('PUBLIC_PRIVACY_GATE_FAILED','unknown retrospective source extension')
@@ -393,11 +422,19 @@ def project(pair: VerifiedPair, *, readable_version: int = 2) -> dict:
                             SUSPICIOUS.search(unicodedata.normalize('NFKC',abstract)) or
                             any(unicodedata.category(c) in ('Cf','Cs') or
                                 (unicodedata.category(c)=='Cc' and c not in '\n\r\t') for c in abstract)):
+                        if status == 'SOURCE_VERIFIED_RESEARCH_NONCOUNTING_V44':
+                            # Optional radar cannot authorize suspicious text or
+                            # prevent unrelated safe observations from delivery.
+                            continue
                         fail('PUBLIC_PRIVACY_GATE_FAILED','unsafe retrospective source input')
-                    topics=source_topics(row)[:8]
+                    topics=source_topics(row, scope_evaluator=evaluate_scope)[:8]
                     public['noncounting_observations'].append(dict(title=title,source_url=url,source_topics=topics,
                         observation_status=status,
-                        technical_detail=detail(abstract,url,topics)))
+                        technical_detail=(grounded_detail(abstract,url,topics)
+                            if grounded_radar and abstract.strip() else detail(abstract,url,topics))))
+            if any(row['technical_detail']['status'] == 'SOURCE_GROUNDED_ABSTRACT_V44'
+                   for row in public['noncounting_observations']):
+                public['revision_reason'] = 'SOURCE_GROUNDED_NONCOUNTING_RADAR_V44'
     if {'HISTORY_DEGRADED_NO_PROMOTION', 'SOURCE_DEGRADED_NO_PROMOTION'} & set(pair.diagnostics):
         if pair.kind != 'daily' or pair.quality != 'PROVISIONAL_PUBLIC' or pair.events:
             fail('EVENT_OWNERSHIP_INVALID', 'noncounting contract cannot authorize events')
@@ -643,12 +680,19 @@ def render(public: dict) -> bytes:
                 '- 条件与局限：'+escape(d['assumptions_zh']), '- 格密码意义：'+escape(d['significance_zh']),
                 *('- 技术核验问题：'+escape(q) for q in d['verification_questions_zh'])])
     if v2 and p['noncounting_observations']:
-        lines.extend(['','## 迟到发现与回溯范围更正（不计入本期首发或修订事件）',
-            '以下条目来自已保存的公开来源：LATE_OBSERVED 表示当前检索才观察到的较早论文；RETROSPECTIVE_SCOPE_CORRECTION 表示新版规则补识别的原分类漏项。保留原 canonical 事件历史，不声称原期间已正确选入。'])
+        v44 = p.get('revision_reason') == 'SOURCE_GROUNDED_NONCOUNTING_RADAR_V44'
+        if v44:
+            lines.extend(['','## 科研发现雷达（不计入本期首发或修订事件）',
+            f"本报告另有 {len(p['noncounting_observations'])} 项来源核验的科研观察；它们不增加发表事件数。",
+            '条目来自已保存的公开来源。SOURCE_VERIFIED_RESEARCH 表示独立于当期事件归属的科研阅读；LATE_OBSERVED 表示迟到观察；RETROSPECTIVE_SCOPE_CORRECTION 表示回溯分类更正。保留原 canonical 历史，不声称原期间已正确选入。'])
+        else:
+            lines.extend(['','## 迟到发现与回溯范围更正（不计入本期首发或修订事件）',
+                '以下条目来自已保存的公开来源：LATE_OBSERVED 表示当前检索才观察到的较早论文；RETROSPECTIVE_SCOPE_CORRECTION 表示新版规则补识别的原分类漏项。保留原 canonical 事件历史，不声称原期间已正确选入。'])
         for row in p['noncounting_observations']:
             d=row['technical_detail']
             lines.extend(['','### '+escape(row['title']),row['source_url'],
                 row['observation_status'], '- 数学／安全对象：'+escape(d['object_zh']),
+                *(['- 证据范围：E2，实际读取来源摘要；未核验全文。'] if v44 and d.get('evidence_level') == 'E2' else []),
                 '- 问题：'+escape(d['problem_zh']),'- 方法：'+escape(d['method_zh']),
                 '- 作者报告的结果：'+escape(d['result_zh']),'- 条件与局限：'+escape(d['assumptions_zh'])])
     lines.extend(['', '<!-- public-generation:' + p['public_generation_id'] + ' -->', ''])
