@@ -151,7 +151,7 @@ class PublicReport(Strict):
     title: str
     quality: Literal['VERIFIED_AUTHORITATIVE', 'VALID_DEGRADED_AUTHORITATIVE', 'PROVISIONAL_PUBLIC']
     source_coverage_state: Literal['AUTHORITATIVE_COMPLETE', 'AUTHORITATIVE_DEGRADED', 'PARTIAL_VERIFY_FIRST', 'INCOMPLETE_DO_NOT_INTERPRET_AS_NO_NEWS']
-    source_policy_version: Literal['scientific-publication-v4-v3', 'scientific-publication-v3-v2', 'scientific-publication-p0-v1', 'period-event-evidence-v1']
+    source_policy_version: Literal['scientific-publication-v45-v1', 'scientific-publication-v4-v3', 'scientific-publication-v3-v2', 'scientific-publication-p0-v1', 'period-event-evidence-v1']
     input_evidence: list[PublicInputEvidence]
     source_generation_ids: list[str]
     canonical_pair_sha256: dict[str, str]
@@ -418,8 +418,13 @@ def project(pair: VerifiedPair, *, readable_version: int = 2) -> dict:
                     reviewed_public_adapters(row['source'])
                     url=normalized_source_url(row['source_url']); title=text(row['title'])
                     abstract=row.get('abstract') or ''
+                    technical = detail(abstract,url,[]) if isinstance(abstract,str) else {}
+                    # Exact source URL plus reviewed abstract hash is the
+                    # explicit source review for public scholarly links inside
+                    # the abstract. Raw abstract bytes are never exported.
+                    reviewed = technical.get('status') == 'REVIEWED_PUBLIC_ABSTRACT'
                     if (not isinstance(abstract,str) or len(abstract)>50000 or
-                            SUSPICIOUS.search(unicodedata.normalize('NFKC',abstract)) or
+                            (not reviewed and SUSPICIOUS.search(unicodedata.normalize('NFKC',abstract))) or
                             any(unicodedata.category(c) in ('Cf','Cs') or
                                 (unicodedata.category(c)=='Cc' and c not in '\n\r\t') for c in abstract)):
                         if status == 'SOURCE_VERIFIED_RESEARCH_NONCOUNTING_V44':
@@ -428,10 +433,13 @@ def project(pair: VerifiedPair, *, readable_version: int = 2) -> dict:
                             continue
                         fail('PUBLIC_PRIVACY_GATE_FAILED','unsafe retrospective source input')
                     topics=source_topics(row, scope_evaluator=evaluate_scope)[:8]
+                    technical = detail(abstract,url,topics)
+                    # Exact reviewed abstract cards retain known controversy;
+                    # an altered abstract cannot inherit the reviewed claims.
+                    if grounded_radar and abstract.strip() and not (reviewed and 'CONTESTED_HIGH_IMPACT_LATTICE_SECURITY_CLAIM' in technical['result_zh']):
+                        technical = grounded_detail(abstract,url,topics)
                     public['noncounting_observations'].append(dict(title=title,source_url=url,source_topics=topics,
-                        observation_status=status,
-                        technical_detail=(grounded_detail(abstract,url,topics)
-                            if grounded_radar and abstract.strip() else detail(abstract,url,topics))))
+                        observation_status=status, technical_detail=technical))
             if any(row['technical_detail']['status'] == 'SOURCE_GROUNDED_ABSTRACT_V44'
                    for row in public['noncounting_observations']):
                 public['revision_reason'] = 'SOURCE_GROUNDED_NONCOUNTING_RADAR_V44'

@@ -265,6 +265,20 @@ def verify(root: Path, kind: str, period: str, *, public_history_root: Path | No
         # Preserve the candidate; never delete its uncertain events to pass QA.
         for event in events:
             value = event.get('event_date')
+            if meta.get('publication_policy_version') == 'scientific-publication-v45-v1':
+                from lattice_digest.period_event_time import daily_event_time_proof
+                row = rows[event['row_index']]
+                # Source value/type are bound by the independently rebuilt ledger.
+                # Never accept the producer's saved proof as a receipt, nor use
+                # source_observed_at as a replacement for the event source time.
+                proof = daily_event_time_proof(value, start, end,
+                    source_timezone_evidence=row.get('source_timezone_evidence'),
+                    source_date_precision=event.get('source_date_precision'))
+                if not proof['containment_proven']:
+                    fail('EVENT_TIME_PRECISION_UNPROVEN', 'source event interval is not proven contained in the requested window')
+                if event.get('source_time_evidence') != proof:
+                    fail('EVENT_TIME_EVIDENCE_MISMATCH', 'saved event time proof differs from independent source interval proof')
+                continue
             try:
                 if not isinstance(value, str) or re.fullmatch(r'\d{4}-\d{2}-\d{2}', value):
                     raise ValueError

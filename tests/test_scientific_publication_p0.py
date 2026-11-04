@@ -112,24 +112,25 @@ def test_future_proceedings_year_does_not_hide_real_preprint():
 def test_old_critical_watch_remains_visible_without_reopening():
     r=record(publication_timestamp='2025-01-01T00:00:00Z',security_impact_severity='CRITICAL',
         first_seen_at='2026-10-08T00:00:00Z').model_dump()
-    first=build_event_ledger([r],META)
+    first=build_event_ledger([r],(META|{'publication_policy_version':'scientific-publication-v4-v3'}))
     assert first['counts']['primary_new']==0
     assert len(first['collections']['new_critical_verify_events'])==1
-    again=build_event_ledger([r],META,[r])
+    again=build_event_ledger([r],(META|{'publication_policy_version':'scientific-publication-v4-v3'}),[r])
     assert again['counts']['selected']==0
     assert again['critical_watch'][0]['proof_verification_status']=='TODO_VERIFY'
     assert again['critical_watch'][0]['reopened'] is False
 
 
 def test_new_verification_event_on_unchanged_old_paper_is_preserved():
+    # Frozen V44 compatibility: V45 authorization is tested separately.
     old=record(publication_timestamp='2025-01-01T00:00:00Z',security_impact_severity='CRITICAL').model_dump()
     new=deepcopy(old)
     new['critical_verification_events']=[{'event_kind':'SOURCE_CORRECTION','change_date':'2026-10-08T00:00:00Z',
         'source_url':'https://arxiv.org/abs/2610.10000v1','source_excerpt':'Correction to parameter claim.',
         'source_sha256':'f'*64,'evidence_state':'SOURCE_ASSERTED'}]
-    ledger=build_event_ledger([new],META,[old])
+    ledger=build_event_ledger([new],(META|{'publication_policy_version':'scientific-publication-v4-v3'}),[old])
     assert len(ledger['collections']['new_critical_verify_events'])==1
-    assert build_event_ledger([new],META,[new])['counts']['selected']==0
+    assert build_event_ledger([new],(META|{'publication_policy_version':'scientific-publication-v4-v3'}),[new])['counts']['selected']==0
 
 
 def test_source_generated_conclusions_and_neighbors_cannot_promote():
@@ -189,13 +190,14 @@ def test_durable_pair_and_semantic_quality_share_event_ledger(tmp_path):
 
 def test_source_dated_critical_correction_reopens_only_once():
     from lattice_digest.publication_events import source_correction_events
+    # Frozen V44 compatibility: V45 authorization is tested separately.
     old=record(publication_timestamp='2025-01-01T00:00:00Z',security_impact_severity='CRITICAL').model_dump()
     new={**old,'abstract':old['abstract']+' Additional note October 8/26: The preprint has been updated with a correction to the proof of Lemma 3.'}
     events=source_correction_events(new)
     assert events[0]['date_precision']=='DATE_ONLY_SOURCE_NOTE'
     assert events[0]['source_excerpt'] in new['abstract']
-    assert build_event_ledger([new],META,[old])['counts']['selected']==1
-    assert build_event_ledger([new],META,[new])['counts']['selected']==0
+    assert build_event_ledger([new],(META|{'publication_policy_version':'scientific-publication-v4-v3'}),[old])['counts']['selected']==1
+    assert build_event_ledger([new],(META|{'publication_policy_version':'scientific-publication-v4-v3'}),[new])['counts']['selected']==0
 
 
 def test_sqlite_keeps_previously_discovered_identities(tmp_path):

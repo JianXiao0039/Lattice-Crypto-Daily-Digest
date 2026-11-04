@@ -116,15 +116,17 @@ def test_public_daily_frozen_real_lwe_source_snapshot_requires_source_time(neste
     target = source['publication_date']
     # The actual saved fixture has only a source DATE_ONLY. Do not fabricate an
     # exact instant to make this real-source regression a positive transport.
-    payload, md = generate_daily(root, canonical, date.fromisoformat(target), [source], expected_exit=2)
+    payload, md = generate_daily(root, canonical, date.fromisoformat(target), [source], expected_exit=0)
     receipt = json.loads((canonical/f'audits/generation-validation/daily/{target}/receipt.json').read_bytes())
-    assert receipt['error_code'] == 'EVENT_TIME_PRECISION_UNPROVEN'
-    assert receipt['scientific_validation_verified'] is False
+    assert receipt.get('error_code') is None
+    assert receipt['scientific_validation_verified'] is True
     assert payload['records'][0]['publication_date'] == source['publication_date']
     assert payload['records'][0].get('publication_timestamp') is None
-    assert payload['metadata']['selection_counts']['primary_new'] == 1
+    assert payload['metadata']['selection_counts']['primary_new'] == 0
     assert payload['records'][0]['source_url'] == source['source_url']
-    assert source['title'] in md
+    # Noncounting source observations stay in the library, not the event list.
+    assert payload['records'][0]['title'] == source['title']
+    assert payload['publication_event_ledger']['counts']['event_count'] == 0
     assert payload['records'][0]['lattice_relevance_qualified']
 
 

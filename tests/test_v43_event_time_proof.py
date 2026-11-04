@@ -28,7 +28,7 @@ def test_counted_event_requires_source_cutoff_and_timezone_proof(tmp_path, sourc
                   source_version_timestamp=None)
     record = bind_source_evidence(make_paper_record(**source))
     jp, mp = publish_daily_pair([record],root,DAY,source_health=health(degraded=True),
-        metadata={**META,'fixture_evidence':'TEST_ONLY_MODIFIED_SOURCE_TIME_NOT_REAL_PUBLICATION'})
+        metadata={**META,'publication_policy_version':'scientific-publication-v4-v3','fixture_evidence':'TEST_ONLY_MODIFIED_SOURCE_TIME_NOT_REAL_PUBLICATION'})
     original = jp.read_bytes(), mp.read_bytes()
     if expected.startswith('EVENT_'):
         with pytest.raises(GateError) as failure:verify(root,'daily',str(DAY))

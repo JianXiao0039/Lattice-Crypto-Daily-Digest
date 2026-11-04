@@ -113,7 +113,11 @@ def test_date_targeted_run_filters_records_and_writes_exact_date(tmp_path: Path,
     assert events == []
     assert not payload['metadata']['promotion_history']['complete']
     inside_row = next(r for r in payload['records'] if r['title']=='Inside target date')
-    assert 'HISTORY_EVIDENCE_UNUSABLE' in inside_row['publication_event_reason']
+    # V45 rejects this date-only interval before history can authorize it.
+    assert inside_row['primary_today_new_eligible'] is False
+    assert inside_row['publication_timestamp'] is None
+    assert inside_row['publication_event_type'] == 'historical_library_observations'
+    assert inside_row['publication_event_reason'] == 'no qualified new publication event'
     outside_row = next(r for r in payload["records"] if r["title"] == "Outside target date")
     assert outside_row["publication_event_type"] == "historical_library_observations"
     assert "DATE_UNCERTAIN" in outside_row["publication_event_reason"]

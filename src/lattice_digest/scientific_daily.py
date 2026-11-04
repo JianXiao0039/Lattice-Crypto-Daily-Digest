@@ -99,7 +99,8 @@ def render_scientific_daily(payload: dict) -> str:
         history_blocked=meta.get('promotion_history',{}).get('schema_version') == 'history-evidence-v41' and meta['promotion_history'].get('complete') is not True
         if history_blocked:lines += [HISTORY_INCOMPLETE_ZERO_TEXT,'']
         if not meta['source_coverage']['complete']:lines += [INCOMPLETE_ZERO_TEXT,'']
-        elif not history_blocked:lines += ['今日未发现值得记录的格密码相关新论文。','']
+        elif not history_blocked:
+            lines += [('本期没有获授权计数的新事件；重要争议与科研观察仍需阅读。' if ledger['critical_watch'] else '今日未发现值得记录的格密码相关新论文。'),'']
     else:
         lines += [f"阅读计划覆盖 {len(events)} 个真实事件；详读预算 {detail_budget} 项，其余保留完整简明索引。",'']
     for name,heading in zip(COLLECTIONS[:3],('2. 真正新增格密码论文','3. 真正内容修订','4. 新关键安全核验提醒')):
@@ -136,7 +137,20 @@ def render_scientific_daily(payload: dict) -> str:
         row=rows[e['row_index']]
         lines += [f"- [{_safe(row['title'])}]({row['source_url']})｜{e['scientific_scope']}｜{e['reason']}；不计为 core Daily 事件。"]
     if not collections['background_updates']:lines += ['本次没有需要单列的背景更新。']
-    lines += [f"- CRITICAL_WATCH 存量：{len(ledger['critical_watch'])}；未变化的旧信号仅保留机器账本，不重复开启阅读提醒。",'',
+    # Scientific importance is independent of authorization to count an event.
+    noncounting_watch = [w for w in ledger['critical_watch'] if not w.get('reopened')]
+    if noncounting_watch:
+        lines += ['', '### 持续关注的重大安全主张（不计入当期事件）', '']
+        for watch in noncounting_watch:
+            row = rows[watch['row_index']]
+            lines += [f"- [{_safe(row['title'])}]({row['source_url']})｜CRITICAL_CLAIM_WATCH｜不计为今日首发或新安全突破。",
+                      f"  - 中文技术导读：{_safe(row.get('critical_claim_zh') or abstract_guide(row))}",
+                      '  - 事件授权：时间或实质变化未闭合时仅观察；算法、证明和参数均须独立核验。']
+            if 'https://eprint.iacr.org/2026/1693' in str(row.get('abstract') or ''):
+                lines += ['  - CONTESTED_HIGH_IMPACT_LATTICE_SECURITY_CLAIM：原摘要明确关联公开反驳 [2026/1693](https://eprint.iacr.org/2026/1693)；双方论证未在本流水线独立复核，未执行 Lean。']
+            lines += ['<details><summary>官方原始摘要（作者陈述）</summary>', '',
+                      _safe(row.get('abstract')), '', '</details>', '']
+    lines += [f"- CRITICAL_WATCH 存量：{len(ledger['critical_watch'])}；持续关注与新事件分层显示，不增加事件计数。",'',
               '## 6. 来源健康与覆盖限制','',
               '- source-starved / source_coverage：'+json.dumps(meta['source_coverage'],ensure_ascii=False,sort_keys=True),
               '- TRANSLATION_BACKEND_SELECTION_REQUIRED', '- BILINGUAL_RELEASE_NOT_YET_AVAILABLE']

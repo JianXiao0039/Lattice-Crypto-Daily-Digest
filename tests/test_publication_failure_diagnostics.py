@@ -142,7 +142,9 @@ def test_existing_valid_pair_never_overwritten(tmp_path, runtime_gate):
 def test_valid_positive_degraded_recovery_supported_without_complete_authority(tmp_path, runtime_gate):
     from tests.v41_history_fixture import seed_empty_history
     seed_empty_history(tmp_path,DAY)
-    row = invalid_record().model_copy(update={'relevance_score': 80})
+    # TEST_ONLY synthetic exact source time keeps this a positive event test.
+    row = invalid_record().model_copy(update={'relevance_score': 80,
+        'publication_timestamp': '2026-10-06T12:00:00Z'})
     jp, _ = storage.publish_daily_pair([row], tmp_path, DAY, source_health=HEALTH, metadata=metadata())
     meta = json.loads(jp.read_text(encoding='utf-8'))['metadata']
     assert meta['authority_state'] == 'AUTHORITATIVE_DEGRADED'

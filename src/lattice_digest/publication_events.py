@@ -18,14 +18,15 @@ from lattice_digest.scientific_scope import evaluate_scope
 
 LEGACY_POLICY_VERSION = 'scientific-publication-p0-v1'
 PREVIOUS_POLICY_VERSION = 'scientific-publication-v3-v2'
-POLICY_VERSION = 'scientific-publication-v4-v3'
-SUPPORTED_POLICIES = {LEGACY_POLICY_VERSION, PREVIOUS_POLICY_VERSION, POLICY_VERSION}
+V44_POLICY_VERSION = 'scientific-publication-v4-v3'
+POLICY_VERSION = 'scientific-publication-v45-v1'
+SUPPORTED_POLICIES = {LEGACY_POLICY_VERSION, PREVIOUS_POLICY_VERSION, V44_POLICY_VERSION, POLICY_VERSION}
 
 def scope_evaluator_for_policy(policy):
     if policy == LEGACY_POLICY_VERSION:
         from lattice_digest.scientific_scope_v1 import evaluate_scope as frozen
         return frozen
-    if policy == POLICY_VERSION:
+    if policy in {POLICY_VERSION, V44_POLICY_VERSION}:
         return evaluate_scope
     if policy == PREVIOUS_POLICY_VERSION:
         from lattice_digest.scientific_scope_v2 import evaluate_scope as frozen
@@ -36,7 +37,7 @@ COLLECTIONS = ('primary_publication_events','revision_events','new_critical_veri
 CORE_EVENTS = set(COLLECTIONS[:3])
 
 
-def source_correction_events(row: dict) -> list[dict]:
+def _legacy_source_correction_events(row: dict) -> list[dict]:
     """Dated author correction notes in original abstract, not generated prose."""
     text=str(row.get('abstract') or '')
     months=('January','February','March','April','May','June','July','August','September','October','November','December')
@@ -54,6 +55,57 @@ def source_correction_events(row: dict) -> list[dict]:
                        'source_sha256':hashlib.sha256(text.encode()).hexdigest(),
                        'proof_verification_status':'TODO_VERIFY'})
     return events
+
+
+def source_correction_events(row: dict) -> list[dict]:
+    """Source notes are observations, never self-authenticating proof revisions.
+
+    Fingerprints exclude surrounding notes, source page hashes, dates and layout.
+    Raw spans/hash remain available for source audit. No historical IDs rewritten.
+    """
+    import html
+    text = str(row.get('abstract') or '')
+    months = ('January','February','March','April','May','June','July','August','September','October','November','December')
+    pattern = r'(?:Additional\s+)?note\s+('+'|'.join(months)+r')\s+(\d{1,2})(?:/|,?\s+)(\d{2,4})\s*:'
+    matches = list(re.finditer(pattern, text, re.I))
+    result = []
+    for i, match in enumerate(matches):
+        stop = matches[i+1].start() if i+1 < len(matches) else len(text)
+        excerpt = text[match.start():stop].strip()
+        year = int(match[3]); year = 2000+year if year < 100 else year
+        try:
+            changed = date(year, next(j+1 for j,m in enumerate(months) if m.lower()==match[1].lower()), int(match[2])).isoformat()
+        except ValueError:
+            continue
+        body = text[match.end():stop]
+        # Normalization suppresses harmless Markdown/HTML layout changes only.
+        # Protect complete math spans before any Markdown/HTML cleanup. Literal
+        # multiplication and subscripts must never disappear from fingerprints.
+        math_spans = []
+        def protect_math(match):
+            math_spans.append(match.group(0))
+            return '\x00MATH'+str(len(math_spans)-1)+'\x00'
+        protected = re.sub(r'\$\$[\s\S]*?\$\$|(?<!\\)\$(?:\\.|[^$])*?(?<!\\)\$|\\\([\s\S]*?\\\)|\\\[[\s\S]*?\\\]', protect_math, body)
+        protected = re.sub(r'</?(?:p|br|em|strong|b|i|span)(?:\s[^>]*)?\s*/?>', '', html.unescape(protected), flags=re.I)
+        normalized = ' '.join(protected.split())
+        normalized = re.sub(r'(?<!\w)\*\*([A-Za-z][A-Za-z -]*)\*\*(?!\w)', r'\1', normalized)
+        for j, math_span in enumerate(math_spans):
+            normalized = normalized.replace('\x00MATH'+str(j)+'\x00', math_span)
+        fingerprint = hashlib.sha256(normalized.encode()).hexdigest()
+        clarification = bool(re.search(r'greater clarity|reformatt|formatting|typograph', normalized, re.I))
+        substance = ('CLARIFICATION_OR_FORMATTING' if clarification else
+                     'CONTESTED_CLAIM_FOLLOWUP' if re.search(r'rebuttal|1693|respond|addressing the claims', normalized, re.I) else
+                     'UNKNOWN_VERSION_DELTA')
+        result.append({'event_kind':'SOURCE_CORRECTION', 'change_date':changed,
+            'date_precision':'DATE_ONLY_SOURCE_NOTE', 'evidence_state':'SOURCE_ASSERTED',
+            'source_url':row.get('source_url'), 'source_excerpt':excerpt,
+            'source_span':{'start':match.start(),'end_exclusive':match.start()+len(text[match.start():stop].rstrip())},
+            'source_sha256':hashlib.sha256(text.encode()).hexdigest(),
+            'note_identity':str(row.get('source_url') or '')+'#author-note-'+changed,
+            'note_fingerprint':fingerprint, 'note_schema_version':'note-local-v45',
+            'substance_state':substance, 'substantive_change_verified':False,
+            'proof_verification_status':'TODO_VERIFY'})
+    return result
 
 
 def timestamp(value) -> datetime | None:
@@ -136,8 +188,25 @@ def _action(row, kind):
 def build_event_ledger(records: list[dict], metadata: dict, prior: list[dict] = ()) -> dict:
     policy=metadata.get('publication_policy_version') or POLICY_VERSION
     evaluator=scope_evaluator_for_policy(policy)
+    v45 = policy == POLICY_VERSION
+    notes = source_correction_events if v45 else _legacy_source_correction_events
     target=date.fromisoformat(str(metadata['target_date'])[:10])
     start,end=coverage(metadata,target)
+    def time_proof(value, row, precision=None):
+        from lattice_digest.period_event_time import event_time_evidence
+        zone_evidence = row.get('source_timezone_evidence')
+        return event_time_evidence(value, start, end, source_timezone=(zone_evidence or {}).get('timezone') if isinstance(zone_evidence,dict) else None,
+            source_timezone_evidence=zone_evidence, evidence_kind=precision)
+    def in_window(value, row, precision=None):
+        return time_proof(value,row,precision)['containment_proven'] if v45 else _in_window(value,start,end)
+    def verified_substance(e, row):
+        return (e.get('evidence_state') == 'INDEPENDENTLY_VERIFIED' and
+            e.get('substantive_change_verified') is True and
+            e.get('substance_state') == 'SUBSTANTIVE_PROOF_REVISION' and
+            bool(row.get('source_url')) and e.get('source_url') == row.get('source_url') and
+            e.get('substance_evidence_url') == row.get('source_url') and
+            bool(e.get('source_excerpt')) and e['source_excerpt'] in str(row.get('abstract') or '') and
+            e.get('source_sha256') == hashlib.sha256(str(row.get('abstract') or '').encode()).hexdigest())
     history = metadata.get('promotion_history') or {}
     history_blocked = history.get('schema_version') == 'history-evidence-v41' and history.get('complete') is not True
     v41 = history.get('schema_version') == 'history-evidence-v41'
@@ -170,12 +239,12 @@ def build_event_ledger(records: list[dict], metadata: dict, prior: list[dict] = 
         pub_kind='AUTHORITATIVE_PUBLICATION_DATE' if row.get('preprint_first_posted_at') else row.get('publication_date_kind','AUTHORITATIVE_PUBLICATION_DATE')
         ann=row.get('announcement_timestamp') or row.get('announcement_date')
         revision=row.get('source_version_timestamp') or row.get('update_timestamp') or row.get('update_date')
-        new_pub=pub if pub_kind=='AUTHORITATIVE_PUBLICATION_DATE' and _in_window(pub,start,end) else ann if row.get('announcement_date_kind','AUTHORITATIVE_ANNOUNCEMENT_DATE')=='AUTHORITATIVE_ANNOUNCEMENT_DATE' and _in_window(ann,start,end) else ''
+        new_pub=pub if pub_kind=='AUTHORITATIVE_PUBLICATION_DATE' and in_window(pub,row) else ann if row.get('announcement_date_kind','AUTHORITATIVE_ANNOUNCEMENT_DATE')=='AUTHORITATIVE_ANNOUNCEMENT_DATE' and in_window(ann,row) else ''
         version=source_version(row)
         older_versions=[source_version(p) for p in matches if source_version(p)]
         new_version=bool(version and older_versions and int(version[1:])>max(int(v[1:]) for v in older_versions))
         content_changed=bool(matches and fingerprint and all(content_fingerprint(p) and fingerprint!=content_fingerprint(p) for p in matches))
-        revision_in_window=row.get('update_date_kind',None if v41 else 'AUTHORITATIVE_CONTENT_REVISION_DATE')=='AUTHORITATIVE_CONTENT_REVISION_DATE' and _in_window(revision,start,end)
+        revision_in_window=row.get('update_date_kind',None if v41 else 'AUTHORITATIVE_CONTENT_REVISION_DATE')=='AUTHORITATIVE_CONTENT_REVISION_DATE' and in_window(revision,row)
         # An unseen v2 alone does not prove a new revision. Timestamp must differ
         # from first publication; prior evidence closes the content/version route.
         distinct_revision=timestamp(revision)!=timestamp(pub)
@@ -201,24 +270,34 @@ def build_event_ledger(records: list[dict], metadata: dict, prior: list[dict] = 
             kind='revision_events';basis=str(revision);reason='source-authenticated in-window content/version revision'
         elif not qualified and scientific['scientific_scope'] in {'ADJACENT_PQC','GENERAL_CRYPTO_BACKGROUND'} and scientific['score']>=40 and any(not r['negative_applicability'] for r in scientific['source_relation_roles']) and (new_pub or genuinely_revised):
             kind='background_updates';basis=str(new_pub or revision);reason='new adjacent/general observation, outside core Daily'
-        elif qualified and row.get('source_metadata_correction_date') and _in_window(row['source_metadata_correction_date'],start,end):
+        elif qualified and row.get('source_metadata_correction_date') and in_window(row['source_metadata_correction_date'],row):
             kind='background_updates';basis=str(row['source_metadata_correction_date']);reason='source metadata correction; not new research'
+        if v45 and row.get('security_impact_severity')=='CRITICAL' and kind=='revision_events':
+            # Count only through the independently source-bound substance route below.
+            kind='historical_library_observations';basis='';reason='SOURCE_REVISION_OBSERVATION: security substance unproven; noncounting watch'
         # A newly observed extraordinary signal gets a distinct verify-first event,
         # never a primary-new event. Unchanged evidence cannot reopen it.
         critical=qualified and row.get('security_impact_severity')=='CRITICAL'
-        changes=[e for e in [*(row.get('critical_verification_events') or []),*source_correction_events(row)] if
+        changes=[e for e in [*(row.get('critical_verification_events') or []),*notes(row)] if
             e.get('source_url') and e.get('source_excerpt') and e.get('source_sha256') and
             e.get('evidence_state') in {'SOURCE_ASSERTED','INDEPENDENTLY_VERIFIED'} and
             e.get('event_kind') in {'SIGNIFICANT_SECURITY_VERIFICATION','SOURCE_CORRECTION','AUTHORITATIVE_CONTENT_REVISION'} and
-            _in_window(e.get('change_date'),start,end)]
+            in_window(e.get('change_date'),row,'SOURCE_ASSERTED_NOTE_DATE' if e.get('date_precision')=='DATE_ONLY_SOURCE_NOTE' else e.get('date_precision'))]
         def change_signature(e):
             # Metadata URL aliases do not make identical evidence a new alert.
+            if v45:
+                return json.dumps([e.get('event_kind'),e.get('change_date'),
+                    e.get('note_fingerprint') or ' '.join(str(e.get('source_excerpt') or '').split())])
             return json.dumps({k:e.get(k) for k in ('event_kind','change_date','source_excerpt','source_sha256')},sort_keys=True)
-        prior_changes={change_signature(e) for p in matches for e in [*(p.get('critical_verification_events') or []),*source_correction_events(p)]}
+        prior_changes={change_signature(e) for p in matches for e in [*(p.get('critical_verification_events') or []),*notes(p)]}
         changes=[e for e in changes if change_signature(e) not in prior_changes]
+        observed_changes = notes(row)
+        if v45:
+            # Source notes/first observation alone never prove new security substance.
+            changes=[e for e in changes if verified_substance(e,row)]
         first_seen=row.get('first_seen_at') or row.get('first_seen_date')
         if (critical and kind not in CORE_EVENTS and not conflicting and not future_only and not history_blocked and revision_matches_verified and not row.get('publication_event_blockers') and
-            (changes or (not same_content and not matches and _in_window(first_seen,start,end)))):
+            (changes or (not v45 and not same_content and not matches and _in_window(first_seen,start,end)))):
             kind='new_critical_verify_events';basis=str(changes[0]['change_date'] if changes else first_seen);reason='new critical source evidence; verify proof, parameters and reduction direction'
         evidence='|'.join([fingerprint,version,basis,json.dumps(changes,sort_keys=True) if kind=='new_critical_verify_events' else ''])
         eid=event_id(identity,kind,evidence)
@@ -234,17 +313,28 @@ def build_event_ledger(records: list[dict], metadata: dict, prior: list[dict] = 
                'event_date':basis,'source_version':version,'source_content_sha256':fingerprint,
                'reason':reason,'action':_action(row,kind) if kind in CORE_EVENTS else 'observe_only',
                'relevance_label':row.get('relevance_label','D'),'scientific_scope':scientific['scientific_scope']}
+        if v45 and kind in CORE_EVENTS:
+            precision = ('SOURCE_ASSERTED_NOTE_DATE' if kind=='new_critical_verify_events' and changes and changes[0].get('date_precision')=='DATE_ONLY_SOURCE_NOTE' else None)
+            entry['source_date_precision'] = precision
+            entry['source_time_evidence'] = time_proof(basis,row,precision)
         collections[kind].append(entry);decisions.append(entry)
         if critical:
             watches.append({**entry,'channel':'CRITICAL_WATCH','original_publication_date':pub,
-                'new_evidence_change_date':basis or next((e['change_date'] for e in reversed(source_correction_events(row))),None),'affected_problem':[r['technical_target'] for r in scientific['source_relation_roles']],
+                'new_evidence_change_date':basis or next((e['change_date'] for e in reversed(notes(row))),None),'affected_problem':[r['technical_target'] for r in scientific['source_relation_roles']],
                 'reduction_direction':row.get('critical_signal_relations') or 'TODO_VERIFY',
                 'claim_confidence':row.get('evidence_confidence') or 'TODO_VERIFY',
                 'proof_verification_status':'TODO_VERIFY', 'known_rebuttals_corrections':[
                     *row.get('source_limitations',[]),*[s for s in re.split(r'(?<=[.!?])\s+',str(row.get('abstract') or ''))
                     if re.search(r'\b(?:note|incorrect|correction|rebuttal|lemma|preprint)\b',s,re.I)]],
                 'rebuttal_search_status':'NOT_INDEPENDENTLY_SEARCHED','next_human_review_action':'核验原稿、证明、归约方向及参数范围；不得外推标准化 PQC 攻破',
-                'reopened':kind=='new_critical_verify_events'})
+                'reopened':kind=='new_critical_verify_events',
+                **({'watch_state':'CONTESTED_HIGH_IMPACT_LATTICE_SECURITY_CLAIM' if '2026/1693' in str(row.get('abstract') or '') else 'CRITICAL_CLAIM_WATCH',
+                    'counts_as_new_publication':False,
+                    'counted_event_authorized':kind in CORE_EVENTS,
+                    'source_revision_observations':[{**e,'source_time_evidence':time_proof(e['change_date'],row,'SOURCE_ASSERTED_NOTE_DATE')} for e in observed_changes],
+                    'noncounting_state':'UNRESOLVED_TIME_OR_SUBSTANCE' if kind not in CORE_EVENTS else None,
+                    'unresolved_obligations':['SOURCE_EVENT_TIME','SUBSTANTIVE_NEW_EVIDENCE'] if kind not in CORE_EVENTS else [],
+                    'related_public_claims':[{'source_url':'https://eprint.iacr.org/2026/1693','relation':'SOURCE_LINKED_REBUTTAL','mathematical_verification':'TODO_VERIFY_NOT_EXECUTED'}] if '2026/1693' in str(row.get('abstract') or '') else []} if v45 else {})})
     active=[e for name in COLLECTIONS[:3] for e in collections[name]]
     counts={'observations':len(records),'observed_paper_identities':len({e['canonical_identity'] for e in decisions}),'qualified_lattice_identities':len(qualified_identities),
             'selected':len(active),'primary_new':len(collections['primary_publication_events']),

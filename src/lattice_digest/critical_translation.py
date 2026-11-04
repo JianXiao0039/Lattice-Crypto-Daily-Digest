@@ -38,9 +38,33 @@ def _source_text(record: PaperRecord) -> str:
     return " ".join(part for part in (record.title, record.abstract, record.conclusion, record.venue or "") if part)
 
 
+def source_math_fragments(text: str) -> list[str]:
+    """Keep complete source math spans and balanced plain-text complexity terms.
+
+    Never scan across a closed formula into an unrelated English sentence.
+    Unclosed delimiters are left to the separately preserved source abstract.
+    """
+    spans = [(m.start(), m.end(), m.group()) for m in re.finditer(
+        r"(?<!\\)\$\$[\s\S]*?(?<!\\)\$\$|(?<!\\)\$(?!\$)[^$\n]*?(?<!\\)\$|\\\([\s\S]*?\\\)|\\\[[\s\S]*?\\\]", text)]
+    for match in re.finditer(r"(?:\d+/)?O\(", text):
+        if any(a <= match.start() < b for a, b, _ in spans):
+            continue
+        if len(re.findall(r"(?<!\\)\$", text[:match.start()])) % 2:
+            # Do not reinterpret an unterminated source math span as plain text.
+            continue
+        depth = 1
+        pos = match.end()
+        while pos < len(text) and depth and text[pos] not in ";.\n$":
+            depth += (text[pos] == "(") - (text[pos] == ")")
+            pos += 1
+        if depth == 0:
+            spans.append((match.start(), pos, text[match.start():pos]))
+    return list(dict.fromkeys(value for _, _, value in sorted(spans)))
+
+
 def _protected_tokens(text: str) -> set[str]:
     tokens = set(re.findall(r"\b(?:DCP|DHSP|EDCP|LWE|RLWE|MLWE|SVP|SIS|ML-KEM|ML-DSA|Module-LWE)\b", text))
-    tokens.update(re.findall(r"(?:\d+/)?O\([^;.\n]*\)", text))
+    tokens.update(source_math_fragments(text))
     tokens.update(re.findall(r"\b\d+(?:\.\d+)?(?:%|/[A-Za-z]+)?\b", text))
     return tokens
 
@@ -91,19 +115,26 @@ def build_critical_claim_translation(record: PaperRecord) -> str:
     if targets:
         rendered = "、".join(dict.fromkeys(targets))
         parts.append(f"可对 {rendered} 产生潜在的多项式时间量子算法后果")
-    formulas = list(dict.fromkeys(re.findall(r"(?:\d+/)?O\([^;.\n]*\)", source)))
-    used_formulas: list[str] = []
+    # Parameter expressions stay verbatim and separate from translated prose.
+    # This preserves alpha and nested parentheses without inventing a mapping
+    # from asymptotic LWE to a standardized ML-KEM parameter set.
+    formulas = source_math_fragments(source)
     if "faulty sample" in lower:
-        faulty_match = re.search(r"(?:\d+/)?O\([^;.\n]*\)", source[source.lower().find("faulty sample") :])
-        formula = f" {faulty_match.group(0)}" if faulty_match else ""
-        if faulty_match:
-            used_formulas.append(faulty_match.group(0))
-        parts.append(f"并声称可容忍相应的错误样本率{formula}")
-    remaining_formulas = [formula for formula in formulas if formula not in used_formulas]
-    if remaining_formulas:
-        parts.append("并保留原文公式 " + "、".join(remaining_formulas))
+        parts.append("并声称可容忍原文给出的错误样本率")
+    if formulas:
+        parts.append("原文数学表达逐项保留：" + "；".join(formulas))
     text = "，".join(parts) + "。"
     text += "该结果仍为 TODO_VERIFY；目前不能据此断言 ML-KEM、ML-DSA 或标准化 Module-LWE 的安全性已经失效。"
+    if "https://eprint.iacr.org/2026/1693" in record.abstract:
+        text += ("公开争议：原摘要明确关联反驳论文 https://eprint.iacr.org/2026/1693；"
+                 "原主张与反驳均须对照全文，未独立复核数学证明，未执行 Lean。")
+    if re.search(r"does not solve|cannot succeed|no-go", source, re.I):
+        # A negative result must never inherit the positive algorithm template.
+        text = ("作者反驳：该论文报告针对 DCP 算法的否定性分析；"
+                "这属于作者报告的研究结论，尚未独立复核全文证明或执行 Lean。"
+                "不应据此声称标准化 ML-KEM 或 ML-DSA 已被攻破。")
+        if formulas:
+            text += "原文数学表达逐项保留：" + "；".join(formulas) + "。"
     return text
 
 

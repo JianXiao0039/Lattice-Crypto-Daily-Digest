@@ -234,6 +234,32 @@
         "复杂度关于模块秩、域次数和输入位长分别如何变化？",
         "输出近似质量与密码分析所需近似因子之间有何差距？"
       ]
+    },
+    "3c29912b7f9e3e1c112af84bf55b5e449ccb0d45ca331668f71d30578576607c": {
+      "source_url": "https://eprint.iacr.org/2026/1591",
+      "object_zh": "二面体陪集问题 DCP 的作者算法主张，以及经归约对 SVP/LWE 的潜在后果。",
+      "problem_zh": "作者声称给出多项式时间量子算法；这是一项存在公开反驳的高影响研究主张，不是已确认的格密码安全突破。",
+      "method_zh": "摘要称沿用 Regev 的归约框架，但以另一方法擦除样本位；作者同时承认早期 Lemma 3 对不同分布的成对独立性处理有误，并报告后续修改。",
+      "result_zh": "CONTESTED_HIGH_IMPACT_LATTICE_SECURITY_CLAIM：作者声称可得到某些 SVP/LWE 后果，摘要明确关联反驳论文 ePrint 2026/1693。October 7 说明称回应反驳并澄清证明；November 3 说明仅报告清晰性编辑和重排版，不能据此认定出现新的算法或已闭合证明。",
+      "assumptions_zh": "仅审读官方摘要；PDF 与完整版本记录本轮不可获取。尚未独立复核双方证明，未执行 Lean。摘要的 LWE 渐近参数不能直接对应标准化 ML-KEM 实例。",
+      "significance_zh": "持续关注原主张及公开反驳；重要性与本期计数授权分离。不构成标准化 ML-KEM 或 ML-DSA 已被攻破的证据。",
+      "verification_questions_zh": [
+        "November 3 版相对上一版实际改变了哪些证明步骤，是否回应了反驳所针对的算法？",
+        "获取双方全文后，核对算法成功概率、归约方向、参数及形式化模型；本轮未执行 Lean。"
+      ]
+    },
+    "45755d48f244f75c5596fdac70ba18c4cbe1506f139c93c84ac66aac817fe386": {
+      "source_url": "https://eprint.iacr.org/2026/1693",
+      "object_zh": "针对 Simon 2026/1591 中 DCP 算法及更广算法类的否定性分析。",
+      "problem_zh": "作者报告该算法不能以非忽略猜测优势提取 DCP 秘密的最低有效位，因此不能求解 DCP；这是反驳作者的结论。",
+      "method_zh": "摘要称证明覆盖更广算法类的 no-go 结果，并分析撤销计算阶段使用经典 Fourier 标签的要求。未在此流水线独立复核证明。",
+      "result_zh": "与原主张 ePrint 2026/1591 配对阅读。作者报告算法可近似仅使用 Fourier 标签最高三分之一，并据此否定其成功性；作者同时提供公开 Lean 4 artifact。存在 artifact 不等于本轮已执行或验证。",
+      "assumptions_zh": "摘要明确指向 August 11 2026 算法；不能未经版本比对自动断言其覆盖 November 3 的一切变动。未取得 PDF，未独立复核数学证明，未执行 Lean。",
+      "significance_zh": "CONTESTED_HIGH_IMPACT_LATTICE_SECURITY_CLAIM 的公开反驳应与原主张同时保留；不构成标准化格方案被攻破的证据。",
+      "verification_questions_zh": [
+        "反驳所建模的算法与 Simon 当前版本是否逐步一致？",
+        "取得全文和固定版本 Lean artifact 后，分别核验数学前提、形式化范围与实际编译结果。"
+      ]
     }
   }
 }

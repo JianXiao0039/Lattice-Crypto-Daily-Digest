@@ -13,6 +13,80 @@ import re
 
 UTC = timezone.utc
 POLICY = 'source-time-interval-v44'
+EVENT_TIME_POLICY = 'source-time-evidence-v45'
+
+
+def event_time_evidence(value, start, end, *, granularity='DAILY_WINDOW',
+                        source_timezone=None, source_timezone_evidence=None,
+                        evidence_kind=None):
+    """Source-bound interval evidence, not a scientific event authorization.
+
+    Only a separately verified source timezone rule may narrow a civil date.
+    A collector observation is never a publication/revision time. Callers must
+    independently bind the value and any timezone rule to the original source;
+    passing this function a dictionary does not verify that rule's provenance.
+    The independent gate recomputes this result from the bound source row.
+    """
+    # Producer coverage normalizes UTC, while the verifier reads the original
+    # offset-bearing metadata. Canonicalize equivalent period instants before
+    # serializing proof fields; this must not invent offsets for naive bounds.
+    if isinstance(start, datetime) and start.tzinfo is not None:
+        start = start.astimezone(UTC)
+    if isinstance(end, datetime) and end.tzinfo is not None:
+        end = end.astimezone(UTC)
+    zone_evidence = source_timezone_evidence
+    verified_zone = (isinstance(zone_evidence, dict)
+        and zone_evidence.get('status') == 'VERIFIED'
+        and isinstance(zone_evidence.get('timezone'), str)
+        and bool(zone_evidence['timezone'])
+        and isinstance(zone_evidence.get('source_url'), str)
+        and zone_evidence['source_url'].startswith('https://')
+        and isinstance(zone_evidence.get('rule'), str)
+        and bool(zone_evidence['rule'].strip())
+        and (source_timezone is None or source_timezone == zone_evidence['timezone']))
+    zone = zone_evidence['timezone'] if verified_zone else None
+    proof = prove_event_time(value, start, end, granularity=granularity, source_timezone=zone)
+    precision = {'EXPLICIT_OFFSET_INSTANT': 'EXPLICIT_OFFSET_TIMESTAMP',
+                 'DATE_ONLY_SOURCE_ZONE': 'SOURCE_TIMEZONE_VERIFIED_DATE',
+                 'DATE_ONLY_UNKNOWN_ZONE': 'DATE_ONLY_UNKNOWN_TIMEZONE',
+                 'NAIVE_TIME_SOURCE_ZONE': 'SOURCE_TIMEZONE_VERIFIED_TIMESTAMP'}.get(proof['precision'], 'UNVERIFIED_EVENT_TIME')
+    if isinstance(value, str) and proof['precision'] == 'UNPROVEN':
+        try:
+            naive = datetime.fromisoformat(value)
+            if naive.tzinfo is None:
+                precision = 'NAIVE_TIMESTAMP_UNKNOWN_TIMEZONE'
+        except ValueError:
+            pass
+    if evidence_kind in {'SOURCE_ASSERTED_NOTE_DATE', 'DATE_ONLY_SOURCE_NOTE'}:
+        precision = 'SOURCE_ASSERTED_NOTE_DATE'
+    if evidence_kind == 'COLLECTOR_OBSERVED_TIMESTAMP':
+        precision = evidence_kind
+    contained = proof[granularity + '_EVENT_TIME_PROVEN']
+    obligations = []
+    if evidence_kind == 'COLLECTOR_OBSERVED_TIMESTAMP':
+        obligations.append('SOURCE_EVENT_TIME_NOT_COLLECTOR_OBSERVATION')
+    if not contained:
+        obligations.append('REQUESTED_PERIOD_CONTAINMENT_UNPROVEN')
+    temporal = contained and not obligations
+    return {**proof, 'policy_version': EVENT_TIME_POLICY,
+            'source_date': value, 'source_date_precision': precision,
+            'source_timezone_evidence': zone_evidence if verified_zone else None,
+            'possible_earliest_utc': proof['possible_start'],
+            'possible_latest_utc_exclusive': proof['possible_end_exclusive'],
+            'target_period': {'granularity': granularity, 'start': start.isoformat(),
+                              'end_exclusive': end.isoformat()},
+            'containment_proven': temporal,
+            granularity + '_EVENT_TIME_PROVEN': temporal,
+            'unresolved_obligations': obligations,
+            'event_authorized': False}
+
+
+def daily_event_time_proof(value, start, end, *, source_timezone_evidence=None,
+                           source_date_precision=None):
+    """Daily convenience entry to the same source-time evidence contract."""
+    return event_time_evidence(value, start, end,
+        source_timezone_evidence=source_timezone_evidence,
+        evidence_kind=source_date_precision)
 
 
 def source_time_interval(value: str, source_timezone: str | None = None):

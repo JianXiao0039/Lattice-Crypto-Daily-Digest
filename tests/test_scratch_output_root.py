@@ -118,7 +118,10 @@ def test_output_root_writes_scratch_artifacts_without_overwriting_authoritative_
     assert item["freshness_reason"]
     assert item["primary_today_new_eligible"] is False
     assert not payload['metadata']['promotion_history']['complete']
-    assert 'HISTORY_EVIDENCE_UNUSABLE' in item['publication_event_reason']
+    # Date-only source time cannot authorize an intra-day event in V45.
+    assert item['publication_timestamp'] is None
+    assert item['publication_event_type'] == 'historical_library_observations'
+    assert item['publication_event_reason'] == 'no qualified new publication event'
     assert item["venue"] == "arXiv"
     assert item["venue_type"] == "preprint"
     assert item["CCF_rank"] == "N/A"
